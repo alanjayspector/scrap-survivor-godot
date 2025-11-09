@@ -59,5 +59,6 @@
   },
 
   // Tasks for validators (Cmd+Shift+B)
-  "tasks.autoDetect": "on"
+  "tasks.autoDetect": "on",
+  "godotTools.editorPath.godot4": "/Applications/Godot.app"
 }

@@ -1,0 +1,12 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "scavenger_toolkit"
+item_name = "Scavenger Toolkit"
+description = "+12 Luck, +5% Scrap Gain, -5 Damage"
+item_type = "item"
+rarity = "uncommon"
+stat_modifiers = {"luck": 12, "scrapGain": 5, "damage": -5}

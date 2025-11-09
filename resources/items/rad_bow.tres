@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "rad_bow"
+item_name = "Rad Bow"
+description = "Bow that leaves radioactive clouds behind."
+item_type = "weapon"
+rarity = "rare"
+stat_modifiers = {}
+base_damage = 15
+damage_type = "ranged"
+fire_rate = 1.4
+projectile_speed = 340
+base_range = 220
+max_durability = 110
+max_fuse_tier = 2
+base_value = 35

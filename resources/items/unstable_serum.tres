@@ -1,0 +1,12 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "unstable_serum"
+item_name = "Unstable Serum"
+description = "+15 Damage, -10 Max HP"
+item_type = "item"
+rarity = "rare"
+stat_modifiers = {"damage": 15, "maxHp": -10}

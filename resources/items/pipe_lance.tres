@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "pipe_lance"
+item_name = "Pipe Lance"
+description = "Long reach melee pipe with armor penetration but slow recovery."
+item_type = "weapon"
+rarity = "uncommon"
+stat_modifiers = {}
+base_damage = 16
+damage_type = "melee"
+fire_rate = 0.9
+projectile_speed = 0
+base_range = 120
+max_durability = 130
+max_fuse_tier = 3
+base_value = 20

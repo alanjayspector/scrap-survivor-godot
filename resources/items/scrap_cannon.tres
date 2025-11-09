@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "scrap_cannon"
+item_name = "Scrap Cannon"
+description = "Hurls metal shards in a cone. Slow but brutal."
+item_type = "weapon"
+rarity = "rare"
+stat_modifiers = {}
+base_damage = 20
+damage_type = "ranged"
+fire_rate = 0.6
+projectile_speed = 220
+base_range = 140
+max_durability = 140
+max_fuse_tier = 2
+base_value = 35

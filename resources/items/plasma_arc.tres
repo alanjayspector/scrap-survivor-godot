@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "plasma_arc"
+item_name = "Plasma Arc"
+description = "Short-range plasma cutter that pierces armor at the cost of self-heat."
+item_type = "weapon"
+rarity = "legendary"
+stat_modifiers = {}
+base_damage = 28
+damage_type = "ranged"
+fire_rate = 1.1
+projectile_speed = 0
+base_range = 90
+max_durability = 90
+max_fuse_tier = 1
+base_value = 60

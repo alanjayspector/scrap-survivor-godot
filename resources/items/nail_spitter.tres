@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "nail_spitter"
+item_name = "Nail Spitter"
+description = "Rapid-fire nail gun that shreds at close range."
+item_type = "weapon"
+rarity = "common"
+stat_modifiers = {}
+base_damage = 9
+damage_type = "ranged"
+fire_rate = 3
+projectile_speed = 260
+base_range = 130
+max_durability = 90
+max_fuse_tier = 3
+base_value = 12

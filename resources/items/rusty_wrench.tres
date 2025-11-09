@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "rusty_wrench"
+item_name = "Rusty Wrench"
+description = "A basic, reliable wrench."
+item_type = "weapon"
+rarity = "common"
+stat_modifiers = {}
+base_damage = 8
+damage_type = "ranged"
+fire_rate = 1.5
+projectile_speed = 350
+base_range = 200
+max_durability = 100
+max_fuse_tier = 3
+base_value = 12

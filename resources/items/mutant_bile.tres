@@ -1,0 +1,12 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "mutant_bile"
+item_name = "Mutant Bile"
+description = "+8 Life Steal, -10 Dodge"
+item_type = "item"
+rarity = "rare"
+stat_modifiers = {"lifeSteal": 8, "dodge": -10}

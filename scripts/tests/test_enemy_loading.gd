@@ -9,9 +9,9 @@ extends Node
 ##
 ## Usage:
 ## 1. Create a new scene with a Node
-## 2. Attach this script
+## 2. Attach this scrip
 ## 3. Run the scene (F6)
-## 4. Check console output
+## 4. Check console outpu
 
 # Cached enemy resources (loaded once)
 var enemy_basic: EnemyResource
@@ -61,7 +61,7 @@ func _test_load_enemies() -> void:
 					enemy.base_hp,
 					enemy.base_speed,
 					enemy.base_damage,
-					enemy.spawn_weight
+					enemy.spawn_weigh
 				]
 			)
 		)
@@ -136,7 +136,7 @@ func _test_wave_scaling() -> void:
 func _test_spawn_weights() -> void:
 	print("3. Spawn Weight Distribution:")
 
-	var total_weight = enemy_basic.spawn_weight + enemy_fast.spawn_weight + enemy_tank.spawn_weight
+	var total_weight = enemy_basic.spawn_weight + enemy_fast.spawn_weight + enemy_tank.spawn_weigh
 
 	print("  Total weight: %d" % total_weight)
 	print(

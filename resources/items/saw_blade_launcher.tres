@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "saw_blade_launcher"
+item_name = "Saw Blade Launcher"
+description = "Launches bouncing saw blades that pierce, but drains durability rapidly."
+item_type = "weapon"
+rarity = "legendary"
+stat_modifiers = {}
+base_damage = 26
+damage_type = "ranged"
+fire_rate = 0.8
+projectile_speed = 360
+base_range = 190
+max_durability = 80
+max_fuse_tier = 1
+base_value = 60

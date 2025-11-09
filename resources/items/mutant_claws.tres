@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "mutant_claws"
+item_name = "Mutant Claws"
+description = "Bioengineered claws that grant life steal but reduce range."
+item_type = "weapon"
+rarity = "rare"
+stat_modifiers = {}
+base_damage = 18
+damage_type = "melee"
+fire_rate = 1.8
+projectile_speed = 0
+base_range = 50
+max_durability = 110
+max_fuse_tier = 2
+base_value = 35

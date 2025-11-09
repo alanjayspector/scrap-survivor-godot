@@ -3,9 +3,9 @@ extends Node
 ##
 ## Usage:
 ## 1. Create a new scene with a Node
-## 2. Attach this script
+## 2. Attach this scrip
 ## 3. Run the scene (F6)
-## 4. Check console output
+## 4. Check console outpu
 
 
 func _ready() -> void:

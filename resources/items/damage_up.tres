@@ -1,0 +1,12 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "damage_up"
+item_name = "Rebar Spike Kit"
+description = "Bolts sharpened scrap into your gauntlets. +5 Damage"
+item_type = "upgrade"
+rarity = "common"
+stat_modifiers = {"damage": 5}

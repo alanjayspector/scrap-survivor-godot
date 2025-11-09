@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "shock_gloves"
+item_name = "Shock Gloves"
+description = "Melee gloves that stun enemies but reduce armor."
+item_type = "weapon"
+rarity = "rare"
+stat_modifiers = {}
+base_damage = 14
+damage_type = "melee"
+fire_rate = 2.4
+projectile_speed = 0
+base_range = 40
+max_durability = 100
+max_fuse_tier = 2
+base_value = 35

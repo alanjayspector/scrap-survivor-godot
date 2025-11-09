@@ -1,0 +1,20 @@
+[gd_resource type="ItemResource" script_class="ItemResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = "rail_slagger"
+item_name = "Rail Slagger"
+description = "Improvised railgun that knocks enemies back but fires slowly."
+item_type = "weapon"
+rarity = "epic"
+stat_modifiers = {}
+base_damage = 35
+damage_type = "ranged"
+fire_rate = 0.4
+projectile_speed = 480
+base_range = 260
+max_durability = 160
+max_fuse_tier = 2
+base_value = 45

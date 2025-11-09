@@ -11,7 +11,7 @@ extends Resource
 ## Display name shown in UI (e.g., "Rusty Pistol")
 @export var weapon_name: String = ""
 
-## Base damage per hit
+## Base damage per hi
 @export var damage: int = 10
 
 ## Shots per second
