@@ -8,23 +8,30 @@
 
 ## Overview
 
-Scrap Survivor features **three distinct shop experiences** that scale with player tier:
+Scrap Survivor features **three distinct shop scenes** with service-level tier gating:
 
 1. **Standard Shop** (All tiers) - General marketplace with random inventory
-2. **Black Market** (Premium+ only) - Curated high-tier items + fully-formed minions
-3. **Atomic Vending Machine** (Subscription only) - Personalized items + minion patterns
+2. **Black Market** (Premium+ features) - Curated high-tier items + fully-formed minions
+3. **Atomic Vending Machine** (Subscription features) - Personalized items + minion patterns
+
+**Service-Level Gating Philosophy:**
+- ✅ **All shop scenes are visible and accessible** to all players (discovery & FOMO)
+- ✅ **Tier checks happen at service usage** (purchase, reroll, etc.), not scene entry
+- ✅ **CTA modals** shown when wrong tier tries to use a service (conversion funnel)
+- ✅ **Perks system can override** tier restrictions for events/promotions
 
 **Shop Progression:**
 ```
-Free tier: Standard Shop only
-Premium tier: Standard Shop + Black Market
-Subscription tier: Standard Shop + Black Market + Atomic Vending Machine
+Free tier: Standard Shop purchases ✅ | Black Market browsing ✅ purchases ❌ | Atomic browsing ✅ purchases ❌
+Premium tier: Standard Shop ✅ | Black Market ✅ | Atomic browsing ✅ purchases ❌
+Subscription tier: Standard Shop ✅ | Black Market ✅ | Atomic Vending Machine ✅
 ```
 
 **Brotato comparison:**
 - ✅ Standard Shop: Similar to Brotato shop (random items, limited slots)
 - 🟢 Black Market: UNIQUE (premium curated shop with minions)
 - 🟢 Atomic Vending Machine: UNIQUE (personalized subscription shop)
+- 🟢 Service-level gating: UNIQUE (better discovery, conversion, perks integration)
 
 ---
 
@@ -144,13 +151,17 @@ Available Items (6):
 
 ---
 
-## 2. Black Market (Premium Tier)
+## 2. Black Market
 
 ### What is the Black Market?
 
-**The Black Market** is the Premium tier's exclusive shop scene featuring curated high-tier items and **fully-formed minions for purchase**.
+**The Black Market** is a premium shop scene featuring curated high-tier items and **fully-formed minions for purchase**.
 
-**Access:** Premium + Subscription tiers only
+**Scene Access:** All tiers can browse (discovery & FOMO)
+
+**Purchase Access:** Premium + Subscription tiers
+
+**Free Tier Experience:** Can browse inventory, but shows CTA modal on purchase attempts
 
 **Location:** Hub → Black Market (separate scene, not a Lab tab)
 
@@ -266,13 +277,17 @@ For personalized crafting, visit The Lab (Subscription).
 
 ---
 
-## 3. Atomic Vending Machine (Subscription Tier)
+## 3. Atomic Vending Machine
 
 ### What is the Atomic Vending Machine?
 
-**The Atomic Vending Machine** is the Subscription tier's ultra-exclusive shop featuring **personalized items tailored to your character** and **minion patterns** (not fully-formed minions).
+**The Atomic Vending Machine** is an ultra-premium shop scene featuring **personalized items tailored to your character** and **minion patterns** (not fully-formed minions).
 
-**Access:** Subscription tier only
+**Scene Access:** All tiers can browse (discovery & FOMO)
+
+**Purchase Access:** Subscription tier only
+
+**Free/Premium Tier Experience:** Can browse personalized inventory, but shows CTA modal on purchase attempts
 
 **Location:** Hub → Atomic Vending Machine (separate scene)
 
@@ -472,15 +487,26 @@ Personalized Inventory (3):
 
 ### Shop Access Matrix
 
+**Scene Access (All tiers can browse):**
+
+| Shop Scene | Free | Premium | Subscription |
+|-----------|------|---------|--------------|
+| Standard Shop | ✅ Browse + Purchase | ✅ Browse + Purchase | ✅ Browse + Purchase |
+| Black Market | ✅ Browse only (CTA on purchase) | ✅ Browse + Purchase | ✅ Browse + Purchase |
+| Atomic Vending Machine | ✅ Browse only (CTA on purchase) | ✅ Browse only (CTA on purchase) | ✅ Browse + Purchase |
+
+**Service Features (Service-level gating):**
+
 | Feature | Free | Premium | Subscription |
 |---------|------|---------|--------------|
-| Standard Shop | ✅ | ✅ | ✅ |
-| Black Market | ❌ | ✅ | ✅ |
-| Atomic Vending Machine | ❌ | ❌ | ✅ |
+| Standard Shop purchases | ✅ | ✅ | ✅ |
+| Black Market purchases | ❌ (CTA: "Upgrade to Premium") | ✅ | ✅ |
+| Atomic purchases | ❌ (CTA: "Upgrade to Subscription") | ❌ (CTA: "Upgrade to Subscription") | ✅ |
 | Reroll discount | 0% | 25% | 50% |
 | Better drop rates | - | +Better | +Best |
 | Personalized items | ❌ | ❌ | ✅ |
 | Buy minions | ❌ | ✅ (fully-formed) | ✅ (patterns) |
+| Perks override | ✅ Can temporarily unlock features | ✅ Can temporarily unlock features | ✅ Can get discounts |
 
 ---
 
@@ -615,10 +641,10 @@ func get_weighted_random_tier(player_tier: String) -> int:
             return 4
     return 1
 
-# Black Market (Premium+)
+# Black Market (Service-level gating, all tiers can browse)
 func refresh_black_market() -> void:
-    if PlayerService.get_tier() == "free":
-        return
+    # NOTE: No tier check here - all players can see Black Market inventory
+    # Tier checks happen at purchase time (service-level gating)
 
     var current_time = Time.get_unix_time_from_system()
 
@@ -644,12 +670,12 @@ func refresh_black_market() -> void:
         black_market_inventory.append(minion)
 
     last_black_market_refresh = current_time
-    GameLogger.info("Black Market refreshed")
+    GameLogger.info("Black Market refreshed (visible to all tiers)")
 
-# Atomic Vending Machine (Subscription)
+# Atomic Vending Machine (Service-level gating, all tiers can browse)
 func refresh_atomic_vending_machine(character: Character) -> void:
-    if PlayerService.get_tier() != "subscription":
-        return
+    # NOTE: No tier check here - all players can see personalized inventory
+    # Tier checks happen at purchase time (service-level gating)
 
     var current_time = Time.get_unix_time_from_system()
 
@@ -657,7 +683,7 @@ func refresh_atomic_vending_machine(character: Character) -> void:
     if current_time - last_atomic_refresh < 86400:  # 24 hours
         return
 
-    # Generate personalized inventory
+    # Generate personalized inventory (even for Free/Premium tiers - discovery!)
     atomic_vending_inventory = []
 
     # Personalized weapon
@@ -673,7 +699,7 @@ func refresh_atomic_vending_machine(character: Character) -> void:
     atomic_vending_inventory.append(pattern)
 
     last_atomic_refresh = current_time
-    GameLogger.info("Atomic Vending Machine refreshed for %s" % character.name)
+    GameLogger.info("Atomic Vending Machine refreshed for %s (visible to all tiers)" % character.name)
 
 func generate_personalized_weapon(character: Character) -> Item:
     # Analyze character build
@@ -694,7 +720,276 @@ func generate_evolving_pattern(character: Character) -> MinionPattern:
     var tier = randi() % 2 + 3  # T3 or T4
     var pattern = MinionPatternFactory.create_evolving_pattern(tier)
     return pattern
+
+# ===============================================
+# SERVICE-LEVEL GATING WITH CTAs
+# ===============================================
+
+# Purchase functions with service-level tier checks and CTA modals
+func purchase_item(item: Item, shop_type: String) -> bool:
+    # Determine required tier based on shop type
+    var required_tier = ""
+    match shop_type:
+        "standard":
+            required_tier = "free"  # All tiers can purchase
+        "black_market":
+            required_tier = "premium"  # Premium+ only
+        "atomic":
+            required_tier = "subscription"  # Subscription only
+
+    # SERVICE-LEVEL TIER CHECK (not scene-level)
+    if not can_access_shop_service(shop_type):
+        # Check perks system override first
+        if not has_perks_override(shop_type):
+            show_upgrade_cta(shop_type, item)
+            return false
+
+    # Process purchase (scrap validation, inventory management, etc.)
+    if not BankingService.spend_scrap(item.price):
+        ToastService.show("Insufficient scrap (%d required)" % item.price)
+        return false
+
+    PlayerInventory.add_item(item)
+    GameLogger.info("Purchased %s from %s" % [item.name, shop_type])
+    AnalyticsService.track_purchase(shop_type, item.tier, item.price)
+    return true
+
+func can_access_shop_service(shop_type: String) -> bool:
+    var player_tier = PlayerService.get_tier()
+
+    match shop_type:
+        "standard":
+            return true  # All tiers
+        "black_market":
+            return player_tier in ["premium", "subscription"]
+        "atomic":
+            return player_tier == "subscription"
+
+    return false
+
+func has_perks_override(shop_type: String) -> bool:
+    # Check if perks system grants temporary access
+    match shop_type:
+        "black_market":
+            # Weekend event: Free tier gets Black Market access
+            if PerksService.has_active_perk("black_market_weekend"):
+                return true
+            # Trial perk: 24-hour Black Market access
+            if PerksService.has_active_perk("black_market_trial"):
+                return true
+        "atomic":
+            # Loyalty reward: Premium tier gets 1-week Atomic access
+            if PerksService.has_active_perk("atomic_vending_trial"):
+                return true
+
+    return false
+
+func show_upgrade_cta(shop_type: String, item: Item) -> void:
+    # Show CTA modal at point of purchase failure (conversion funnel)
+    var modal_config = {}
+
+    match shop_type:
+        "black_market":
+            modal_config = {
+                "title": "Upgrade to Premium",
+                "headline": "Shop the Black Market",
+                "body": "Get access to curated high-tier items and fully-formed minions!\n\nYou wanted: %s (%d scrap)" % [item.name, item.price],
+                "features": [
+                    "Curated T3-T4 items",
+                    "Buy fully-formed minions instantly",
+                    "25% discount on shop rerolls",
+                    "Better drop rates across all shops"
+                ],
+                "cta_button": "Upgrade to Premium",
+                "price": "$4.99/month or $39.99/year",
+                "dismiss_button": "Maybe Later"
+            }
+        "atomic":
+            modal_config = {
+                "title": "Upgrade to Subscription",
+                "headline": "Unlock Personalized Shopping",
+                "body": "Get items tailored to YOUR build!\n\nThis %s has +25%% bonus stats for your playstyle!" % item.name,
+                "features": [
+                    "Personalized items matched to your build",
+                    "+25% stat bonuses on all items",
+                    "Evolving minion patterns (unlimited crafts)",
+                    "Free daily reroll",
+                    "50% discount on all shop rerolls",
+                    "Full access to The Lab (Nanites, crafting, etc.)"
+                ],
+                "cta_button": "Upgrade to Subscription",
+                "price": "$9.99/month or $79.99/year",
+                "dismiss_button": "Maybe Later"
+            }
+
+    CTAModalService.show_upgrade_modal(modal_config)
+    AnalyticsService.track_cta_shown(shop_type, item.tier, "purchase_blocked")
 ```
+
+---
+
+## Perks System Integration
+
+### How Perks Override Tier Restrictions
+
+**Service-level gating enables the perks system to temporarily unlock or discount premium features** for events, promotions, loyalty rewards, and player retention.
+
+---
+
+### Example Perks
+
+**1. Black Market Weekend (Free Tier Event)**
+```gdscript
+# Perk definition
+{
+    "id": "black_market_weekend",
+    "name": "Black Market Weekend",
+    "description": "Free tier players get 48-hour access to the Black Market!",
+    "duration": 172800,  # 48 hours in seconds
+    "tier_override": {
+        "shop_access": ["black_market"]
+    },
+    "analytics_tag": "weekend_event_2025_01"
+}
+
+# Usage in shop service
+func purchase_item(item: Item, shop_type: String) -> bool:
+    if shop_type == "black_market":
+        # Check perks override before showing CTA
+        if PerksService.has_active_perk("black_market_weekend"):
+            GameLogger.info("Free tier using Black Market Weekend perk")
+            # Allow purchase, skip CTA
+        else:
+            show_upgrade_cta("black_market", item)
+            return false
+    # ... rest of purchase logic
+```
+
+**2. Atomic Vending Machine Trial (Premium Tier Loyalty)**
+```gdscript
+# Perk definition
+{
+    "id": "atomic_vending_trial",
+    "name": "Atomic Vending Trial",
+    "description": "Try Subscription features for 7 days! Unlock personalized shopping.",
+    "duration": 604800,  # 7 days in seconds
+    "tier_override": {
+        "shop_access": ["atomic"]
+    },
+    "eligibility": {
+        "min_tier": "premium",
+        "max_tier": "premium",
+        "min_playtime": 86400  # 24 hours played
+    },
+    "analytics_tag": "premium_retention_trial"
+}
+
+# Auto-grant after 24 hours of Premium tier playtime
+func check_loyalty_perks() -> void:
+    if PlayerService.get_tier() == "premium":
+        if PlayerService.get_playtime() >= 86400:  # 24 hours
+            if not PerksService.has_claimed_perk("atomic_vending_trial"):
+                PerksService.grant_perk("atomic_vending_trial")
+                ToastService.show("🎁 Loyalty Reward: 7-day Atomic Vending Machine access!")
+```
+
+**3. Shop Reroll Discount (All Tiers)**
+```gdscript
+# Perk definition
+{
+    "id": "reroll_discount_50",
+    "name": "Half-Price Rerolls",
+    "description": "All shop rerolls cost 50% less for 24 hours!",
+    "duration": 86400,  # 24 hours
+    "modifiers": {
+        "reroll_cost_multiplier": 0.50
+    },
+    "analytics_tag": "flash_sale_rerolls"
+}
+
+# Usage in reroll cost calculation
+func calculate_reroll_cost(rerolls_today: int, player_tier: String) -> int:
+    var base_cost = 50 * pow(2, rerolls_today)
+
+    # Tier discounts
+    match player_tier:
+        "premium":
+            base_cost = int(base_cost * 0.75)
+        "subscription":
+            base_cost = int(base_cost * 0.50)
+
+    # Perks modifier (stacks with tier discount!)
+    if PerksService.has_active_perk("reroll_discount_50"):
+        base_cost = int(base_cost * 0.50)
+
+    return base_cost
+
+# Examples with perks:
+# Free tier + reroll perk: 50 → 100 → 200 becomes 25 → 50 → 100
+# Premium tier + reroll perk: 37 → 75 → 150 becomes 18 → 37 → 75
+# Subscription tier + reroll perk: 25 → 50 → 100 becomes 12 → 25 → 50
+```
+
+**4. Minion Purchase Discount (Black Market Event)**
+```gdscript
+# Perk definition
+{
+    "id": "minion_sale_25",
+    "name": "Minion Madness Sale",
+    "description": "All Black Market minions are 25% off!",
+    "duration": 259200,  # 3 days
+    "modifiers": {
+        "minion_cost_multiplier": 0.75
+    },
+    "shop_scope": ["black_market"],
+    "analytics_tag": "minion_sale_jan_2025"
+}
+
+# Usage in purchase flow
+func purchase_black_market_minion(minion: Minion) -> bool:
+    var base_cost = minion.get_base_cost()  # 500/1000/2000/4000
+
+    # Apply perks discount
+    if PerksService.has_active_perk("minion_sale_25"):
+        base_cost = int(base_cost * 0.75)
+        ToastService.show("Minion Madness Sale: 25% off!")
+
+    if not BankingService.spend_scrap(base_cost):
+        return false
+
+    MinionService.add_minion(minion)
+    AnalyticsService.track_minion_purchase("black_market", minion.tier, base_cost, "sale")
+    return true
+
+# Examples with sale:
+# T1 minion: 500 → 375 scrap
+# T2 minion: 1000 → 750 scrap
+# T3 minion: 2000 → 1500 scrap
+# T4 minion: 4000 → 3000 scrap
+```
+
+---
+
+### Perks Strategy Benefits
+
+**Discovery & Retention:**
+- Free tier players experience premium features temporarily → higher conversion
+- Premium tier players experience subscription features → upsell opportunity
+- Time-limited access creates FOMO
+
+**Flexible Monetization:**
+- Weekend events boost engagement (Black Market access)
+- Flash sales drive revenue (minion discounts, reroll discounts)
+- Loyalty rewards improve retention (trial perks after 24h playtime)
+
+**Better Than Hard Gates:**
+- ❌ Hard gates: "You can't see this until you pay"
+- ✅ Service-level gating: "You can see it, try it with perks, or upgrade anytime"
+
+**Analytics Opportunities:**
+- Track perk usage → conversion rate (did trial lead to upgrade?)
+- Track perk engagement → feature validation (do players like Atomic Vending?)
+- Track discount effectiveness → pricing optimization (25% vs 50% off)
 
 ---
 

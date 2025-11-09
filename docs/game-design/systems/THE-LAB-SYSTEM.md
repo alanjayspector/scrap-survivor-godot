@@ -10,19 +10,26 @@
 
 **The Lab** is the central scene for **biology, genetics, mutations, and mad science**. It consolidates radioactivity management, minion crafting, and stat manipulation into one thematic location.
 
+**Service-Level Gating Philosophy:**
+- ✅ **All Lab tabs are visible** to all players (discovery & FOMO)
+- ✅ **Tier checks happen at service usage** (craft, treat, convert), not tab access
+- ✅ **CTA modals** shown when wrong tier tries to use premium services
+- ✅ **Perks system can override** tier restrictions for events/promotions
+
 **Core Services:**
-- 🧬 **Radioactivity Treatment** - Reduce radioactivity stat (all tiers)
-- 🤖 **Minion Crafting** - Create robot/bio companions (Subscription via patterns)
-- ⚡ **Afterburn Venting** - Emergency radioactivity purge (Premium/Subscription)
-- 🧪 **Alchemic Crapshot** - Random stat manipulation (Premium/Subscription)
-- 🔄 **MetaConvertor** - Convert stats (Subscription only)
-- 💥 **Complete Purge** - Remove all radioactivity (Subscription only)
-- ⚗️ **Mutation Chamber** - Idle Nanite generation (Subscription only)
+- 🧬 **Radioactivity Treatment** - Reduce radioactivity stat (all tiers can use)
+- 🤖 **Minion Crafting** - Create robot/bio companions (Subscription service)
+- ⚡ **Afterburn Venting** - Emergency radioactivity purge (Premium+ service)
+- 🧪 **Alchemic Crapshot** - Random stat manipulation (Premium+ service)
+- 🔄 **MetaConvertor** - Convert stats (Subscription service)
+- 💥 **Complete Purge** - Remove all radioactivity (Subscription service)
+- ⚗️ **Mutation Chamber** - Idle Nanite generation (Subscription service)
 
 **Note:** Fully-formed minions can be purchased at the Black Market scene (Premium tier) - see [SHOPS-SYSTEM.md](./SHOPS-SYSTEM.md)
 
 **Brotato comparison:**
 - 🟢 **UNIQUE TO SCRAP SURVIVOR** (Brotato has no Lab, minions, or radioactivity systems)
+- 🟢 **Service-level gating** (better discovery, conversion, perks integration)
 
 ---
 
@@ -711,19 +718,286 @@ func calculate_conversion_ratio(character: Character, from_stat: String, to_stat
 
 ---
 
+## Service-Level Gating & CTAs
+
+### Tier Check Philosophy
+
+**All Lab tabs are visible to all players** with tier checks happening at service usage:
+
+```gdscript
+# LabService.gd - Service-level tier checks with CTAs
+
+func can_use_lab_service(service_name: String) -> bool:
+    var player_tier = PlayerService.get_tier()
+
+    match service_name:
+        "radioactivity_treatment":
+            return true  # All tiers
+        "minion_crafting":
+            return player_tier == "subscription"
+        "mutation_chamber":
+            return player_tier == "subscription"
+        "alchemic_crapshot":
+            return player_tier in ["premium", "subscription"]
+        "metaconvertor":
+            return player_tier == "subscription"
+        "afterburn":
+            return player_tier in ["premium", "subscription"]
+        "complete_purge":
+            return player_tier == "subscription"
+
+    return false
+
+func has_perks_override(service_name: String) -> bool:
+    # Check if perks system grants temporary access
+    match service_name:
+        "minion_crafting":
+            # Weekend event: Free tier gets minion crafting
+            if PerksService.has_active_perk("minion_weekend"):
+                return true
+        "alchemic_crapshot":
+            # Trial perk: Free tier tries stat manipulation
+            if PerksService.has_active_perk("crapshot_trial"):
+                return true
+        "mutation_chamber":
+            # Premium loyalty: 7-day Mutation Chamber access
+            if PerksService.has_active_perk("mutation_chamber_trial"):
+                return true
+
+    return false
+```
+
+---
+
+### Minion Crafting CTA Example
+
+```gdscript
+# Minion crafting with service-level gating
+func craft_minion_with_gating(pattern_id: String, craft_type: String) -> Minion:
+    # SERVICE-LEVEL TIER CHECK (not tab-level)
+    if not can_use_lab_service("minion_crafting"):
+        # Check perks override first
+        if not has_perks_override("minion_crafting"):
+            show_minion_crafting_cta()
+            return null
+
+    # Proceed with crafting logic
+    match craft_type:
+        "generic":
+            return craft_generic_minion(pattern_id)
+        "evolving":
+            return craft_evolving_minion(pattern_id)
+        "personalized":
+            return craft_personalized_minion(pattern_id)
+
+    return null
+
+func show_minion_crafting_cta() -> void:
+    var modal_config = {
+        "title": "Upgrade to Subscription",
+        "headline": "Craft Your Own Minions",
+        "body": "Create powerful robot and bio companions to fight alongside you!",
+        "features": [
+            "Craft minions from patterns (50 scrap + 25 Nanites)",
+            "Personalize minions for up to +310% stats",
+            "Evolving patterns improve with each craft",
+            "Unlimited minion crafts (no 5-craft limit)",
+            "Mutation Chamber passive Nanite generation",
+            "Full access to The Lab (MetaConvertor, Complete Purge, etc.)"
+        ],
+        "cta_button": "Upgrade to Subscription",
+        "price": "$9.99/month or $79.99/year",
+        "dismiss_button": "Maybe Later"
+    }
+
+    CTAModalService.show_upgrade_modal(modal_config)
+    AnalyticsService.track_cta_shown("lab_minion_crafting", "subscription", "craft_blocked")
+```
+
+---
+
+### Alchemic Crapshot CTA Example
+
+```gdscript
+# Alchemic Crapshot with service-level gating
+func use_alchemic_crapshot_with_gating(nanites_cost: int) -> void:
+    # SERVICE-LEVEL TIER CHECK
+    if not can_use_lab_service("alchemic_crapshot"):
+        # Check perks override
+        if not has_perks_override("alchemic_crapshot"):
+            show_alchemic_crapshot_cta()
+            return
+
+    # Proceed with crapshot logic
+    if not LabService.spend_nanites(nanites_cost):
+        ToastService.show("Insufficient Nanites (%d required)" % nanites_cost)
+        return
+
+    # Roll for stat changes
+    var result = roll_alchemic_crapshot()
+    apply_crapshot_result(result)
+
+func show_alchemic_crapshot_cta() -> void:
+    var modal_config = {
+        "title": "Upgrade to Premium",
+        "headline": "Gamble Your Stats",
+        "body": "Use the Alchemic Crapshot to randomly boost or reduce your stats!",
+        "features": [
+            "50-75% chance of positive stat changes",
+            "Risk/reward stat manipulation",
+            "Costs Nanites (affected by Biotech skill)",
+            "Unique to Scrap Survivor",
+            "Plus: Access to Afterburn emergency purge",
+            "Plus: Access to Black Market shop"
+        ],
+        "cta_button": "Upgrade to Premium",
+        "price": "$4.99/month or $39.99/year",
+        "dismiss_button": "Maybe Later"
+    }
+
+    CTAModalService.show_upgrade_modal(modal_config)
+    AnalyticsService.track_cta_shown("lab_alchemic_crapshot", "premium", "use_blocked")
+```
+
+---
+
+### Mutation Chamber CTA Example
+
+```gdscript
+# Mutation Chamber with service-level gating
+func start_mutation_chamber_session_with_gating() -> void:
+    # SERVICE-LEVEL TIER CHECK
+    if not can_use_lab_service("mutation_chamber"):
+        # Check perks override
+        if not has_perks_override("mutation_chamber"):
+            show_mutation_chamber_cta()
+            return
+
+    # Check if sessions available
+    var sessions_used = IdleSystemsService.get_sessions_used_today("mutation_chamber")
+    if sessions_used >= 2:
+        ToastService.show("No Mutation Chamber sessions left today (2/2 used)")
+        return
+
+    # Start idle session
+    IdleSystemsService.start_session("mutation_chamber", 8 * 3600)  # 8 hours
+    ToastService.show("Mutation Chamber started! Generating Nanites for 8 hours...")
+
+func show_mutation_chamber_cta() -> void:
+    var modal_config = {
+        "title": "Upgrade to Subscription",
+        "headline": "Generate Nanites While Idle",
+        "body": "Use the Mutation Chamber to passively generate 80 Nanites per day!",
+        "features": [
+            "5 Nanites per hour (max 8 hours per session)",
+            "2 sessions per day = 80 Nanites daily",
+            "Works offline (idle generation)",
+            "Perfect for minion crafting fuel",
+            "Plus: Full minion crafting access",
+            "Plus: MetaConvertor stat conversion"
+        ],
+        "cta_button": "Upgrade to Subscription",
+        "price": "$9.99/month or $79.99/year",
+        "dismiss_button": "Maybe Later"
+    }
+
+    CTAModalService.show_upgrade_modal(modal_config)
+    AnalyticsService.track_cta_shown("lab_mutation_chamber", "subscription", "start_blocked")
+```
+
+---
+
+### Perks Integration Example
+
+```gdscript
+# Example: Minion Crafting Weekend Event (Free Tier)
+{
+    "id": "minion_weekend",
+    "name": "Minion Madness Weekend",
+    "description": "Free tier players can craft minions for 48 hours!",
+    "duration": 172800,  # 48 hours
+    "tier_override": {
+        "lab_services": ["minion_crafting"]
+    },
+    "analytics_tag": "minion_weekend_2025_01"
+}
+
+# Example: Alchemic Crapshot Trial (Free Tier Retention)
+{
+    "id": "crapshot_trial",
+    "name": "Alchemic Crapshot Trial",
+    "description": "Try stat manipulation for 24 hours! See what Premium offers.",
+    "duration": 86400,  # 24 hours
+    "tier_override": {
+        "lab_services": ["alchemic_crapshot"]
+    },
+    "eligibility": {
+        "min_tier": "free",
+        "max_tier": "free",
+        "min_playtime": 7200  # 2 hours played
+    },
+    "analytics_tag": "free_retention_crapshot"
+}
+
+# Example: Mutation Chamber Trial (Premium Loyalty)
+{
+    "id": "mutation_chamber_trial",
+    "name": "Mutation Chamber Access",
+    "description": "Premium loyalty reward: 7 days of Mutation Chamber access!",
+    "duration": 604800,  # 7 days
+    "tier_override": {
+        "lab_services": ["mutation_chamber", "minion_crafting"]
+    },
+    "eligibility": {
+        "min_tier": "premium",
+        "max_tier": "premium",
+        "min_playtime": 86400  # 24 hours as Premium
+    },
+    "analytics_tag": "premium_loyalty_mutation"
+}
+```
+
+---
+
+### Why Service-Level Gating Works
+
+**Discovery:**
+- Free tier sees Minion Crafting tab → "I want to try this!"
+- Free tier sees Mutation Chamber → "Passive Nanites sound great!"
+- Browsing creates desire, CTA at point of action = better conversion
+
+**FOMO:**
+- Free tier can see Premium/Subscription players using services
+- "That player just crafted a T4 minion... I want that!"
+- Time-limited perks create urgency
+
+**Flexible Monetization:**
+- Weekend events unlock minion crafting for Free tier → trial experience
+- Premium tier gets Mutation Chamber trial → upsell to Subscription
+- Flash sales can discount Nanite costs or waive tier requirements
+
+**Better UX:**
+- No hidden features (confused players don't convert)
+- Clear upgrade path (see value before buying)
+- Perks make game feel generous (temporary access = goodwill)
+
+---
+
 ## The Lab Scene Layout
+
+**All tabs are visible to all players** (service-level gating at usage, not scene level):
 
 ```
 TheLabScene
 ├── Header
 │   └── "The Lab - [Character Name]"
-├── Navigation Tabs
-│   ├── Radioactivity
-│   ├── Minion Crafting (Subscription)
-│   ├── Mutation Chamber (Subscription)
-│   ├── Alchemic Crapshot (Premium+)
-│   ├── MetaConvertor (Subscription)
-│   └── Afterburn (Premium+)
+├── Navigation Tabs (ALL VISIBLE TO ALL TIERS)
+│   ├── Radioactivity (All tiers can use)
+│   ├── Minion Crafting (Subscription service - Free/Premium see CTA on craft)
+│   ├── Mutation Chamber (Subscription service - Free/Premium see CTA on start)
+│   ├── Alchemic Crapshot (Premium+ service - Free sees CTA on use)
+│   ├── MetaConvertor (Subscription service - Free/Premium see CTA on convert)
+│   └── Afterburn (Premium+ service - Free sees CTA on use)
 ├── Resources Display (Top-right)
 │   ├── Nanites: [amount]/[limit]
 │   ├── Carried Scrap: [amount]
@@ -732,6 +1006,12 @@ TheLabScene
 │   └── Biotech Skill: [level]
 └── Active Tab Content
 ```
+
+**Why all tabs visible:**
+- ✅ **Discovery** - Free players see what they're missing (conversion incentive)
+- ✅ **FOMO** - Can read descriptions, see costs, understand value
+- ✅ **Perks integration** - Weekend events can unlock Minion Crafting for Free tier
+- ✅ **Better UX** - No confusing hidden features, clear upgrade path
 
 ---
 
@@ -743,9 +1023,11 @@ The Lab provides:
 - ✅ **Biotech skill** (affects all Lab operations)
 - ✅ **Minion crafting** (degrading, evolving, personalized patterns via Subscription)
 - ✅ **Mutation Chamber** (Subscription passive Nanites generation)
-- ✅ **Clear tier differentiation** (Free = radioactivity only, Premium = stat manipulation, Subscription = minion crafting + idle)
+- ✅ **Service-level tier gating** (all tabs visible, CTAs at service usage)
+- ✅ **Perks system integration** (events can unlock premium features temporarily)
+- ✅ **Clear tier progression** (Free = radioactivity, Premium+ = stat manipulation, Subscription = minion crafting + idle)
 
-**The Lab is a unique system** that provides strategic depth through risk/reward mechanics and compelling Premium/Subscription features.
+**The Lab is a unique system** that provides strategic depth through risk/reward mechanics, compelling Premium/Subscription features, and industry-standard monetization with discovery-driven conversion.
 
 ---
 
