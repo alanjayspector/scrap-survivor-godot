@@ -23,10 +23,10 @@ func test_file_creation() -> void:
 	if DirAccess.dir_exists_absolute(log_dir):
 		var dir = DirAccess.open(log_dir)
 		dir.list_dir_begin()
-		var file = dir.get_next()
-		while file != "":
-			dir.remove(file)
-			file = dir.get_next()
+		var filename = dir.get_next()
+		while filename != "":
+			dir.remove(filename)
+			filename = dir.get_next()
 
 	# Test first log
 	GameLogger.info("Test log entry")

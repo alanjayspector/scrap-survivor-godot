@@ -38,20 +38,21 @@ func test_log_levels() -> void:
 func test_signals() -> void:
 	print("--- Testing Signals ---")
 
-	var error_received = false
-	var critical_received = false
+	# Use array wrapper for lambda capture
+	var error_received = [false]
+	var critical_received = [false]
 
-	ErrorService.error_occurred.connect(func(_msg, _level, _meta): error_received = true)
-	ErrorService.critical_error_occurred.connect(func(_msg, _meta): critical_received = true)
+	ErrorService.error_occurred.connect(func(_msg, _level, _meta): error_received[0] = true)
+	ErrorService.critical_error_occurred.connect(func(_msg, _meta): critical_received[0] = true)
 
 	# Test regular error signal
 	ErrorService.log_error("Test signal")
-	assert(error_received, "error_occurred signal should emit")
+	assert(error_received[0], "error_occurred signal should emit")
 	print("✓ error_occurred signal emitted")
 
 	# Test critical signal
 	ErrorService.log_critical("Test critical")
-	assert(critical_received, "critical_error_occurred signal should emit")
+	assert(critical_received[0], "critical_error_occurred signal should emit")
 	print("✓ critical_error_occurred signal emitted")
 
 
@@ -74,14 +75,15 @@ func test_helpers() -> void:
 func test_godot_error_capture() -> void:
 	print("--- Testing Godot Error Capture ---")
 
-	var error_captured = false
+	# Use array wrapper for lambda capture
+	var error_captured = [false]
 	ErrorService.error_occurred.connect(
 		func(_msg, _level, meta):
 			if meta.has("stack_trace"):
-				error_captured = true
+				error_captured[0] = true
 	)
 
 	# Simulate an error
 	ErrorService.capture_godot_error("Test error with stack trace")
-	assert(error_captured, "Should capture stack trace")
+	assert(error_captured[0], "Should capture stack trace")
 	print("✓ Stack trace captured in metadata")

@@ -205,11 +205,11 @@ func test_combat_integration() -> void:
 	assert(enemy.target == player, "Enemy should target player")
 	print("✓ Enemy targets player")
 
-	# Test player weapon firing
-	var projectile_fired = false
-	player.weapon_fired.connect(func(_data): projectile_fired = true)
+	# Test player weapon firing (use array wrapper for lambda capture)
+	var projectile_fired = [false]
+	player.weapon_fired.connect(func(_data): projectile_fired[0] = true)
 	player.fire_weapon()
-	assert(projectile_fired, "Player should fire weapon")
+	assert(projectile_fired[0], "Player should fire weapon")
 	print("✓ Player fires weapon")
 
 	# Test enemy AI distance calculation

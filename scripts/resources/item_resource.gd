@@ -94,8 +94,8 @@ func get_stat_descriptions() -> Array[String]:
 
 	for stat_name in stat_modifiers.keys():
 		var value = stat_modifiers[stat_name]
-		var sign = "+" if float(value) > 0 else ""
-		descriptions.append("%s%s %s" % [sign, value, stat_name])
+		var value_sign = "+" if float(value) > 0 else ""
+		descriptions.append("%s%s %s" % [value_sign, value, stat_name])
 
 	return descriptions
 
