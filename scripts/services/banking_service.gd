@@ -33,6 +33,9 @@ signal currency_changed(type: CurrencyType, new_balance: int)
 ## Emitted when transaction fails
 signal transaction_failed(reason: String)
 
+## Emitted when state is loaded from save
+signal state_loaded
+
 ## Current balances (local-first, will sync to Supabase in Week 6)
 var balances: Dictionary = {"scrap": 0, "premium": 0}
 
@@ -150,6 +153,52 @@ func reset() -> void:
 	currency_changed.emit(CurrencyType.SCRAP, 0)
 	currency_changed.emit(CurrencyType.PREMIUM, 0)
 	GameLogger.info("Banking service reset")
+
+
+## Serialize service state to dictionary (Week 6)
+func serialize() -> Dictionary:
+	return {
+		"version": 1,
+		"balances": balances.duplicate(),
+		"tier": current_tier,
+		"transaction_history": transaction_history.duplicate(),
+		"timestamp": Time.get_unix_time_from_system()
+	}
+
+
+## Deserialize service state from dictionary (Week 6)
+func deserialize(data: Dictionary) -> void:
+	if data.get("version", 0) != 1:
+		GameLogger.warning("BankingService: Unknown save version", data)
+		return
+
+	# Restore balances
+	if data.has("balances"):
+		balances = data.balances.duplicate()
+	else:
+		balances = {"scrap": 0, "premium": 0}
+
+	# Restore tier
+	if data.has("tier"):
+		current_tier = data.tier
+	else:
+		current_tier = UserTier.FREE
+
+	# Restore transaction history (optional, may be omitted to save space)
+	if data.has("transaction_history"):
+		transaction_history = data.transaction_history.duplicate()
+	else:
+		transaction_history = []
+
+	# Emit signals to notify UI
+	currency_changed.emit(CurrencyType.SCRAP, balances.scrap)
+	currency_changed.emit(CurrencyType.PREMIUM, balances.premium)
+	state_loaded.emit()
+
+	GameLogger.info(
+		"BankingService state loaded",
+		{"scrap": balances.scrap, "premium": balances.premium, "tier": current_tier}
+	)
 
 
 ## Private: Log a transaction

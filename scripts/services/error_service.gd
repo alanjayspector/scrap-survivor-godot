@@ -76,3 +76,24 @@ func capture_godot_error(
 
 func _to_string() -> String:
 	return "ErrorService"
+
+
+## Reset service state (for testing)
+func reset() -> void:
+	# ErrorService is stateless, no reset needed
+	pass
+
+
+## Serialize service state to dictionary (Week 6)
+func serialize() -> Dictionary:
+	return {
+		"version": 1,
+		"note": "ErrorService is stateless",
+		"timestamp": Time.get_unix_time_from_system()
+	}
+
+
+## Deserialize service state from dictionary (Week 6)
+func deserialize(_data: Dictionary) -> void:
+	# ErrorService is stateless, nothing to restore
+	pass

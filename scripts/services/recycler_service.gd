@@ -97,6 +97,7 @@ const COMPONENTS_CHANCE_BY_RARITY = {
 
 # Signals
 signal item_dismantled(template_id: String, outcome: DismantleOutcome)
+signal state_loaded
 
 
 ## Preview dismantle outcome without actually dismantling
@@ -250,3 +251,32 @@ func rarity_from_string(rarity_str: String) -> ItemRarity:
 ## Helper: Convert enum to rarity string
 func rarity_to_string(rarity: ItemRarity) -> String:
 	return ItemRarity.keys()[rarity].to_lower()
+
+
+## Reset service state (for testing)
+## RecyclerService is stateless, so this is a no-op for API consistency
+func reset() -> void:
+	# No state to reset (service is stateless)
+	GameLogger.info("RecyclerService: reset() called (stateless service, no-op)")
+
+
+## Serialize service state to dictionary (Week 6)
+## RecyclerService is stateless, so returns empty dictionary
+func serialize() -> Dictionary:
+	return {
+		"version": 1,
+		"note": "RecyclerService is stateless (pure calculations)",
+		"timestamp": Time.get_unix_time_from_system()
+	}
+
+
+## Deserialize service state from dictionary (Week 6)
+## RecyclerService is stateless, so this is a no-op for API consistency
+func deserialize(data: Dictionary) -> void:
+	if data.get("version", 0) != 1:
+		GameLogger.warning("RecyclerService: Unknown save version", data)
+		return
+
+	# No state to restore (service is stateless)
+	GameLogger.info("RecyclerService: No state to restore (stateless service)")
+	state_loaded.emit()

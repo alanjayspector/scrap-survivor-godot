@@ -47,9 +47,16 @@ fi
 echo ""
 echo "🔎 Running project validators..."
 
-# Native class name checker (BLOCKING - Week 6)
+# Native class name checker (BLOCKING - Week 6 Day 1)
 if [ -f .system/validators/native_class_checker.py ]; then
     if ! python3 .system/validators/native_class_checker.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Service API consistency checker (BLOCKING - Week 6 Day 2)
+if [ -f .system/validators/service_api_checker.py ]; then
+    if ! python3 .system/validators/service_api_checker.py; then
         VALIDATION_FAILED=1
     fi
 fi

@@ -54,3 +54,24 @@ static func calculate_crit_chance(luck: float) -> float:
 ## Calculates life steal amount (converts percentage)
 static func calculate_life_steal(amount: float, damage: float) -> float:
 	return damage * (amount / 100.0)
+
+
+## Reset service state (for testing)
+func reset() -> void:
+	# StatService is stateless (pure calculations), no reset needed
+	pass
+
+
+## Serialize service state to dictionary (Week 6)
+func serialize() -> Dictionary:
+	return {
+		"version": 1,
+		"note": "StatService is stateless (pure calculations)",
+		"timestamp": Time.get_unix_time_from_system()
+	}
+
+
+## Deserialize service state from dictionary (Week 6)
+func deserialize(_data: Dictionary) -> void:
+	# StatService is stateless, nothing to restore
+	pass

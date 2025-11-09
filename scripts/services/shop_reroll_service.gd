@@ -60,6 +60,7 @@ class RerollExecution:
 # Signals
 signal reroll_executed(execution: RerollExecution)
 signal reroll_count_reset(game_day: String)
+signal state_loaded
 
 # Internal state (Week 5: in-memory only, will persist in Week 6+)
 var _current_state: RerollState = RerollState.new()
@@ -126,10 +127,52 @@ func get_reroll_count() -> int:
 	return _current_state.reroll_count
 
 
+## Reset service state (for testing)
+func reset() -> void:
+	reset_reroll_count()
+
+
 ## Reset reroll count (for testing or admin use)
 func reset_reroll_count() -> void:
 	var today = _get_game_day()
 	_reset_for_new_day(today)
+
+
+## Serialize service state to dictionary (Week 6)
+func serialize() -> Dictionary:
+	return {
+		"version": 1,
+		"game_day": _current_state.game_day,
+		"reroll_count": _current_state.reroll_count,
+		"timestamp": Time.get_unix_time_from_system()
+	}
+
+
+## Deserialize service state from dictionary (Week 6)
+func deserialize(data: Dictionary) -> void:
+	if data.get("version", 0) != 1:
+		GameLogger.warning("ShopRerollService: Unknown save version", data)
+		return
+
+	# Restore state
+	_current_state.game_day = data.get("game_day", "")
+	_current_state.reroll_count = data.get("reroll_count", 0)
+
+	# Auto-reset if day changed since save
+	var today = _get_game_day()
+	if _current_state.game_day != today:
+		GameLogger.info(
+			"Shop reroll count reset (day changed since save)",
+			{"saved_day": _current_state.game_day, "current_day": today}
+		)
+		_reset_for_new_day(today)
+	else:
+		GameLogger.info(
+			"ShopRerollService state loaded",
+			{"game_day": _current_state.game_day, "reroll_count": _current_state.reroll_count}
+		)
+
+	state_loaded.emit()
 
 
 ## Calculate reroll cost based on count
