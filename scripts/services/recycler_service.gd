@@ -230,7 +230,7 @@ func _calculate_scrap_granted(
 
 
 ## Helper: Convert rarity string to enum
-static func rarity_from_string(rarity_str: String) -> ItemRarity:
+func rarity_from_string(rarity_str: String) -> ItemRarity:
 	match rarity_str.to_lower():
 		"common":
 			return ItemRarity.COMMON
@@ -243,10 +243,10 @@ static func rarity_from_string(rarity_str: String) -> ItemRarity:
 		"legendary":
 			return ItemRarity.LEGENDARY
 		_:
-			GameLogger.warn("Unknown rarity: " + rarity_str + ", defaulting to COMMON")
+			GameLogger.warning("Unknown rarity: " + rarity_str + ", defaulting to COMMON")
 			return ItemRarity.COMMON
 
 
 ## Helper: Convert enum to rarity string
-static func rarity_to_string(rarity: ItemRarity) -> String:
+func rarity_to_string(rarity: ItemRarity) -> String:
 	return ItemRarity.keys()[rarity].to_lower()
