@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bypvdja1h2qfa"]
+
+[ext_resource type="Script" path="res://scripts/tests/save_integration_test.gd" id="1_integration_test"]
+
+[node name="SaveIntegrationTest" type="Node"]
+script = ExtResource("1_integration_test")

@@ -61,6 +61,11 @@ if [ -f .system/validators/service_api_checker.py ]; then
     fi
 fi
 
+# Integration test requirement checker (non-blocking reminder - Week 6 Day 3)
+if [ -f .system/validators/integration_test_checker.py ]; then
+    python3 .system/validators/integration_test_checker.py
+fi
+
 # Test naming convention validator (non-blocking warning)
 if [ -f .system/validators/test_naming_validator.py ]; then
     python3 .system/validators/test_naming_validator.py
