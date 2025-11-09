@@ -26,18 +26,41 @@ There are two paths to the Premium Tier:
 
 Upgrading to Premium grants access to a wide array of new features:
 
-- **Character Slot Expansion:** 15 total character slots (up from 3).
-- **Additional Slot Purchases:** Option to buy +5 slot packs ($0.99) or +25 slot bundles ($3.99) for power users who want even more space.
-- **Character Type Expansion:** 5 character types available (up from 3), including advanced types like the Specialist and Hybrid.
-- **Perks System:** Unlock powerful, run-altering passive abilities.
-- **Banking System:** A per-character storage for Scrap, allowing for better financial management.
-- **Black Market:** A special shop with rare and sometimes cursed items, offering high-risk, high-reward options.
-- **Workshop:** The ability to craft and modify items.
-- **Minion System:** Acquire and upgrade allied minions that fight alongside you.
-- **Barracks:** Manage and house your minions.
-- **Special Events:** Access to unique, time-limited gameplay events with exclusive rewards.
-- **Enhanced Trading Cards:** Deeper mechanics for the trading card meta-game.
-- **Controller Support:** Play the game with a physical gamepad.
+**Character & Inventory Expansion:**
+- **15 Character Slots:** Up from 3 (5x more space for experimentation)
+- **Additional Slot Purchases:** Option to buy +5 slot packs ($0.99) or +25 slot bundles ($3.99)
+- **Premium Character Types:** Unlock additional character types beyond the 3 basic Free tier types
+- **8 Premium Weapons:** Access to exclusive premium weapon pool (23 total weapons vs 15 for Free)
+- **Premium Items:** Shop items marked "Premium" now purchasable
+
+**New Gameplay Systems:**
+- **Black Market:** High-risk gambling for rare items using premium currency
+  - Mystery Boxes (random item drops)
+  - Mystery Rerolls (reroll item rarity)
+  - Exclusive Gambles (50/50 legendary or refund)
+  - Luck stat influences success rates
+- **Minions System (2 active slots):** Deploy AI-controlled combat companions
+  - 10 roster slots to manage minion collection
+  - 6 minion types: Tank, DPS, Support, Ranged, Melee, Hybrid
+  - Per-minion XP, levels, and equipment
+  - Barracks hub location for minion management
+
+**Enhanced Progression:**
+- **Perks System:** Access to Premium-tier perks (powerful run-altering modifiers)
+- **Goals System (Enhanced):** 3 daily goals + 2 weekly goals + 1 seasonal goal (vs 1+1 for Free)
+  - Higher tier rewards
+- **Achievements (Premium Category):** 10 exclusive Premium achievements
+- **Special Events:** Full participation in seasonal/themed events with exclusive rewards
+
+**Quality of Life:**
+- **Advisor (Full):** Post-run analysis, archetype-specific recommendations, optimization tips
+  - Real-time contextual advice during shop/combat
+  - Skill level adaptive (beginner → advanced)
+- **Enhanced Trading Cards:** Deeper integration with referral system
+- **Feature Request System (Enhanced):** 3 votes/month (2x weight), 3 submissions/month
+- **Radioactivity (Enhanced):** 10% reduced debuff severity on irradiated items
+
+**Note:** Controller Support is FREE for all tiers (not Premium-gated)
 
 ---
 

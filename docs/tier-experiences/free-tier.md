@@ -27,17 +27,54 @@ The Free Tier of Scrap Survivor is a complete, satisfying gameplay experience. O
 
 ### Included Features:
 
-- **Full Combat Experience:** No restrictions on gameplay.
-- **Core Systems:** Shop, Inventory, Stats, Achievements, Basic Goals, Basic Trading Cards.
-- **Character Slots:** 3 slots, allowing for experimentation with different builds.
-- **Character Types:** 3 basic types.
+**Combat & Progression:**
+- **Full Combat Experience:** Complete wave-based combat with no restrictions
+- **3 Character Slots:** Room to experiment with different builds
+- **3 Character Types:** Scavenger, Soldier, Engineer (balanced starter options)
+- **15 Weapons:** Core weapon pool (excludes 8 premium weapons)
+- **Full Item System:** Inventory, durability, auto-active stats
+- **Experience & Leveling:** Character progression system
+
+**Economy & Resources:**
+- **Shop System:** Purchase items between waves, shop rerolls
+- **Workshop System:** Repair items, fuse duplicates, craft from blueprints
+- **Recycler Service:** Dismantle items for scrap + components
+- **Banking System:** Per-character scrap/premium currency storage
+- **Radioactivity System:** Irradiate items for high-risk stat bonuses
+
+**Engagement Systems:**
+- **Goals System:** 1 daily goal, 1 weekly goal (standard rewards)
+- **Achievements:** All 120+ achievements trackable and claimable
+- **Trading Cards:** Auto-generated on milestones, shareable with referral code
+- **Personalization:** Playstyle archetype tracking and badge display
+- **Advisor (Basic):** Beginner-level gameplay tips
+- **Controller Support:** Full gamepad compatibility (FREE for all tiers)
+
+**Social & Community:**
+- **Referral System:** Unique code to invite friends, earn rewards
+- **Feature Request System:** 1 vote/month (1x weight), 1 submission/month
 
 ### Key Limitations:
 
-- **No Ads:** We are committed to an ad-free experience for all players.
-- **Limited Variety:** Access to a smaller pool of character types and advanced features is restricted.
-- **No Convenience Features:** Lacks access to quality-of-life features like resource sharing or passive repair.
-- **Slot Management:** With only 3 slots, players will need to delete characters to make room for new runs. This creates natural upgrade pressure while maintaining a complete gameplay experience.
+**What You Don't Get:**
+- ❌ **Premium Items:** Cannot purchase items marked "Premium" in shop
+- ❌ **Black Market:** No access to mystery boxes and gambling mechanics
+- ❌ **Premium Character Types:** Locked to 3 basic types
+- ❌ **Minions System:** Cannot recruit or deploy combat companions
+- ❌ **Advanced Perks:** Access to basic perks only (Premium/Subscription perks locked)
+- ❌ **Atomic Vending Machine:** Subscription-exclusive personalized weekly shop
+- ❌ **Quantum Banking/Storage:** Cannot transfer currency/items between characters
+- ❌ **Hall of Fame:** Cannot archive characters (must delete to free slots)
+- ❌ **Enhanced Goals:** Limited to 1 daily + 1 weekly (vs 5 daily + 3 weekly for Subscription)
+- ❌ **Full Advisor:** Only beginner tips (no post-run analysis or optimization advice)
+
+**Slot Management:**
+- With only 3 slots, players must delete characters to make room for new builds
+- This creates natural upgrade pressure while maintaining complete gameplay
+
+**No Ads, Ever:**
+- We are committed to an ad-free experience for ALL players
+- Free tier is supported by Premium/Subscription purchases, not ads
 
 ---
 

@@ -80,11 +80,19 @@ class CharacterData:
 class_name CharacterService
 extends Node
 
-# Signals
+# Signals (existing)
 signal character_created(character: Dictionary)
 signal character_updated(character: Dictionary)
 signal character_deleted(character_id: String)
 signal active_character_changed(character: Dictionary)
+
+# **NEW: Perk Hook Signals (CRITICAL for Week 6)**
+signal character_create_pre(context: Dictionary)  # Before character creation
+signal character_create_post(context: Dictionary)  # After character creation
+signal character_level_up_pre(context: Dictionary)  # Before level up
+signal character_level_up_post(context: Dictionary)  # After level up
+signal character_death_pre(context: Dictionary)  # Before death processing
+signal character_death_post(context: Dictionary)  # After death processing
 
 # Character management
 func create_character(name: String, character_type: String) -> Dictionary:
@@ -284,13 +292,215 @@ const CHARACTER_TYPES = {
 }
 ```
 
-### Time Estimate: 3-4 hours
+### Perk Hooks Implementation (CRITICAL)
+
+**IMPORTANT:** CharacterService MUST implement 6 perk hooks for the Perks System foundation.
+
+**Hook 1: `character_create_pre`**
+```gdscript
+func create_character(name: String, character_type: String) -> Dictionary:
+    # 1. Validate name
+    if not validate_character_name(name):
+        return {}
+
+    # 2. Check slot limits
+    if list_characters().size() >= get_character_slot_limit():
+        return {}
+
+    # 3. Build base character data
+    var char_type_data = CHARACTER_TYPES.get(character_type, CHARACTER_TYPES["scavenger"])
+    var base_stats = char_type_data.base_stats.duplicate()
+
+    # 4. **FIRE PRE-HOOK** (let perks modify starting data)
+    var context = {
+        "character_type": character_type,
+        "base_stats": base_stats,
+        "starting_items": [],  # Perks can add items
+        "starting_currency": {"scrap": 0, "premium": 0},  # Perks can grant bonuses
+        "allow_create": true  # Perks can block creation
+    }
+    character_create_pre.emit(context)
+
+    # 5. Check if perks blocked creation
+    if not context.allow_create:
+        return {}
+
+    # 6. Use modified context to create character
+    var char = CharacterData.new()
+    char.id = _generate_uuid()
+    char.name = name
+    char.character_type = character_type
+    char.stats = context.base_stats  # Potentially modified by perks
+    char.currency = context.starting_currency  # Potentially modified by perks
+    char.created_at = Time.get_datetime_string_from_system()
+    char.updated_at = char.created_at
+
+    _characters.append(char)
+
+    # 7. **FIRE POST-HOOK** (let perks react to creation)
+    var post_context = {
+        "character_id": char.id,
+        "character_data": _character_to_dict(char),
+        "player_tier": BankingService.current_tier
+    }
+    character_create_post.emit(post_context)
+
+    # 8. Grant starting items from perks
+    for item_id in context.starting_items:
+        # InventoryService.add_item(char.id, item_id)  # Week 7
+        pass
+
+    # 9. Set as active if first character
+    if _characters.size() == 1:
+        set_active_character(char.id)
+
+    # 10. Emit standard signal
+    character_created.emit(_character_to_dict(char))
+
+    return _character_to_dict(char)
+```
+
+**Hook 2: `character_level_up_pre/post`**
+```gdscript
+func level_up_character(character_id: String) -> bool:
+    var char = _find_character(character_id)
+    if not char:
+        return false
+
+    # Calculate stat gains
+    var base_stat_gains = {
+        "max_health": 5,
+        "damage": 2,
+        "speed": 1
+    }
+
+    # **FIRE PRE-HOOK** (let perks modify stat gains)
+    var context = {
+        "character_id": character_id,
+        "old_level": char.level,
+        "new_level": char.level + 1,
+        "stat_gains": base_stat_gains.duplicate(),  # Perks modify this
+        "allow_level_up": true
+    }
+    character_level_up_pre.emit(context)
+
+    # Check if perks blocked level up
+    if not context.allow_level_up:
+        return false
+
+    # Apply modified stat gains
+    char.level = context.new_level
+    for stat_name in context.stat_gains:
+        char.stats[stat_name] = char.stats.get(stat_name, 0) + context.stat_gains[stat_name]
+
+    # **FIRE POST-HOOK** (let perks grant milestone rewards)
+    var post_context = {
+        "character_id": character_id,
+        "new_level": char.level,
+        "total_stat_gains": context.stat_gains
+    }
+    character_level_up_post.emit(post_context)
+
+    character_updated.emit(_character_to_dict(char))
+    return true
+```
+
+**Hook 3: `character_death_pre/post`**
+```gdscript
+func on_character_death(character_id: String) -> void:
+    var char = _find_character(character_id)
+    if not char:
+        return
+
+    # **FIRE PRE-HOOK** (let perks reduce penalties or resurrect)
+    var context = {
+        "character_id": character_id,
+        "death_context": {},  # Populated by combat system
+        "durability_loss_pct": 0.10,  # 10% default, perks can reduce
+        "allow_death": true,  # Perks can set to false (resurrection)
+        "resurrection_granted": false  # Perks set to true to revive
+    }
+    character_death_pre.emit(context)
+
+    # Check for resurrection perk
+    if context.resurrection_granted or not context.allow_death:
+        # Character was resurrected, skip death processing
+        return
+
+    # Apply durability loss (modified by perks)
+    # InventoryService.apply_durability_loss(character_id, context.durability_loss_pct)  # Week 7
+
+    # Increment death count
+    char.death_count += 1
+    char.updated_at = Time.get_datetime_string_from_system()
+
+    # **FIRE POST-HOOK** (let perks grant XP bonuses, track stats)
+    var post_context = {
+        "character_id": character_id,
+        "final_stats": {
+            "wave_reached": char.current_wave,
+            "total_kills": char.total_kills,
+            "death_count": char.death_count
+        },
+        "death_count": char.death_count
+    }
+    character_death_post.emit(post_context)
+
+    character_updated.emit(_character_to_dict(char))
+```
+
+**Why These Hooks Are Critical:**
+1. **Foundation for Perks System** - Week 10 depends on these hooks existing
+2. **Marketing Campaigns** - Enable "Double XP weekends", "Free resurrection", etc.
+3. **Tier Incentives** - Premium/Subscription perks require these hooks
+4. **A/B Testing** - Server can test different starting bonuses without client updates
+
+**Hook Testing:**
+```gdscript
+# In character_service_test.gd
+func test_character_create_perk_hook():
+    # Arrange: Create a test perk that grants +10 HP
+    var perk_fired = false
+    var hook_context = {}
+
+    CharacterService.character_create_pre.connect(func(context):
+        perk_fired = true
+        hook_context = context
+        context.base_stats.max_health += 10  # Perk modifies starting HP
+    )
+
+    # Act: Create character
+    var char = CharacterService.create_character("TestChar", "scavenger")
+
+    # Assert: Hook fired, HP bonus applied
+    assert_true(perk_fired)
+    assert_eq(char.stats.max_health, 110)  # 100 base + 10 from perk
+
+func test_character_death_resurrection_perk():
+    # Arrange: Create resurrection perk
+    CharacterService.character_death_pre.connect(func(context):
+        context.resurrection_granted = true  # Perk prevents death
+    )
+
+    var char = CharacterService.create_character("TestChar", "scavenger")
+
+    # Act: Trigger death
+    CharacterService.on_character_death(char.id)
+
+    # Assert: Death count unchanged (resurrected)
+    var updated_char = CharacterService.get_character(char.id)
+    assert_eq(updated_char.death_count, 0)  # Not incremented
+```
+
+### Time Estimate: 3-4 hours → 4-5 hours (with perk hooks)
 
 **Breakdown:**
 - Character data model: 30 min
 - CRUD operations: 1.5h
 - Validation logic: 45 min
 - Serialization: 30 min
+- **Perk hooks implementation: 1h (NEW)**
+- **Perk hook testing: 30 min (NEW)**
 - Testing/debugging: 30-45 min
 
 ---
@@ -448,29 +658,33 @@ func get_character_slot_limit() -> int:
 ## Success Criteria
 
 ### Day 4 Complete When:
-- [x] CharacterService file created
-- [x] CharacterData class defined
-- [x] CRUD operations implemented
-- [x] Name validation working
-- [x] Slot limits enforced
-- [x] Serialization working
-- [x] Code passes all validators
+- [ ] CharacterService file created
+- [ ] CharacterData class defined
+- [ ] CRUD operations implemented
+- [ ] Name validation working
+- [ ] Slot limits enforced
+- [ ] Serialization working
+- [ ] **6 perk hooks implemented (character_create, level_up, death pre/post)** ⚠️ CRITICAL
+- [ ] Code passes all validators
 
 ### Day 5 Complete When:
-- [x] All unit tests passing
-- [x] Integration tests passing
-- [x] Save/load verified
-- [x] Cross-service tests passing
-- [x] Edge cases handled
-- [x] Documentation updated
+- [ ] All unit tests passing
+- [ ] **Perk hook tests passing (6 hooks tested)** ⚠️ CRITICAL
+- [ ] Integration tests passing
+- [ ] Save/load verified
+- [ ] Cross-service tests passing
+- [ ] Edge cases handled
+- [ ] Documentation updated
 
 ### Week 6 Complete When:
-- [x] CharacterService in production
-- [x] Can create/manage characters
-- [x] Characters persist across sessions
-- [x] Tier limits enforced
-- [x] All tests green
-- [x] Ready for inventory system (Week 7)
+- [ ] CharacterService in production
+- [ ] Can create/manage characters
+- [ ] Characters persist across sessions
+- [ ] Tier limits enforced
+- [ ] **All 6 perk hooks functional and tested** ⚠️ CRITICAL
+- [ ] All tests green
+- [ ] Ready for inventory system (Week 7)
+- [ ] **Ready for Perks System foundation (Week 10)** ⚠️ CRITICAL
 
 ---
 
