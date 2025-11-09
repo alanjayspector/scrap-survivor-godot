@@ -21,25 +21,35 @@ NC = '\033[0m'
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-# Service files to parse for API extraction
-SERVICE_FILES = [
-    "scripts/services/banking_service.gd",
-    "scripts/services/shop_reroll_service.gd",
-    "scripts/services/recycler_service.gd",
-    "scripts/services/error_service.gd",
-    "scripts/systems/save_system.gd",
-    "scripts/systems/save_manager.gd",
-]
 
-# Test files to validate
-TEST_FILES = [
-    "scripts/tests/banking_service_test.gd",
-    "scripts/tests/shop_reroll_service_test.gd",
-    "scripts/tests/recycler_service_test.gd",
-    "scripts/tests/service_integration_test.gd",
-    "scripts/tests/save_system_test.gd",
-    "scripts/tests/save_integration_test.gd",
-]
+def discover_service_files() -> List[Path]:
+    """Auto-discover all service and system files"""
+    service_files = []
+
+    # Find all *_service.gd files in scripts/services/
+    services_dir = PROJECT_ROOT / "scripts" / "services"
+    if services_dir.exists():
+        service_files.extend(services_dir.glob("*_service.gd"))
+
+    # Find all *_system.gd and *_manager.gd files in scripts/systems/
+    systems_dir = PROJECT_ROOT / "scripts" / "systems"
+    if systems_dir.exists():
+        service_files.extend(systems_dir.glob("*_system.gd"))
+        service_files.extend(systems_dir.glob("*_manager.gd"))
+
+    return sorted(service_files)
+
+
+def discover_test_files() -> List[Path]:
+    """Auto-discover all test files"""
+    test_files = []
+
+    # Find all *_test.gd files in scripts/tests/
+    tests_dir = PROJECT_ROOT / "scripts" / "tests"
+    if tests_dir.exists():
+        test_files.extend(tests_dir.glob("*_test.gd"))
+
+    return sorted(test_files)
 
 
 class ServiceAPI:
@@ -80,8 +90,9 @@ def extract_service_api(file_path: Path) -> ServiceAPI:
         if stripped.startswith('#'):
             continue
 
-        # Extract ALL methods (including private ones - tests can call them)
-        method_match = re.match(r'func\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
+        # Extract ALL methods (including private ones and static - tests can call them)
+        # Match both "func method_name(" and "static func method_name("
+        method_match = re.match(r'(?:static\s+)?func\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', stripped)
         if method_match:
             method_name = method_match.group(1)
             api.methods.add(method_name)
@@ -223,13 +234,15 @@ def main():
     print("Validating test method calls against service APIs...")
     print()
 
+    # Auto-discover service and test files
+    service_files = discover_service_files()
+    test_files = discover_test_files()
+
     # Extract service APIs
     service_apis = {}
-    for service_file in SERVICE_FILES:
-        file_path = PROJECT_ROOT / service_file
-        if file_path.exists():
-            api = extract_service_api(file_path)
-            service_apis[api.name] = api
+    for file_path in service_files:
+        api = extract_service_api(file_path)
+        service_apis[api.name] = api
 
     # Report discovered APIs
     print(f"Found {len(service_apis)} services:")
@@ -239,11 +252,9 @@ def main():
 
     # Validate each test file
     all_errors = []
-    for test_file in TEST_FILES:
-        file_path = PROJECT_ROOT / test_file
-        if file_path.exists():
-            errors = validate_test_file(file_path, service_apis)
-            all_errors.extend(errors)
+    for file_path in test_files:
+        errors = validate_test_file(file_path, service_apis)
+        all_errors.extend(errors)
 
     # Report results
     if all_errors:
