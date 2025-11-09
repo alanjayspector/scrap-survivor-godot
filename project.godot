@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Scrap Survivor"
-config/features=PackedStringArray("4.4", "Mobile")
+config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
 
 [display]
@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=2
-window/size/resizable=true
 window/stretch/mode="viewport"
 
 [rendering]
