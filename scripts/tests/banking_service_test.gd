@@ -15,8 +15,10 @@ func _ready() -> void:
 	test_subtract_currency()
 	test_insufficient_funds()
 	test_tier_gating()
+	test_get_tier()
 	test_balance_caps()
 	test_transaction_history()
+	test_signals()
 
 	print()
 	print("=== All BankingService Tests Complete ===")
@@ -171,3 +173,78 @@ func test_transaction_history() -> void:
 
 	print("✓ Transaction history recorded correctly")
 	print()
+
+
+func test_get_tier() -> void:
+	print("--- Testing Get Tier ---")
+
+	BankingService.reset()
+
+	# Default tier should be FREE
+	assert(BankingService.get_tier() == BankingService.UserTier.FREE, "Default tier should be FREE")
+
+	# Set to PREMIUM
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	assert(BankingService.get_tier() == BankingService.UserTier.PREMIUM, "Tier should be PREMIUM")
+
+	# Set to SUBSCRIPTION
+	BankingService.set_tier(BankingService.UserTier.SUBSCRIPTION)
+	assert(
+		BankingService.get_tier() == BankingService.UserTier.SUBSCRIPTION,
+		"Tier should be SUBSCRIPTION"
+	)
+
+	print("✓ Get tier works correctly")
+	print()
+
+
+func test_signals() -> void:
+	print("--- Testing Signals ---")
+
+	BankingService.reset()
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+
+	# Track signal emissions
+	var currency_added_count = 0
+	var currency_changed_count = 0
+	var last_added_type = -1
+	var last_added_amount = 0
+	var last_changed_type = -1
+	var last_changed_balance = 0
+
+	# Connect to signals
+	var added_conn = func(type, amount):
+		currency_added_count += 1
+		last_added_type = type
+		last_added_amount = amount
+
+	var changed_conn = func(type, balance):
+		currency_changed_count += 1
+		last_changed_type = type
+		last_changed_balance = balance
+
+	BankingService.currency_added.connect(added_conn)
+	BankingService.currency_changed.connect(changed_conn)
+
+	# Add currency should emit both signals
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+
+	assert(currency_added_count == 1, "currency_added should emit once")
+	assert(currency_changed_count == 1, "currency_changed should emit once")
+	assert(last_added_type == BankingService.CurrencyType.SCRAP, "Signal should report SCRAP type")
+	assert(last_added_amount == 100, "Signal should report 100 amount")
+	assert(last_changed_balance == 100, "Signal should report new balance of 100")
+
+	# Subtract currency should emit changed signal
+	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 30)
+
+	assert(currency_added_count == 1, "currency_added should not emit on subtract")
+	assert(currency_changed_count == 2, "currency_changed should emit again")
+	assert(last_changed_balance == 70, "Signal should report new balance of 70")
+
+	print("✓ All signals emitted correctly")
+	print()
+
+	# Disconnect
+	BankingService.currency_added.disconnect(added_conn)
+	BankingService.currency_changed.disconnect(changed_conn)

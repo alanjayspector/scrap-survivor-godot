@@ -19,6 +19,7 @@ func _ready() -> void:
 	test_progressive_costs()
 	test_max_reroll_cap()
 	test_reset_functionality()
+	test_signals()
 
 	print()
 	print("=== ShopRerollService Tests Complete ===")
@@ -218,3 +219,51 @@ func test_reset_functionality() -> void:
 	var preview = ShopRerollService.get_reroll_preview()
 	assert(preview.cost == 50, "First reroll cost should be 50 again")
 	print("✓ Costs reset to initial values")
+
+
+func test_signals() -> void:
+	print("--- Testing Signals ---")
+
+	ShopRerollService.reset_reroll_count()
+
+	# Track signal emissions
+	var reroll_executed_count = 0
+	var reset_count = 0
+	var last_execution: ShopRerollService.RerollExecution = null
+
+	# Connect to signals
+	var executed_conn = func(execution):
+		reroll_executed_count += 1
+		last_execution = execution
+
+	var reset_conn = func(): reset_count += 1
+
+	ShopRerollService.reroll_executed.connect(executed_conn)
+	ShopRerollService.reroll_count_reset.connect(reset_conn)
+
+	# Execute reroll should emit reroll_executed
+	ShopRerollService.execute_reroll()
+
+	assert(reroll_executed_count == 1, "reroll_executed should emit once")
+	assert(last_execution != null, "Execution data should be provided")
+	assert(last_execution.reroll_count == 1, "Execution should report count=1")
+	assert(last_execution.charged_cost == 50, "Execution should report cost=50")
+	print("✓ reroll_executed signal emits with correct data")
+
+	# Execute another reroll
+	ShopRerollService.execute_reroll()
+
+	assert(reroll_executed_count == 2, "reroll_executed should emit again")
+	assert(last_execution.reroll_count == 2, "Execution should report count=2")
+	assert(last_execution.charged_cost == 100, "Execution should report cost=100")
+	print("✓ Multiple rerolls emit signals correctly")
+
+	# Reset should emit reroll_count_reset
+	ShopRerollService.reset_reroll_count()
+
+	assert(reset_count == 1, "reroll_count_reset should emit once")
+	print("✓ reroll_count_reset signal emits on reset")
+
+	# Disconnect
+	ShopRerollService.reroll_executed.disconnect(executed_conn)
+	ShopRerollService.reroll_count_reset.disconnect(reset_conn)

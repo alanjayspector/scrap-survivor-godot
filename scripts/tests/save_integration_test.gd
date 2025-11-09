@@ -20,6 +20,7 @@ func _ready() -> void:
 	test_save_deletion()
 	test_cross_service_consistency()
 	test_stateless_service_serialization()
+	test_auto_save_trigger()
 
 	print()
 	print("=== SaveManager Integration Tests Complete ===")
@@ -384,3 +385,56 @@ func test_stateless_service_serialization() -> void:
 
 	# Cleanup
 	SaveManager.delete_save(TEST_SLOT)
+
+
+## Test auto-save trigger mechanism
+func test_auto_save_trigger() -> void:
+	print("--- Testing Auto-Save Trigger ---")
+
+	# Clean state
+	BankingService.reset()
+	if SaveManager.has_save(TEST_SLOT):
+		SaveManager.delete_save(TEST_SLOT)
+
+	# Disable auto-save if it's running
+	SaveManager.disable_auto_save()
+
+	# Track auto-save trigger signal
+	var auto_save_triggered_count = 0
+	var auto_save_trigger_conn = func(): auto_save_triggered_count += 1
+
+	SaveManager.auto_save_triggered.connect(auto_save_trigger_conn)
+
+	# Enable auto-save
+	SaveManager.enable_auto_save()
+	print("✓ Auto-save enabled")
+
+	# Make a change to trigger unsaved flag
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	assert(SaveManager.has_unsaved_changes(), "Should have unsaved changes")
+	print("✓ Unsaved changes tracked")
+
+	# Manually trigger the auto-save timeout handler (instead of waiting 5 minutes)
+	# This tests the logic without the timer delay
+	SaveManager._on_auto_save_timeout()
+
+	# Verify signal was emitted
+	assert(auto_save_triggered_count == 1, "auto_save_triggered should emit once")
+	print("✓ auto_save_triggered signal emitted")
+
+	# Verify save actually happened (slot 0 is used for auto-save)
+	assert(SaveManager.has_save(0), "Auto-save should create save in slot 0")
+	assert(not SaveManager.has_unsaved_changes(), "Unsaved changes should be cleared")
+	print("✓ Auto-save completed successfully")
+
+	# Trigger again with no changes - should skip
+	SaveManager._on_auto_save_timeout()
+	assert(auto_save_triggered_count == 1, "auto_save_triggered should not emit again")
+	print("✓ Auto-save skips when no changes")
+
+	# Disconnect and disable
+	SaveManager.auto_save_triggered.disconnect(auto_save_trigger_conn)
+	SaveManager.disable_auto_save()
+
+	# Cleanup
+	SaveManager.delete_save(0)
