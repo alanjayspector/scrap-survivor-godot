@@ -68,6 +68,13 @@ if [ -f .system/validators/documentation_validator.py ]; then
     fi
 fi
 
+# Godot runtime validator (NEW - catches parse errors)
+if [ -f .system/validators/godot_runtime_validator.py ]; then
+    if ! python3 .system/validators/godot_runtime_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Final check
 if [ $VALIDATION_FAILED -ne 0 ]; then
     echo ""

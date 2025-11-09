@@ -82,6 +82,38 @@ python3 .system/validators/documentation_validator.py
 1. Checks for README.md, .gitignore
 2. Validates docs/godot/ required files exist per Week 1 Day 5
 
+### 4. Godot Runtime Validator (NEW - Week 5)
+
+**What it catches:**
+- ✅ **Native class name conflicts** (Logger vs built-in Logger) - **Would have caught Week 5 Day 1 bug**
+- ✅ Parse errors that static analysis (gdlint) cannot detect
+- ✅ Autoload circular dependencies
+- ✅ Missing resource files referenced in code
+- ✅ Invalid enum/constant references
+
+**Run manually:**
+```bash
+python3 .system/validators/godot_runtime_validator.py
+```
+
+**What it does:**
+1. Checks if Godot is already running (skips if yes, to avoid project lock)
+2. Loads project in Godot headless mode with `--quit` flag
+3. Captures stderr output and scans for parse errors
+4. Fails commit if any ERROR-level parse issues detected
+
+**Why this was needed:**
+- Week 5 Day 1: BankingService committed with `class_name Logger` conflicting with Godot's native Logger class
+- gdlint passed (it's a static analyzer, doesn't know Godot's native classes)
+- All other validators passed (they check configuration, not runtime)
+- Bug only discovered when user tried to run the project
+- This validator would have caught it before commit
+
+**Tradeoff:**
+- Adds ~5-10 seconds to commit time (when Godot not running)
+- Skips validation if Godot is running (to avoid blocking development)
+- Can be bypassed with `git commit --no-verify` in emergencies
+
 ## Pre-commit Hook
 
 The pre-commit hook runs automatically on `git commit` and validates:
