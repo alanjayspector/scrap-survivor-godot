@@ -1,5 +1,6 @@
 {
-  "godot_tools.editor_path": "/Applications/Godot.app",
+  "godot_tools.editor_path": "/Applications/Godot.app/Contents/MacOS/Godot",
+  "godot_tools.editor_path.godot4": "/Applications/Godot.app/Contents/MacOS/Godot",
   "godot_tools.gdscript_lsp_server_port": 6005,
 
   // File exclusions
@@ -32,6 +33,7 @@
   // GDScript LSP
   "gdscript.lsp.serverPort": 6005,
   "gdscript.lsp.serverProtocol": "ws",
+  "gdscript.lsp.autoCheckUpdate": false,
 
   // Enforcement system integration
   "files.watcherExclude": {
