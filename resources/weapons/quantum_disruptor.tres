@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "quantum_disruptor"
+weapon_name = "Quantum Disruptor"
+damage = 100
+fire_rate = 2
+projectile_speed = 800
+weapon_range = 600
+is_premium = true
+rarity = "epic"
+sprite = "quantum_disruptor"

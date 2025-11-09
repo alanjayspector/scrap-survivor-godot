@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "spark_pistol"
+weapon_name = "Spark Pistol"
+damage = 18
+fire_rate = 4
+projectile_speed = 380
+weapon_range = 320
+is_premium = false
+rarity = "common"
+sprite = "spark_pistol"

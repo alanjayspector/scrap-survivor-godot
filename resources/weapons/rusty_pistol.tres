@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "rusty_pistol"
+weapon_name = "Rusty Pistol"
+damage = 15
+fire_rate = 3
+projectile_speed = 400
+weapon_range = 300
+is_premium = false
+rarity = "common"
+sprite = "rusty_pistol"

@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "void_cannon"
+weapon_name = "Void Cannon"
+damage = 200
+fire_rate = 0.5
+projectile_speed = 400
+weapon_range = 600
+is_premium = true
+rarity = "legendary"
+sprite = "void_cannon"

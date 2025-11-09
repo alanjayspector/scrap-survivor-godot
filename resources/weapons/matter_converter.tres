@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "matter_converter"
+weapon_name = "Matter Converter"
+damage = 120
+fire_rate = 1.5
+projectile_speed = 500
+weapon_range = 550
+is_premium = true
+rarity = "epic"
+sprite = "matter_converter"

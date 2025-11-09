@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "plasma_cutter"
+weapon_name = "Plasma Cutter"
+damage = 20
+fire_rate = 4
+projectile_speed = 350
+weapon_range = 250
+is_premium = false
+rarity = "common"
+sprite = "plasma_cutter"

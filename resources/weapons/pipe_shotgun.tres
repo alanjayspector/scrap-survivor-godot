@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "pipe_shotgun"
+weapon_name = "Pipe Shotgun"
+damage = 40
+fire_rate = 1
+projectile_speed = 300
+weapon_range = 200
+is_premium = false
+rarity = "rare"
+sprite = "pipe_shotgun"

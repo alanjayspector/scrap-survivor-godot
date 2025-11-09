@@ -1,0 +1,15 @@
+[gd_resource type="WeaponResource" script_class="WeaponResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_resource.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_id = "scrap_rifle"
+weapon_name = "Scrap Rifle"
+damage = 25
+fire_rate = 2
+projectile_speed = 600
+weapon_range = 500
+is_premium = false
+rarity = "uncommon"
+sprite = "scrap_rifle"
