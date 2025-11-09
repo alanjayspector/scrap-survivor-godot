@@ -25,6 +25,7 @@ GODOT_EXECUTABLE = "/Applications/Godot.app/Contents/MacOS/Godot"
 # Test scenes to run (following *_test.tscn naming convention)
 TEST_SCENES = [
     "scenes/tests/banking_service_test.tscn",
+    "scenes/tests/recycler_service_test.tscn",
     # Add more test scenes here as they're created
 ]
 
