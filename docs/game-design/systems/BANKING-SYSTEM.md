@@ -56,17 +56,19 @@ Each character instance has its own bank account:
 
 ```gdscript
 class BankAccount:
-    var character_id: String      # Owning character ID
-    var balance: int = 0           # Banked scrap
-    var total_deposited: int = 0   # Lifetime deposits (stat tracking)
-    var total_withdrawn: int = 0   # Lifetime withdrawals (stat tracking)
-    var created_at: String         # Account creation timestamp
+    var character_id: String       # Owning character ID
+    var balance: int = 0            # Banked scrap
+    var repair_fund_balance: int = 0 # Repair Fund allocation (NEW)
+    var total_deposited: int = 0    # Lifetime deposits (stat tracking)
+    var total_withdrawn: int = 0    # Lifetime withdrawals (stat tracking)
+    var created_at: String          # Account creation timestamp
 ```
 
 **Key points:**
 - **Character-bound:** Each character has separate bank account
 - **No shared balance:** Characters can't access each other's banks (unless Subscription Quantum Banking)
 - **No fees:** Deposits and withdrawals are free
+- **Repair Fund:** Optional scrap allocation for auto-repair service (see section 3.4)
 
 ### 3.2 Banking Operations
 
@@ -125,8 +127,10 @@ func withdraw(character_id: String, amount: int) -> Result:
 **Features:**
 - View current bank balance
 - View current carried scrap
+- View Repair Fund balance (NEW)
 - Deposit interface (input amount or "Deposit All")
 - Withdraw interface (input amount or "Withdraw All")
+- Repair Fund allocation (input amount)
 - Transaction history (recent deposits/withdrawals)
 
 **UI Mock:**
@@ -136,10 +140,11 @@ func withdraw(character_id: String, amount: int) -> Result:
 ├─────────────────────────────────────┤
 │ Character: Scavenger #1             │
 │                                     │
-│ 💰 Carried Scrap: 15,420           │
-│ 🏦 Banked Scrap:  42,850           │
+│ 💰 Carried Scrap:    15,420        │
+│ 🏦 Banked Scrap:     42,850        │
+│ 🔧 Repair Fund:       5,000        │
 │                                     │
-│ [Deposit] [Withdraw]                │
+│ [Deposit] [Withdraw] [Repair Fund]  │
 │                                     │
 │ Recent Transactions:                │
 │ - Deposited 10,000 scrap (1h ago)  │
@@ -147,6 +152,61 @@ func withdraw(character_id: String, amount: int) -> Result:
 │ - Deposited 20,000 scrap (1d ago)  │
 └─────────────────────────────────────┘
 ```
+
+---
+
+### 3.4 Repair Fund (NEW)
+
+**The Repair Fund** is a convenience feature that allows players to **allocate banked scrap for automatic item repairs** through the Workshop.
+
+**How it works:**
+1. Player allocates scrap from bank balance → Repair Fund
+2. When item needs repair, Workshop can auto-deduct from Repair Fund
+3. Repair Fund costs **3x more scrap** than Workshop Components
+
+**Why Repair Fund exists:**
+- ✅ **Convenience:** Passive auto-repair without managing Workshop Components
+- ✅ **Bank integration:** Another use for banked scrap
+- ✅ **Trade-off:** 3x cost vs free Workshop Components (recycling rewards)
+
+**Repair Cost Comparison:**
+
+| Repair Method | Cost Example (T4 item, 10% durability lost) | Notes |
+|--------------|---------------------------------------------|-------|
+| Workshop Components | 40 components (free, earned via recycling) | Strategic, requires recycling items |
+| Repair Fund (scrap) | 120 scrap (3x Workshop cost) | Convenient, passive auto-deduct |
+
+**Implementation:**
+
+```gdscript
+# Allocate scrap to Repair Fund
+func allocate_to_repair_fund(character_id: String, amount: int) -> Result:
+    var bank = get_bank_account(character_id)
+    if bank.balance < amount:
+        return Result.error("Insufficient bank balance")
+
+    # Move scrap from bank to repair fund
+    bank.balance -= amount
+    bank.repair_fund_balance += amount
+
+    await save_bank_account(bank)
+    return Result.success(bank)
+
+# Deduct from Repair Fund (called by Workshop)
+func deduct_repair_fund(character_id: String, amount: int) -> bool:
+    var bank = get_bank_account(character_id)
+    if bank.repair_fund_balance < amount:
+        return false
+
+    bank.repair_fund_balance -= amount
+    await save_bank_account(bank)
+    return true
+```
+
+**Strategic Decision:**
+- Players can choose to recycle items for free Workshop Components (strategic)
+- OR allocate banked scrap to Repair Fund for convenience (3x cost)
+- Repair Fund is **passive** - Workshop auto-deducts when repairing items
 
 ---
 
@@ -312,23 +372,58 @@ CREATE INDEX idx_quantum_transfers_user_id ON quantum_transfers(user_id);
 When character dies:
 - Carried scrap → 0
 - **Banked scrap → preserved**
+- **Repair Fund → preserved** (stays intact)
 - Workshop components → 0
 
-### 6.2 Tier System
+### 6.2 Workshop System
+
+**Repair Fund Integration:**
+
+When repairing items in Workshop, players have two payment options:
+1. **Workshop Components** (free, earned via recycling)
+2. **Repair Fund** (scrap, 3x cost, passive auto-deduct)
+
+Workshop queries Banking System for Repair Fund balance:
+
+```gdscript
+# Workshop repair logic
+func repair_item(item: Item, use_repair_fund: bool) -> Result:
+    var repair_cost_components = calculate_repair_cost(item.tier, 100 - item.durability)
+
+    if use_repair_fund:
+        var scrap_cost = repair_cost_components * 3
+        if BankingService.deduct_repair_fund(character_id, scrap_cost):
+            item.durability = 100
+            return Result.success("Repaired with Repair Fund")
+        else:
+            return Result.error("Insufficient Repair Fund balance")
+    else:
+        if WorkshopService.has_components(repair_cost_components):
+            WorkshopService.spend_components(repair_cost_components)
+            item.durability = 100
+            return Result.success("Repaired with Workshop Components")
+        else:
+            return Result.error("Insufficient Workshop Components")
+```
+
+See [WORKSHOP-SYSTEM.md](./WORKSHOP-SYSTEM.md) for full repair documentation.
+
+### 6.3 Tier System
 
 Banking access by tier:
 - **Free:** No access (banking disabled)
-- **Premium:** Basic banking (deposit/withdraw)
-- **Subscription:** Basic banking + Quantum Banking
+- **Premium:** Basic banking (deposit/withdraw) + Repair Fund
+- **Subscription:** Basic banking + Repair Fund + Quantum Banking
 
-### 6.3 Perks System
+### 6.4 Perks System
 
 Perks can affect banking:
 - "Bank interest: +5% per week" (compound interest)
 - "Double deposit bonuses this week"
 - "Free Quantum Transfers (no rate limit)"
+- "Repair Fund efficiency: -50% repair costs this week" (NEW)
 
-**Hook point:** `bank_deposit`, `bank_withdraw`, `quantum_transfer`
+**Hook point:** `bank_deposit`, `bank_withdraw`, `quantum_transfer`, `repair_fund_allocate`
 
 ---
 
