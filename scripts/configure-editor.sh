@@ -41,7 +41,7 @@ case $choice in
         ;;
     2)
         EDITOR_NAME="Windsurf"
-        EDITOR_PATH="/Applications/Windsurf.app/Contents/MacOS/Windsurf"
+        EDITOR_PATH="/Applications/Windsurf.app/Contents/MacOS/Electron"
         EXEC_FLAGS="{project} --goto {file}:{line}:{col}"
         ;;
     3)
