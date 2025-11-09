@@ -129,8 +129,8 @@ func _on_area_entered(area: Area2D) -> void:
 	if not is_active:
 		return
 
-	# Check if it's an enemy
-	var enemy = area as Enemy
+	# Check if the area's owner is an enemy
+	var enemy = area.owner as Enemy
 	if enemy and enemy.is_alive():
 		hit_enemy(enemy)
 

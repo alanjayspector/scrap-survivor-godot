@@ -1,5 +1,5 @@
 @tool
-extends EditorScrip
+extends EditorScript
 ## Batch import weapons from weapons.json to .tres files
 ##
 ## This tool reads resources/data/weapons.json and creates WeaponResource .tres files
