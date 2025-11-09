@@ -12,13 +12,14 @@
 
 **Core Services:**
 - 🧬 **Radioactivity Treatment** - Reduce radioactivity stat (all tiers)
-- 🤖 **Minion Crafting** - Create robot/bio companions (Premium/Subscription)
+- 🤖 **Minion Crafting** - Create robot/bio companions (Subscription via patterns)
 - ⚡ **Afterburn Venting** - Emergency radioactivity purge (Premium/Subscription)
 - 🧪 **Alchemic Crapshot** - Random stat manipulation (Premium/Subscription)
 - 🔄 **MetaConvertor** - Convert stats (Subscription only)
 - 💥 **Complete Purge** - Remove all radioactivity (Subscription only)
-- 🛒 **Black Market** - Buy fully-formed minions (Premium only)
 - ⚗️ **Mutation Chamber** - Idle Nanite generation (Subscription only)
+
+**Note:** Fully-formed minions can be purchased at the Black Market scene (Premium tier) - see [SHOPS-SYSTEM.md](./SHOPS-SYSTEM.md)
 
 **Brotato comparison:**
 - 🟢 **UNIQUE TO SCRAP SURVIVOR** (Brotato has no Lab, minions, or radioactivity systems)
@@ -463,67 +464,6 @@ Bonus Ability Chance: 50% (procs: "Energy Shield" ability)
 
 ---
 
-## Black Market (Premium Tier Only)
-
-**The Black Market** allows Premium players to **buy fully-formed minions directly** without crafting:
-
-### Black Market Prices
-
-| Minion Tier | Scrap Cost | Notes |
-|------------|-----------|-------|
-| Tier 1 | 500 scrap | Instant minion, no crafting |
-| Tier 2 | 1,000 scrap | More expensive than pattern crafting |
-| Tier 3 | 2,000 scrap | Convenience premium |
-| Tier 4 | 4,000 scrap | 10x more expensive than crafting |
-
-### Black Market vs Pattern Crafting
-
-**Black Market (Premium):**
-- ✅ **Instant gratification** (buy now, use now)
-- ✅ **No Nanites required** (just scrap)
-- ✅ **Fully-formed** (100% stats, no degradation)
-- ❌ **Very expensive** (10x crafting cost)
-- ❌ **No personalization** (generic minion)
-
-**Pattern Crafting (Subscription):**
-- ✅ **Much cheaper** (400 scrap + 100 Nanites for personalized T4)
-- ✅ **Unlimited crafts** (reusable patterns)
-- ✅ **Personalization** (custom names, stat bonuses)
-- ✅ **Evolving patterns** (get better with each craft)
-- ❌ **Requires Nanites** (must earn/farm)
-
-**This creates perfect upsell:** Premium players will eventually want Subscription for cheaper, unlimited minion access.
-
-### Black Market Implementation
-
-```gdscript
-# Black Market purchase
-func purchase_black_market_minion(minion_tier: int) -> Minion:
-    # Verify Premium tier
-    if PlayerService.get_tier() == "free":
-        ToastService.show("Black Market requires Premium tier")
-        return null
-
-    # Calculate cost
-    var cost = [500, 1000, 2000, 4000][minion_tier - 1]
-
-    # Verify scrap
-    if not BankingService.spend_scrap(cost):
-        ToastService.show("Insufficient scrap (%d required)" % cost)
-        return null
-
-    # Create minion (random pattern of tier)
-    var pattern = PatternLibrary.get_random_pattern_of_tier(minion_tier)
-    var minion = MinionFactory.create_from_pattern(pattern, 1.0)  # 100% stats
-    minion.is_black_market_purchase = true  # Can transfer via Quantum Storage
-
-    MinionService.add_minion(minion)
-    GameLogger.info("Black Market minion purchased: %s (T%d, %d scrap)" % [minion.name, minion_tier, cost])
-    return minion
-```
-
----
-
 ## Mutation Chamber (Subscription Idle System)
 
 **The Mutation Chamber** is a Subscription-exclusive idle system that **generates Nanites passively**.
@@ -629,7 +569,7 @@ func collect_mutation_chamber_nanites(character_id: String) -> int:
 **Minion transfers via Quantum Storage (Subscription only):**
 
 **✅ Can Transfer:**
-- **Black Market minions** (purchased, expensive, 1x per day per minion)
+- **Black Market minions** (purchased from Black Market scene, see [SHOPS-SYSTEM.md](./SHOPS-SYSTEM.md))
 - **Generic crafted minions** (degrading stats, 1x per day per minion)
 - **Evolving crafted minions** (Subscription patterns, 1x per day per minion)
 
@@ -779,8 +719,7 @@ TheLabScene
 │   └── "The Lab - [Character Name]"
 ├── Navigation Tabs
 │   ├── Radioactivity
-│   ├── Minion Crafting
-│   ├── Black Market (Premium+)
+│   ├── Minion Crafting (Subscription)
 │   ├── Mutation Chamber (Subscription)
 │   ├── Alchemic Crapshot (Premium+)
 │   ├── MetaConvertor (Subscription)
@@ -802,10 +741,9 @@ The Lab provides:
 - ✅ **Consolidated bio/genetics hub** (radioactivity + minions + stat manipulation)
 - ✅ **Nanites currency** (thematic, works for all services)
 - ✅ **Biotech skill** (affects all Lab operations)
-- ✅ **Minion crafting** (degrading, evolving, personalized patterns)
-- ✅ **Black Market** (Premium instant gratification)
-- ✅ **Mutation Chamber** (Subscription passive Nanites)
-- ✅ **Clear tier differentiation** (Free = basic, Premium = Black Market, Subscription = crafting + idle)
+- ✅ **Minion crafting** (degrading, evolving, personalized patterns via Subscription)
+- ✅ **Mutation Chamber** (Subscription passive Nanites generation)
+- ✅ **Clear tier differentiation** (Free = radioactivity only, Premium = stat manipulation, Subscription = minion crafting + idle)
 
 **The Lab is a unique system** that provides strategic depth through risk/reward mechanics and compelling Premium/Subscription features.
 
