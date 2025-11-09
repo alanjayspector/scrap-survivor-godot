@@ -1,0 +1,415 @@
+[
+  {
+    "id": "health_boost",
+    "name": "Scrap-Stitched Vitals",
+    "description": "Improvised med rig welded from scavenged tubing. +20 Max HP",
+    "type": "upgrade",
+    "rarity": "common",
+    "stats": {
+      "maxHp": 20
+    }
+  },
+  {
+    "id": "damage_up",
+    "name": "Rebar Spike Kit",
+    "description": "Bolts sharpened scrap into your gauntlets. +5 Damage",
+    "type": "upgrade",
+    "rarity": "common",
+    "stats": {
+      "damage": 5
+    }
+  },
+  {
+    "id": "speed_boost",
+    "name": "Turbo Knee Pistons",
+    "description": "Hydraulic boosters for sprint-ready legs. +10 Movement Speed",
+    "type": "upgrade",
+    "rarity": "uncommon",
+    "stats": {
+      "speed": 10
+    }
+  },
+  {
+    "id": "armor_plate",
+    "name": "Furnace Plating",
+    "description": "Heat-forged armor plates strapped across your torso. +5 Armor",
+    "type": "upgrade",
+    "rarity": "rare",
+    "stats": {
+      "armor": 5
+    }
+  },
+  {
+    "id": "lucky_charm",
+    "name": "Irradiated Gambler's Token",
+    "description": "Glimmers with unstable fortune. +10 Luck",
+    "type": "item",
+    "rarity": "epic",
+    "stats": {
+      "luck": 10
+    }
+  },
+  {
+    "id": "vampiric_fangs",
+    "name": "Hemophage Siphons",
+    "description": "Leeches scrap-born energy from foes. +3 Life Steal",
+    "type": "item",
+    "rarity": "legendary",
+    "stats": {
+      "lifeSteal": 3
+    }
+  },
+  {
+    "id": "reactor_coolant",
+    "name": "Reactor Coolant",
+    "description": "+5 Armor, -5 Speed",
+    "type": "item",
+    "rarity": "uncommon",
+    "stats": {
+      "armor": 5,
+      "speed": -5
+    }
+  },
+  {
+    "id": "unstable_serum",
+    "name": "Unstable Serum",
+    "description": "+15 Damage, -10 Max HP",
+    "type": "item",
+    "rarity": "rare",
+    "stats": {
+      "damage": 15,
+      "maxHp": -10
+    }
+  },
+  {
+    "id": "scavenger_toolkit",
+    "name": "Scavenger Toolkit",
+    "description": "+12 Luck, +5% Scrap Gain, -5 Damage",
+    "type": "item",
+    "rarity": "uncommon",
+    "stats": {
+      "luck": 12,
+      "scrapGain": 5,
+      "damage": -5
+    }
+  },
+  {
+    "id": "mutant_bile",
+    "name": "Mutant Bile",
+    "description": "+8 Life Steal, -10 Dodge",
+    "type": "item",
+    "rarity": "rare",
+    "stats": {
+      "lifeSteal": 8,
+      "dodge": -10
+    }
+  },
+  {
+    "id": "rusted_plate",
+    "name": "Rusted Plate",
+    "description": "+12 Armor, -6 Speed",
+    "type": "item",
+    "rarity": "common",
+    "stats": {
+      "armor": 12,
+      "speed": -6
+    }
+  },
+  {
+    "id": "rad_sponge",
+    "name": "Rad Sponge",
+    "description": "+20 Range, +8 Scrap Gain, -8 Speed",
+    "type": "item",
+    "rarity": "rare",
+    "stats": {
+      "range": 20,
+      "scrapGain": 8,
+      "speed": -8
+    }
+  },
+  {
+    "id": "combat_injector",
+    "name": "Combat Injector",
+    "description": "+15% Attack Speed, -5 Armor",
+    "type": "item",
+    "rarity": "uncommon",
+    "stats": {
+      "attackSpeed": 15,
+      "armor": -5
+    }
+  },
+  {
+    "id": "scrap_magnet",
+    "name": "Scrap Magnet",
+    "description": "+20 Pickup Range, +10 Scrap Gain",
+    "type": "item",
+    "rarity": "rare",
+    "stats": {
+      "pickupRange": 20,
+      "scrapGain": 10
+    }
+  },
+  {
+    "id": "neural_resistor",
+    "name": "Neural Resistor",
+    "description": "+10 Dodge, -10 Attack Speed",
+    "type": "item",
+    "rarity": "common",
+    "stats": {
+      "dodge": 10,
+      "attackSpeed": -10
+    }
+  },
+  {
+    "id": "relic_of_decay",
+    "name": "Relic of Decay",
+    "description": "+20 Damage, -20 Speed, -20 Dodge",
+    "type": "item",
+    "rarity": "legendary",
+    "stats": {
+      "damage": 20,
+      "speed": -20,
+      "dodge": -20
+    }
+  },
+  {
+    "id": "rusty_wrench",
+    "name": "Rusty Wrench",
+    "description": "A basic, reliable wrench.",
+    "type": "weapon",
+    "rarity": "common",
+    "stats": {},
+    "base_damage": 8,
+    "damage_type": "ranged",
+    "fire_rate": 1.5,
+    "projectile_speed": 350,
+    "base_range": 200,
+    "max_durability": 100,
+    "max_fuse_tier": 3,
+    "base_value": 12
+  },
+  {
+    "id": "rusty_sword",
+    "name": "Rusty Sword",
+    "description": "A weapon held together by hope.",
+    "type": "weapon",
+    "rarity": "common",
+    "stats": {},
+    "base_damage": 6,
+    "damage_type": "melee",
+    "fire_rate": 1.2,
+    "projectile_speed": 0,
+    "base_range": 60,
+    "max_durability": 80,
+    "max_fuse_tier": 3,
+    "base_value": 12
+  },
+  {
+    "id": "scatter_blaster",
+    "name": "Scatter Blaster",
+    "description": "A powerful short-range shotgun.",
+    "type": "weapon",
+    "rarity": "rare",
+    "stats": {},
+    "base_damage": 12,
+    "damage_type": "ranged",
+    "fire_rate": 0.8,
+    "projectile_speed": 250,
+    "base_range": 150,
+    "max_durability": 120,
+    "max_fuse_tier": 2,
+    "base_value": 35
+  },
+  {
+    "id": "scrap_cannon",
+    "name": "Scrap Cannon",
+    "description": "Hurls metal shards in a cone. Slow but brutal.",
+    "type": "weapon",
+    "rarity": "rare",
+    "stats": {},
+    "base_damage": 20,
+    "damage_type": "ranged",
+    "fire_rate": 0.6,
+    "projectile_speed": 220,
+    "base_range": 140,
+    "max_durability": 140,
+    "max_fuse_tier": 2,
+    "base_value": 35
+  },
+  {
+    "id": "plasma_arc",
+    "name": "Plasma Arc",
+    "description": "Short-range plasma cutter that pierces armor at the cost of self-heat.",
+    "type": "weapon",
+    "rarity": "legendary",
+    "stats": {},
+    "base_damage": 28,
+    "damage_type": "ranged",
+    "fire_rate": 1.1,
+    "projectile_speed": 0,
+    "base_range": 90,
+    "max_durability": 90,
+    "max_fuse_tier": 1,
+    "base_value": 60
+  },
+  {
+    "id": "rail_slagger",
+    "name": "Rail Slagger",
+    "description": "Improvised railgun that knocks enemies back but fires slowly.",
+    "type": "weapon",
+    "rarity": "epic",
+    "stats": {},
+    "base_damage": 35,
+    "damage_type": "ranged",
+    "fire_rate": 0.4,
+    "projectile_speed": 480,
+    "base_range": 260,
+    "max_durability": 160,
+    "max_fuse_tier": 2,
+    "base_value": 45
+  },
+  {
+    "id": "mutant_claws",
+    "name": "Mutant Claws",
+    "description": "Bioengineered claws that grant life steal but reduce range.",
+    "type": "weapon",
+    "rarity": "rare",
+    "stats": {},
+    "base_damage": 18,
+    "damage_type": "melee",
+    "fire_rate": 1.8,
+    "projectile_speed": 0,
+    "base_range": 50,
+    "max_durability": 110,
+    "max_fuse_tier": 2,
+    "base_value": 35
+  },
+  {
+    "id": "arc_thrower",
+    "name": "Arc Thrower",
+    "description": "Jumps lightning between enemies, but drains user armor.",
+    "type": "weapon",
+    "rarity": "legendary",
+    "stats": {},
+    "base_damage": 22,
+    "damage_type": "ranged",
+    "fire_rate": 1.3,
+    "projectile_speed": 320,
+    "base_range": 200,
+    "max_durability": 120,
+    "max_fuse_tier": 1,
+    "base_value": 60
+  },
+  {
+    "id": "scrap_sling",
+    "name": "Scrap Sling",
+    "description": "Quick-firing sling that favors dodge builds.",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "stats": {},
+    "base_damage": 10,
+    "damage_type": "ranged",
+    "fire_rate": 2.2,
+    "projectile_speed": 300,
+    "base_range": 180,
+    "max_durability": 100,
+    "max_fuse_tier": 3,
+    "base_value": 20
+  },
+  {
+    "id": "pipe_lance",
+    "name": "Pipe Lance",
+    "description": "Long reach melee pipe with armor penetration but slow recovery.",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "stats": {},
+    "base_damage": 16,
+    "damage_type": "melee",
+    "fire_rate": 0.9,
+    "projectile_speed": 0,
+    "base_range": 120,
+    "max_durability": 130,
+    "max_fuse_tier": 3,
+    "base_value": 20
+  },
+  {
+    "id": "auto_forge",
+    "name": "Auto Forge",
+    "description": "Deploys mini turrets at the cost of speed.",
+    "type": "weapon",
+    "rarity": "legendary",
+    "stats": {},
+    "base_damage": 12,
+    "damage_type": "ranged",
+    "fire_rate": 1,
+    "projectile_speed": 200,
+    "base_range": 160,
+    "max_durability": 150,
+    "max_fuse_tier": 1,
+    "base_value": 60
+  },
+  {
+    "id": "shock_gloves",
+    "name": "Shock Gloves",
+    "description": "Melee gloves that stun enemies but reduce armor.",
+    "type": "weapon",
+    "rarity": "rare",
+    "stats": {},
+    "base_damage": 14,
+    "damage_type": "melee",
+    "fire_rate": 2.4,
+    "projectile_speed": 0,
+    "base_range": 40,
+    "max_durability": 100,
+    "max_fuse_tier": 2,
+    "base_value": 35
+  },
+  {
+    "id": "nail_spitter",
+    "name": "Nail Spitter",
+    "description": "Rapid-fire nail gun that shreds at close range.",
+    "type": "weapon",
+    "rarity": "common",
+    "stats": {},
+    "base_damage": 9,
+    "damage_type": "ranged",
+    "fire_rate": 3,
+    "projectile_speed": 260,
+    "base_range": 130,
+    "max_durability": 90,
+    "max_fuse_tier": 3,
+    "base_value": 12
+  },
+  {
+    "id": "rad_bow",
+    "name": "Rad Bow",
+    "description": "Bow that leaves radioactive clouds behind.",
+    "type": "weapon",
+    "rarity": "rare",
+    "stats": {},
+    "base_damage": 15,
+    "damage_type": "ranged",
+    "fire_rate": 1.4,
+    "projectile_speed": 340,
+    "base_range": 220,
+    "max_durability": 110,
+    "max_fuse_tier": 2,
+    "base_value": 35
+  },
+  {
+    "id": "saw_blade_launcher",
+    "name": "Saw Blade Launcher",
+    "description": "Launches bouncing saw blades that pierce, but drains durability rapidly.",
+    "type": "weapon",
+    "rarity": "legendary",
+    "stats": {},
+    "base_damage": 26,
+    "damage_type": "ranged",
+    "fire_rate": 0.8,
+    "projectile_speed": 360,
+    "base_range": 190,
+    "max_durability": 80,
+    "max_fuse_tier": 1,
+    "base_value": 60
+  }
+]

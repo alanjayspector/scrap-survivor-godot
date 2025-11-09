@@ -1,0 +1,61 @@
+{
+  "viewport": {
+    "width": 1024,
+    "height": 768,
+    "background_color": "#1a1a1a",
+    "background_dark": "#2a2a2a"
+  },
+  "asset_config": {
+    "sprite_size": 64,
+    "scale_factor": 1,
+    "texture_format": "png",
+    "enemy_texture_size": 32,
+    "player_texture_size": 30
+  },
+  "monetization": {
+    "premium_price": 2.99,
+    "free_limits": {
+      "characters": 2,
+      "weapons": 15,
+      "max_waves": 15,
+      "workshop_sessions": 3,
+      "save_slots": 1
+    },
+    "premium_previews": {
+      "first_session": {
+        "duration": 7200000
+      },
+      "achievement": {
+        "duration": 86400000
+      },
+      "video_ad": {
+        "duration": 1800000
+      },
+      "weekly_rotation": {
+        "duration": 604800000
+      }
+    }
+  },
+  "game_balance": {
+    "player": {
+      "base_health": 100,
+      "base_speed": 200,
+      "base_damage": 10,
+      "base_pickup_range": 100,
+      "base_scrap_gain": 100,
+      "min_damage": 1,
+      "base_crit_damage": 150,
+      "base_max_weapons": 6
+    },
+    "enemies": {
+      "base_scrap_value": 5,
+      "base_damage": 5
+    },
+    "waves": {
+      "base_enemy_count": 5,
+      "scaling_factor": 1.2,
+      "max_wave": 50,
+      "wave_duration": 60
+    }
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "basic",
+    "name": "Scrap Shambler",
+    "color": "#ff0000",
+    "size": 20,
+    "base_hp": 20,
+    "base_speed": 30,
+    "base_damage": 5,
+    "base_value": 5,
+    "spawn_weight": 60,
+    "drop_chance": 0.3
+  },
+  {
+    "id": "fast",
+    "name": "Rust Runner",
+    "color": "#ff9900",
+    "size": 15,
+    "base_hp": 12,
+    "base_speed": 55,
+    "base_damage": 3,
+    "base_value": 8,
+    "spawn_weight": 30,
+    "drop_chance": 0.4
+  },
+  {
+    "id": "tank",
+    "name": "Junk Juggernaut",
+    "color": "#990000",
+    "size": 30,
+    "base_hp": 50,
+    "base_speed": 20,
+    "base_damage": 10,
+    "base_value": 15,
+    "spawn_weight": 10,
+    "drop_chance": 0.5
+  }
+]
