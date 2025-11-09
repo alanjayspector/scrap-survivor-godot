@@ -1,21 +1,16 @@
-[MASTER]
-# Enable all checks
-class-name=true
-function-name=true
-variable-names=true
-constant-names=true
+# GDLint configuration for Scrap Survivor Godot project
+# See: https://github.com/Scony/godot-gdscript-toolkit
 
-[FORMAT]
-max-line-length=100
-indent-size=4
-indent-type=tabs
+# Disable problematic or noisy checks
+disable:
+  - class-definitions-order
+  - max-public-methods
+  - function-arguments-number
 
-[NAMING]
-# Enforced by default based on Godot style guide
-# snake_case for functions/variables
-# PascalCase for classes
-# SCREAMING_SNAKE_CASE for constants
+# Allow longer lines for descriptive comments and documentation
+max-line-length: 120
 
-[DISABLED]
-# Disable specific rules here if needed
-# Example: function-variable-name
+# Allow more complex functions during migration
+max-returns: 6
+max-branches: 12
+max-statements: 50

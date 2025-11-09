@@ -18,9 +18,9 @@ fi
 
 echo "Checking: $STAGED_GD_FILES"
 
-# Run gdlint
+# Run gdlint (uses .gdlintrc automatically if present)
 if command -v gdlint &> /dev/null; then
-    if gdlint --config .gdlintrc $STAGED_GD_FILES; then
+    if gdlint $STAGED_GD_FILES; then
         echo -e "${GREEN}✅ Linting passed${NC}"
     else
         echo -e "${RED}❌ Linting failed${NC}"
