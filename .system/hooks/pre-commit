@@ -47,6 +47,13 @@ fi
 echo ""
 echo "🔎 Running project validators..."
 
+# Native class name checker (BLOCKING - Week 6)
+if [ -f .system/validators/native_class_checker.py ]; then
+    if ! python3 .system/validators/native_class_checker.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Test naming convention validator (non-blocking warning)
 if [ -f .system/validators/test_naming_validator.py ]; then
     python3 .system/validators/test_naming_validator.py
