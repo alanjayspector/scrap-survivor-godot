@@ -1,9 +1,9 @@
 ## Static utility for file-based logging
-class_name Logger
+class_name GameLogger
 ##
 ## Usage:
-##   Logger.debug("Message")
-##   Logger.error("Something broke", {"context": extra_data})
+##   GameLogger.debug("Message")
+##   GameLogger.error("Something broke", {"context": extra_data})
 
 const LOG_DIR = "user://logs/"
 const MAX_LOG_FILES = 5

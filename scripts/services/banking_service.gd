@@ -89,7 +89,9 @@ func add_currency(type: CurrencyType, amount: int) -> bool:
 	# Log transaction
 	_log_transaction("add", type_str, amount, new_balance)
 
-	Logger.info("Currency added", {"type": type_str, "amount": amount, "new_balance": new_balance})
+	GameLogger.info(
+		"Currency added", {"type": type_str, "amount": amount, "new_balance": new_balance}
+	)
 
 	return true
 
@@ -117,7 +119,7 @@ func subtract_currency(type: CurrencyType, amount: int) -> bool:
 	# Log transaction
 	_log_transaction("subtract", type_str, amount, new_balance)
 
-	Logger.info(
+	GameLogger.info(
 		"Currency subtracted", {"type": type_str, "amount": amount, "new_balance": new_balance}
 	)
 
@@ -133,7 +135,7 @@ func get_balance(type: CurrencyType) -> int:
 ## Set user tier (called by TierService or for testing)
 func set_tier(tier: UserTier) -> void:
 	current_tier = tier
-	Logger.info("User tier set", {"tier": tier})
+	GameLogger.info("User tier set", {"tier": tier})
 
 
 ## Get transaction history
@@ -147,7 +149,7 @@ func reset() -> void:
 	transaction_history.clear()
 	currency_changed.emit(CurrencyType.SCRAP, 0)
 	currency_changed.emit(CurrencyType.PREMIUM, 0)
-	Logger.info("Banking service reset")
+	GameLogger.info("Banking service reset")
 
 
 ## Private: Log a transaction

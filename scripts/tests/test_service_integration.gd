@@ -36,7 +36,7 @@ func test_full_workflow() -> void:
 	)
 
 	# 4. Log info
-	Logger.info(
+	GameLogger.info(
 		"Game state updated", {"character": GameState.current_character, "score": GameState.score}
 	)
 
