@@ -21,6 +21,9 @@ func _ready() -> void:
 	print()
 	print("=== All BankingService Tests Complete ===")
 
+	# Exit after tests complete (for headless mode)
+	get_tree().quit()
+
 
 func test_initial_state() -> void:
 	print("--- Testing Initial State ---")

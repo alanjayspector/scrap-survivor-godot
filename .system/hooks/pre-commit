@@ -75,6 +75,13 @@ fi
 #     fi
 # fi
 
+# Godot test runner (runs tests in headless mode)
+if [ -f .system/validators/godot_test_runner.py ]; then
+    if ! python3 .system/validators/godot_test_runner.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Final check
 if [ $VALIDATION_FAILED -ne 0 ]; then
     echo ""
