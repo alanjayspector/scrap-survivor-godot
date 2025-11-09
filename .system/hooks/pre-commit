@@ -2,6 +2,8 @@
 # Pre-commit hook for Godot project
 
 echo "🔍 Running pre-commit checks..."
+echo "💡 Tip: See docs/godot-community-research.md for best practices and common issues"
+echo ""
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -100,6 +102,13 @@ fi
 # Documentation validator
 if [ -f .system/validators/documentation_validator.py ]; then
     if ! python3 .system/validators/documentation_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Godot anti-patterns validator (community best practices - Week 6 Day 4)
+if [ -f .system/validators/godot_antipatterns_validator.py ]; then
+    if ! python3 .system/validators/godot_antipatterns_validator.py; then
         VALIDATION_FAILED=1
     fi
 fi

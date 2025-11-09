@@ -81,6 +81,28 @@ jobs:
 
           echo "::endgroup::"
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Godot anti-patterns
+        id: antipatterns
+        run: |
+          echo "::group::Checking for Godot anti-patterns"
+
+          if [ -f ".system/validators/godot_antipatterns_validator.py" ]; then
+            python3 .system/validators/godot_antipatterns_validator.py || {
+              echo "::error::Anti-pattern validation failed"
+              echo "::notice::See docs/godot-community-research.md for best practices"
+              exit 1
+            }
+          else
+            echo "::warning::Anti-pattern validator not found - skipping"
+          fi
+
+          echo "::endgroup::"
+
       - name: Upload validation report
         if: always()
         uses: actions/upload-artifact@v4

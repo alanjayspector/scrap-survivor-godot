@@ -150,6 +150,87 @@ var enemies: Array[Enemy] = []
 
 ---
 
+## 📚 Godot Best Practices & Community Wisdom
+
+### Community Anti-Patterns Reference
+
+**See [docs/godot-community-research.md](docs/godot-community-research.md)** for comprehensive coverage of:
+
+**Critical Anti-Patterns to Avoid:**
+- ❌ `get_parent()` chains → Use signals or `@onready` cached refs
+- ❌ `get_node()` in `_process()` → Cache references in `_ready()`
+- ❌ Excessive signal bubbling (>2 levels) → Use event manager autoload
+- ❌ Missing type hints → Enable editor error detection
+- ❌ `animation.play()` in `_process()` → Only trigger on state changes
+
+**Performance Patterns:**
+- ✅ Use `@onready` for node references (cache in `_ready()`)
+- ✅ Signals over polling for events
+- ✅ State machines over complex if/else trees
+- ✅ Area2D signals over distance checks every frame
+
+**Common Issues & Solutions:**
+- Collision layer/mask confusion (Layer = where it IS, Mask = what it SEES)
+- Jitter/stutter fixes (physics interpolation, tick rate)
+- Memory leaks (use `queue_free()`, not `free()`)
+- Animation flickering (texture filter settings, state-based triggering)
+
+### Automated Anti-Pattern Detection
+
+**The pre-commit hook now checks for:**
+- ✅ `get_parent()` chains (warns if nested 2+ levels)
+- ✅ `get_node()` in `_process()/_physics_process()` (suggests `@onready`)
+- ✅ Missing `@onready` for node references
+- ✅ Missing type hints on exported variables
+- ✅ Animation playback in game loop without state checks
+
+**Violations are:**
+- ❌ **Errors** (block commit): Critical anti-patterns that cause bugs
+- ⚠️ **Warnings** (don't block): Performance issues, best practice violations
+
+### Official Documentation Navigation
+
+**See [docs/godot-reference.md](docs/godot-reference.md)** for quick links to:
+- GDScript syntax and style guide
+- API reference for specific classes
+- 2D/3D development tutorials
+- Physics, UI, audio, and networking guides
+- Performance optimization strategies
+- Debugging tools and techniques
+
+### Systematic Debugging Workflow
+
+**When encountering an issue, follow this order:**
+
+1. **Check [godot-community-research.md](docs/godot-community-research.md)** FIRST
+   - Common Issues & Solutions section
+   - 80% of problems have known community solutions
+
+2. **Use Godot Debugger** (see [docs/godot/debugging-guide.md](docs/godot/debugging-guide.md))
+   - Breakpoints and variable inspection
+   - Profiler for performance issues
+
+3. **Consult [godot-reference.md](docs/godot-reference.md)** for official docs
+   - API reference for classes and methods
+   - Deeper tutorial exploration
+
+4. **Ask Community** (if above don't help)
+   - Forum: https://forum.godotengine.org/
+   - Reddit: r/godot
+   - GitHub issues for bugs
+
+### Why This Matters
+
+**Community wisdom prevents:**
+- 🐛 **Hidden bugs** from fragile `get_parent()` chains
+- 🐌 **Performance issues** from polling instead of signals
+- 💥 **Memory leaks** from improper node cleanup
+- 😵 **Debugging nightmares** from unclear signal flow
+
+**These patterns are automatically enforced** via validators, not just documented!
+
+---
+
 ## 🚀 Usage
 
 ### Run Validators Locally

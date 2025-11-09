@@ -4,6 +4,64 @@ Complete guide to debugging GDScript in Godot 4.5.1
 
 ---
 
+## 🎯 Systematic Debugging Workflow
+
+**When you encounter an issue, follow this order for fastest resolution:**
+
+### 1. Check Community Research FIRST (80% of issues solved here)
+
+**See [../godot-community-research.md](../godot-community-research.md)** for:
+
+**Common Issues & Solutions:**
+- Collision layer/mask confusion → "Layer = where it IS, Mask = what it SEES"
+- Jitter/stutter in movement → Enable physics interpolation or increase tick rate
+- Memory leaks in scenes → Use `queue_free()` not `free()`
+- Sprite flickering → Set texture filter to NEAREST for pixel art
+- Animation not triggering → Check state machine pattern, don't call `play()` every frame
+
+**Critical Anti-Patterns (check your code for these):**
+- `get_parent().get_parent()` chains → Refactor to signals or cached `@onready` refs
+- `get_node()` in `_process()` → Cache in `_ready()` with `@onready`
+- Missing type hints → Add `-> ReturnType` and `: Type` for better errors
+- Polling every frame → Use Area2D signals or state change events
+
+**Why check here first:** Community has debugged thousands of Godot projects. Your issue is likely documented with a solution.
+
+---
+
+### 2. Use Godot Built-in Debugger (this guide below)
+
+If community research doesn't solve it:
+- Set breakpoints and inspect variables
+- Use profiler to find performance bottlenecks
+- Check console for runtime errors
+
+---
+
+### 3. Consult Official Documentation
+
+**See [../godot-reference.md](../godot-reference.md)** for quick links to:
+- Class API reference (understand method signatures)
+- Tutorial deep-dives (learn correct patterns)
+- Performance optimization guides
+
+---
+
+### 4. Ask Community (last resort)
+
+**If above steps don't help:**
+- **Forum**: https://forum.godotengine.org/ (search first!)
+- **Reddit**: r/godot (active community, quick responses)
+- **GitHub Issues**: For confirmed bugs in Godot engine
+
+**When asking, provide:**
+- Godot version (4.4 stable, etc.)
+- Minimal reproducible example
+- What you've already tried (from steps 1-3 above)
+- Expected vs actual behavior
+
+---
+
 ## 🐛 Built-in Godot Debugger
 
 Godot has a **powerful built-in debugger** that runs in the editor. It's similar to Chrome DevTools but for game development.
