@@ -231,8 +231,9 @@ func test_preview_vs_dismantle() -> void:
 			got_zero = true
 
 	assert(got_components, "Should get components in some dismantles (75% chance over 20 tries)")
-	assert(got_zero or true, "Might get 0 components in some dismantles (25% chance)")
-	print("✓ Dismantle uses randomness")
+	# Note: got_zero tracks 0-component results (25% chance), but we don't assert it
+	# since it's probabilistic and might not occur in 20 tries
+	print("✓ Dismantle uses randomness (got zero components: %s)" % got_zero)
 
 
 func test_edge_cases() -> void:

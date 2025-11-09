@@ -87,8 +87,8 @@ func test_multiple_services_save_load() -> void:
 
 	# Set up state across multiple services
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
-	ShopRerollService.increment_reroll_count()
-	ShopRerollService.increment_reroll_count()
+	ShopRerollService.execute_reroll()
+	ShopRerollService.execute_reroll()
 
 	# Save
 	var save_success = SaveManager.save_all_services(TEST_SLOT)
@@ -129,7 +129,7 @@ func test_transaction_history_persists() -> void:
 	# Create transaction history
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 200)
-	BankingService.remove_currency(BankingService.CurrencyType.SCRAP, 50)
+	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 50)
 
 	var history_before = BankingService.get_transaction_history()
 	assert(history_before.size() == 3, "Should have 3 transactions")
@@ -319,7 +319,7 @@ func test_cross_service_consistency() -> void:
 	# Set up complex state across services
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	ShopRerollService.increment_reroll_count()
+	ShopRerollService.execute_reroll()
 
 	# Save
 	var save_success = SaveManager.save_all_services(TEST_SLOT)
@@ -375,8 +375,11 @@ func test_stateless_service_serialization() -> void:
 	print("✓ Loaded with stateless service")
 
 	# Verify RecyclerService still works after load
-	var preview = RecyclerService.get_recycle_preview(RecyclerService.ItemRarity.COMMON, 1)
-	assert(preview.rarity == RecyclerService.ItemRarity.COMMON, "RecyclerService still functional")
+	var test_input = RecyclerService.DismantleInput.new(
+		"test_item", RecyclerService.ItemRarity.COMMON, false, 0
+	)
+	var preview = RecyclerService.preview_dismantle(test_input)
+	assert(preview.scrap_granted > 0, "RecyclerService still functional")
 	print("✓ Stateless service still functional")
 
 	# Cleanup

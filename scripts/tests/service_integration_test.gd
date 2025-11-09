@@ -121,7 +121,7 @@ func test_tier_gating_with_recycling() -> void:
 	print("✓ FREE tier: scrap addition rejected")
 
 	# Upgrade to PREMIUM tier
-	BankingService.set_user_tier(BankingService.UserTier.PREMIUM)
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	var premium_caps = BankingService.get_balance_caps(BankingService.UserTier.PREMIUM)
 	assert(premium_caps.per_character == 10000, "PREMIUM tier should have 10k per-character cap")
 	print("✓ PREMIUM tier: 10,000 scrap cap per character")
@@ -199,7 +199,7 @@ func test_realistic_gameplay_loop() -> void:
 	# Reset all services
 	BankingService.reset()
 	ShopRerollService.reset_reroll_count()
-	BankingService.set_user_tier(BankingService.UserTier.PREMIUM)
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
 	print("\n  SCENARIO: Premium player grinds and rerolls shop")
 
