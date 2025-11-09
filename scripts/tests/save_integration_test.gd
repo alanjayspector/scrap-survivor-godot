@@ -56,7 +56,7 @@ func test_save_and_load_all_services() -> void:
 	BankingService.reset()
 	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0, "Balance reset")
 	assert(BankingService.get_balance(BankingService.CurrencyType.PREMIUM) == 0, "Premium reset")
-	assert(BankingService.get_tier() == BankingService.UserTier.FREE, "Tier reset")
+	assert(BankingService.current_tier == BankingService.UserTier.FREE, "Tier reset")
 	print("✓ Services reset")
 
 	# Load state
@@ -69,7 +69,7 @@ func test_save_and_load_all_services() -> void:
 	assert(
 		BankingService.get_balance(BankingService.CurrencyType.PREMIUM) == 50, "Premium restored"
 	)
-	assert(BankingService.get_tier() == BankingService.UserTier.PREMIUM, "Tier restored")
+	assert(BankingService.current_tier == BankingService.UserTier.PREMIUM, "Tier restored")
 	print("✓ State restored correctly")
 
 	# Cleanup
@@ -333,7 +333,7 @@ func test_cross_service_consistency() -> void:
 
 	# Verify everything is reset
 	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0)
-	assert(BankingService.get_tier() == BankingService.UserTier.FREE)
+	assert(BankingService.current_tier == BankingService.UserTier.FREE)
 	assert(ShopRerollService.get_reroll_count() == 0)
 	print("✓ Services reset")
 
@@ -344,7 +344,7 @@ func test_cross_service_consistency() -> void:
 
 	# Verify all state is consistent
 	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 1000)
-	assert(BankingService.get_tier() == BankingService.UserTier.PREMIUM)
+	assert(BankingService.current_tier == BankingService.UserTier.PREMIUM)
 	assert(ShopRerollService.get_reroll_count() == 1)
 	print("✓ All state restored consistently")
 

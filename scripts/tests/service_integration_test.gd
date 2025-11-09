@@ -152,9 +152,9 @@ func test_signal_integration() -> void:
 	var events = []
 
 	# Connect to all service signals
-	BankingService.currency_added.connect(
-		func(type, amount):
-			events.append({"service": "banking", "event": "currency_added", "amount": amount})
+	BankingService.currency_changed.connect(
+		func(type, balance):
+			events.append({"service": "banking", "event": "currency_changed", "balance": balance})
 	)
 
 	RecyclerService.item_dismantled.connect(
