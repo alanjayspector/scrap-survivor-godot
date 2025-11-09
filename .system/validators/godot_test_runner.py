@@ -22,9 +22,9 @@ NC = '\033[0m'
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 GODOT_EXECUTABLE = "/Applications/Godot.app/Contents/MacOS/Godot"
 
-# Test scenes to run
+# Test scenes to run (following *_test.tscn naming convention)
 TEST_SCENES = [
-    "scenes/tests/test_banking_service.tscn",
+    "scenes/tests/banking_service_test.tscn",
     # Add more test scenes here as they're created
 ]
 

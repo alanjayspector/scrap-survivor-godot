@@ -47,6 +47,11 @@ fi
 echo ""
 echo "🔎 Running project validators..."
 
+# Test naming convention validator (non-blocking warning)
+if [ -f .system/validators/test_naming_validator.py ]; then
+    python3 .system/validators/test_naming_validator.py
+fi
+
 # Godot configuration validator
 if [ -f .system/validators/godot_config_validator.py ]; then
     if ! python3 .system/validators/godot_config_validator.py; then
