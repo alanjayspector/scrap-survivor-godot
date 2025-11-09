@@ -1,0 +1,57 @@
+# Godot 4+ specific
+.godot/
+.import/
+export_presets.cfg
+
+# Exported builds
+builds/
+*.x86_64
+*.exe
+*.pck
+*.apk
+*.ipa
+*.aab
+*.dmg
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# Godot cache
+.godot/editor/
+.godot/imported/
+.godot/uid_cache.bin
+
+# Android
+.gradle/
+android/build/
+android/.gradle/
+
+# iOS
+ios/build/
+*.ipa.dSYM.zip
+*.dSYM/
+
+# Node (if using any JS tools)
+node_modules/
+package-lock.json

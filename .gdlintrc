@@ -1,0 +1,21 @@
+[MASTER]
+# Enable all checks
+class-name=true
+function-name=true
+variable-names=true
+constant-names=true
+
+[FORMAT]
+max-line-length=100
+indent-size=4
+indent-type=tabs
+
+[NAMING]
+# Enforced by default based on Godot style guide
+# snake_case for functions/variables
+# PascalCase for classes
+# SCREAMING_SNAKE_CASE for constants
+
+[DISABLED]
+# Disable specific rules here if needed
+# Example: function-variable-name
