@@ -68,11 +68,11 @@ func test_log_rotation() -> void:
 	var dir = DirAccess.open("user://logs/")
 	var log_count = 0
 	dir.list_dir_begin()
-	var file = dir.get_next()
-	while file != "":
-		if file.begins_with("scrap_survivor_") and file.ends_with(".log"):
+	var filename = dir.get_next()
+	while filename != "":
+		if filename.begins_with("scrap_survivor_") and filename.ends_with(".log"):
 			log_count += 1
-		file = dir.get_next()
+		filename = dir.get_next()
 
 	assert(log_count <= GameLogger.MAX_LOG_FILES, "Should not exceed max log files")
 	print("✓ Log rotation keeps <= %d files" % GameLogger.MAX_LOG_FILES)
