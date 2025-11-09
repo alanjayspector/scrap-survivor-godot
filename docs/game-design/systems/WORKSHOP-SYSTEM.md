@@ -32,6 +32,7 @@ The Workshop is the central hub for **item management, crafting, repair, and per
 **Workshop Components** are the primary currency for Workshop operations:
 - ✅ Earned by **recycling items** (tier-based rewards)
 - ✅ Used for **repairs** (durability restoration)
+- ✅ Used for **generic crafting** (25 scrap + 50 components)
 - ✅ Used for **personalized crafting** (200 scrap + 100 components)
 - ✅ Stored in Workshop (not Banking)
 - ✅ Protected by Storage Locker (character-specific)
@@ -45,11 +46,59 @@ Tier 3 item: 30-50 Workshop Components
 Tier 4 item: 75-125 Workshop Components
 ```
 
+**Storage Limits (by Player Tier):**
+```
+Free tier: 75 Workshop Components max
+Premium tier: 250 Workshop Components max
+Subscription tier: Unlimited Workshop Components
+```
+
 **Why Workshop Components exist:**
 - Provides **free repair currency** (reduces friction from durability system)
 - Creates **strategic recycling decisions** (keep vs recycle?)
 - Drives **Workshop engagement** (not just a repair shop)
 - **No real money** required (earned through gameplay)
+- **Storage limits drive CTAs** (Free/Premium fill up fast, Subscription unlimited)
+
+---
+
+## ATM Withdrawal (Banking Integration)
+
+### Withdraw Banked Scrap
+
+**Players can withdraw scrap from their Bank to their carried scrap:**
+- ✅ **Instant withdrawal** (no fees, no delays)
+- ✅ **Available in Workshop and Lab** (convenient access)
+- ✅ **Shows banked vs carried scrap** (clear financial status)
+- ✅ **Button in resource display** (one-click withdrawal)
+
+**Why ATM buttons:**
+- ✅ **Reduces friction** (don't need to visit Bank scene to withdraw)
+- ✅ **Convenient for crafting** (withdraw exactly what you need)
+- ✅ **Clear financial status** (see banked + carried in one view)
+
+```gdscript
+# ATM withdrawal (WorkshopScene.gd)
+func withdraw_from_bank(amount: int) -> void:
+    if BankingService.has_banked_scrap(amount):
+        BankingService.withdraw_scrap(amount)
+        BankingService.add_carried_scrap(amount)
+        update_resource_display()
+        GameLogger.info("Withdrew %d scrap from Bank" % amount)
+    else:
+        ToastService.show("Insufficient banked scrap")
+```
+
+**UI Implementation:**
+```
+Resource Display (Top-right):
+┌────────────────────────────────────┐
+│ Carried Scrap: 150                  │
+│ Banked Scrap: 5,000 [Withdraw All]│
+│   [Withdraw 100] [Withdraw 500]     │
+│ Workshop Components: 45 / 75        │
+└────────────────────────────────────┘
+```
 
 ---
 
@@ -139,25 +188,25 @@ func repair_item_with_components(item: Item) -> void:
         GameLogger.info("Item repaired with %d components" % components_cost)
 ```
 
-#### Option 2: Banking Repair Fund (Auto-Deduct Scrap)
+#### Option 2: Direct Scrap Payment
 ```gdscript
-# Banking Repair Fund (set up in Bank scene)
-# Players allocate scrap to Repair Fund
-# Automatically deducts on item damage
+# Direct scrap payment (convenience option)
+# Pay scrap directly instead of using components
+# More expensive but useful when low on components
 
-func repair_item_with_fund(item: Item) -> void:
+func repair_item_with_scrap(item: Item) -> void:
     var durability_lost = 100 - item.durability
-    var scrap_cost = calculate_repair_cost(item.tier, durability_lost) * 3  # 3x scrap cost
+    var scrap_cost = calculate_repair_cost(item.tier, durability_lost) * 3  # 3x component cost
 
-    if BankingService.repair_fund_balance >= scrap_cost:
-        BankingService.deduct_repair_fund(scrap_cost)
+    if BankingService.has_carried_scrap(scrap_cost):
+        BankingService.spend_carried_scrap(scrap_cost)
         item.durability = 100
-        GameLogger.info("Item repaired from Repair Fund: %d scrap" % scrap_cost)
+        GameLogger.info("Item repaired with scrap: %d scrap" % scrap_cost)
 ```
 
 **Why two options:**
-- ✅ Workshop Components: Free, earned via recycling (strategic)
-- ✅ Repair Fund: Convenience (passive, auto-deduct, but 3x cost)
+- ✅ Workshop Components: Cheaper, earned via recycling (strategic)
+- ✅ Direct scrap: Convenience (no need to recycle, but 3x cost)
 
 ---
 
@@ -287,6 +336,7 @@ func deduct_storage_fees() -> void:
 - ✅ **Character-specific** (Bruiser unlocks, Bruiser gets 3 crafts)
 - ✅ **No customization** (standard weapon stats)
 - ✅ **Limited uses** (3 crafts total, then requires personalization)
+- ✅ **Cost**: 25 scrap + 50 Workshop Components per craft
 
 ```gdscript
 # Generic crafting
@@ -299,6 +349,19 @@ func craft_generic_weapon(blueprint_id: String) -> Item:
     if crafts_used >= 3:
         ToastService.show("No generic crafts remaining. Use Personalization Station.")
         return null
+
+    # Check costs
+    if not BankingService.has_scrap(25):
+        ToastService.show("Insufficient scrap (25 required)")
+        return null
+
+    if not WorkshopService.has_components(50):
+        ToastService.show("Insufficient Workshop Components (50 required)")
+        return null
+
+    # Deduct costs
+    BankingService.spend_scrap(25)
+    WorkshopService.spend_components(50)
 
     # Create item from blueprint stats
     var item = ItemFactory.create_from_blueprint(blueprint)
@@ -483,8 +546,9 @@ WorkshopScene
 │   ├── Personalization Station
 │   └── Quantum Storage (Subscription only)
 ├── Resource Display (Top-right)
-│   ├── Scrap: [amount]
-│   ├── Workshop Components: [amount]
+│   ├── Carried Scrap: [amount]
+│   ├── Banked Scrap: [amount] [Withdraw →]
+│   ├── Workshop Components: [amount] / [limit]
 │   └── Storage Fees: [amount/day]
 └── Active Tab Content
 ```
@@ -504,11 +568,8 @@ Inventory Items:
 │   (Scrap Tech 50: -50% cost)        │
 │                                     │
 │ [Repair with Components]            │
-│ [Repair with Fund (120 scrap)]      │
+│ [Repair with Scrap (120 scrap)]     │
 └────────────────────────────────────┘
-
-Banking Repair Fund Balance: 500 scrap
-[Allocate to Repair Fund]
 ```
 
 ---
@@ -570,8 +631,9 @@ Unlocked Blueprints (8):
 │ Generic Crafts: 1/3 used            │
 │ Personalized Crafts: Unlimited      │
 │                                     │
-│ [Craft Generic (FREE)]              │
-│ [Craft Personalized (200 scrap +   │
+│ [Craft Generic (25 scrap +          │
+│  50 components)]                    │
+│ [Craft Personalized (200 scrap +    │
 │  100 components)]                   │
 └────────────────────────────────────┘
 
@@ -657,6 +719,7 @@ extends Node
 
 # Workshop Components management
 var components_balance: int = 0
+var components_limit: int = 75  # Updated based on player tier
 
 # Storage management
 var stored_items: Dictionary = {}  # {character_id: [items]}
@@ -681,6 +744,15 @@ func repair_item_with_fund(item: Item) -> bool:
 # Recycling Station
 func recycle_item(item: Item) -> int:
     var reward = calculate_recycle_reward(item.tier)
+
+    # Check storage limit
+    if components_balance + reward > components_limit:
+        var overflow = (components_balance + reward) - components_limit
+        ToastService.show("Component storage full! Would overflow by %d." % overflow)
+        if PlayerService.get_tier() != "subscription":
+            ToastService.show("Upgrade to Subscription for unlimited storage!")
+        return 0
+
     components_balance += reward
     InventoryService.remove_item(item)
     return reward

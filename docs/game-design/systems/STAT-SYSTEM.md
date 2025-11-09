@@ -617,6 +617,162 @@ if radioactivity >= 40:
 
 ---
 
+## Proficiency Skills
+
+**Proficiency Skills** are separate from character stats and govern scene-specific operations. Unlike combat stats, these skills affect costs, yields, and bonuses in specific scenes only.
+
+**Key differences from character stats:**
+- ✅ **Scene-specific** (only active in their respective scenes)
+- ✅ **Earned via repetition** (use scene services to level up)
+- ✅ **Account-wide** (shared across all characters)
+- ✅ **No caps** (can level indefinitely, but soft diminishing returns)
+
+---
+
+### Biotech Skill
+
+**What it does:** Governs all operations in The Lab (radioactivity treatment, minion crafting, stat manipulation)
+
+**Base value:** 0
+**Scaling:** 1 point per Lab service use
+**Soft cap:** None (unlimited)
+
+**How to earn:**
+- +1 Biotech per radioactivity treatment
+- +1 Biotech per minion craft
+- +1 Biotech per Alchemic Crapshot use
+- +1 Biotech per MetaConvertor use
+- +1 Biotech per Afterburn use
+
+**Effects:**
+
+**1. Radioactivity treatment cost reduction:**
+```gdscript
+func calculate_treatment_cost(base_cost: int, biotech: int) -> int:
+    var reduction = biotech / 100.0  # 1% reduction per point
+    return int(base_cost * (1.0 - reduction))
+
+# Examples:
+# Biotech 0: 50 Nanites treatment = 50 Nanites
+# Biotech 50: 50 Nanites treatment = 25 Nanites (-50%)
+# Biotech 100: 50 Nanites treatment = FREE
+```
+
+**2. Minion crafting cost reduction:**
+```gdscript
+# Same formula as radioactivity treatment
+# Biotech 100 = FREE minion crafting
+```
+
+**3. Minion stat bonuses (personalized crafts only):**
+```gdscript
+func calculate_minion_stat_bonus(luck: int, biotech: int) -> float:
+    var base_bonus = 0.10  # 10% base
+    var luck_bonus = luck / 100.0
+    var biotech_bonus = biotech / 50.0  # 2% per point
+    return base_bonus + luck_bonus + biotech_bonus
+
+# Examples:
+# Luck 0, Biotech 0: 10% bonus
+# Luck 50, Biotech 50: 10% + 50% + 100% = 160% bonus
+# Luck 100, Biotech 100: 10% + 100% + 200% = 310% bonus
+```
+
+**4. Afterburn cooldown reduction:**
+```gdscript
+func calculate_afterburn_cooldown(base_hours: int, biotech: int) -> float:
+    var reduction = min(biotech / 200.0, 0.50)  # Max 50% reduction at Biotech 100
+    return base_hours * (1.0 - reduction)
+
+# Examples:
+# Biotech 0: 24 hours
+# Biotech 50: 18 hours (-25%)
+# Biotech 100: 12 hours (-50%)
+```
+
+**5. Alchemic Crapshot success rate:**
+```gdscript
+func calculate_crapshot_success_rate(base_rate: float, biotech: int) -> float:
+    var bonus = biotech / 500.0  # 0.2% per point
+    return min(base_rate + bonus, 0.80)  # Cap at 80%
+
+# Examples:
+# Biotech 0: 50% success (base)
+# Biotech 50: 60% success (+10%)
+# Biotech 100: 70% success (+20%)
+```
+
+**See also:** [THE-LAB-SYSTEM.md](./THE-LAB-SYSTEM.md) for complete Biotech integration details.
+
+---
+
+### Scrap Tech Skill
+
+**What it does:** Governs all operations in the Workshop (repairs, recycling, crafting, personalization)
+
+**Base value:** 0
+**Scaling:** 1 point per Workshop service use
+**Soft cap:** None (unlimited)
+
+**How to earn:**
+- +1 Scrap Tech per item repair
+- +1 Scrap Tech per item recycled
+- +1 Scrap Tech per blueprint craft
+- +1 Scrap Tech per personalized weapon craft
+
+**Effects:**
+
+**1. Repair cost reduction:**
+```gdscript
+func calculate_repair_cost(base_cost: int, scrap_tech: int) -> int:
+    var reduction = scrap_tech / 100.0  # 1% reduction per point
+    return int(base_cost * (1.0 - reduction))
+
+# Examples:
+# Scrap Tech 0: 80 components repair = 80 components
+# Scrap Tech 50: 80 components repair = 40 components (-50%)
+# Scrap Tech 100: 80 components repair = FREE
+```
+
+**2. Recycling yield increase:**
+```gdscript
+func calculate_recycle_reward(base_reward: int, scrap_tech: int) -> int:
+    var yield_multiplier = 1.0 + (scrap_tech / 50.0)  # 2% yield per point
+    return int(base_reward * yield_multiplier)
+
+# Examples:
+# Scrap Tech 0: 100 components = 100 components
+# Scrap Tech 50: 100 components = 200 components (+100%)
+# Scrap Tech 100: 100 components = 300 components (+200%)
+```
+
+**3. Personalization stat bonus:**
+```gdscript
+func calculate_personalization_bonus(luck: int, scrap_tech: int) -> float:
+    var base_bonus = 0.10  # 10% base
+    var luck_bonus = luck / 100.0
+    var tech_bonus = scrap_tech / 50.0  # 2% per point
+    return base_bonus + luck_bonus + tech_bonus
+
+# Examples:
+# Luck 0, Scrap Tech 0: 10% bonus
+# Luck 50, Scrap Tech 50: 10% + 50% + 100% = 160% bonus
+# Luck 100, Scrap Tech 100: 10% + 100% + 200% = 310% bonus
+```
+
+**4. Visual customization unlocks:**
+
+| Scrap Tech Level | Unlock |
+|-----------------|--------|
+| 25 | Color tint customization (6 colors) |
+| 50 | Particle effect customization (3 effects) |
+| 75 | Sound effect customization (3 sounds) |
+| 100 | Legendary glow effect (rainbow shimmer) |
+
+**See also:** [WORKSHOP-SYSTEM.md](./WORKSHOP-SYSTEM.md) for complete Scrap Tech integration details.
+
+---
+
 ## Stat Categories by Tier Access
 
 ### Free Tier Stats (10 stats)
