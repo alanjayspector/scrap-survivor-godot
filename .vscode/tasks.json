@@ -1,0 +1,88 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Lint GDScript Files",
+      "type": "shell",
+      "command": "gdlint",
+      "args": [
+        "--config",
+        ".gdlintrc",
+        "scripts/"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Format GDScript Files",
+      "type": "shell",
+      "command": "gdformat",
+      "args": [
+        "scripts/"
+      ],
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Check GDScript Formatting",
+      "type": "shell",
+      "command": "gdformat",
+      "args": [
+        "--check",
+        "scripts/"
+      ],
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Validate GDScript Patterns",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".system/validators/check-patterns.sh"
+      ],
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run All Checks",
+      "dependsOn": [
+        "Lint GDScript Files",
+        "Check GDScript Formatting",
+        "Validate GDScript Patterns"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

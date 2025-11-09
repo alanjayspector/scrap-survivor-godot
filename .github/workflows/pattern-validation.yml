@@ -1,0 +1,92 @@
+name: Pattern Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'scripts/**/*.gd'
+      - '.system/validators/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'scripts/**/*.gd'
+
+jobs:
+  validate-patterns:
+    runs-on: ubuntu-latest
+    name: Validate GDScript Patterns
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run pattern validators
+        id: patterns
+        run: |
+          echo "::group::Running pattern validators"
+
+          if [ -f ".system/validators/check-patterns.sh" ]; then
+            bash .system/validators/check-patterns.sh || {
+              echo "::error::Pattern validation failed"
+              exit 1
+            }
+          else
+            echo "::warning::Pattern validator not found - skipping"
+          fi
+
+          echo "::endgroup::"
+
+      - name: Check naming conventions
+        id: naming
+        run: |
+          echo "::group::Checking file naming conventions"
+
+          # Check for non-snake_case GDScript files
+          BAD_FILES=$(find scripts -name "*.gd" 2>/dev/null | while read file; do
+            filename=$(basename "$file" .gd)
+            if [[ ! "$filename" =~ ^[a-z][a-z0-9_]*$ ]]; then
+              echo "$file"
+            fi
+          done)
+
+          if [ -n "$BAD_FILES" ]; then
+            echo "::error::Found files with invalid naming (must be snake_case):"
+            echo "$BAD_FILES"
+            exit 1
+          else
+            echo "✅ All files follow snake_case naming"
+          fi
+
+          echo "::endgroup::"
+
+      - name: Check for type hints
+        id: types
+        run: |
+          echo "::group::Checking for type hints"
+
+          # This is a warning-only check
+          MISSING_TYPES=$(find scripts -name "*.gd" 2>/dev/null | xargs grep -l "^func " | while read file; do
+            if grep "^func " "$file" | grep -v "\->" | grep -v "_ready\(\)" | grep -v "_process\(" | grep -q .; then
+              echo "$file"
+            fi
+          done)
+
+          if [ -n "$MISSING_TYPES" ]; then
+            echo "::warning::Files with functions missing return type hints:"
+            echo "$MISSING_TYPES"
+            echo "::notice::Add '-> ReturnType' to function signatures"
+          else
+            echo "✅ All functions have type hints"
+          fi
+
+          echo "::endgroup::"
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-validation-report
+          path: |
+            .system/logs/
+          retention-days: 30
+          if-no-files-found: ignore

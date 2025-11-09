@@ -1,0 +1,73 @@
+name: GDScript Lint & Format Check
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'scripts/**/*.gd'
+      - '.gdlintrc'
+      - '.github/workflows/gdscript-lint.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'scripts/**/*.gd'
+      - '.gdlintrc'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint GDScript Files
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install gdtoolkit
+        run: |
+          pip install "gdtoolkit==4.*"
+          gdlint --version
+          gdformat --version
+
+      - name: Run gdlint
+        id: lint
+        run: |
+          echo "::group::Running gdlint"
+          if [ -d "scripts" ]; then
+            gdlint --config .gdlintrc scripts/ || {
+              echo "lint_failed=true" >> $GITHUB_OUTPUT
+              exit 1
+            }
+          else
+            echo "No scripts directory yet - skipping"
+          fi
+          echo "::endgroup::"
+
+      - name: Check formatting
+        id: format
+        run: |
+          echo "::group::Checking GDScript formatting"
+          if [ -d "scripts" ]; then
+            gdformat --check scripts/ || {
+              echo "::error::GDScript formatting check failed"
+              echo "::notice::Run 'gdformat scripts/' to auto-format"
+              exit 1
+            }
+          else
+            echo "No scripts directory yet - skipping"
+          fi
+          echo "::endgroup::"
+
+      - name: Upload lint results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-results
+          path: |
+            scripts/
+          retention-days: 7

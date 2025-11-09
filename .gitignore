@@ -18,7 +18,12 @@ builds/
 Thumbs.db
 
 # IDE
-.vscode/
+# Note: We commit .vscode/ for shared project settings
+# but ignore user-specific settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo

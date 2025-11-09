@@ -1,0 +1,61 @@
+{
+  "godot_tools.editor_path": "/Applications/Godot.app",
+  "godot_tools.gdscript_lsp_server_port": 6005,
+
+  // File exclusions
+  "files.exclude": {
+    ".godot/": true,
+    ".import/": true,
+    "**/.DS_Store": true
+  },
+
+  // File associations
+  "files.associations": {
+    "*.gd": "gdscript",
+    "*.tscn": "xml",
+    "*.tres": "xml"
+  },
+
+  // GDScript formatting (tabs, 100 char limit)
+  "[gdscript]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+    "editor.rulers": [100],
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    }
+  },
+
+  // GDScript LSP
+  "gdscript.lsp.serverPort": 6005,
+  "gdscript.lsp.serverProtocol": "ws",
+
+  // Enforcement system integration
+  "files.watcherExclude": {
+    "**/.godot/**": true,
+    "**/.import/**": true,
+    "**/node_modules/**": true
+  },
+
+  // Search exclusions
+  "search.exclude": {
+    "**/.godot": true,
+    "**/.import": true,
+    "**/builds": true
+  },
+
+  // Git integration
+  "git.ignoreLimitWarning": true,
+  "git.enableCommitSigning": false,
+
+  // Terminal integration for enforcement
+  "terminal.integrated.env.osx": {
+    "GODOT_PROJECT_ROOT": "${workspaceFolder}"
+  },
+
+  // Tasks for validators (Cmd+Shift+B)
+  "tasks.autoDetect": "on"
+}

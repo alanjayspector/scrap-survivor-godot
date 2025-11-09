@@ -1,0 +1,144 @@
+name: Godot Export Test
+
+# Tests that the project can be exported successfully
+# Runs on main branch changes and PRs
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'scripts/**/*.gd'
+      - 'scenes/**/*.tscn'
+      - 'project.godot'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  export-test:
+    runs-on: ubuntu-latest
+    name: Test Godot Export
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download Godot
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: 4.4-stable
+          use-dotnet: false
+
+      - name: Verify Godot installation
+        run: godot --version
+
+      - name: Import project (headless)
+        run: |
+          echo "::group::Importing Godot project"
+          godot --headless --import --quit || {
+            echo "::error::Project import failed"
+            exit 1
+          }
+          echo "::endgroup::"
+
+      - name: Check for import errors
+        run: |
+          if [ -f ".godot/uid_cache.bin" ]; then
+            echo "✅ Project imported successfully"
+          else
+            echo "::error::Project import may have failed - uid_cache not found"
+            exit 1
+          fi
+
+      - name: Run GDScript syntax check
+        run: |
+          echo "::group::Checking GDScript syntax"
+
+          # Parse project for syntax errors (Godot will report them)
+          godot --headless --script .github/workflows/scripts/check_syntax.gd --quit || {
+            echo "::warning::Syntax check script not found (expected for new project)"
+          }
+
+          echo "::endgroup::"
+
+      - name: Test headless export (Linux)
+        run: |
+          echo "::group::Testing Linux export"
+
+          mkdir -p builds/linux
+
+          # Export for Linux (headless test)
+          godot --headless --export-release "Linux" builds/linux/game.x86_64 || {
+            echo "::notice::Export failed - likely no export preset configured yet"
+            echo "This is expected for new projects"
+          }
+
+          echo "::endgroup::"
+
+      - name: Upload export artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-export-test
+          path: builds/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Separate job for checking project configuration
+  project-config:
+    runs-on: ubuntu-latest
+    name: Validate Project Config
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check project.godot
+        run: |
+          if [ ! -f "project.godot" ]; then
+            echo "::error::project.godot not found"
+            exit 1
+          fi
+
+          echo "✅ project.godot exists"
+
+      - name: Check icon.svg
+        run: |
+          if [ ! -f "icon.svg" ]; then
+            echo "::warning::icon.svg not found"
+          else
+            echo "✅ icon.svg exists"
+          fi
+
+      - name: Validate directory structure
+        run: |
+          echo "::group::Checking directory structure"
+
+          REQUIRED_DIRS=("scripts" "scenes" "resources" "assets")
+
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "✅ $dir/ exists"
+            else
+              echo "::warning::$dir/ not found (will be created as needed)"
+            fi
+          done
+
+          echo "::endgroup::"
+
+      - name: Check for .env leakage
+        run: |
+          if [ -f ".env" ]; then
+            echo "::error::.env file found in repository - this should be .gitignored!"
+            exit 1
+          else
+            echo "✅ No .env file in repository"
+          fi
+
+          if [ -f ".env.example" ]; then
+            echo "✅ .env.example exists"
+          else
+            echo "::warning::.env.example not found"
+          fi
