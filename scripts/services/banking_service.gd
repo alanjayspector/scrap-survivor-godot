@@ -45,7 +45,7 @@ var transaction_history: Array = []
 
 ## Get balance caps for a user tier
 ## Based on BankingService.ts:64-83
-static func get_balance_caps(tier: UserTier) -> BalanceCaps:
+func get_balance_caps(tier: UserTier) -> BalanceCaps:
 	match tier:
 		UserTier.PREMIUM:
 			return BalanceCaps.new(10_000, 1_000_000)
