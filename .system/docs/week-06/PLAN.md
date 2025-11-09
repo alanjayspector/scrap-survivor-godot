@@ -220,7 +220,7 @@ func auto_save() -> void:
 
 ---
 
-### Day 4: Save File Migration + Autoload Static Checker
+### Day 4: Save File Migration + Validator Improvements
 
 **Main Work: Version Migration System**
 
@@ -281,15 +281,33 @@ func _migrate_0_to_1(data: Dictionary) -> Dictionary:
 - Add "unsaved changes" warning
 - Add save slot selection menu
 
-**Health Improvement: Autoload Static Checker**
+**Health Improvement: Validator Enhancements (Day 2 Learnings)**
 
-**Time:** 30 minutes
+**Time:** 1 hour
+
+**1. Autoload Static Checker**
 **Deliverable:** `.system/validators/autoload_static_checker.py`
 **Detection:** Warn when autoload scripts have static functions
 
+**2. Improve Naming Consistency Detection**
+**Update:** `.system/validators/service_api_checker.py`
+**Enhancements:**
+- Better cross-service pattern detection
+- Clearer grouping of similar methods
+- Actionable suggestions for standardization
+- Track trends over time
+
+**3. Validator Test Suite**
+**Deliverable:** `.system/validators/tests/`
+**Coverage:**
+- Test all validators with known good/bad inputs
+- Test regex patterns for edge cases
+- Test false positive scenarios
+- Automated validator testing in CI
+
 ---
 
-### Day 5: Documentation + Coverage Checker
+### Day 5: Documentation + Common Patterns Guide
 
 **Main Work: Week 6 Documentation**
 
@@ -322,11 +340,26 @@ func _migrate_0_to_1(data: Dictionary) -> Dictionary:
 - Manual testing of all save flows
 - Edge case testing (corrupted saves, old versions)
 
-**Health Improvement: Documentation Coverage Checker**
+**Health Improvement: Pattern Documentation (Day 2 Learnings)**
 
-**Time:** 20 minutes
+**Time:** 45 minutes
+
+**1. Documentation Coverage Checker**
 **Deliverable:** `.system/validators/doc_coverage_checker.py`
 **Reminder:** Create weekly documentation (non-blocking)
+
+**2. Service Patterns Guide**
+**Deliverable:** `.system/docs/PATTERNS.md`
+**Content:**
+- **Stateless vs Stateful Services:** When to use each pattern
+- **Serialization Best Practices:** How to implement serialize/deserialize
+- **Signal-Based State Loading:** When to emit state_loaded signals
+- **Service Reset Patterns:** Testing vs production reset behavior
+- **Underscore Prefix Convention:** Unused parameters in interface methods
+- **Example Code:** Real examples from BankingService, RecyclerService
+- **Common Pitfalls:** Lessons learned from Week 5-6
+
+**Goal:** New developers understand service patterns in <30 minutes
 
 ---
 
@@ -450,12 +483,13 @@ scrap-survivor-godot/
 | 1 | 3-4 hours | 30 min | 4 hours |
 | 2 | 3-4 hours | 45 min | 4.5 hours |
 | 3 | 3-4 hours | 20 min | 4 hours |
-| 4 | 3-4 hours | 30 min | 4.5 hours |
-| 5 | 2-3 hours | 20 min | 3 hours |
-| **Total** | **14-19 hours** | **2.5 hours** | **20 hours** |
+| 4 | 3-4 hours | 1 hour | 5 hours |
+| 5 | 2-3 hours | 45 min | 3.5 hours |
+| **Total** | **14-19 hours** | **3.5 hours** | **21 hours** |
 
 **Weekly capacity:** ~20-25 hours
-**Buffer:** 0-5 hours for unexpected issues
+**Buffer:** 4 hours for Day 2 learnings integration
+**Note:** Days 4-5 include improvements discovered during Day 2
 
 ---
 
