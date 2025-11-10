@@ -150,6 +150,7 @@ func get_transaction_history() -> Array:
 func reset() -> void:
 	balances = {"scrap": 0, "premium": 0}
 	transaction_history.clear()
+	current_tier = UserTier.FREE
 	currency_changed.emit(CurrencyType.SCRAP, 0)
 	currency_changed.emit(CurrencyType.PREMIUM, 0)
 	GameLogger.info("Banking service reset")

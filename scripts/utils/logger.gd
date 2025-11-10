@@ -42,9 +42,14 @@ static func _rotate_logs() -> void:
 static func _write_log(level: Level, message: String, metadata: Dictionary = {}) -> void:
 	_ensure_log_dir()
 
-	var file = FileAccess.open(_get_log_path(), FileAccess.WRITE_READ)
+	var log_path = _get_log_path()
+	var file_exists = FileAccess.file_exists(log_path)
+
+	# Use READ_WRITE to preserve existing content, or WRITE to create new file
+	var mode = FileAccess.READ_WRITE if file_exists else FileAccess.WRITE
+	var file = FileAccess.open(log_path, mode)
 	if not file:
-		push_error("Logger failed to open file: " + _get_log_path())
+		push_error("Logger failed to open file: " + log_path)
 		return
 
 	file.seek_end()

@@ -174,6 +174,12 @@ func load_game(slot: int = 0) -> LoadResult:
 		load_completed.emit(true, slot)
 		return result
 
+	# If it's a version error, don't try backup - return immediately
+	if "newer version" in result.error:
+		GameLogger.warning("Save file from newer version", {"slot": slot, "error": result.error})
+		load_completed.emit(false, slot)
+		return result
+
 	# Main save failed, try backup
 	GameLogger.warning("Main save corrupted, attempting backup", {"slot": slot})
 	var backup_path = save_path + ".bak"

@@ -22,6 +22,28 @@
 
 ---
 
+## ⚠️ TESTING DOCUMENTATION - READ BEFORE IMPLEMENTING
+
+**CRITICAL**: Before writing ANY code or tests, consult the testing documentation:
+
+📚 **[Testing Documentation Index](../TESTING-INDEX.md)** - Central hub for all testing standards
+
+**Key Documents**:
+- [godot-testing-research.md](../godot-testing-research.md) - GUT framework patterns and best practices
+- [test-file-template.md](../test-file-template.md) - Template for ALL new test files
+- [test-quality-enforcement.md](../test-quality-enforcement.md) - Pre-commit checklist and quality gates
+
+**Quality Requirements**:
+- ✅ All tests must verify real functionality (no smoke tests)
+- ✅ All tests must use Arrange-Act-Assert pattern
+- ✅ All assertions must have clear failure messages
+- ✅ Integration tests must use correct payment pattern (preview → pay → execute)
+- ✅ Run quality validator before EVERY commit: `python3 .system/validators/test_quality_validator.py`
+
+**See Section 10 for testing milestones and coverage targets.**
+
+---
+
 ## 1. Roadmap Overview
 
 ### 1.1 Development Phases
@@ -885,6 +907,8 @@ graph LR
 ---
 
 ## 10. Testing Milestones
+
+**📚 See [TESTING-INDEX.md](../TESTING-INDEX.md) for complete testing documentation, templates, and enforcement protocols.**
 
 ### 10.1 Testing Strategy
 

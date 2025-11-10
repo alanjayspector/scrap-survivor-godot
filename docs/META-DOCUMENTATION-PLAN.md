@@ -12,6 +12,26 @@ This plan outlines all documentation work needed to capture brainstormed systems
 
 ---
 
+## ⚠️ TESTING DOCUMENTATION - READ BEFORE ANY IMPLEMENTATION
+
+**CRITICAL**: This is a DOCUMENTATION plan. When implementing ANY features described in these docs, you MUST consult the testing documentation first:
+
+📚 **[TESTING-INDEX.md](TESTING-INDEX.md)** - Central hub for all testing standards
+
+**Key Documents**:
+- [godot-testing-research.md](godot-testing-research.md) - GUT framework patterns and best practices
+- [test-file-template.md](test-file-template.md) - Template for ALL new test files
+- [test-quality-enforcement.md](test-quality-enforcement.md) - Pre-commit checklist and quality gates
+
+**Quality Requirements**:
+- ✅ All tests must verify real functionality (no smoke tests)
+- ✅ All tests must use Arrange-Act-Assert pattern
+- ✅ Run quality validator before EVERY commit: `python3 .system/validators/test_quality_validator.py`
+
+**See [IMPLEMENTATION-ROADMAP.md](core-architecture/IMPLEMENTATION-ROADMAP.md) Section 10 for testing milestones.**
+
+---
+
 ## Phase 1: Expand Existing Rushed Docs
 
 These docs exist but need expansion to match PERKS-SYSTEM.md / MINIONS-SYSTEM.md quality.

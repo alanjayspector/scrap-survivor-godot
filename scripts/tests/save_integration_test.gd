@@ -1,440 +1,295 @@
-extends Node
-## Integration test for SaveManager + SaveSystem + Services
+extends GutTest
+## Integration test for SaveManager + SaveSystem + Services using GUT framework
 ##
-## Tests the complete save/load flow across all services
+## Tests the complete save/load flow across all services.
+
+class_name SaveIntegrationTest
 
 const TEST_SLOT = 9  # Use slot 9 to avoid conflicts
 
 
-func _ready() -> void:
-	print("=== SaveManager Integration Test ===")
-	print()
-
-	test_save_and_load_all_services()
-	test_multiple_services_save_load()
-	test_transaction_history_persists()
-	test_save_load_signals()
-	test_unsaved_changes_tracking()
-	test_load_nonexistent_save()
-	test_save_metadata()
-	test_save_deletion()
-	test_cross_service_consistency()
-	test_stateless_service_serialization()
-	test_auto_save_trigger()
-
-	print()
-	print("=== SaveManager Integration Tests Complete ===")
-
-	# CRITICAL: Exit after tests for headless mode
-	get_tree().quit()
-
-
-## Test basic save→load→verify flow
-func test_save_and_load_all_services() -> void:
-	print("--- Testing Save and Load All Services ---")
-
-	# Clean state
+func before_each() -> void:
+	# Clean state before each test
 	BankingService.reset()
+	ShopRerollService.reset()
+
+	# Set PREMIUM tier for save/load tests (FREE tier blocks scrap transactions)
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+
+	# Save to clear unsaved changes flag after tier setup
+	if SaveManager.has_save(0):
+		SaveManager.delete_save(0)
+	SaveManager.save_all_services(0)
+
 	if SaveManager.has_save(TEST_SLOT):
 		SaveManager.delete_save(TEST_SLOT)
 
-	# Set up initial state
+
+func after_each() -> void:
+	# Cleanup after each test
+	for slot in range(10):
+		if SaveManager.has_save(slot):
+			SaveManager.delete_save(slot)
+
+	BankingService.reset()
+	ShopRerollService.reset()
+	SaveManager.disable_auto_save()
+
+
+# Save and Load All Services Tests
+func test_save_all_services_succeeds() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
+
+	var save_success = SaveManager.save_all_services(TEST_SLOT)
+
+	assert_true(save_success, "Save should succeed")
+	assert_true(SaveManager.has_save(TEST_SLOT), "Save should exist")
+
+
+func test_load_all_services_restores_state() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
 	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 50)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
-	# Save state
-	var save_success = SaveManager.save_all_services(TEST_SLOT)
-	assert(save_success, "Save should succeed")
-	print("✓ Saved successfully")
-
-	# Verify save exists
-	assert(SaveManager.has_save(TEST_SLOT), "Save should exist")
-	print("✓ Save exists")
-
-	# Reset
+	SaveManager.save_all_services(TEST_SLOT)
 	BankingService.reset()
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0, "Balance reset")
-	assert(BankingService.get_balance(BankingService.CurrencyType.PREMIUM) == 0, "Premium reset")
-	assert(BankingService.current_tier == BankingService.UserTier.FREE, "Tier reset")
-	print("✓ Services reset")
 
-	# Load state
 	var load_success = SaveManager.load_all_services(TEST_SLOT)
-	assert(load_success, "Load should succeed")
-	print("✓ Loaded successfully")
 
-	# Verify state restored
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 1000, "Scrap restored")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.PREMIUM) == 50, "Premium restored"
+	assert_true(load_success, "Load should succeed")
+	assert_eq(BankingService.get_balance(BankingService.CurrencyType.SCRAP), 1000, "Scrap restored")
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.PREMIUM), 50, "Premium restored"
 	)
-	assert(BankingService.current_tier == BankingService.UserTier.PREMIUM, "Tier restored")
-	print("✓ State restored correctly")
-
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM, "Tier restored")
 
 
-## Test saving multiple services simultaneously
-func test_multiple_services_save_load() -> void:
-	print("--- Testing Multiple Services Save/Load ---")
-
-	# Clean state
-	BankingService.reset()
-	ShopRerollService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# Set up state across multiple services
+# Multiple Services Tests
+func test_multiple_services_save_and_load() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
 	ShopRerollService.execute_reroll()
 	ShopRerollService.execute_reroll()
 
-	# Save
-	var save_success = SaveManager.save_all_services(TEST_SLOT)
-	assert(save_success, "Save should succeed")
-	print("✓ Saved successfully")
-
-	# Reset all services
+	SaveManager.save_all_services(TEST_SLOT)
 	BankingService.reset()
 	ShopRerollService.reset()
 
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0, "Banking reset")
-	assert(ShopRerollService.get_reroll_count() == 0, "Shop reroll reset")
-	print("✓ Services reset")
+	SaveManager.load_all_services(TEST_SLOT)
 
-	# Load
-	var load_success = SaveManager.load_all_services(TEST_SLOT)
-	assert(load_success, "Load should succeed")
-	print("✓ Loaded successfully")
-
-	# Verify all services restored
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 500, "Banking restored")
-	assert(ShopRerollService.get_reroll_count() == 2, "Shop reroll restored")
-	print("✓ All services restored correctly")
-
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP), 500, "Banking restored"
+	)
+	assert_eq(ShopRerollService.get_reroll_count(), 2, "Shop reroll restored")
 
 
-## Test transaction history persistence
+# Transaction History Tests
 func test_transaction_history_persists() -> void:
-	print("--- Testing Transaction History Persistence ---")
-
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# Create transaction history
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 200)
 	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 50)
 
 	var history_before = BankingService.get_transaction_history()
-	assert(history_before.size() == 3, "Should have 3 transactions")
-	print("✓ Transaction history created")
+	assert_eq(history_before.size(), 3, "Should have 3 transactions")
 
-	# Save and reset
 	SaveManager.save_all_services(TEST_SLOT)
 	BankingService.reset()
 
-	assert(BankingService.get_transaction_history().size() == 0, "History should be cleared")
-	print("✓ History cleared after reset")
+	assert_eq(BankingService.get_transaction_history().size(), 0, "History cleared after reset")
 
-	# Load and verify
 	SaveManager.load_all_services(TEST_SLOT)
 
 	var history_after = BankingService.get_transaction_history()
-	assert(history_after.size() == 3, "History should be restored")
-	assert(history_after[0].amount == 100, "First transaction restored")
-	assert(history_after[1].amount == 200, "Second transaction restored")
-	assert(history_after[2].amount == -50, "Third transaction restored")
-	print("✓ Transaction history fully restored")
+	assert_eq(history_after.size(), 3, "History should be restored")
+	assert_eq(history_after[0].amount, 100, "First transaction restored")
+	assert_eq(history_after[1].amount, 200, "Second transaction restored")
+	assert_eq(
+		history_after[2].amount, 50, "Third transaction restored (subtract stores positive amount)"
+	)
+	assert_eq(history_after[2].action, "subtract", "Third transaction should be a subtract")
 
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
 
+# Signal Tests
+func test_save_started_signal_emits() -> void:
+	watch_signals(SaveManager)
 
-## Test signals are emitted during save/load
-func test_save_load_signals() -> void:
-	print("--- Testing Save/Load Signals ---")
-
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	var save_started_count = 0
-	var save_completed_count = 0
-	var save_success_value = false
-	var load_started_count = 0
-	var load_completed_count = 0
-	var load_success_value = false
-
-	# Connect to signals
-	var save_started_conn = func(): save_started_count += 1
-	var save_completed_conn = func(success):
-		save_completed_count += 1
-		save_success_value = success
-	var load_started_conn = func(): load_started_count += 1
-	var load_completed_conn = func(success):
-		load_completed_count += 1
-		load_success_value = success
-
-	SaveManager.save_started.connect(save_started_conn)
-	SaveManager.save_completed.connect(save_completed_conn)
-	SaveManager.load_started.connect(load_started_conn)
-	SaveManager.load_completed.connect(load_completed_conn)
-
-	# Perform save/load
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager.save_all_services(TEST_SLOT)
+
+	assert_signal_emitted(SaveManager, "save_started", "save_started signal should emit")
+
+
+func test_save_completed_signal_emits() -> void:
+	watch_signals(SaveManager)
+
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	SaveManager.save_all_services(TEST_SLOT)
+
+	assert_signal_emitted(SaveManager, "save_completed", "save_completed signal should emit")
+	var signal_params = get_signal_parameters(SaveManager, "save_completed", 0)
+	assert_true(signal_params[0], "Save should complete with success=true")
+
+
+func test_load_started_signal_emits() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	SaveManager.save_all_services(TEST_SLOT)
+
+	watch_signals(SaveManager)
 	SaveManager.load_all_services(TEST_SLOT)
 
-	# Verify signals
-	assert(save_started_count == 1, "save_started emitted once")
-	assert(save_completed_count == 1, "save_completed emitted once")
-	assert(save_success_value == true, "save completed with success=true")
-	assert(load_started_count == 1, "load_started emitted once")
-	assert(load_completed_count == 1, "load_completed emitted once")
-	assert(load_success_value == true, "load completed with success=true")
-	print("✓ All signals emitted correctly")
-
-	# Disconnect
-	SaveManager.save_started.disconnect(save_started_conn)
-	SaveManager.save_completed.disconnect(save_completed_conn)
-	SaveManager.load_started.disconnect(load_started_conn)
-	SaveManager.load_completed.disconnect(load_completed_conn)
-
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_signal_emitted(SaveManager, "load_started", "load_started signal should emit")
 
 
-## Test unsaved changes tracking
-func test_unsaved_changes_tracking() -> void:
-	print("--- Testing Unsaved Changes Tracking ---")
+func test_load_completed_signal_emits() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	SaveManager.save_all_services(TEST_SLOT)
 
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
+	watch_signals(SaveManager)
+	SaveManager.load_all_services(TEST_SLOT)
 
-	# Initially no unsaved changes (after reset)
-	# Note: We can't assert false here because signal connections may have triggered
-	print("✓ Initial state checked")
+	assert_signal_emitted(SaveManager, "load_completed", "load_completed signal should emit")
+	var signal_params = get_signal_parameters(SaveManager, "load_completed", 0)
+	assert_true(signal_params[0], "Load should complete with success=true")
 
-	# Make a change
+
+# Unsaved Changes Tests
+func test_unsaved_changes_tracked_after_modification() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 
-	# Signal propagation should be immediate
-	assert(SaveManager.has_unsaved_changes(), "Has unsaved changes after modification")
-	print("✓ Unsaved changes tracked")
+	assert_true(SaveManager.has_unsaved_changes(), "Has unsaved changes after modification")
 
-	# Save clears unsaved flag
+
+func test_unsaved_changes_cleared_after_save() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager.save_all_services(TEST_SLOT)
-	assert(not SaveManager.has_unsaved_changes(), "No unsaved changes after save")
-	print("✓ Unsaved flag cleared after save")
 
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_false(SaveManager.has_unsaved_changes(), "No unsaved changes after save")
 
 
-## Test loading non-existent save
-func test_load_nonexistent_save() -> void:
-	print("--- Testing Load Non-Existent Save ---")
-
-	# Ensure save doesn't exist
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
+# Load Non-Existent Save Tests
+func test_load_nonexistent_save_fails_gracefully() -> void:
 	var load_success = SaveManager.load_all_services(TEST_SLOT)
-	assert(not load_success, "Loading non-existent save should fail gracefully")
-	print("✓ Failed gracefully on non-existent save")
+
+	assert_false(load_success, "Loading non-existent save should fail gracefully")
 
 
-## Test save metadata
-func test_save_metadata() -> void:
-	print("--- Testing Save Metadata ---")
+# Metadata Tests
+func test_metadata_shows_no_save_initially() -> void:
+	var metadata = SaveManager.get_save_metadata(TEST_SLOT)
 
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
+	assert_false(metadata.exists, "Save should not exist initially")
 
-	# No save exists yet
-	var metadata_before = SaveManager.get_save_metadata(TEST_SLOT)
-	assert(not metadata_before.exists, "Save should not exist")
-	print("✓ Metadata shows no save initially")
 
-	# Create save
+func test_metadata_populated_after_save() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager.save_all_services(TEST_SLOT)
 
-	# Check metadata
-	var metadata_after = SaveManager.get_save_metadata(TEST_SLOT)
-	assert(metadata_after.exists, "Save should exist")
-	assert(metadata_after.version == 1, "Version should be 1")
-	assert(metadata_after.slot == TEST_SLOT, "Slot should match")
-	assert(metadata_after.timestamp > 0, "Should have timestamp")
-	print("✓ Metadata populated correctly")
+	var metadata = SaveManager.get_save_metadata(TEST_SLOT)
 
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_true(metadata.exists, "Save should exist")
+	assert_eq(metadata.version, 1, "Version should be 1")
+	assert_eq(metadata.slot, TEST_SLOT, "Slot should match")
+	assert_gt(metadata.timestamp, 0, "Should have timestamp")
 
 
-## Test save deletion
-func test_save_deletion() -> void:
-	print("--- Testing Save Deletion ---")
-
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# Create save
+# Deletion Tests
+func test_save_deleted_successfully() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager.save_all_services(TEST_SLOT)
 
-	assert(SaveManager.has_save(TEST_SLOT), "Save should exist")
-	print("✓ Save created")
+	assert_true(SaveManager.has_save(TEST_SLOT), "Save should exist")
 
-	# Delete save
 	var delete_success = SaveManager.delete_save(TEST_SLOT)
-	assert(delete_success, "Delete should succeed")
-	assert(not SaveManager.has_save(TEST_SLOT), "Save should not exist after deletion")
-	print("✓ Save deleted successfully")
+
+	assert_true(delete_success, "Delete should succeed")
+	assert_false(SaveManager.has_save(TEST_SLOT), "Save should not exist after deletion")
 
 
-## Test cross-service state consistency
-func test_cross_service_consistency() -> void:
-	print("--- Testing Cross-Service State Consistency ---")
-
-	# Clean state
-	BankingService.reset()
-	ShopRerollService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# Set up complex state across services
+# Cross-Service Consistency Tests
+func test_cross_service_state_consistency() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	ShopRerollService.execute_reroll()
 
-	# Save
-	var save_success = SaveManager.save_all_services(TEST_SLOT)
-	assert(save_success, "Save should succeed")
-	print("✓ Saved successfully")
-
-	# Reset everything
+	SaveManager.save_all_services(TEST_SLOT)
 	BankingService.reset()
 	ShopRerollService.reset()
 
-	# Verify everything is reset
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0)
-	assert(BankingService.current_tier == BankingService.UserTier.FREE)
-	assert(ShopRerollService.get_reroll_count() == 0)
-	print("✓ Services reset")
+	SaveManager.load_all_services(TEST_SLOT)
 
-	# Load
-	var load_success = SaveManager.load_all_services(TEST_SLOT)
-	assert(load_success, "Load should succeed")
-	print("✓ Loaded successfully")
-
-	# Verify all state is consistent
-	assert(BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 1000)
-	assert(BankingService.current_tier == BankingService.UserTier.PREMIUM)
-	assert(ShopRerollService.get_reroll_count() == 1)
-	print("✓ All state restored consistently")
-
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_eq(BankingService.get_balance(BankingService.CurrencyType.SCRAP), 1000)
+	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM)
+	assert_eq(ShopRerollService.get_reroll_count(), 1)
 
 
-## Test stateless service serialization (RecyclerService)
-func test_stateless_service_serialization() -> void:
-	print("--- Testing Stateless Service Serialization ---")
-
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# RecyclerService is stateless - just verify it doesn't break save/load
+# Stateless Service Tests
+func test_stateless_service_save_succeeds() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
 
-	# Save (includes RecyclerService)
 	var save_success = SaveManager.save_all_services(TEST_SLOT)
-	assert(save_success, "Save with stateless service should succeed")
-	print("✓ Saved with stateless service")
 
-	# Load (includes RecyclerService)
+	assert_true(save_success, "Save with stateless service should succeed")
+
+
+func test_stateless_service_load_succeeds() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
+	SaveManager.save_all_services(TEST_SLOT)
 	BankingService.reset()
-	var load_success = SaveManager.load_all_services(TEST_SLOT)
-	assert(load_success, "Load with stateless service should succeed")
-	print("✓ Loaded with stateless service")
 
-	# Verify RecyclerService still works after load
+	var load_success = SaveManager.load_all_services(TEST_SLOT)
+
+	assert_true(load_success, "Load with stateless service should succeed")
+
+
+func test_recycler_service_functional_after_load() -> void:
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
+	SaveManager.save_all_services(TEST_SLOT)
+	BankingService.reset()
+	SaveManager.load_all_services(TEST_SLOT)
+
 	var test_input = RecyclerService.DismantleInput.new(
 		"test_item", RecyclerService.ItemRarity.COMMON, false, 0
 	)
 	var preview = RecyclerService.preview_dismantle(test_input)
-	assert(preview.scrap_granted > 0, "RecyclerService still functional")
-	print("✓ Stateless service still functional")
 
-	# Cleanup
-	SaveManager.delete_save(TEST_SLOT)
+	assert_gt(preview.scrap_granted, 0, "RecyclerService still functional")
 
 
-## Test auto-save trigger mechanism
-func test_auto_save_trigger() -> void:
-	print("--- Testing Auto-Save Trigger ---")
-
-	# Clean state
-	BankingService.reset()
-	if SaveManager.has_save(TEST_SLOT):
-		SaveManager.delete_save(TEST_SLOT)
-
-	# Disable auto-save if it's running
-	SaveManager.disable_auto_save()
-
-	# Track auto-save trigger signal
-	var auto_save_triggered_count = 0
-	var auto_save_trigger_conn = func(): auto_save_triggered_count += 1
-
-	SaveManager.auto_save_triggered.connect(auto_save_trigger_conn)
-
-	# Enable auto-save
+# Auto-Save Tests
+func test_auto_save_enabled() -> void:
 	SaveManager.enable_auto_save()
-	print("✓ Auto-save enabled")
 
-	# Make a change to trigger unsaved flag
+	# Verify it's enabled by making a change and triggering the timeout
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
-	assert(SaveManager.has_unsaved_changes(), "Should have unsaved changes")
-	print("✓ Unsaved changes tracked")
+	assert_true(SaveManager.has_unsaved_changes(), "Should have unsaved changes")
 
-	# Manually trigger the auto-save timeout handler (instead of waiting 5 minutes)
-	# This tests the logic without the timer delay
+
+func test_auto_save_trigger_signal_emits() -> void:
+	watch_signals(SaveManager)
+
+	SaveManager.enable_auto_save()
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager._on_auto_save_timeout()
 
-	# Verify signal was emitted
-	assert(auto_save_triggered_count == 1, "auto_save_triggered should emit once")
-	print("✓ auto_save_triggered signal emitted")
+	assert_signal_emitted(
+		SaveManager, "auto_save_triggered", "auto_save_triggered signal should emit"
+	)
 
-	# Verify save actually happened (slot 0 is used for auto-save)
-	assert(SaveManager.has_save(0), "Auto-save should create save in slot 0")
-	assert(not SaveManager.has_unsaved_changes(), "Unsaved changes should be cleared")
-	print("✓ Auto-save completed successfully")
 
-	# Trigger again with no changes - should skip
+func test_auto_save_creates_save_in_slot_0() -> void:
+	SaveManager.enable_auto_save()
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	SaveManager._on_auto_save_timeout()
-	assert(auto_save_triggered_count == 1, "auto_save_triggered should not emit again")
-	print("✓ Auto-save skips when no changes")
 
-	# Disconnect and disable
-	SaveManager.auto_save_triggered.disconnect(auto_save_trigger_conn)
-	SaveManager.disable_auto_save()
+	assert_true(SaveManager.has_save(0), "Auto-save should create save in slot 0")
+	assert_false(SaveManager.has_unsaved_changes(), "Unsaved changes should be cleared")
 
-	# Cleanup
-	SaveManager.delete_save(0)
+
+func test_auto_save_skips_when_no_changes() -> void:
+	watch_signals(SaveManager)
+
+	SaveManager.enable_auto_save()
+	SaveManager._on_auto_save_timeout()  # No changes
+
+	assert_signal_not_emitted(
+		SaveManager, "auto_save_triggered", "auto_save_triggered should not emit when no changes"
+	)

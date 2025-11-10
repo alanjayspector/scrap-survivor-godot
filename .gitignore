@@ -1,5 +1,7 @@
 # Godot 4+ specific
-.godot/
+# Note: We allow global_script_class_cache.cfg for CI/CD headless testing
+.godot/**
+!.godot/global_script_class_cache.cfg
 .import/
 export_presets.cfg
 

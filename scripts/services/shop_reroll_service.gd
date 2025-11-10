@@ -98,7 +98,9 @@ func execute_reroll() -> RerollExecution:
 	# Increment reroll count (capped at MAX)
 	var next_count = mini(current_count + 1, MAX_REROLL_COUNT)
 	_current_state.reroll_count = next_count
-	var next_cost = _calculate_cost(next_count)
+	# Calculate cost for the reroll after the next one
+	var next_next_count = mini(next_count + 1, MAX_REROLL_COUNT)
+	var next_cost = _calculate_cost(next_next_count)
 
 	(
 		GameLogger
@@ -135,7 +137,9 @@ func reset() -> void:
 ## Reset reroll count (for testing or admin use)
 func reset_reroll_count() -> void:
 	var today = _get_game_day()
-	_reset_for_new_day(today)
+	_current_state.game_day = today
+	_current_state.reroll_count = 0
+	reroll_count_reset.emit(today)
 
 
 ## Serialize service state to dictionary (Week 6)

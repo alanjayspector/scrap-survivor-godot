@@ -51,20 +51,32 @@ def run_gut_tests() -> tuple[bool, str, dict]:
     Returns (success: bool, output: str, stats: dict)
     """
     try:
-        # First, run Godot in editor mode briefly to scan and register all class_name scripts
+        # First, run Godot in editor mode to scan and register all class_name scripts
         # This ensures custom Resource classes like WeaponResource are available in headless mode
+        # NOTE: Use --quit-after 2 instead of --quit to allow import threads to complete
+        # See: https://github.com/godotengine/godot/issues/77508
+        print(f"{CYAN}Scanning project to register custom classes...{NC}", flush=True)
         scan_result = subprocess.run(
             [
                 GODOT_EXECUTABLE,
                 "--headless",
                 "--editor",
                 "--path", str(PROJECT_ROOT),
-                "--quit"
+                "--quit-after", "2"  # Wait 2 frames for import threads to complete
             ],
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=60
         )
+
+        # Verify class cache was created
+        cache_path = PROJECT_ROOT / ".godot" / "global_script_class_cache.cfg"
+        if cache_path.exists():
+            print(f"{GREEN}✓ Class cache created successfully{NC}", flush=True)
+        else:
+            print(f"{YELLOW}⚠️  Warning: Class cache not found at {cache_path}{NC}", flush=True)
+
+        print(f"{CYAN}Running tests with registered classes...{NC}", flush=True)
 
         # Now run the actual tests with classes properly registered
         result = subprocess.run(
@@ -131,6 +143,11 @@ def main():
             print(f"{YELLOW}⚠️  No GUT tests found (0 test files extend GutTest){NC}")
             print(f"   {CYAN}This is expected during GUT migration (Phase 1 setup complete){NC}")
             print(f"   {CYAN}Next: Migrate test files to extend GutTest (see GUT-MIGRATION.md){NC}")
+            print()
+            print(f"{CYAN}Debug: Showing last 50 lines of GUT output:{NC}")
+            for line in output.split('\n')[-50:]:
+                if line.strip():
+                    print(f"  {line}")
         else:
             print(f"{GREEN}✅ All tests passed ({stats['passed']}/{stats['total']}){NC}")
         return 0

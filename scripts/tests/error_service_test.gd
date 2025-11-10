@@ -1,89 +1,68 @@
-extends Node
-## Test script for ErrorService
+extends GutTest
+## Test script for ErrorService using GUT framework
+##
+## Tests logging, signal emission, and Godot error capture.
+
+class_name ErrorServiceTest
 
 
-func _ready() -> void:
-	print("=== ErrorService Test ===")
-	print()
-
-	test_log_levels()
-	test_signals()
-	test_helpers()
-	test_godot_error_capture()
-
-	print()
-	print("=== ErrorService Tests Complete ===")
+func before_each() -> void:
+	# Reset error service before each test
+	ErrorService.reset()
 
 
-func test_log_levels() -> void:
-	print("--- Testing Log Levels ---")
-
-	# Test INFO
-	ErrorService.log_info("Test info message")
-	print("✓ Info logged")
-
-	# Test WARNING
-	ErrorService.log_warning("Test warning message")
-	print("✓ Warning logged")
-
-	# Test ERROR
-	ErrorService.log_error("Test error message", ErrorService.ErrorLevel.ERROR)
-	print("✓ Error logged")
-
-	# Test CRITICAL
-	ErrorService.log_critical("Test critical message")
-	print("✓ Critical logged")
+func after_each() -> void:
+	# Cleanup
+	pass
 
 
-func test_signals() -> void:
-	print("--- Testing Signals ---")
+func test_error_occurred_signal_emits_on_error() -> void:
+	# Arrange
+	watch_signals(ErrorService)
 
-	# Use array wrapper for lambda capture
-	var error_received = [false]
-	var critical_received = [false]
-
-	ErrorService.error_occurred.connect(func(_msg, _level, _meta): error_received[0] = true)
-	ErrorService.critical_error_occurred.connect(func(_msg, _meta): critical_received[0] = true)
-
-	# Test regular error signal
+	# Act
 	ErrorService.log_error("Test signal")
-	assert(error_received[0], "error_occurred signal should emit")
-	print("✓ error_occurred signal emitted")
 
-	# Test critical signal
+	# Assert
+	assert_signal_emitted(ErrorService, "error_occurred", "error_occurred signal should emit")
+	assert_signal_emit_count(ErrorService, "error_occurred", 1, "Signal should emit once")
+
+	var signal_params = get_signal_parameters(ErrorService, "error_occurred", 0)
+	assert_eq(signal_params[0], "Test signal", "Signal should contain error message")
+
+
+func test_critical_error_occurred_signal_emits_on_critical() -> void:
+	# Arrange
+	watch_signals(ErrorService)
+
+	# Act
 	ErrorService.log_critical("Test critical")
-	assert(critical_received[0], "critical_error_occurred signal should emit")
-	print("✓ critical_error_occurred signal emitted")
 
-
-func test_helpers() -> void:
-	print("--- Testing Helper Methods ---")
-
-	# Test log_info helper
-	ErrorService.log_info("Info helper test")
-	print("✓ log_info helper works")
-
-	# Test log_warning helper
-	ErrorService.log_warning("Warning helper test")
-	print("✓ log_warning helper works")
-
-	# Test log_critical helper
-	ErrorService.log_critical("Critical helper test")
-	print("✓ log_critical helper works")
-
-
-func test_godot_error_capture() -> void:
-	print("--- Testing Godot Error Capture ---")
-
-	# Use array wrapper for lambda capture
-	var error_captured = [false]
-	ErrorService.error_occurred.connect(
-		func(_msg, _level, meta):
-			if meta.has("stack_trace"):
-				error_captured[0] = true
+	# Assert
+	assert_signal_emitted(
+		ErrorService, "critical_error_occurred", "critical_error_occurred signal should emit"
+	)
+	assert_signal_emit_count(
+		ErrorService, "critical_error_occurred", 1, "Critical signal should emit once"
 	)
 
-	# Simulate an error
+	var signal_params = get_signal_parameters(ErrorService, "critical_error_occurred", 0)
+	assert_eq(signal_params[0], "Test critical", "Signal should contain critical message")
+
+
+func test_godot_error_capture_includes_stack_trace_in_metadata() -> void:
+	# Arrange
+	watch_signals(ErrorService)
+
+	# Act
 	ErrorService.capture_godot_error("Test error with stack trace")
-	assert(error_captured[0], "Should capture stack trace")
-	print("✓ Stack trace captured in metadata")
+
+	# Assert
+	assert_signal_emitted(ErrorService, "error_occurred", "Should emit error_occurred signal")
+
+	var signal_params = get_signal_parameters(ErrorService, "error_occurred", 0)
+	var metadata = signal_params[2]  # Third parameter is metadata
+	assert_true(
+		metadata.has("stack_trace"),
+		"Metadata should contain stack_trace when capturing Godot errors"
+	)
