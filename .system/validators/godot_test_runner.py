@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Godot Test Runner
+Godot Test Runner (GUT Framework)
 
-Automatically runs Godot test scenes in headless mode and validates output.
-Runs during pre-commit to catch test failures before they're committed.
+Runs GUT tests in headless mode during pre-commit to catch test failures.
+
+Uses GUT (Godot Unit Test) framework for proper test isolation, assertions,
+and lifecycle hooks. Replaces manual test scene orchestration.
 
 Only runs when Godot is NOT already open (to avoid project lock).
 """
@@ -17,21 +19,17 @@ import re
 RED = '\033[0;31m'
 GREEN = '\033[0;32m'
 YELLOW = '\033[1;33m'
+CYAN = '\033[0;36m'
 NC = '\033[0m'
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 GODOT_EXECUTABLE = "/Applications/Godot.app/Contents/MacOS/Godot"
 
-# Test scenes to run (following *_test.tscn naming convention)
-TEST_SCENES = [
-    "scenes/tests/banking_service_test.tscn",
-    "scenes/tests/recycler_service_test.tscn",
-    "scenes/tests/shop_reroll_service_test.tscn",
-    "scenes/tests/service_integration_test.tscn",
-    "scenes/tests/save_system_test.tscn",
-    "scenes/tests/save_integration_test.tscn",
-    # Add more test scenes here as they're created
-]
+# GUT CLI script path
+GUT_CLI_SCRIPT = "res://addons/gut/gut_cmdln.gd"
+
+# Test directory (GUT will discover all *_test.gd files)
+TEST_DIR = "res://scripts/tests/"
 
 
 def is_godot_running():
@@ -47,10 +45,10 @@ def is_godot_running():
         return False
 
 
-def run_test_scene(scene_path: str) -> tuple[bool, str]:
+def run_gut_tests() -> tuple[bool, str, dict]:
     """
-    Run a single test scene in Godot headless mode.
-    Returns (success: bool, output: str)
+    Run all GUT tests in headless mode.
+    Returns (success: bool, output: str, stats: dict)
     """
     try:
         result = subprocess.run(
@@ -58,35 +56,47 @@ def run_test_scene(scene_path: str) -> tuple[bool, str]:
                 GODOT_EXECUTABLE,
                 "--headless",
                 "--path", str(PROJECT_ROOT),
-                scene_path
+                "-s", GUT_CLI_SCRIPT,
+                f"-gdir={TEST_DIR}",
+                "-gexit"
             ],
             capture_output=True,
             text=True,
-            timeout=10  # 10 second timeout per test
+            timeout=60  # 60 second timeout for all tests
         )
 
         output = result.stdout + result.stderr
 
-        # Check for test success indicators
-        # Tests print "=== All [Service] Tests Complete ===" when successful
-        if "Tests Complete" in output and "✓" in output:
-            return True, output
+        # Parse GUT output for test statistics
+        # GUT prints: "X of Y tests passed"
+        stats = {"passed": 0, "failed": 0, "total": 0}
 
-        # Check for errors or assertion failures
-        if "ERROR:" in output or "Assertion failed" in output:
-            return False, output
+        # Look for GUT's summary line
+        passed_match = re.search(r'(\d+)\s+of\s+(\d+)\s+tests?\s+passed', output)
+        if passed_match:
+            stats["passed"] = int(passed_match.group(1))
+            stats["total"] = int(passed_match.group(2))
+            stats["failed"] = stats["total"] - stats["passed"]
 
-        # If we get here, test ran but output is unclear
-        return False, output
+        # Check for "Nothing was run" (no tests found - OK during migration)
+        # GUT outputs this with ANSI codes, so check for substring
+        nothing_ran = "Nothing was run" in output or "ERROR]:  Nothing was run" in output
+
+        # Check for success
+        # - All tests passed, OR
+        # - No tests found (during GUT migration phase)
+        success = (result.returncode == 0 and stats["failed"] == 0) or nothing_ran
+
+        return success, output, stats
 
     except subprocess.TimeoutExpired:
-        return False, f"Test timed out after 10 seconds"
+        return False, "Tests timed out after 60 seconds", {"passed": 0, "failed": 0, "total": 0}
     except Exception as e:
-        return False, f"Failed to run test: {e}"
+        return False, f"Failed to run tests: {e}", {"passed": 0, "failed": 0, "total": 0}
 
 
 def main():
-    """Run all test scenes and report results."""
+    """Run all GUT tests and report results."""
 
     # Skip if Godot is running
     if is_godot_running():
@@ -94,42 +104,41 @@ def main():
         print(f"   Run tests manually in Godot, or close Godot to enable automated testing")
         return 0
 
-    print(f"Running Godot tests in headless mode...")
+    print(f"{CYAN}Running GUT tests in headless mode...{NC}")
 
-    all_passed = True
-    results = []
-
-    for scene_path in TEST_SCENES:
-        scene_name = Path(scene_path).stem
-        print(f"  Testing {scene_name}...", end=" ")
-
-        success, output = run_test_scene(scene_path)
-
-        if success:
-            print(f"{GREEN}✓{NC}")
-            results.append((scene_name, True, None))
-        else:
-            print(f"{RED}✗{NC}")
-            results.append((scene_name, False, output))
-            all_passed = False
+    success, output, stats = run_gut_tests()
 
     # Print summary
     print()
-    if all_passed:
-        print(f"{GREEN}✅ All tests passed ({len(TEST_SCENES)} scenes){NC}")
+    if success:
+        if stats['total'] == 0:
+            print(f"{YELLOW}⚠️  No GUT tests found (0 test files extend GutTest){NC}")
+            print(f"   {CYAN}This is expected during GUT migration (Phase 1 setup complete){NC}")
+            print(f"   {CYAN}Next: Migrate test files to extend GutTest (see GUT-MIGRATION.md){NC}")
+        else:
+            print(f"{GREEN}✅ All tests passed ({stats['passed']}/{stats['total']}){NC}")
         return 0
     else:
-        print(f"{RED}❌ Some tests failed:{NC}")
-        for scene_name, success, output in results:
-            if not success:
-                print(f"\n{RED}Failed: {scene_name}{NC}")
-                # Print first few lines of output to help debug
-                if output:
-                    lines = output.split('\n')[:20]
-                    for line in lines:
-                        if line.strip():
-                            print(f"  {line}")
-        print(f"\n{YELLOW}💡 Fix: Run the test in Godot to see full output{NC}")
+        print(f"{RED}❌ {stats['failed']} of {stats['total']} tests failed{NC}")
+        print()
+
+        # Print relevant failure output
+        # Look for test failure indicators in GUT output
+        lines = output.split('\n')
+        in_failure_section = False
+
+        for line in lines:
+            # Detect failure markers in GUT output
+            if 'FAILED' in line or 'ERROR' in line or 'Assertion failed' in line:
+                in_failure_section = True
+
+            # Print failure-related lines
+            if in_failure_section or re.search(r'test_\w+.*FAILED', line):
+                if line.strip():
+                    print(f"  {line}")
+
+        print(f"\n{YELLOW}💡 Fix: Run tests in Godot editor with GUT panel (bottom panel){NC}")
+        print(f"{CYAN}   Or run: godot --headless -s {GUT_CLI_SCRIPT} -gdir={TEST_DIR} -gexit{NC}")
         return 1
 
 

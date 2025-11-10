@@ -1,0 +1,19 @@
+{
+    "dirs": [
+        "res://scripts/tests/"
+    ],
+    "include_subdirs": true,
+    "log_level": 1,
+    "should_maximize": true,
+    "compact_mode": false,
+    "junit_xml_file": "res://test_results.xml",
+    "junit_xml_timestamp": false,
+    "prefix": "test_",
+    "suffix": ".gd",
+    "tests": [],
+    "selected": "",
+    "double_strategy": "SCRIPT_ONLY",
+    "pre_run_script": "",
+    "post_run_script": "",
+    "color_output": true
+}
