@@ -274,6 +274,18 @@ func _on_create_character_pressed() -> void:
 		)
 		character_created.emit(character_id)
 
+		# Auto-launch demo after creating character
+		_launch_demo(character_id)
+
+
+func _launch_demo(character_id: String) -> void:
+	"""Launch the gameplay demo with the selected/created character"""
+	# Set as active character
+	CharacterService.set_active_character(character_id)
+
+	# Change to demo scene
+	get_tree().change_scene_to_file("res://scenes/demo/gameplay_demo.tscn")
+
 
 func _on_back_pressed() -> void:
 	# Return to previous screen

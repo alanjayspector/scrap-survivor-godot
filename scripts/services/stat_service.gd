@@ -28,7 +28,7 @@ static func apply_stat_modifiers(base_stats: Dictionary, modifiers: Dictionary) 
 
 			# Clamp negative stats to 0 (except special cases like cooldown reduction)
 			if not stat.begins_with("cooldown"):
-				result[stat] = max(0, result[stat])
+				result[stat] = max(0.0, result[stat])
 
 	return result
 

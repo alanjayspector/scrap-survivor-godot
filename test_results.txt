@@ -9,6 +9,8 @@
 
 [0;36mDebug: Showing last 50 lines of GUT output:[0m
   [33m    [Pending]:  [0mDisabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor
+  - test_get_rarity_tier_epic_is_3
+  [33m    [Pending]:  [0mDisabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor
   - test_get_rarity_tier_legendary_is_4
   [33m    [Pending]:  [0mDisabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor
   - test_to_string_contains_id
@@ -43,13 +45,12 @@
   [33m    [Pending]:  [0mDisabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor
   Totals
   ------
-  Warnings              2
-  Scripts              15
-  Tests               341
-  Passing Tests       246
+  Scripts              18
+  Tests               408
+  Passing Tests       313
   Risky/Pending        95
-  Asserts             457
-  Time              2.21s
+  Asserts             659
+  Time              2.875s
   [33m---- 95 pending/risky tests. ----
   [0m
   Results saved to res://test_results.xml

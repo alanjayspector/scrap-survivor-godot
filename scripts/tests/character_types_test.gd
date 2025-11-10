@@ -66,7 +66,9 @@ func test_commando_has_correct_stat_modifiers() -> void:
 
 	# Assert
 	assert_eq(character.stats.ranged_damage, 5, "Commando should have +5 ranged damage")
-	assert_eq(character.stats.attack_speed, 15, "Commando should have +15% attack speed")
+	assert_almost_eq(
+		character.stats.attack_speed, 15.0, 0.01, "Commando should have +15% attack speed"
+	)
 	assert_eq(character.stats.armor, -2, "Commando should have -2 armor (0 - 2)")
 
 

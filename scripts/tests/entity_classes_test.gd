@@ -263,7 +263,7 @@ func test_projectile_velocity_is_set() -> void:
 	var direction = Vector2.RIGHT
 	projectile.activate(Vector2.ZERO, direction, 25.0, 400.0, 500.0)
 
-	assert_gt(projectile.velocity.length(), 0, "Projectile should have velocity")
+	assert_gt(projectile.velocity.length(), 0.0, "Projectile should have velocity")
 	assert_eq(
 		projectile.velocity.normalized(), direction, "Projectile should move in correct direction"
 	)

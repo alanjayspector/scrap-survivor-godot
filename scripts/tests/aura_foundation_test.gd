@@ -257,15 +257,12 @@ func test_all_aura_types_have_required_fields() -> void:
 
 func test_aura_visual_can_be_instantiated() -> void:
 	# Arrange & Act
-	var aura_visual = AuraVisual.new()
+	var aura_visual = autofree(AuraVisual.new())
 
 	# Assert
 	assert_not_null(aura_visual, "AuraVisual should instantiate successfully")
 	assert_eq(aura_visual.aura_type, "collect", "Should have default aura type")
 	assert_eq(aura_visual.radius, 100.0, "Should have default radius")
-
-	# Cleanup
-	aura_visual.queue_free()
 
 
 func test_aura_visual_creates_child_nodes() -> void:
@@ -274,7 +271,7 @@ func test_aura_visual_creates_child_nodes() -> void:
 	add_child_autofree(aura_visual)
 
 	# Wait for _ready() to be called
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert - Should have Line2D (ring) and GPUParticles2D
 	var has_line2d = false
@@ -294,11 +291,11 @@ func test_aura_visual_update_changes_parameters() -> void:
 	# Arrange
 	var aura_visual = AuraVisual.new()
 	add_child_autofree(aura_visual)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Act - Update to damage aura with larger radius
 	aura_visual.update_aura("damage", 150.0)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	assert_eq(aura_visual.aura_type, "damage", "Aura type should update")
@@ -312,7 +309,7 @@ func test_aura_visual_set_emitting() -> void:
 	# Arrange
 	var aura_visual = AuraVisual.new()
 	add_child_autofree(aura_visual)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Act - Disable particles
 	aura_visual.set_emitting(false)
@@ -342,10 +339,10 @@ func test_aura_visual_colors_match_aura_types() -> void:
 	for aura_type in test_types:
 		var aura_visual = AuraVisual.new()
 		add_child_autofree(aura_visual)
-		await wait_frames(1)
+		await wait_physics_frames(1)
 
 		aura_visual.update_aura(aura_type, 100.0)
-		await wait_frames(1)
+		await wait_physics_frames(1)
 
 		var expected_color = AuraTypes.AURA_TYPES[aura_type].color
 		assert_eq(
@@ -359,7 +356,7 @@ func test_aura_visual_ring_has_correct_point_count() -> void:
 	# Arrange
 	var aura_visual = AuraVisual.new()
 	add_child_autofree(aura_visual)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Act - Find the Line2D ring
 	var ring: Line2D = null
@@ -391,7 +388,7 @@ func test_mutant_has_damage_aura_visual() -> void:
 	var aura_radius = AuraTypes.calculate_aura_radius(mutant.stats.pickup_range)
 
 	aura_visual.update_aura(mutant.aura.type, aura_radius)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert - Visual should be configured for damage aura
 	assert_eq(aura_visual.aura_type, "damage", "Visual should show damage aura")
