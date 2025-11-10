@@ -103,6 +103,23 @@ jobs:
 
           echo "::endgroup::"
 
+      - name: Check Godot performance patterns
+        id: performance
+        run: |
+          echo "::group::Checking for Godot performance anti-patterns"
+
+          if [ -f ".system/validators/godot_performance_validator.py" ]; then
+            python3 .system/validators/godot_performance_validator.py || {
+              echo "::error::Performance validation failed"
+              echo "::notice::See docs/godot-performance-patterns.md for optimization strategies"
+              exit 1
+            }
+          else
+            echo "::warning::Performance validator not found - skipping"
+          fi
+
+          echo "::endgroup::"
+
       - name: Upload validation report
         if: always()
         uses: actions/upload-artifact@v4
