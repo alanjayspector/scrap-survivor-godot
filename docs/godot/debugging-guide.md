@@ -55,7 +55,7 @@ If community research doesn't solve it:
 - **GitHub Issues**: For confirmed bugs in Godot engine
 
 **When asking, provide:**
-- Godot version (4.4 stable, etc.)
+- Godot version (4.5.1 stable)
 - Minimal reproducible example
 - What you've already tried (from steps 1-3 above)
 - Expected vs actual behavior

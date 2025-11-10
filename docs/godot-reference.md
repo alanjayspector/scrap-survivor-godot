@@ -427,7 +427,7 @@ res://
 
 ## Version Information
 
-This reference is for **Godot 4.4 stable** branch, the latest version as of 2025.
+This reference is for **Godot 4.5.1 stable** branch, the version used in this project.
 
 ### Documentation Availability
 - Offline downloads available (HTML, ePub)
@@ -473,5 +473,5 @@ This reference is for **Godot 4.4 stable** branch, the latest version as of 2025
 ---
 
 **Last Updated**: November 2025
-**Godot Version**: 4.4 Stable
+**Godot Version**: 4.5.1 Stable
 **Documentation**: https://docs.godotengine.org/en/stable/

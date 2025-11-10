@@ -605,7 +605,7 @@ if node:
 - Better collision generation UI
 - Enhanced animation system
 
-### Godot 4.4 (Latest Stable - 2025)
+### Godot 4.5.1 (Project Version - 2025)
 - Most issues resolved
 - Recommended for new projects
 
@@ -712,7 +712,7 @@ res://
 
 **Example**:
 ```
-Godot 4.4 | GDScript
+Godot 4.5.1 | GDScript
 
 Problem: Character doesn't collide with tilemap
 
@@ -787,7 +787,7 @@ func _on_health_changed(new_health: int) -> void:
 ---
 
 ## Last Updated
-**November 2025** | **Godot 4.4 Stable**
+**November 2025** | **Godot 4.5.1 Stable**
 
 **Key Sources**: Official forums, Reddit r/godot, GDQuest, GitHub issues, community best practices
 

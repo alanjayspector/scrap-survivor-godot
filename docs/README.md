@@ -146,8 +146,8 @@ See [migration/week6-days1-3-completion.md](migration/week6-days1-3-completion.m
 - This Godot port migrates the game logic to GDScript
 
 **Godot Documentation:**
-- [Godot 4.4 Docs](https://docs.godotengine.org/en/4.4/)
-- [GDScript Reference](https://docs.godotengine.org/en/4.4/tutorials/scripting/gdscript/index.html)
+- [Godot 4.5 Docs](https://docs.godotengine.org/en/stable/)
+- [GDScript Reference](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/index.html)
 
 **Testing:**
 - [GUT (Godot Unit Test)](https://github.com/bitwes/Gut)
