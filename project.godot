@@ -25,6 +25,7 @@ BankingService="*res://scripts/services/banking_service.gd"
 RecyclerService="*res://scripts/services/recycler_service.gd"
 ShopRerollService="*res://scripts/services/shop_reroll_service.gd"
 CharacterService="*res://scripts/services/character_service.gd"
+AuraTypes="*res://scripts/systems/aura_types.gd"
 
 [display]
 
