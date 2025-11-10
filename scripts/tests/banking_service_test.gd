@@ -1,241 +1,217 @@
-extends Node
-## Test script for BankingService
+extends GutTest
+## Test script for BankingService using GUT framework
 ##
 ## Tests currency management, tier-gating, and transaction validation.
+
+class_name BankingServiceTest
 
 # gdlint: disable=duplicated-load
 
 
-func _ready() -> void:
-	print("=== BankingService Test ===")
-	print()
-
-	test_initial_state()
-	test_add_currency()
-	test_subtract_currency()
-	test_insufficient_funds()
-	test_tier_gating()
-	test_get_tier()
-	test_balance_caps()
-	test_transaction_history()
-	test_signals()
-
-	print()
-	print("=== All BankingService Tests Complete ===")
-
-	# Exit after tests complete (for headless mode)
-	get_tree().quit()
-
-
-func test_initial_state() -> void:
-	print("--- Testing Initial State ---")
-
-	# Reset service
+func before_each() -> void:
+	# Reset service before each test for isolation
 	BankingService.reset()
-
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 0,
-		"Initial scrap should be 0"
-	)
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.PREMIUM) == 0,
-		"Initial premium should be 0"
-	)
-
-	print("✓ Initial balances correct")
-	print()
+	# Explicitly reset tier to FREE (autoload state persists between tests)
+	BankingService.set_tier(BankingService.UserTier.FREE)
 
 
-func test_add_currency() -> void:
-	print("--- Testing Add Currency ---")
+func after_each() -> void:
+	# Cleanup after each test
+	pass
 
-	BankingService.reset()
+
+func test_initial_state_all_balances_are_zero() -> void:
+	# Arrange (done in before_each)
+
+	# Act
+	var scrap_balance = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+	var premium_balance = BankingService.get_balance(BankingService.CurrencyType.PREMIUM)
+
+	# Assert
+	assert_eq(scrap_balance, 0, "Initial scrap balance should be 0")
+	assert_eq(premium_balance, 0, "Initial premium balance should be 0")
+
+
+func test_add_currency_increases_balance() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
+	# Act
 	var success = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
-	assert(success, "Adding scrap should succeed")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 100,
-		"Scrap balance should be 100"
-	)
+	var balance_after_first_add = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
 
-	success = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 50)
-	assert(success, "Adding more scrap should succeed")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 150,
-		"Scrap balance should be 150"
-	)
+	var success2 = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 50)
+	var balance_after_second_add = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
 
-	print("✓ Add currency works correctly")
-	print()
+	# Assert
+	assert_true(success, "Adding scrap should succeed")
+	assert_eq(balance_after_first_add, 100, "Scrap balance should be 100 after first add")
+
+	assert_true(success2, "Adding more scrap should succeed")
+	assert_eq(balance_after_second_add, 150, "Scrap balance should be 150 after second add")
 
 
-func test_subtract_currency() -> void:
-	print("--- Testing Subtract Currency ---")
-
-	BankingService.reset()
+func test_subtract_currency_decreases_balance() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 200)
 
+	# Act
 	var success = BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 50)
-	assert(success, "Subtracting scrap should succeed")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 150,
-		"Scrap balance should be 150"
-	)
+	var balance_after_subtract = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
 
-	print("✓ Subtract currency works correctly")
-	print()
+	# Assert
+	assert_true(success, "Subtracting scrap should succeed")
+	assert_eq(balance_after_subtract, 150, "Scrap balance should be 150 after subtract")
 
 
-func test_insufficient_funds() -> void:
-	print("--- Testing Insufficient Funds ---")
-
-	BankingService.reset()
+func test_subtract_currency_with_insufficient_funds_fails() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 50)
 
+	# Act
 	var success = BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 100)
-	assert(not success, "Subtracting more than balance should fail")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 50,
-		"Balance should remain 50"
-	)
+	var balance_unchanged = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
 
-	print("✓ Insufficient funds handled correctly")
-	print()
+	# Assert
+	assert_false(success, "Subtracting more than balance should fail")
+	assert_eq(balance_unchanged, 50, "Balance should remain 50 when transaction fails")
 
 
-func test_tier_gating() -> void:
-	print("--- Testing Tier Gating ---")
-
-	BankingService.reset()
-
-	# Free tier - no banking access
+func test_tier_gating_free_tier_denies_access() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.FREE)
-	assert(not BankingService.has_access(), "Free tier should not have banking access")
 
-	# Premium tier - has access
+	# Act
+	var has_access = BankingService.has_access()
+
+	# Assert
+	assert_false(has_access, "Free tier should not have banking access")
+
+
+func test_tier_gating_premium_tier_grants_access() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	assert(BankingService.has_access(), "Premium tier should have banking access")
 
-	# Subscription tier - has access
+	# Act
+	var has_access = BankingService.has_access()
+
+	# Assert
+	assert_true(has_access, "Premium tier should have banking access")
+
+
+func test_tier_gating_subscription_tier_grants_access() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.SUBSCRIPTION)
-	assert(BankingService.has_access(), "Subscription tier should have banking access")
 
-	print("✓ Tier gating works correctly")
-	print()
+	# Act
+	var has_access = BankingService.has_access()
+
+	# Assert
+	assert_true(has_access, "Subscription tier should have banking access")
 
 
-func test_balance_caps() -> void:
-	print("--- Testing Balance Caps ---")
-
-	BankingService.reset()
-
-	# Premium tier: 10k cap
+func test_balance_caps_premium_tier_enforces_10k_limit() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	var caps = BankingService.get_balance_caps(BankingService.UserTier.PREMIUM)
-	assert(caps.per_character == 10_000, "Premium cap should be 10k")
 
+	# Act
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 9_000)
-	var success = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 2_000)
-	assert(not success, "Adding over cap should fail")
-	assert(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP) == 9_000,
-		"Balance should remain 9000"
-	)
+	var success_over_cap = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 2_000)
+	var balance_at_cap = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
 
-	# Subscription tier: 100k cap
-	BankingService.reset()
+	# Assert
+	assert_eq(caps.per_character, 10_000, "Premium cap should be 10k")
+	assert_false(success_over_cap, "Adding over cap should fail")
+	assert_eq(balance_at_cap, 9_000, "Balance should remain 9000 when exceeding cap")
+
+
+func test_balance_caps_subscription_tier_enforces_100k_limit() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.SUBSCRIPTION)
-	caps = BankingService.get_balance_caps(BankingService.UserTier.SUBSCRIPTION)
-	assert(caps.per_character == 100_000, "Subscription cap should be 100k")
+	var caps = BankingService.get_balance_caps(BankingService.UserTier.SUBSCRIPTION)
 
-	print("✓ Balance caps enforced correctly")
-	print()
+	# Act & Assert
+	assert_eq(caps.per_character, 100_000, "Subscription cap should be 100k")
 
 
-func test_transaction_history() -> void:
-	print("--- Testing Transaction History ---")
-
-	BankingService.reset()
+func test_transaction_history_records_all_operations() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
+	# Act
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 30)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 50)
 
 	var history = BankingService.get_transaction_history()
-	assert(history.size() == 3, "Should have 3 transactions")
-	assert(history[0].action == "add", "First transaction should be add")
-	assert(history[1].action == "subtract", "Second transaction should be subtract")
-	assert(history[2].action == "add", "Third transaction should be add")
 
-	print("✓ Transaction history recorded correctly")
-	print()
+	# Assert
+	assert_eq(history.size(), 3, "Should have 3 transactions in history")
+	assert_eq(history[0].action, "add", "First transaction should be add")
+	assert_eq(history[1].action, "subtract", "Second transaction should be subtract")
+	assert_eq(history[2].action, "add", "Third transaction should be add")
 
 
-func test_get_tier() -> void:
-	print("--- Testing Get Tier ---")
+func test_get_tier_returns_current_tier() -> void:
+	# Arrange (default tier is FREE after before_each reset)
 
-	BankingService.reset()
-
-	# Default tier should be FREE
-	assert(
-		BankingService.current_tier == BankingService.UserTier.FREE, "Default tier should be FREE"
+	# Act & Assert - Default
+	assert_eq(
+		BankingService.current_tier, BankingService.UserTier.FREE, "Default tier should be FREE"
 	)
 
-	# Set to PREMIUM
+	# Act & Assert - Premium
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	assert(BankingService.current_tier == BankingService.UserTier.PREMIUM, "Tier should be PREMIUM")
+	assert_eq(
+		BankingService.current_tier, BankingService.UserTier.PREMIUM, "Tier should be PREMIUM"
+	)
 
-	# Set to SUBSCRIPTION
+	# Act & Assert - Subscription
 	BankingService.set_tier(BankingService.UserTier.SUBSCRIPTION)
-	assert(
-		BankingService.current_tier == BankingService.UserTier.SUBSCRIPTION,
+	assert_eq(
+		BankingService.current_tier,
+		BankingService.UserTier.SUBSCRIPTION,
 		"Tier should be SUBSCRIPTION"
 	)
 
-	print("✓ Get tier works correctly")
-	print()
 
-
-func test_signals() -> void:
-	print("--- Testing Signals ---")
-
-	BankingService.reset()
+func test_currency_changed_signal_emits_on_add() -> void:
+	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	watch_signals(BankingService)
 
-	# Track signal emissions
-	var currency_changed_count = 0
-	var last_changed_type = -1
-	var last_changed_balance = 0
-
-	# Connect to signals
-	var changed_conn = func(type, balance):
-		currency_changed_count += 1
-		last_changed_type = type
-		last_changed_balance = balance
-
-	BankingService.currency_changed.connect(changed_conn)
-
-	# Add currency should emit currency_changed signal
+	# Act
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 
-	assert(currency_changed_count == 1, "currency_changed should emit once")
-	assert(
-		last_changed_type == BankingService.CurrencyType.SCRAP, "Signal should report SCRAP type"
+	# Assert
+	assert_signal_emitted(BankingService, "currency_changed", "currency_changed should emit on add")
+	assert_signal_emit_count(
+		BankingService, "currency_changed", 1, "currency_changed should emit once"
 	)
-	assert(last_changed_balance == 100, "Signal should report new balance of 100")
 
-	# Subtract currency should also emit currency_changed signal
+	var signal_params = get_signal_parameters(BankingService, "currency_changed", 0)
+	assert_eq(
+		signal_params[0], BankingService.CurrencyType.SCRAP, "Signal should report SCRAP type"
+	)
+	assert_eq(signal_params[1], 100, "Signal should report new balance of 100")
+
+
+func test_currency_changed_signal_emits_on_subtract() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	watch_signals(BankingService)
+
+	# Act
 	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 30)
 
-	assert(currency_changed_count == 2, "currency_changed should emit again")
-	assert(last_changed_balance == 70, "Signal should report new balance of 70")
+	# Assert
+	assert_signal_emitted(
+		BankingService, "currency_changed", "currency_changed should emit on subtract"
+	)
 
-	print("✓ All signals emitted correctly")
-	print()
-
-	# Disconnect
-	BankingService.currency_changed.disconnect(changed_conn)
+	var signal_params = get_signal_parameters(BankingService, "currency_changed", 0)
+	assert_eq(signal_params[1], 70, "Signal should report new balance of 70 after subtract")
