@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script to verify enemy resources load correctly using GUT framework
 ##
+## USER STORY: "As a player, I want varied enemy types with balanced stats"
+##
 ## Tests loading, wave scaling, spawn weights, and drop chances.
 
 class_name EnemyLoadingTest

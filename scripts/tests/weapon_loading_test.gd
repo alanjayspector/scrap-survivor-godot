@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script to verify weapon resources load correctly using GUT framework
 ##
+## USER STORY: "As a player, I want weapons with different stats and rarities"
+##
 ## Tests individual weapon loading and bulk directory loading.
 
 class_name WeaponLoadingTest

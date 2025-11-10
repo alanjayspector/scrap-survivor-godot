@@ -1,6 +1,8 @@
 extends GutTest
 ## Integration test for Week 5 services working together using GUT framework
 ##
+## USER STORY: "As a player, I want services to work together correctly"
+##
 ## Tests realistic workflows combining BankingService, RecyclerService, and ShopRerollService.
 
 class_name ServiceIntegrationTest

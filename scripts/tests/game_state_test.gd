@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for GameState autoload using GUT framework
 ##
+## USER STORY: "As a player, I want wave progression and score tracking"
+##
 ## Tests wave management, score tracking, gameplay state, and character selection.
 
 class_name GameStateTest

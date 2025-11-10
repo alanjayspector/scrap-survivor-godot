@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for StatService using GUT framework
 ##
+## USER STORY: "As a developer, I want centralized stat tracking"
+##
 ## Tests stat calculations, modifiers, and secondary stats (dodge, crit, life steal).
 
 class_name StatServiceTest

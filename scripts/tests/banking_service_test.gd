@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for BankingService using GUT framework
 ##
+## USER STORY: "As a player, I want to earn and spend scrap/premium currency safely"
+##
 ## Tests currency management, tier-gating, and transaction validation.
 
 class_name BankingServiceTest

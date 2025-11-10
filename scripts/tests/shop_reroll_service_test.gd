@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for ShopRerollService using GUT framework
 ##
+## USER STORY: "As a player, I want to reroll shop offerings with escalating costs"
+##
 ## Tests reroll mechanics, cost calculations, and progressive scaling.
 
 class_name ShopRerollServiceTest

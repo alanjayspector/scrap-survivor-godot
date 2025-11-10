@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for SaveSystem using GUT framework
 ##
+## USER STORY: "As a player, I want reliable save file management"
+##
 ## Tests save/load cycles, multiple slots, metadata, deletion, and corruption recovery.
 
 class_name SaveSystemTest

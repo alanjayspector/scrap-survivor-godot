@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for entity classes (Player, Enemy, Projectile) using GUT framework
 ##
+## USER STORY: "As a developer, I want entity data structures"
+##
 ## Tests entity initialization, stats, combat mechanics, and resource integration.
 
 class_name EntityClassesTest

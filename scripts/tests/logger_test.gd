@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for Logger utility using GUT framework
 ##
+## USER STORY: "As a developer, I want persistent log files"
+##
 ## Tests file creation, log levels, and rotation.
 
 class_name LoggerTest

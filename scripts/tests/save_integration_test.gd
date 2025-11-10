@@ -1,6 +1,8 @@
 extends GutTest
 ## Integration test for SaveManager + SaveSystem + Services using GUT framework
 ##
+## USER STORY: "As a player, I want my progress saved across sessions"
+##
 ## Tests the complete save/load flow across all services.
 
 class_name SaveIntegrationTest

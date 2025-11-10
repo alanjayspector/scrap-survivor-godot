@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for ErrorService using GUT framework
 ##
+## USER STORY: "As a developer, I want error tracking and logging"
+##
 ## Tests logging, signal emission, and Godot error capture.
 
 class_name ErrorServiceTest

@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for RecyclerService using GUT framework
 ##
+## USER STORY: "As a player, I want to dismantle items for scrap with luck bonuses"
+##
 ## Tests dismantling mechanics, rarity systems, luck modifiers, and component drops.
 
 class_name RecyclerServiceTest

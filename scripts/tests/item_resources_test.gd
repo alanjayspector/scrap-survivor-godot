@@ -1,6 +1,8 @@
 extends GutTest
 ## Test script for ItemResource loading and functionality using GUT framework
 ##
+## USER STORY: "As a player, I want items with different rarities and effects"
+##
 ## Tests upgrades, consumables, trade-off items, craftable weapons, and helper methods.
 
 class_name ItemResourcesTest
