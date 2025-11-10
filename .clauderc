@@ -1,0 +1,59 @@
+{
+  "name": "Scrap Survivor - Godot Development",
+  "version": "1.0.0",
+  "description": "Configuration for Claude Code when working on Scrap Survivor",
+
+  "critical_rules": [
+    "NEVER use git commit --no-verify or any flag that bypasses hooks",
+    "Pre-commit hooks are mandatory protective layers - fix errors, don't bypass them",
+    "If blocked by hooks after fixing errors twice, ask user before proceeding",
+    "Read docs/DEVELOPMENT-RULES.md at the start of EVERY session",
+    "Test files are part of the repo - test_results.xml is tracked intentionally"
+  ],
+
+  "session_start_checklist": [
+    "Read docs/DEVELOPMENT-RULES.md",
+    "Check docs/migration/ for current week plan",
+    "Review docs/godot-service-architecture.md if working on services",
+    "Understand that pre-commit hooks catch bugs - they are not obstacles"
+  ],
+
+  "commit_workflow": {
+    "step_1": "Make code changes",
+    "step_2": "Run gdformat on changed files",
+    "step_3": "Stage changes with git add",
+    "step_4": "Commit WITHOUT --no-verify flag",
+    "step_5": "If hooks fail, read error and fix root cause",
+    "step_6": "Re-commit after fixing",
+    "forbidden": "NEVER bypass hooks with --no-verify"
+  },
+
+  "tools": {
+    "formatter": "gdformat",
+    "linter": "gdlint",
+    "test_runner": "python3 .system/validators/godot_test_runner.py"
+  },
+
+  "hook_failure_protocol": [
+    "Read error message carefully",
+    "Identify file and line number",
+    "Fix the actual issue (not bypass validation)",
+    "Re-attempt commit",
+    "After 2 genuine attempts, ask user for guidance"
+  ],
+
+  "documentation_priority": [
+    "docs/DEVELOPMENT-RULES.md (CRITICAL - read first)",
+    "docs/godot-service-architecture.md (for service work)",
+    "docs/RUNNING-TESTS-IN-GODOT.md (for testing)",
+    "docs/migration/week*-implementation-plan.md (for current work)",
+    "docs/godot-testing-research.md (for test patterns)"
+  ],
+
+  "test_philosophy": {
+    "framework": "GUT (Godot Unit Test)",
+    "target": "313/313 tests passing",
+    "tdd_workflow": "Write test → Implement feature → Verify test passes",
+    "no_bypassing": "Test failures must be fixed, not bypassed"
+  }
+}

@@ -12,6 +12,19 @@ Roguelike survival game built with Godot 4.4
 - **Cloud Sync:** Supabase backend with offline-first architecture
 - **Mobile-First:** Native iOS and Android support
 
+## 🚨 For AI Assistants
+
+**If you are an AI assistant (Claude Code, Copilot, etc.) working on this codebase:**
+
+- ✅ **READ [docs/DEVELOPMENT-RULES.md](docs/DEVELOPMENT-RULES.md) FIRST**
+- ❌ **NEVER use `git commit --no-verify`** or any flag that bypasses hooks
+- ✅ **Pre-commit hooks are mandatory** - fix errors, don't bypass validation
+- ✅ **If blocked after 2 fix attempts, ASK THE USER** - never bypass on your own
+
+The pre-commit hooks are **critical protective layers** that catch bugs before they're committed. Bypassing them defeats their entire purpose.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Engine:** Godot 4.4
