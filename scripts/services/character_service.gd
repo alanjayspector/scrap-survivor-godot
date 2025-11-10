@@ -29,6 +29,40 @@ const XP_PER_LEVEL = 100  # Level 2 = 100 XP, Level 3 = 200 XP, etc.
 ## Default character type (Week 6: single type, expand in Week 7+)
 const DEFAULT_CHARACTER_TYPE = "scavenger"
 
+## Character type definitions (Week 7 Phase 2)
+const CHARACTER_TYPES = {
+	"scavenger":
+	{
+		"tier_required": UserTier.FREE,
+		"display_name": "Scavenger",
+		"description": "Efficient resource gatherer with auto-collect aura",
+		"color": Color(0.6, 0.6, 0.6),  # Gray
+		"stat_modifiers": {"scavenging": 5, "pickup_range": 20},
+		"aura_type": "collect",  # Auto-collect currency (quality of life)
+		"unlock_condition": "default"  # Always unlocked
+	},
+	"tank":
+	{
+		"tier_required": UserTier.PREMIUM,
+		"display_name": "Tank",
+		"description": "Heavy armor specialist with protective aura",
+		"color": Color(0.3, 0.5, 0.3),  # Olive green
+		"stat_modifiers": {"max_hp": 20, "armor": 3, "speed": -20},
+		"aura_type": "shield",  # +Armor while in aura radius
+		"unlock_condition": "premium_purchase"
+	},
+	"commando":
+	{
+		"tier_required": UserTier.SUBSCRIPTION,
+		"display_name": "Commando",
+		"description": "High DPS glass cannon with no defensive aura",
+		"color": Color(0.8, 0.2, 0.2),  # Red
+		"stat_modifiers": {"ranged_damage": 5, "attack_speed": 15, "armor": -2},
+		"aura_type": null,  # No aura (trade-off for raw DPS)
+		"unlock_condition": "subscription_active"
+	}
+}
+
 ## Default base stats for new characters (Week 7: expanded from 8 to 14 stats)
 const DEFAULT_BASE_STATS = {
 	# Core Survival Stats (4)
@@ -86,10 +120,24 @@ var _next_character_id: int = 1
 
 ## Create a new character
 ## Returns character_id on success, empty string on failure
-func create_character(name: String) -> String:
+func create_character(name: String, character_type: String = "scavenger") -> String:
 	# Validate name
 	if name.strip_edges().is_empty():
 		GameLogger.warning("Cannot create character with empty name")
+		return ""
+
+	# Validate character type exists
+	if not CHARACTER_TYPES.has(character_type):
+		GameLogger.error("Invalid character type", {"type": character_type})
+		return ""
+
+	# Check tier restrictions
+	var type_def = CHARACTER_TYPES[character_type]
+	if type_def.tier_required > current_tier:
+		GameLogger.warning(
+			"Character type requires higher tier",
+			{"type": character_type, "required": type_def.tier_required, "current": current_tier}
+		)
 		return ""
 
 	# Check slot limits
@@ -104,20 +152,29 @@ func create_character(name: String) -> String:
 	var character_id = "char_%d" % _next_character_id
 	_next_character_id += 1
 
+	# Build base stats with character type modifiers
+	var base_stats = DEFAULT_BASE_STATS.duplicate(true)
+
+	# Apply character type stat modifiers
+	for stat_name in type_def.stat_modifiers.keys():
+		if base_stats.has(stat_name):
+			base_stats[stat_name] += type_def.stat_modifiers[stat_name]
+
 	# Build character data
 	var character_data = {
 		"id": character_id,
 		"name": name,
-		"character_type": DEFAULT_CHARACTER_TYPE,
+		"character_type": character_type,
 		"level": 1,
 		"experience": 0,
-		"stats": DEFAULT_BASE_STATS.duplicate(true),
+		"stats": base_stats,
 		"created_at": Time.get_unix_time_from_system(),
 		"last_played": Time.get_unix_time_from_system(),
 		"death_count": 0,
 		"total_kills": 0,
 		"highest_wave": 0,
-		"current_wave": 0
+		"current_wave": 0,
+		"aura": {"type": type_def.aura_type, "enabled": true, "level": 1}
 	}
 
 	# Fire pre-hook (perks can modify starting stats/items)
@@ -125,7 +182,7 @@ func create_character(name: String) -> String:
 		"character_type": character_data.character_type,
 		"base_stats": character_data.stats.duplicate(true),
 		"starting_items": [],
-		"starting_currency": {"scrap": 0, "premium": 0},
+		"starting_currency": {"scrap": 0, "premium": 0, "nanites": 0},
 		"allow_create": true
 	}
 
@@ -158,7 +215,9 @@ func create_character(name: String) -> String:
 	# Emit service signal
 	character_created.emit(character_data.duplicate(true))
 
-	GameLogger.info("Character created", {"character_id": character_id, "name": name})
+	GameLogger.info(
+		"Character created", {"character_id": character_id, "name": name, "type": character_type}
+	)
 
 	return character_id
 

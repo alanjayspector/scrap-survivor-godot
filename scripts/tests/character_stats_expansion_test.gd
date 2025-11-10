@@ -150,7 +150,11 @@ func test_new_character_has_scavenging() -> void:
 
 	# Assert
 	assert_true(character.stats.has("scavenging"), "New character should have scavenging stat")
-	assert_eq(character.stats.scavenging, 0, "New character scavenging should be 0")
+	assert_eq(
+		character.stats.scavenging,
+		5,
+		"New character scavenging should be 5 (default scavenger type bonus)"
+	)
 
 
 func test_new_character_has_resonance() -> void:
@@ -295,7 +299,11 @@ func test_scavenging_increases_multiple_levels() -> void:
 	# Assert
 	var character = CharacterService.get_character(character_id)
 	assert_eq(character.level, 6, "Character should be level 6 (1 + 5 levels)")
-	assert_eq(character.stats.scavenging, 5, "scavenging should increase by 5")
+	assert_eq(
+		character.stats.scavenging,
+		10,
+		"scavenging should be 10 (5 base from scavenger + 5 from levels)"
+	)
 
 
 ## ============================================================================

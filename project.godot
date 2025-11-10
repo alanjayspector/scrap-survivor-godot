@@ -24,6 +24,7 @@ SaveManager="*res://scripts/systems/save_manager.gd"
 BankingService="*res://scripts/services/banking_service.gd"
 RecyclerService="*res://scripts/services/recycler_service.gd"
 ShopRerollService="*res://scripts/services/shop_reroll_service.gd"
+CharacterService="*res://scripts/services/character_service.gd"
 
 [display]
 

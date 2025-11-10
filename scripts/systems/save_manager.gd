@@ -78,6 +78,9 @@ func save_all_services(slot: int = 0) -> bool:
 	if is_instance_valid(ErrorService):
 		save_data.services["error"] = ErrorService.serialize()
 
+	if is_instance_valid(CharacterService):
+		save_data.services["character"] = CharacterService.serialize()
+
 	# Write to disk via SaveSystem
 	var result = SaveSystem.save_game(save_data, slot)
 
@@ -134,6 +137,9 @@ func load_all_services(slot: int = 0) -> bool:
 
 		if services.has("error") and is_instance_valid(ErrorService):
 			ErrorService.deserialize(services.error)
+
+		if services.has("character") and is_instance_valid(CharacterService):
+			CharacterService.deserialize(services.character)
 
 	_unsaved_changes = false
 	GameLogger.info("All services loaded successfully", {"slot": slot})
@@ -212,6 +218,9 @@ func reset() -> void:
 	if is_instance_valid(ErrorService):
 		ErrorService.reset()
 
+	if is_instance_valid(CharacterService):
+		CharacterService.reset()
+
 	# Clear save files
 	SaveSystem.reset()
 
@@ -232,6 +241,15 @@ func _connect_service_signals() -> void:
 			ShopRerollService.reroll_executed.connect(_on_service_changed)
 		if not ShopRerollService.reroll_count_reset.is_connected(_on_service_changed):
 			ShopRerollService.reroll_count_reset.connect(_on_service_changed)
+
+	# Connect to character service signals
+	if is_instance_valid(CharacterService):
+		if not CharacterService.character_created.is_connected(_on_service_changed):
+			CharacterService.character_created.connect(_on_service_changed)
+		if not CharacterService.character_deleted.is_connected(_on_service_changed):
+			CharacterService.character_deleted.connect(_on_service_changed)
+		if not CharacterService.character_stats_changed.is_connected(_on_service_changed):
+			CharacterService.character_stats_changed.connect(_on_service_changed)
 
 
 ## Internal: Handle service state changes
