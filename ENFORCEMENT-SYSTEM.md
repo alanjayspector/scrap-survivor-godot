@@ -318,6 +318,105 @@ Per-Entity Budget: 10-15 microseconds
 
 ---
 
+## 🏗️ Service Architecture Patterns
+
+### Service Architecture Reference
+
+**See [docs/godot-service-architecture.md](docs/godot-service-architecture.md)** for comprehensive coverage of:
+
+**Service Lifecycle Patterns:**
+- Initialization order management (ServiceRegistry pattern)
+- Ready vs manual initialization
+- Cleanup and reset patterns
+- Hot reload considerations
+
+**Service Communication Patterns:**
+- When to use signals vs direct calls
+- Event bus pattern for cross-cutting concerns
+- Avoiding circular dependencies
+- Service discovery patterns
+
+**Service State Management:**
+- State serialization best practices (Resources vs Dictionary)
+- Dirty flag patterns for optimization
+- State validation before save/load
+- Migration and versioning strategies
+
+**Service Testing Patterns:**
+- Unit testing with GdUnit4
+- Mocking service dependencies
+- Integration testing multi-service interactions
+- Test doubles and service isolation
+
+**API Design Patterns:**
+- Naming conventions (get_ vs fetch_ vs retrieve_)
+- Return types (Dictionary vs custom Resources)
+- Error handling (bool + signal, enum, Result type)
+- Async patterns with await
+
+**Dependency Injection:**
+- Setter injection (Godot-friendly)
+- Service locator pattern
+- Testing with dependency injection
+
+**Common Service Anti-Patterns:**
+- ❌ God services (too much responsibility → split into focused services)
+- ❌ Chatty services (too many calls → aggregate data)
+- ❌ Service leakage (exposing internals → encapsulate)
+- ❌ State sync issues (multiple sources of truth → single source)
+
+### Automated Architecture Checks
+
+**The pre-commit hook now checks for:**
+- ✅ Service naming convention (*_service.gd, extends Node)
+- ⚠️ Direct autoload references (use ServiceRegistry.get_service())
+- ⚠️ Service size limits (>500 lines warning, >700 error)
+- ⚠️ Signal naming (past tense, *_started/*_finished)
+- ⚠️ State management methods (validate_state(), reset_game_state())
+
+**Violations are:**
+- ❌ **Errors** (block commit): Missing extends Node, >700 lines
+- ⚠️ **Warnings** (don't block): Direct autoloads, signal naming, missing validation
+
+### Service Architecture Principles
+
+| Principle | Pattern | Example |
+|-----------|---------|---------|
+| Single Responsibility | One service, one concern | InventoryService (items only) |
+| Dependency Inversion | Use ServiceRegistry | `var bank = ServiceRegistry.get_service("BankingService")` |
+| Interface Segregation | Minimal public API | Only expose necessary methods |
+| Open/Closed | Extend via signals | Listen to service events, don't modify |
+| State Validation | Always validate state | `validate_state() -> Array[String]` |
+
+### Service Communication Decision Tree
+
+```
+Do you need immediate response?
+├─ YES → Direct method call
+│   ├─ Needs error handling? → Return bool/enum
+│   └─ Result required? → Return value/Result type
+│
+└─ NO → Use signal
+    ├─ Cross-service event? → EventBus signal
+    ├─ Service-specific? → Service signal
+    └─ Async operation? → Signal + await
+```
+
+### Quick Service Patterns
+
+| Problem | Pattern | Code |
+|---------|---------|------|
+| Initialization order | ServiceRegistry + lookup | `ServiceRegistry.get_service("BankingService")` |
+| Broadcasting events | Event bus signals | `EventBus.enemy_defeated.emit(id, reward)` |
+| Complex state | Resource-based save | `ResourceSaver.save(state, path)` |
+| Testing services | Dependency injection | `shop.set_banking_service(mock_banking)` |
+| Error handling | Result type | `Result.ok(value)` or `Result.err(message)` |
+| Async operations | Signal + await | `await save_completed` |
+
+**These patterns are automatically enforced** via validators and documented with working examples!
+
+---
+
 ## 🚀 Usage
 
 ### Run Validators Locally

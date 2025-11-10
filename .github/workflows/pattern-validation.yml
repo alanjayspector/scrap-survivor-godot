@@ -120,6 +120,23 @@ jobs:
 
           echo "::endgroup::"
 
+      - name: Check service architecture patterns
+        id: architecture
+        run: |
+          echo "::group::Checking for service architecture issues"
+
+          if [ -f ".system/validators/service_architecture_validator.py" ]; then
+            python3 .system/validators/service_architecture_validator.py || {
+              echo "::error::Service architecture validation failed"
+              echo "::notice::See docs/godot-service-architecture.md for patterns and examples"
+              exit 1
+            }
+          else
+            echo "::warning::Service architecture validator not found - skipping"
+          fi
+
+          echo "::endgroup::"
+
       - name: Upload validation report
         if: always()
         uses: actions/upload-artifact@v4

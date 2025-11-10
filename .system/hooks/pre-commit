@@ -120,6 +120,13 @@ if [ -f .system/validators/godot_performance_validator.py ]; then
     fi
 fi
 
+# Service architecture validator (service patterns - Week 6 Day 5)
+if [ -f .system/validators/service_architecture_validator.py ]; then
+    if ! python3 .system/validators/service_architecture_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Godot runtime validator (DISABLED - needs better strategy)
 # if [ -f .system/validators/godot_runtime_validator.py ]; then
 #     if ! python3 .system/validators/godot_runtime_validator.py; then
