@@ -1,765 +1,855 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="GutTests" failures="0" tests="365" >
-  <testsuite name="scripts/tests/banking_service_test.gd" tests="13" failures="0" skipped="0" time="0.01477" >
-      <testcase name="test_initial_state_all_balances_are_zero" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000869" >
+<testsuites name="GutTests" failures="0" tests="408" >
+  <testsuite name="scripts/tests/aura_foundation_test.gd" tests="19" failures="0" skipped="0" time="0.596442" >
+      <testcase name="test_aura_data_stored_in_character" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001235" >
       </testcase>
-      <testcase name="test_add_currency_increases_balance" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001339" >
+      <testcase name="test_aura_type_matches_character_type" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000902" >
       </testcase>
-      <testcase name="test_subtract_currency_decreases_balance" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001707" >
+      <testcase name="test_scavenger_has_collect_aura" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001071" >
       </testcase>
-      <testcase name="test_subtract_currency_with_insufficient_funds_fails" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001071" >
+      <testcase name="test_tank_has_shield_aura" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000972" >
       </testcase>
-      <testcase name="test_tier_gating_free_tier_denies_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000807" >
+      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000839" >
       </testcase>
-      <testcase name="test_tier_gating_premium_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000752" >
+      <testcase name="test_calculate_aura_power_with_resonance" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000312" >
       </testcase>
-      <testcase name="test_tier_gating_subscription_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000782" >
+      <testcase name="test_calculate_aura_power_for_all_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000321" >
       </testcase>
-      <testcase name="test_balance_caps_premium_tier_enforces_10k_limit" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00107" >
+      <testcase name="test_calculate_aura_radius_from_pickup_range" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000297" >
       </testcase>
-      <testcase name="test_balance_caps_subscription_tier_enforces_100k_limit" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000781" >
+      <testcase name="test_invalid_aura_type_returns_zero" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000303" >
       </testcase>
-      <testcase name="test_transaction_history_records_all_operations" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001521" >
+      <testcase name="test_aura_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001699" >
       </testcase>
-      <testcase name="test_get_tier_returns_current_tier" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001053" >
+      <testcase name="test_multiple_characters_with_different_auras_persist" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.002135" >
       </testcase>
-      <testcase name="test_currency_changed_signal_emits_on_add" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001218" >
+      <testcase name="test_all_aura_types_have_required_fields" assertions="48" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000467" >
       </testcase>
-      <testcase name="test_currency_changed_signal_emits_on_subtract" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.0018" >
+      <testcase name="test_aura_visual_can_be_instantiated" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000425" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/character_service_test.gd" tests="43" failures="0" skipped="0" time="0.061915" >
-      <testcase name="test_create_character_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001181" >
+      <testcase name="test_aura_visual_creates_child_nodes" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.003925" >
       </testcase>
-      <testcase name="test_create_character_stores_correct_data" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001449" >
+      <testcase name="test_aura_visual_update_changes_parameters" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.02909" >
       </testcase>
-      <testcase name="test_create_character_with_empty_name_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000916" >
+      <testcase name="test_aura_visual_set_emitting" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.055076" >
       </testcase>
-      <testcase name="test_create_character_sets_default_stats" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000841" >
+      <testcase name="test_aura_visual_colors_match_aura_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.401286" >
       </testcase>
-      <testcase name="test_first_character_becomes_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000785" >
+      <testcase name="test_aura_visual_ring_has_correct_point_count" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.047824" >
       </testcase>
-      <testcase name="test_get_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000966" >
-      </testcase>
-      <testcase name="test_get_nonexistent_character_returns_empty_dict" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000908" >
-      </testcase>
-      <testcase name="test_get_all_characters_returns_all_created" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001294" >
-      </testcase>
-      <testcase name="test_update_character_modifies_data" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001055" >
-      </testcase>
-      <testcase name="test_update_nonexistent_character_fails" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000774" >
-      </testcase>
-      <testcase name="test_delete_character_removes_from_storage" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001319" >
-      </testcase>
-      <testcase name="test_delete_active_character_clears_active_state" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001865" >
-      </testcase>
-      <testcase name="test_delete_only_character_clears_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001059" >
-      </testcase>
-      <testcase name="test_set_active_character_changes_active" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001319" >
-      </testcase>
-      <testcase name="test_set_active_nonexistent_character_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000809" >
-      </testcase>
-      <testcase name="test_get_active_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001256" >
-      </testcase>
-      <testcase name="test_free_tier_allows_3_characters" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001928" >
-      </testcase>
-      <testcase name="test_premium_tier_allows_10_characters" assertions="12" status="pass" classname="scripts/tests/character_service_test.gd" time="0.003846" >
-      </testcase>
-      <testcase name="test_subscription_tier_allows_unlimited_characters" assertions="16" status="pass" classname="scripts/tests/character_service_test.gd" time="0.005004" >
-      </testcase>
-      <testcase name="test_can_create_character_respects_tier_limits" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001645" >
-      </testcase>
-      <testcase name="test_get_available_slots_returns_correct_count" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00165" >
-      </testcase>
-      <testcase name="test_add_experience_increases_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000821" >
-      </testcase>
-      <testcase name="test_level_up_at_100_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001077" >
-      </testcase>
-      <testcase name="test_level_up_increases_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001124" >
-      </testcase>
-      <testcase name="test_multiple_level_ups_from_single_xp_gain" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001352" >
-      </testcase>
-      <testcase name="test_add_zero_or_negative_xp_does_nothing" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000853" >
-      </testcase>
-      <testcase name="test_character_death_increments_death_count" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001127" >
-      </testcase>
-      <testcase name="test_multiple_deaths_increment_count" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001592" >
-      </testcase>
-      <testcase name="test_character_create_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001026" >
-      </testcase>
-      <testcase name="test_character_create_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000923" >
-      </testcase>
-      <testcase name="test_character_level_up_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001222" >
-      </testcase>
-      <testcase name="test_character_level_up_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001241" >
-      </testcase>
-      <testcase name="test_character_death_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001221" >
-      </testcase>
-      <testcase name="test_character_death_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001197" >
-      </testcase>
-      <testcase name="test_serialize_returns_valid_data" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001103" >
-      </testcase>
-      <testcase name="test_deserialize_restores_characters" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001897" >
-      </testcase>
-      <testcase name="test_deserialize_restores_character_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001864" >
-      </testcase>
-      <testcase name="test_full_save_load_cycle_with_save_manager" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.004241" >
-      </testcase>
-      <testcase name="test_character_created_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00096" >
-      </testcase>
-      <testcase name="test_character_deleted_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001174" >
-      </testcase>
-      <testcase name="test_active_character_changed_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001576" >
-      </testcase>
-      <testcase name="test_character_stats_changed_signal_fires_on_update" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001292" >
-      </testcase>
-      <testcase name="test_character_stats_changed_signal_fires_on_level_up" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001163" >
+      <testcase name="test_mutant_has_damage_aura_visual" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.048263" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/character_stats_expansion_test.gd" tests="24" failures="0" skipped="0" time="0.023673" >
-      <testcase name="test_hp_regen_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000584" >
+  <testsuite name="scripts/tests/banking_service_test.gd" tests="13" failures="0" skipped="0" time="0.022172" >
+      <testcase name="test_initial_state_all_balances_are_zero" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004109" >
       </testcase>
-      <testcase name="test_life_steal_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000544" >
+      <testcase name="test_add_currency_increases_balance" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002518" >
       </testcase>
-      <testcase name="test_attack_speed_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000531" >
+      <testcase name="test_subtract_currency_decreases_balance" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001774" >
       </testcase>
-      <testcase name="test_melee_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000541" >
+      <testcase name="test_subtract_currency_with_insufficient_funds_fails" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001387" >
       </testcase>
-      <testcase name="test_ranged_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000559" >
+      <testcase name="test_tier_gating_free_tier_denies_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001081" >
       </testcase>
-      <testcase name="test_scavenging_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000784" >
+      <testcase name="test_tier_gating_premium_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001077" >
       </testcase>
-      <testcase name="test_resonance_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000794" >
+      <testcase name="test_tier_gating_subscription_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001033" >
       </testcase>
-      <testcase name="test_new_character_has_hp_regen" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000877" >
+      <testcase name="test_balance_caps_premium_tier_enforces_10k_limit" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001396" >
       </testcase>
-      <testcase name="test_new_character_has_life_steal" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000791" >
+      <testcase name="test_balance_caps_subscription_tier_enforces_100k_limit" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.000978" >
       </testcase>
-      <testcase name="test_new_character_has_attack_speed" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000786" >
+      <testcase name="test_transaction_history_records_all_operations" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001945" >
       </testcase>
-      <testcase name="test_new_character_has_melee_and_ranged_damage" assertions="4" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001233" >
+      <testcase name="test_get_tier_returns_current_tier" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001307" >
       </testcase>
-      <testcase name="test_new_character_has_scavenging" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000925" >
+      <testcase name="test_currency_changed_signal_emits_on_add" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.001491" >
       </testcase>
-      <testcase name="test_new_character_has_resonance" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000902" >
-      </testcase>
-      <testcase name="test_can_update_hp_regen_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001143" >
-      </testcase>
-      <testcase name="test_can_update_life_steal_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00112" >
-      </testcase>
-      <testcase name="test_can_update_attack_speed_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001123" >
-      </testcase>
-      <testcase name="test_can_update_melee_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001126" >
-      </testcase>
-      <testcase name="test_can_update_ranged_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00109" >
-      </testcase>
-      <testcase name="test_can_update_scavenging_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001117" >
-      </testcase>
-      <testcase name="test_can_update_resonance_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00111" >
-      </testcase>
-      <testcase name="test_scavenging_in_level_up_gains" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000566" >
-      </testcase>
-      <testcase name="test_scavenging_increases_on_level_up" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001318" >
-      </testcase>
-      <testcase name="test_scavenging_increases_multiple_levels" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00238" >
-      </testcase>
-      <testcase name="test_new_stats_persist_through_save_load" assertions="7" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001729" >
+      <testcase name="test_currency_changed_signal_emits_on_subtract" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002076" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/enemy_loading_test.gd" tests="23" failures="0" skipped="23" time="0.001101" >
-      <testcase name="test_basic_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000075" >
+  <testsuite name="scripts/tests/character_service_test.gd" tests="43" failures="0" skipped="0" time="0.065845" >
+      <testcase name="test_create_character_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001115" >
+      </testcase>
+      <testcase name="test_create_character_stores_correct_data" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001079" >
+      </testcase>
+      <testcase name="test_create_character_with_empty_name_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000973" >
+      </testcase>
+      <testcase name="test_create_character_sets_default_stats" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001014" >
+      </testcase>
+      <testcase name="test_first_character_becomes_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000968" >
+      </testcase>
+      <testcase name="test_get_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001161" >
+      </testcase>
+      <testcase name="test_get_nonexistent_character_returns_empty_dict" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000931" >
+      </testcase>
+      <testcase name="test_get_all_characters_returns_all_created" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001519" >
+      </testcase>
+      <testcase name="test_update_character_modifies_data" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001223" >
+      </testcase>
+      <testcase name="test_update_nonexistent_character_fails" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000868" >
+      </testcase>
+      <testcase name="test_delete_character_removes_from_storage" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001459" >
+      </testcase>
+      <testcase name="test_delete_active_character_clears_active_state" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001732" >
+      </testcase>
+      <testcase name="test_delete_only_character_clears_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001152" >
+      </testcase>
+      <testcase name="test_set_active_character_changes_active" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001431" >
+      </testcase>
+      <testcase name="test_set_active_nonexistent_character_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000856" >
+      </testcase>
+      <testcase name="test_get_active_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001311" >
+      </testcase>
+      <testcase name="test_free_tier_allows_3_characters" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.002101" >
+      </testcase>
+      <testcase name="test_premium_tier_allows_10_characters" assertions="12" status="pass" classname="scripts/tests/character_service_test.gd" time="0.004028" >
+      </testcase>
+      <testcase name="test_subscription_tier_allows_unlimited_characters" assertions="16" status="pass" classname="scripts/tests/character_service_test.gd" time="0.005231" >
+      </testcase>
+      <testcase name="test_can_create_character_respects_tier_limits" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001692" >
+      </testcase>
+      <testcase name="test_get_available_slots_returns_correct_count" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001873" >
+      </testcase>
+      <testcase name="test_add_experience_increases_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000912" >
+      </testcase>
+      <testcase name="test_level_up_at_100_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001292" >
+      </testcase>
+      <testcase name="test_level_up_increases_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001149" >
+      </testcase>
+      <testcase name="test_multiple_level_ups_from_single_xp_gain" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001582" >
+      </testcase>
+      <testcase name="test_add_zero_or_negative_xp_does_nothing" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000919" >
+      </testcase>
+      <testcase name="test_character_death_increments_death_count" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001152" >
+      </testcase>
+      <testcase name="test_multiple_deaths_increment_count" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001802" >
+      </testcase>
+      <testcase name="test_character_create_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001119" >
+      </testcase>
+      <testcase name="test_character_create_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001004" >
+      </testcase>
+      <testcase name="test_character_level_up_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001276" >
+      </testcase>
+      <testcase name="test_character_level_up_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001319" >
+      </testcase>
+      <testcase name="test_character_death_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001279" >
+      </testcase>
+      <testcase name="test_character_death_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.0013" >
+      </testcase>
+      <testcase name="test_serialize_returns_valid_data" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001202" >
+      </testcase>
+      <testcase name="test_deserialize_restores_characters" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.002029" >
+      </testcase>
+      <testcase name="test_deserialize_restores_character_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.002053" >
+      </testcase>
+      <testcase name="test_full_save_load_cycle_with_save_manager" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.004492" >
+      </testcase>
+      <testcase name="test_character_created_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000991" >
+      </testcase>
+      <testcase name="test_character_deleted_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001257" >
+      </testcase>
+      <testcase name="test_active_character_changed_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00152" >
+      </testcase>
+      <testcase name="test_character_stats_changed_signal_fires_on_update" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001234" >
+      </testcase>
+      <testcase name="test_character_stats_changed_signal_fires_on_level_up" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001245" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/character_stats_expansion_test.gd" tests="24" failures="0" skipped="0" time="0.022478" >
+      <testcase name="test_hp_regen_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000601" >
+      </testcase>
+      <testcase name="test_life_steal_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000577" >
+      </testcase>
+      <testcase name="test_attack_speed_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000589" >
+      </testcase>
+      <testcase name="test_melee_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000572" >
+      </testcase>
+      <testcase name="test_ranged_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000591" >
+      </testcase>
+      <testcase name="test_scavenging_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000572" >
+      </testcase>
+      <testcase name="test_resonance_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000565" >
+      </testcase>
+      <testcase name="test_new_character_has_hp_regen" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000858" >
+      </testcase>
+      <testcase name="test_new_character_has_life_steal" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000836" >
+      </testcase>
+      <testcase name="test_new_character_has_attack_speed" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00084" >
+      </testcase>
+      <testcase name="test_new_character_has_melee_and_ranged_damage" assertions="4" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000886" >
+      </testcase>
+      <testcase name="test_new_character_has_scavenging" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000886" >
+      </testcase>
+      <testcase name="test_new_character_has_resonance" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000941" >
+      </testcase>
+      <testcase name="test_can_update_hp_regen_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001114" >
+      </testcase>
+      <testcase name="test_can_update_life_steal_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001142" >
+      </testcase>
+      <testcase name="test_can_update_attack_speed_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001093" >
+      </testcase>
+      <testcase name="test_can_update_melee_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001072" >
+      </testcase>
+      <testcase name="test_can_update_ranged_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001145" >
+      </testcase>
+      <testcase name="test_can_update_scavenging_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001106" >
+      </testcase>
+      <testcase name="test_can_update_resonance_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001078" >
+      </testcase>
+      <testcase name="test_scavenging_in_level_up_gains" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000565" >
+      </testcase>
+      <testcase name="test_scavenging_increases_on_level_up" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001085" >
+      </testcase>
+      <testcase name="test_scavenging_increases_multiple_levels" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.002101" >
+      </testcase>
+      <testcase name="test_new_stats_persist_through_save_load" assertions="7" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001663" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/character_types_test.gd" tests="24" failures="0" skipped="0" time="0.02399" >
+      <testcase name="test_scavenger_has_correct_stat_modifiers" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000875" >
+      </testcase>
+      <testcase name="test_tank_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000916" >
+      </testcase>
+      <testcase name="test_commando_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000892" >
+      </testcase>
+      <testcase name="test_mutant_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000847" >
+      </testcase>
+      <testcase name="test_character_type_stored_correctly" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000873" >
+      </testcase>
+      <testcase name="test_free_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000879" >
+      </testcase>
+      <testcase name="test_free_tier_cannot_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000865" >
+      </testcase>
+      <testcase name="test_free_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000821" >
+      </testcase>
+      <testcase name="test_free_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00081" >
+      </testcase>
+      <testcase name="test_premium_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000808" >
+      </testcase>
+      <testcase name="test_premium_tier_can_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000834" >
+      </testcase>
+      <testcase name="test_premium_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000814" >
+      </testcase>
+      <testcase name="test_premium_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000811" >
+      </testcase>
+      <testcase name="test_subscription_tier_can_create_all_types" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001675" >
+      </testcase>
+      <testcase name="test_scavenger_has_collect_aura" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000866" >
+      </testcase>
+      <testcase name="test_tank_has_shield_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000846" >
+      </testcase>
+      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000836" >
+      </testcase>
+      <testcase name="test_mutant_has_damage_aura" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000847" >
+      </testcase>
+      <testcase name="test_character_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001662" >
+      </testcase>
+      <testcase name="test_aura_type_persists_after_save_load" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001379" >
+      </testcase>
+      <testcase name="test_invalid_character_type_fails" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000827" >
+      </testcase>
+      <testcase name="test_multiple_characters_with_different_types" assertions="5" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001762" >
+      </testcase>
+      <testcase name="test_character_type_defaults_to_scavenger" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000875" >
+      </testcase>
+      <testcase name="test_mutant_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00137" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/enemy_loading_test.gd" tests="23" failures="0" skipped="23" time="0.00118" >
+      <testcase name="test_basic_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.00007" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_fast_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.00006" >
+      <testcase name="test_fast_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000054" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_tank_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000052" >
+      <testcase name="test_tank_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000053" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_basic_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000053" >
+      <testcase name="test_basic_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000062" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_fast_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
+      <testcase name="test_fast_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_tank_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000044" >
+      <testcase name="test_tank_enemy_has_valid_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000049" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_1_stats_equal_base_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
+      <testcase name="test_wave_1_stats_equal_base_stats" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000048" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_5_hp_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
+      <testcase name="test_wave_5_hp_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000055" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_5_speed_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
+      <testcase name="test_wave_5_speed_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000049" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_5_damage_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000044" >
+      <testcase name="test_wave_5_damage_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000049" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_5_value_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
+      <testcase name="test_wave_5_value_scales_correctly" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_10_hp_greater_than_wave_1" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
+      <testcase name="test_wave_10_hp_greater_than_wave_1" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.00005" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_wave_20_hp_greater_than_wave_10" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000043" >
+      <testcase name="test_wave_20_hp_greater_than_wave_10" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000049" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_spawn_weights_sum_to_100" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000051" >
+      <testcase name="test_spawn_weights_sum_to_100" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_basic_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
+      <testcase name="test_basic_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_fast_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
+      <testcase name="test_fast_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_tank_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
+      <testcase name="test_tank_enemy_spawn_percentage" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_basic_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000042" >
+      <testcase name="test_basic_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_fast_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
+      <testcase name="test_fast_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000045" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_tank_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000043" >
+      <testcase name="test_tank_enemy_has_drop_chance" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000047" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_should_drop_item_is_probabilistic_basic" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000043" >
+      <testcase name="test_should_drop_item_is_probabilistic_basic" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000071" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_should_drop_item_is_probabilistic_fast" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000046" >
+      <testcase name="test_should_drop_item_is_probabilistic_fast" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000049" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_should_drop_item_is_probabilistic_tank" assertions="0" status="pending" classname="scripts/tests/enemy_loading_test.gd" time="0.000048" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
   </testsuite>
-  <testsuite name="scripts/tests/entity_classes_test.gd" tests="30" failures="0" skipped="18" time="0.001927" >
-      <testcase name="test_player_initial_max_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000181" >
+  <testsuite name="scripts/tests/entity_classes_test.gd" tests="30" failures="0" skipped="18" time="0.001997" >
+      <testcase name="test_player_initial_max_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000158" >
       </testcase>
-      <testcase name="test_player_initial_current_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000066" >
+      <testcase name="test_player_initial_current_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000077" >
       </testcase>
-      <testcase name="test_player_base_speed_is_200" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000061" >
+      <testcase name="test_player_base_speed_is_200" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000068" >
       </testcase>
       <testcase name="test_player_takes_damage_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000062" >
       </testcase>
-      <testcase name="test_player_heals_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000059" >
+      <testcase name="test_player_heals_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.00006" >
       </testcase>
-      <testcase name="test_player_applies_health_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000051" >
+      <testcase name="test_player_applies_health_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000056" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_applies_speed_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000048" >
+      <testcase name="test_player_applies_speed_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000053" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_equips_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000047" >
+      <testcase name="test_player_equips_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_invulnerability_blocks_damage" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000063" >
+      <testcase name="test_player_invulnerability_blocks_damage" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000061" >
       </testcase>
-      <testcase name="test_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000059" >
+      <testcase name="test_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000054" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_initializes_with_wave_1" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000047" >
+      <testcase name="test_enemy_initializes_with_wave_1" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_scales_health_with_wave" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000046" >
+      <testcase name="test_enemy_scales_health_with_wave" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000054" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_takes_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000045" >
+      <testcase name="test_enemy_takes_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000053" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_health_percentage_calculation" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000057" >
+      <testcase name="test_enemy_health_percentage_calculation" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000051" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_is_alive_when_health_positive" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000048" >
+      <testcase name="test_enemy_is_alive_when_health_positive" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000051" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_is_dead_when_health_zero" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000048" >
+      <testcase name="test_enemy_is_dead_when_health_zero" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000051" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_projectile_activates_with_parameters" assertions="4" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000156" >
+      <testcase name="test_projectile_activates_with_parameters" assertions="4" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.00015" >
       </testcase>
-      <testcase name="test_projectile_velocity_is_set" assertions="2" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000117" >
+      <testcase name="test_projectile_velocity_is_set" assertions="2" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000119" >
       </testcase>
-      <testcase name="test_projectile_pierce_is_set" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000075" >
+      <testcase name="test_projectile_pierce_is_set" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000083" >
       </testcase>
-      <testcase name="test_projectile_remaining_range_is_full" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000073" >
+      <testcase name="test_projectile_remaining_range_is_full" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000079" >
       </testcase>
-      <testcase name="test_projectile_deactivates" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000066" >
+      <testcase name="test_projectile_deactivates" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000076" >
       </testcase>
-      <testcase name="test_enemy_targets_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000053" >
+      <testcase name="test_enemy_targets_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000066" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_fires_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00005" >
+      <testcase name="test_player_fires_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_enemy_calculates_distance_to_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000051" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_armor_reduces_damage" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
+      <testcase name="test_player_armor_reduces_damage" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.000053" >
       </testcase>
-      <testcase name="test_player_life_steal_modifier" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00005" >
+      <testcase name="test_player_life_steal_modifier" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_weapon_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000046" >
+      <testcase name="test_weapon_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000053" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_resource_basic_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000052" >
+      <testcase name="test_enemy_resource_basic_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00005" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.000048" >
+      <testcase name="test_health_boost_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00005" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_vampiric_fangs_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00005" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
   </testsuite>
-  <testsuite name="scripts/tests/error_service_test.gd" tests="3" failures="0" skipped="0" time="0.000588" >
-      <testcase name="test_error_occurred_signal_emits_on_error" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000245" >
+  <testsuite name="scripts/tests/error_service_test.gd" tests="3" failures="0" skipped="0" time="0.000584" >
+      <testcase name="test_error_occurred_signal_emits_on_error" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000226" >
       </testcase>
-      <testcase name="test_critical_error_occurred_signal_emits_on_critical" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000184" >
+      <testcase name="test_critical_error_occurred_signal_emits_on_critical" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000189" >
       </testcase>
-      <testcase name="test_godot_error_capture_includes_stack_trace_in_metadata" assertions="2" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000159" >
+      <testcase name="test_godot_error_capture_includes_stack_trace_in_metadata" assertions="2" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000169" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/game_state_test.gd" tests="28" failures="0" skipped="0" time="0.002362" >
-      <testcase name="test_initial_wave_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00006" >
+  <testsuite name="scripts/tests/game_state_test.gd" tests="28" failures="0" skipped="0" time="0.002379" >
+      <testcase name="test_initial_wave_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000069" >
       </testcase>
-      <testcase name="test_set_current_wave_updates_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
+      <testcase name="test_set_current_wave_updates_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000059" >
       </testcase>
-      <testcase name="test_set_current_wave_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000198" >
+      <testcase name="test_set_current_wave_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000186" >
       </testcase>
-      <testcase name="test_set_current_wave_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000138" >
+      <testcase name="test_set_current_wave_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000137" >
       </testcase>
-      <testcase name="test_initial_score_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000053" >
+      <testcase name="test_initial_score_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000061" >
       </testcase>
       <testcase name="test_set_score_updates_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
       </testcase>
-      <testcase name="test_set_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00005" >
+      <testcase name="test_set_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
       </testcase>
-      <testcase name="test_set_score_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000185" >
+      <testcase name="test_set_score_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000181" >
       </testcase>
-      <testcase name="test_add_score_increases_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
+      <testcase name="test_add_score_increases_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000062" >
       </testcase>
-      <testcase name="test_add_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00005" >
+      <testcase name="test_add_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_add_score_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000152" >
+      <testcase name="test_add_score_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000155" >
       </testcase>
-      <testcase name="test_high_score_does_not_decrease" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
+      <testcase name="test_high_score_does_not_decrease" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000063" >
       </testcase>
-      <testcase name="test_initial_gameplay_state_is_inactive" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000042" >
+      <testcase name="test_initial_gameplay_state_is_inactive" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000045" >
       </testcase>
-      <testcase name="test_set_gameplay_active_true_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000043" >
+      <testcase name="test_set_gameplay_active_true_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000049" >
       </testcase>
-      <testcase name="test_set_gameplay_active_true_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000241" >
+      <testcase name="test_set_gameplay_active_true_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000138" >
       </testcase>
-      <testcase name="test_set_gameplay_active_false_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00005" >
+      <testcase name="test_set_gameplay_active_false_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000052" >
       </testcase>
-      <testcase name="test_set_gameplay_active_false_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000146" >
+      <testcase name="test_set_gameplay_active_false_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000141" >
       </testcase>
-      <testcase name="test_initial_character_is_empty" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
+      <testcase name="test_initial_character_is_empty" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000066" >
       </testcase>
-      <testcase name="test_set_current_character_updates_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000053" >
+      <testcase name="test_set_current_character_updates_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000058" >
       </testcase>
-      <testcase name="test_set_current_character_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000145" >
+      <testcase name="test_set_current_character_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000151" >
       </testcase>
-      <testcase name="test_set_current_character_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000123" >
+      <testcase name="test_set_current_character_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000142" >
       </testcase>
-      <testcase name="test_reset_clears_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000051" >
+      <testcase name="test_reset_clears_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00006" >
       </testcase>
-      <testcase name="test_reset_clears_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000047" >
+      <testcase name="test_reset_clears_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_reset_preserves_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000046" >
+      <testcase name="test_reset_preserves_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
       </testcase>
-      <testcase name="test_reset_deactivates_gameplay" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000036" >
+      <testcase name="test_reset_deactivates_gameplay" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000044" >
       </testcase>
-      <testcase name="test_reset_clears_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000052" >
+      <testcase name="test_reset_clears_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
       </testcase>
-      <testcase name="test_reset_unpauses_game" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000041" >
+      <testcase name="test_reset_unpauses_game" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000043" >
       </testcase>
       <testcase name="test_reset_full_state" assertions="6" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000083" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/item_resources_test.gd" tests="41" failures="0" skipped="41" time="0.002233" >
-      <testcase name="test_health_boost_loads" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000064" >
+  <testsuite name="scripts/tests/item_resources_test.gd" tests="41" failures="0" skipped="41" time="0.002441" >
+      <testcase name="test_health_boost_loads" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000068" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_has_correct_id" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000065" >
+      <testcase name="test_health_boost_has_correct_id" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000056" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_health_boost_has_correct_name" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000057" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_is_upgrade_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000057" >
+      <testcase name="test_health_boost_is_upgrade_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000056" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_has_maxhp_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.00006" >
+      <testcase name="test_health_boost_has_maxhp_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000061" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_has_no_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_health_boost_has_no_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_damage_up_has_damage_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000057" >
+      <testcase name="test_damage_up_has_damage_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_speed_boost_is_uncommon" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_speed_boost_is_uncommon" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_speed_boost_has_speed_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_speed_boost_has_speed_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000064" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_armor_plate_is_rare" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_armor_plate_is_rare" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000055" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_armor_plate_has_armor_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000055" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_lucky_charm_is_consumable_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_lucky_charm_is_consumable_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000064" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_lucky_charm_is_epic" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_lucky_charm_is_epic" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000065" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_lucky_charm_has_luck_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_lucky_charm_has_luck_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_vampiric_fangs_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
+      <testcase name="test_vampiric_fangs_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000054" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_vampiric_fangs_has_lifesteal_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_vampiric_fangs_has_lifesteal_modifier" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_scrap_magnet_has_multiple_modifiers" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_scrap_magnet_has_multiple_modifiers" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_reactor_coolant_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000055" >
+      <testcase name="test_reactor_coolant_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000056" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_reactor_coolant_positive_and_negative_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_reactor_coolant_positive_and_negative_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_unstable_serum_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_unstable_serum_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_unstable_serum_positive_and_negative_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_unstable_serum_positive_and_negative_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000057" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_scavenger_toolkit_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_scavenger_toolkit_has_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_scavenger_toolkit_multiple_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_scavenger_toolkit_multiple_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_relic_of_decay_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
+      <testcase name="test_relic_of_decay_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000063" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_relic_of_decay_extreme_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_relic_of_decay_extreme_trade_offs" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000061" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_wrench_is_weapon_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_rusty_wrench_is_weapon_type" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000063" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_wrench_weapon_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_rusty_wrench_weapon_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000064" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_sword_is_melee" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000055" >
+      <testcase name="test_rusty_sword_is_melee" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_sword_melee_properties" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
+      <testcase name="test_rusty_sword_melee_properties" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_plasma_arc_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_plasma_arc_is_legendary" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000065" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_plasma_arc_legendary_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_plasma_arc_legendary_stats" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000061" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rail_slagger_is_epic" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.00006" >
+      <testcase name="test_rail_slagger_is_epic" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rail_slagger_high_damage_slow_rate" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000051" >
+      <testcase name="test_rail_slagger_high_damage_slow_rate" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_nail_spitter_fast_fire_rate" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_nail_spitter_fast_fire_rate" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_get_stat_descriptions_returns_array" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000055" >
+      <testcase name="test_get_stat_descriptions_returns_array" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_get_rarity_tier_common_is_0" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_get_rarity_tier_common_is_0" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000066" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
       <testcase name="test_get_rarity_tier_uncommon_is_1" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_get_rarity_tier_rare_is_2" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000054" >
+      <testcase name="test_get_rarity_tier_rare_is_2" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000063" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_get_rarity_tier_epic_is_3" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000052" >
+      <testcase name="test_get_rarity_tier_epic_is_3" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000063" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_get_rarity_tier_legendary_is_4" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000053" >
+      <testcase name="test_get_rarity_tier_legendary_is_4" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_to_string_contains_id" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000054" >
+      <testcase name="test_to_string_contains_id" assertions="0" status="pending" classname="scripts/tests/item_resources_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
   </testsuite>
-  <testsuite name="scripts/tests/logger_test.gd" tests="11" failures="0" skipped="0" time="1.375833" >
-      <testcase name="test_log_file_is_created" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000696" >
+  <testsuite name="scripts/tests/logger_test.gd" tests="11" failures="0" skipped="0" time="1.38265" >
+      <testcase name="test_log_file_is_created" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000748" >
       </testcase>
-      <testcase name="test_log_file_is_not_empty" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000544" >
+      <testcase name="test_log_file_is_not_empty" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000617" >
       </testcase>
-      <testcase name="test_log_path_returns_valid_path" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000267" >
+      <testcase name="test_log_path_returns_valid_path" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.00029" >
       </testcase>
-      <testcase name="test_debug_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000497" >
+      <testcase name="test_debug_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000551" >
       </testcase>
-      <testcase name="test_info_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000538" >
+      <testcase name="test_info_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000593" >
       </testcase>
-      <testcase name="test_warning_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000548" >
+      <testcase name="test_warning_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000594" >
       </testcase>
-      <testcase name="test_error_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000532" >
+      <testcase name="test_error_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000595" >
       </testcase>
-      <testcase name="test_multiple_log_levels_are_recorded" assertions="6" status="pass" classname="scripts/tests/logger_test.gd" time="0.001284" >
+      <testcase name="test_multiple_log_levels_are_recorded" assertions="6" status="pass" classname="scripts/tests/logger_test.gd" time="0.001359" >
       </testcase>
-      <testcase name="test_log_rotation_respects_max_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.628587" >
+      <testcase name="test_log_rotation_respects_max_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.63734" >
       </testcase>
-      <testcase name="test_log_rotation_keeps_most_recent_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.741041" >
+      <testcase name="test_log_rotation_keeps_most_recent_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.738622" >
       </testcase>
-      <testcase name="test_error_service_integration_placeholder" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.001299" >
-      </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/recycler_service_test.gd" tests="26" failures="0" skipped="0" time="0.016178" >
-      <testcase name="test_rarity_enum_values_are_correct" assertions="5" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00139" >
-      </testcase>
-      <testcase name="test_scrap_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001176" >
-      </testcase>
-      <testcase name="test_component_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000922" >
-      </testcase>
-      <testcase name="test_dismantle_common_non_weapon_gives_base_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001112" >
-      </testcase>
-      <testcase name="test_dismantle_common_weapon_applies_multiplier" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000732" >
-      </testcase>
-      <testcase name="test_dismantle_rare_non_weapon_gives_higher_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000645" >
-      </testcase>
-      <testcase name="test_dismantle_rare_weapon_applies_multiplier_and_rounds" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000614" >
-      </testcase>
-      <testcase name="test_common_items_never_drop_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000636" >
-      </testcase>
-      <testcase name="test_uncommon_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000346" >
-      </testcase>
-      <testcase name="test_rare_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000351" >
-      </testcase>
-      <testcase name="test_epic_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000346" >
-      </testcase>
-      <testcase name="test_legendary_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00034" >
-      </testcase>
-      <testcase name="test_luck_40_adds_10_percent_component_chance" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000325" >
-      </testcase>
-      <testcase name="test_luck_chance_bonus_caps_at_25_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000322" >
-      </testcase>
-      <testcase name="test_luck_120_adds_one_component" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00033" >
-      </testcase>
-      <testcase name="test_luck_240_adds_two_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000331" >
-      </testcase>
-      <testcase name="test_component_chance_caps_at_95_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000323" >
-      </testcase>
-      <testcase name="test_preview_shows_potential_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000583" >
-      </testcase>
-      <testcase name="test_dismantle_uses_randomness_for_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001412" >
-      </testcase>
-      <testcase name="test_broken_item_gives_zero_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001144" >
-      </testcase>
-      <testcase name="test_negative_luck_normalized_to_zero" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000342" >
-      </testcase>
-      <testcase name="test_empty_template_id_returns_zero_outcome" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000594" >
-      </testcase>
-      <testcase name="test_base_scrap_override_works" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000606" >
-      </testcase>
-      <testcase name="test_rarity_from_string_converts_correctly" assertions="3" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000333" >
-      </testcase>
-      <testcase name="test_rarity_to_string_converts_correctly" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000341" >
-      </testcase>
-      <testcase name="test_unknown_rarity_string_defaults_to_common" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000582" >
+      <testcase name="test_error_service_integration_placeholder" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.001341" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/save_integration_test.gd" tests="22" failures="0" skipped="0" time="0.116542" >
-      <testcase name="test_save_all_services_succeeds" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005694" >
+  <testsuite name="scripts/tests/recycler_service_test.gd" tests="26" failures="0" skipped="0" time="0.016122" >
+      <testcase name="test_rarity_enum_values_are_correct" assertions="5" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001373" >
       </testcase>
-      <testcase name="test_load_all_services_restores_state" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007618" >
+      <testcase name="test_scrap_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001048" >
       </testcase>
-      <testcase name="test_multiple_services_save_and_load" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007901" >
+      <testcase name="test_component_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00098" >
       </testcase>
-      <testcase name="test_transaction_history_persists" assertions="7" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.008998" >
+      <testcase name="test_dismantle_common_non_weapon_gives_base_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001109" >
       </testcase>
-      <testcase name="test_save_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005225" >
+      <testcase name="test_dismantle_common_weapon_applies_multiplier" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000768" >
       </testcase>
-      <testcase name="test_save_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00513" >
+      <testcase name="test_dismantle_rare_non_weapon_gives_higher_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000709" >
       </testcase>
-      <testcase name="test_load_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006766" >
+      <testcase name="test_dismantle_rare_weapon_applies_multiplier_and_rounds" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000688" >
       </testcase>
-      <testcase name="test_load_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006673" >
+      <testcase name="test_common_items_never_drop_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000706" >
       </testcase>
-      <testcase name="test_unsaved_changes_tracked_after_modification" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.002966" >
+      <testcase name="test_uncommon_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000398" >
       </testcase>
-      <testcase name="test_unsaved_changes_cleared_after_save" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004811" >
+      <testcase name="test_rare_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000393" >
       </testcase>
-      <testcase name="test_load_nonexistent_save_fails_gracefully" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003524" >
+      <testcase name="test_epic_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000379" >
       </testcase>
-      <testcase name="test_metadata_shows_no_save_initially" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.002579" >
+      <testcase name="test_legendary_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000381" >
       </testcase>
-      <testcase name="test_metadata_populated_after_save" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004525" >
+      <testcase name="test_luck_40_adds_10_percent_component_chance" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000373" >
       </testcase>
-      <testcase name="test_save_deleted_successfully" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00439" >
+      <testcase name="test_luck_chance_bonus_caps_at_25_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000368" >
       </testcase>
-      <testcase name="test_cross_service_state_consistency" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00682" >
+      <testcase name="test_luck_120_adds_one_component" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000375" >
       </testcase>
-      <testcase name="test_stateless_service_save_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004271" >
+      <testcase name="test_luck_240_adds_two_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000364" >
       </testcase>
-      <testcase name="test_stateless_service_load_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006139" >
+      <testcase name="test_component_chance_caps_at_95_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000354" >
       </testcase>
-      <testcase name="test_recycler_service_functional_after_load" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006231" >
+      <testcase name="test_preview_shows_potential_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000375" >
       </testcase>
-      <testcase name="test_auto_save_enabled" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003306" >
+      <testcase name="test_dismantle_uses_randomness_for_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000653" >
       </testcase>
-      <testcase name="test_auto_save_trigger_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004719" >
+      <testcase name="test_broken_item_gives_zero_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00066" >
       </testcase>
-      <testcase name="test_auto_save_creates_save_in_slot_0" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004837" >
+      <testcase name="test_negative_luck_normalized_to_zero" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000347" >
       </testcase>
-      <testcase name="test_auto_save_skips_when_no_changes" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003419" >
+      <testcase name="test_empty_template_id_returns_zero_outcome" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000718" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/save_system_test.gd" tests="20" failures="0" skipped="0" time="0.136682" >
-      <testcase name="test_save_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006875" >
+      <testcase name="test_base_scrap_override_works" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000922" >
       </testcase>
-      <testcase name="test_load_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006671" >
+      <testcase name="test_rarity_from_string_converts_correctly" assertions="3" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000382" >
       </testcase>
-      <testcase name="test_loaded_data_matches_saved_data" assertions="4" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006893" >
+      <testcase name="test_rarity_to_string_converts_correctly" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00038" >
       </testcase>
-      <testcase name="test_save_to_multiple_slots" assertions="3" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007444" >
-      </testcase>
-      <testcase name="test_load_from_multiple_slots" assertions="9" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007743" >
-      </testcase>
-      <testcase name="test_non_existent_save_metadata" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006239" >
-      </testcase>
-      <testcase name="test_existing_save_metadata" assertions="5" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006852" >
-      </testcase>
-      <testcase name="test_second_save_creates_backup" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007232" >
-      </testcase>
-      <testcase name="test_save_exists_after_creation" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006772" >
-      </testcase>
-      <testcase name="test_save_deleted_successfully" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007444" >
-      </testcase>
-      <testcase name="test_has_save_detects_empty_slots" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006542" >
-      </testcase>
-      <testcase name="test_has_save_detects_existing_save" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007039" >
-      </testcase>
-      <testcase name="test_negative_slot_save_fails" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006721" >
-      </testcase>
-      <testcase name="test_too_large_slot_save_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006524" >
-      </testcase>
-      <testcase name="test_invalid_slot_load_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006339" >
-      </testcase>
-      <testcase name="test_invalid_slot_has_save_returns_false" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006109" >
-      </testcase>
-      <testcase name="test_corruption_recovers_from_backup" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007304" >
-      </testcase>
-      <testcase name="test_save_with_current_version" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006629" >
-      </testcase>
-      <testcase name="test_load_verifies_version" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006726" >
-      </testcase>
-      <testcase name="test_future_version_rejected" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006584" >
+      <testcase name="test_unknown_rarity_string_defaults_to_common" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000919" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/service_integration_test.gd" tests="15" failures="0" skipped="0" time="0.074868" >
-      <testcase name="test_dismantle_rare_weapon_grants_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000832" >
+  <testsuite name="scripts/tests/save_integration_test.gd" tests="22" failures="0" skipped="0" time="0.132811" >
+      <testcase name="test_save_all_services_succeeds" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.008912" >
       </testcase>
-      <testcase name="test_add_recycled_scrap_to_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001312" >
+      <testcase name="test_load_all_services_restores_state" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.011658" >
       </testcase>
-      <testcase name="test_player_can_afford_first_reroll" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001067" >
+      <testcase name="test_multiple_services_save_and_load" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.015014" >
       </testcase>
-      <testcase name="test_reroll_deducts_cost_from_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001585" >
+      <testcase name="test_transaction_history_persists" assertions="7" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.009462" >
       </testcase>
-      <testcase name="test_second_reroll_costs_more" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000802" >
+      <testcase name="test_save_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005471" >
       </testcase>
-      <testcase name="test_free_tier_rejects_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000579" >
+      <testcase name="test_save_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005534" >
       </testcase>
-      <testcase name="test_premium_tier_accepts_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001059" >
+      <testcase name="test_load_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007226" >
       </testcase>
-      <testcase name="test_premium_tier_enforces_cap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.053203" >
+      <testcase name="test_load_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006831" >
       </testcase>
-      <testcase name="test_banking_currency_changed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001294" >
+      <testcase name="test_unsaved_changes_tracked_after_modification" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.002947" >
       </testcase>
-      <testcase name="test_recycler_item_dismantled_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.00107" >
+      <testcase name="test_unsaved_changes_cleared_after_save" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004767" >
       </testcase>
-      <testcase name="test_shop_reroll_executed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000979" >
+      <testcase name="test_load_nonexistent_save_fails_gracefully" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003442" >
       </testcase>
-      <testcase name="test_player_dismantles_multiple_items" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.003483" >
+      <testcase name="test_metadata_shows_no_save_initially" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.002509" >
       </testcase>
-      <testcase name="test_player_runs_out_of_scrap_rerolling" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001529" >
+      <testcase name="test_metadata_populated_after_save" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00489" >
       </testcase>
-      <testcase name="test_legendary_weapon_grants_high_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001288" >
+      <testcase name="test_save_deleted_successfully" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004571" >
       </testcase>
-      <testcase name="test_complete_gameplay_scenario" assertions="5" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.004786" >
+      <testcase name="test_cross_service_state_consistency" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006801" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/shop_reroll_service_test.gd" tests="35" failures="0" skipped="0" time="0.012718" >
-      <testcase name="test_base_cost_constant_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00005" >
+      <testcase name="test_stateless_service_save_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004247" >
       </testcase>
-      <testcase name="test_cost_multiplier_constant_is_2" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
+      <testcase name="test_stateless_service_load_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006287" >
       </testcase>
-      <testcase name="test_max_reroll_count_constant_is_99" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000051" >
+      <testcase name="test_recycler_service_functional_after_load" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006369" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_0_equals_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
+      <testcase name="test_auto_save_enabled" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003303" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_1_equals_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00004" >
+      <testcase name="test_auto_save_trigger_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00472" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_2_equals_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000042" >
+      <testcase name="test_auto_save_creates_save_in_slot_0" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004591" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_3_equals_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
-      </testcase>
-      <testcase name="test_calculate_cost_for_reroll_5_equals_1600" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000038" >
-      </testcase>
-      <testcase name="test_calculate_cost_for_reroll_10_equals_51200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000046" >
-      </testcase>
-      <testcase name="test_initial_reroll_count_is_zero" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
-      </testcase>
-      <testcase name="test_initial_preview_shows_zero_rerolls" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000046" >
-      </testcase>
-      <testcase name="test_initial_preview_cost_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000045" >
-      </testcase>
-      <testcase name="test_initial_preview_next_cost_is_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000045" >
-      </testcase>
-      <testcase name="test_preview_does_not_mutate_state" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00007" >
-      </testcase>
-      <testcase name="test_preview_shows_accurate_costs" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000054" >
-      </testcase>
-      <testcase name="test_execute_first_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000335" >
-      </testcase>
-      <testcase name="test_execute_first_reroll_charges_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00031" >
-      </testcase>
-      <testcase name="test_execute_first_reroll_next_cost_is_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000304" >
-      </testcase>
-      <testcase name="test_execute_second_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000567" >
-      </testcase>
-      <testcase name="test_execute_second_reroll_charges_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000568" >
-      </testcase>
-      <testcase name="test_execute_second_reroll_next_cost_is_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000553" >
-      </testcase>
-      <testcase name="test_execute_third_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000825" >
-      </testcase>
-      <testcase name="test_execute_third_reroll_charges_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000819" >
-      </testcase>
-      <testcase name="test_execute_third_reroll_next_cost_is_800" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000831" >
-      </testcase>
-      <testcase name="test_get_reroll_count_tracks_executions" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000816" >
-      </testcase>
-      <testcase name="test_exponential_cost_progression" assertions="6" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.001624" >
-      </testcase>
-      <testcase name="test_reroll_count_reaches_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000324" >
-      </testcase>
-      <testcase name="test_reroll_count_does_not_exceed_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000571" >
-      </testcase>
-      <testcase name="test_max_cost_still_calculated_correctly" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00004" >
-      </testcase>
-      <testcase name="test_reset_clears_reroll_count" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000903" >
-      </testcase>
-      <testcase name="test_reset_restores_initial_costs" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000871" >
-      </testcase>
-      <testcase name="test_reroll_executed_signal_emits_on_execution" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000485" >
-      </testcase>
-      <testcase name="test_reroll_executed_signal_contains_correct_data" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000417" >
-      </testcase>
-      <testcase name="test_reroll_executed_signal_emits_multiple_times" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000709" >
-      </testcase>
-      <testcase name="test_reroll_count_reset_signal_emits_on_reset" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000153" >
+      <testcase name="test_auto_save_skips_when_no_changes" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.003259" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/stat_service_test.gd" tests="17" failures="0" skipped="0" time="0.000843" >
-      <testcase name="test_calculate_damage_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000049" >
+  <testsuite name="scripts/tests/save_system_test.gd" tests="20" failures="0" skipped="0" time="0.145597" >
+      <testcase name="test_save_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007044" >
       </testcase>
-      <testcase name="test_calculate_damage_with_strength_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000056" >
+      <testcase name="test_load_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007032" >
       </testcase>
-      <testcase name="test_calculate_damage_with_weapon_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
+      <testcase name="test_loaded_data_matches_saved_data" assertions="4" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007004" >
       </testcase>
-      <testcase name="test_calculate_health_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
+      <testcase name="test_save_to_multiple_slots" assertions="3" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007912" >
       </testcase>
-      <testcase name="test_calculate_health_with_vitality_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000043" >
+      <testcase name="test_load_from_multiple_slots" assertions="9" status="pass" classname="scripts/tests/save_system_test.gd" time="0.008096" >
       </testcase>
-      <testcase name="test_calculate_speed_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000049" >
+      <testcase name="test_non_existent_save_metadata" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006594" >
       </testcase>
-      <testcase name="test_calculate_speed_with_agility_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00004" >
+      <testcase name="test_existing_save_metadata" assertions="5" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007098" >
       </testcase>
-      <testcase name="test_apply_stat_modifiers_increases_and_decreases_stats" assertions="4" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000074" >
+      <testcase name="test_second_save_creates_backup" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007664" >
       </testcase>
-      <testcase name="test_apply_stat_modifiers_clamps_negative_values_to_zero" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000075" >
+      <testcase name="test_save_exists_after_creation" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007654" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_with_zero_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
+      <testcase name="test_save_deleted_successfully" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.009112" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_with_normal_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
+      <testcase name="test_has_save_detects_empty_slots" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.009205" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_caps_at_80_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000043" >
+      <testcase name="test_has_save_detects_existing_save" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007077" >
+      </testcase>
+      <testcase name="test_negative_slot_save_fails" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006507" >
+      </testcase>
+      <testcase name="test_too_large_slot_save_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006545" >
+      </testcase>
+      <testcase name="test_invalid_slot_load_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006432" >
+      </testcase>
+      <testcase name="test_invalid_slot_has_save_returns_false" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006445" >
+      </testcase>
+      <testcase name="test_corruption_recovers_from_backup" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.00746" >
+      </testcase>
+      <testcase name="test_save_with_current_version" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.0068" >
+      </testcase>
+      <testcase name="test_load_verifies_version" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007005" >
+      </testcase>
+      <testcase name="test_future_version_rejected" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006911" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/service_integration_test.gd" tests="15" failures="0" skipped="0" time="0.076695" >
+      <testcase name="test_dismantle_rare_weapon_grants_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000898" >
+      </testcase>
+      <testcase name="test_add_recycled_scrap_to_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001421" >
+      </testcase>
+      <testcase name="test_player_can_afford_first_reroll" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001115" >
+      </testcase>
+      <testcase name="test_reroll_deducts_cost_from_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001655" >
+      </testcase>
+      <testcase name="test_second_reroll_costs_more" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000886" >
+      </testcase>
+      <testcase name="test_free_tier_rejects_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000586" >
+      </testcase>
+      <testcase name="test_premium_tier_accepts_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001109" >
+      </testcase>
+      <testcase name="test_premium_tier_enforces_cap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.054804" >
+      </testcase>
+      <testcase name="test_banking_currency_changed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001218" >
+      </testcase>
+      <testcase name="test_recycler_item_dismantled_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000915" >
+      </testcase>
+      <testcase name="test_shop_reroll_executed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.000908" >
+      </testcase>
+      <testcase name="test_player_dismantles_multiple_items" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.003481" >
+      </testcase>
+      <testcase name="test_player_runs_out_of_scrap_rerolling" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001635" >
+      </testcase>
+      <testcase name="test_legendary_weapon_grants_high_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001353" >
+      </testcase>
+      <testcase name="test_complete_gameplay_scenario" assertions="5" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.004711" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/shop_reroll_service_test.gd" tests="35" failures="0" skipped="0" time="0.012853" >
+      <testcase name="test_base_cost_constant_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00006" >
+      </testcase>
+      <testcase name="test_cost_multiplier_constant_is_2" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000051" >
+      </testcase>
+      <testcase name="test_max_reroll_count_constant_is_99" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000046" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_0_equals_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000044" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_1_equals_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00005" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_2_equals_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_3_equals_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000048" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_5_equals_1600" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000045" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_10_equals_51200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00006" >
+      </testcase>
+      <testcase name="test_initial_reroll_count_is_zero" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000056" >
+      </testcase>
+      <testcase name="test_initial_preview_shows_zero_rerolls" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000058" >
+      </testcase>
+      <testcase name="test_initial_preview_cost_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000047" >
+      </testcase>
+      <testcase name="test_initial_preview_next_cost_is_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000055" >
+      </testcase>
+      <testcase name="test_preview_does_not_mutate_state" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000076" >
+      </testcase>
+      <testcase name="test_preview_shows_accurate_costs" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00006" >
+      </testcase>
+      <testcase name="test_execute_first_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00034" >
+      </testcase>
+      <testcase name="test_execute_first_reroll_charges_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000337" >
+      </testcase>
+      <testcase name="test_execute_first_reroll_next_cost_is_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000314" >
+      </testcase>
+      <testcase name="test_execute_second_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000579" >
+      </testcase>
+      <testcase name="test_execute_second_reroll_charges_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000567" >
+      </testcase>
+      <testcase name="test_execute_second_reroll_next_cost_is_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000567" >
+      </testcase>
+      <testcase name="test_execute_third_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000843" >
+      </testcase>
+      <testcase name="test_execute_third_reroll_charges_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000814" >
+      </testcase>
+      <testcase name="test_execute_third_reroll_next_cost_is_800" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000849" >
+      </testcase>
+      <testcase name="test_get_reroll_count_tracks_executions" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000831" >
+      </testcase>
+      <testcase name="test_exponential_cost_progression" assertions="6" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.001673" >
+      </testcase>
+      <testcase name="test_reroll_count_reaches_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000321" >
+      </testcase>
+      <testcase name="test_reroll_count_does_not_exceed_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000587" >
+      </testcase>
+      <testcase name="test_max_cost_still_calculated_correctly" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
+      </testcase>
+      <testcase name="test_reset_clears_reroll_count" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000869" >
+      </testcase>
+      <testcase name="test_reset_restores_initial_costs" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000841" >
+      </testcase>
+      <testcase name="test_reroll_executed_signal_emits_on_execution" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000458" >
+      </testcase>
+      <testcase name="test_reroll_executed_signal_contains_correct_data" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000384" >
+      </testcase>
+      <testcase name="test_reroll_executed_signal_emits_multiple_times" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00068" >
+      </testcase>
+      <testcase name="test_reroll_count_reset_signal_emits_on_reset" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000157" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/stat_service_test.gd" tests="17" failures="0" skipped="0" time="0.000927" >
+      <testcase name="test_calculate_damage_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000061" >
+      </testcase>
+      <testcase name="test_calculate_damage_with_strength_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000054" >
+      </testcase>
+      <testcase name="test_calculate_damage_with_weapon_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000054" >
+      </testcase>
+      <testcase name="test_calculate_health_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000052" >
+      </testcase>
+      <testcase name="test_calculate_health_with_vitality_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000049" >
+      </testcase>
+      <testcase name="test_calculate_speed_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
+      </testcase>
+      <testcase name="test_calculate_speed_with_agility_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
+      </testcase>
+      <testcase name="test_apply_stat_modifiers_increases_and_decreases_stats" assertions="4" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000081" >
+      </testcase>
+      <testcase name="test_apply_stat_modifiers_clamps_negative_values_to_zero" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000078" >
+      </testcase>
+      <testcase name="test_calculate_armor_reduction_with_zero_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
+      </testcase>
+      <testcase name="test_calculate_armor_reduction_with_normal_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
+      </testcase>
+      <testcase name="test_calculate_armor_reduction_caps_at_80_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000049" >
       </testcase>
       <testcase name="test_calculate_dodge_chance_scales_with_agility" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
       </testcase>
-      <testcase name="test_calculate_dodge_chance_caps_at_50_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000041" >
+      <testcase name="test_calculate_dodge_chance_caps_at_50_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000049" >
       </testcase>
-      <testcase name="test_calculate_crit_chance_scales_with_luck" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
+      <testcase name="test_calculate_crit_chance_scales_with_luck" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000054" >
       </testcase>
-      <testcase name="test_calculate_crit_chance_caps_at_30_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000044" >
+      <testcase name="test_calculate_crit_chance_caps_at_30_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
       </testcase>
-      <testcase name="test_calculate_life_steal_percentage_of_damage" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
+      <testcase name="test_calculate_life_steal_percentage_of_damage" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/weapon_loading_test.gd" tests="14" failures="0" skipped="13" time="0.000742" >
-      <testcase name="test_rusty_pistol_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000062" >
+  <testsuite name="scripts/tests/weapon_loading_test.gd" tests="14" failures="0" skipped="13" time="0.000889" >
+      <testcase name="test_rusty_pistol_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000067" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_pistol_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000052" >
+      <testcase name="test_rusty_pistol_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000065" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_pistol_premium_status" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000047" >
+      <testcase name="test_rusty_pistol_premium_status" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_rusty_pistol_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000045" >
+      <testcase name="test_rusty_pistol_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_void_cannon_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000047" >
+      <testcase name="test_void_cannon_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_void_cannon_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000046" >
+      <testcase name="test_void_cannon_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_void_cannon_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000046" >
+      <testcase name="test_void_cannon_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000063" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_plasma_cutter_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000048" >
+      <testcase name="test_plasma_cutter_resource_loads" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_plasma_cutter_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000055" >
+      <testcase name="test_plasma_cutter_has_valid_dps" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000061" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_plasma_cutter_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000055" >
+      <testcase name="test_plasma_cutter_rarity_tier" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.00006" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_weapons_directory_exists" assertions="1" status="pass" classname="scripts/tests/weapon_loading_test.gd" time="0.000088" >
+      <testcase name="test_weapons_directory_exists" assertions="1" status="pass" classname="scripts/tests/weapon_loading_test.gd" time="0.000099" >
       </testcase>
-      <testcase name="test_all_weapon_resources_load" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000052" >
+      <testcase name="test_all_weapon_resources_load" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000058" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_expected_23_weapons_exist" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000052" >
+      <testcase name="test_expected_23_weapons_exist" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000059" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_all_loaded_weapons_have_valid_stats" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000047" >
+      <testcase name="test_all_loaded_weapons_have_valid_stats" assertions="0" status="pending" classname="scripts/tests/weapon_loading_test.gd" time="0.000061" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_WEAPON_TESTS=true to run in Godot Editor]]></skipped></testcase>
   </testsuite>
 </testsuites>
