@@ -496,6 +496,11 @@ func set_tier(tier: UserTier) -> void:
 	GameLogger.info("User tier set", {"tier": tier})
 
 
+## Get current user tier
+func get_tier() -> UserTier:
+	return current_tier
+
+
 ## Reset service state (for testing or new game)
 func reset() -> void:
 	characters.clear()

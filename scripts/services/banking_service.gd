@@ -141,6 +141,11 @@ func set_tier(tier: UserTier) -> void:
 	GameLogger.info("User tier set", {"tier": tier})
 
 
+## Get current user tier
+func get_tier() -> UserTier:
+	return current_tier
+
+
 ## Get transaction history
 func get_transaction_history() -> Array:
 	return transaction_history.duplicate()
