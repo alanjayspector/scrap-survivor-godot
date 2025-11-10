@@ -122,16 +122,18 @@ func save_game(data: Dictionary, slot: int = 0) -> SaveResult:
 
 	# Step 2: Create backup of existing save (if exists)
 	if FileAccess.file_exists(save_path):
-		var dir = DirAccess.open(SAVE_DIR)
-		if dir:
+		var backup_dir = DirAccess.open(SAVE_DIR)
+		if backup_dir:
 			# Remove old backup
 			if FileAccess.file_exists(backup_path):
-				dir.remove(backup_path)
+				backup_dir.remove(backup_path)
 
 			# Rename current save to backup
-			var rename_error = dir.rename(save_path, backup_path)
-			if rename_error != OK:
-				GameLogger.warning("Failed to create backup", {"slot": slot, "error": rename_error})
+			var backup_rename_error = backup_dir.rename(save_path, backup_path)
+			if backup_rename_error != OK:
+				GameLogger.warning(
+					"Failed to create backup", {"slot": slot, "error": backup_rename_error}
+				)
 
 	# Step 3: Rename temp file to final save file (atomic operation)
 	var dir = DirAccess.open(SAVE_DIR)

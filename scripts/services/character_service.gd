@@ -130,9 +130,9 @@ var _next_character_id: int = 1
 
 ## Create a new character
 ## Returns character_id on success, empty string on failure
-func create_character(name: String, character_type: String = "scavenger") -> String:
+func create_character(character_name: String, character_type: String = "scavenger") -> String:
 	# Validate name
-	if name.strip_edges().is_empty():
+	if character_name.strip_edges().is_empty():
 		GameLogger.warning("Cannot create character with empty name")
 		return ""
 
@@ -173,7 +173,7 @@ func create_character(name: String, character_type: String = "scavenger") -> Str
 	# Build character data
 	var character_data = {
 		"id": character_id,
-		"name": name,
+		"name": character_name,
 		"character_type": character_type,
 		"level": 1,
 		"experience": 0,
@@ -226,7 +226,8 @@ func create_character(name: String, character_type: String = "scavenger") -> Str
 	character_created.emit(character_data.duplicate(true))
 
 	GameLogger.info(
-		"Character created", {"character_id": character_id, "name": name, "type": character_type}
+		"Character created",
+		{"character_id": character_id, "name": character_name, "type": character_type}
 	)
 
 	return character_id

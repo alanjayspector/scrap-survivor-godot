@@ -434,6 +434,69 @@ func test_feature_2() -> void:
 
 ---
 
+## 🔧 Troubleshooting: Tests Not Showing Up
+
+### If GUT Panel is Empty (No Tests Listed)
+
+**Step 1: Verify GUT Configuration**
+```bash
+# Check your godot-gut.config file
+cat godot-gut.config | grep -E "dirs|prefix|suffix|include_subdirs"
+```
+
+Should show:
+```json
+"dirs": ["res://scripts/tests"],
+"prefix": "",
+"suffix": "_test.gd",
+"include_subdirs": true
+```
+
+**Step 2: Manually Configure in GUT Panel**
+1. Open GUT panel (bottom of Godot editor)
+2. Click **⚙️ Settings** (gear icon)
+3. In the settings window:
+   - **Directories**: Click **+** button, add `res://scripts/tests`
+   - **Prefix**: Leave empty (delete if there's `test_` in there)
+   - **Suffix**: Type `_test.gd`
+   - **Include Subdirectories**: Check the box ✅
+4. Click **Save As**, save to project root as `godot-gut.config`
+5. Close settings window
+6. Click **🔄 Refresh** button in GUT panel
+
+**Step 3: Force Reload**
+1. **Project → Reload Current Project** in Godot menu
+2. Wait for editor to reload
+3. Open GUT panel again
+4. Tests should now appear
+
+**Step 4: Check GUT Panel Mode**
+
+If you see a GUT panel but it's in "window mode" instead of "panel mode":
+1. Right-click the GUT tab
+2. Select "Move to Bottom Panel" or similar
+3. Or use: **Editor → Editor Layout → GUT** (if available)
+
+**Step 5: Verify Test Files Are Valid**
+```bash
+# Check that test files extend GutTest
+head -1 scripts/tests/character_service_test.gd
+```
+
+Should output: `extends GutTest`
+
+If not, the file isn't a valid GUT test file.
+
+**Step 6: Try Command Line Test**
+```bash
+# From project root, run the test discovery script
+godot --headless --script test_runner.gd
+```
+
+This will show if GUT can find your tests outside of the editor.
+
+---
+
 ## ✅ Troubleshooting Checklist
 
 - [ ] GUT plugin installed and enabled?
