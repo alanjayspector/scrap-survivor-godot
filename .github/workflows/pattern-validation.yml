@@ -137,6 +137,21 @@ jobs:
 
           echo "::endgroup::"
 
+      - name: Check test patterns
+        id: testpatterns
+        run: |
+          echo "::group::Checking for test pattern issues"
+
+          if [ -f ".system/validators/test_patterns_validator.py" ]; then
+            python3 .system/validators/test_patterns_validator.py || true
+            echo "::notice::Test pattern warnings are informational only (GUT migration guidance)"
+            echo "::notice::See docs/godot-testing-research.md for testing best practices"
+          else
+            echo "::warning::Test patterns validator not found - skipping"
+          fi
+
+          echo "::endgroup::"
+
       - name: Upload validation report
         if: always()
         uses: actions/upload-artifact@v4

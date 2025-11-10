@@ -127,6 +127,12 @@ if [ -f .system/validators/service_architecture_validator.py ]; then
     fi
 fi
 
+# Test patterns validator (testing patterns - Week 6 Day 5 - NON-BLOCKING)
+if [ -f .system/validators/test_patterns_validator.py ]; then
+    python3 .system/validators/test_patterns_validator.py
+    # Don't fail on warnings - this is informational for GUT migration
+fi
+
 # Godot runtime validator (DISABLED - needs better strategy)
 # if [ -f .system/validators/godot_runtime_validator.py ]; then
 #     if ! python3 .system/validators/godot_runtime_validator.py; then

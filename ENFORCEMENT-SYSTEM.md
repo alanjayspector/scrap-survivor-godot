@@ -417,6 +417,122 @@ Do you need immediate response?
 
 ---
 
+## 🧪 Testing Patterns with GUT Framework
+
+### Testing Patterns Reference
+
+**See [docs/godot-testing-research.md](docs/godot-testing-research.md)** for comprehensive coverage of:
+
+**GUT Framework Fundamentals:**
+- Installation and setup for Godot 4.5.1
+- Test structure & lifecycle (before_each, after_each, before_all, after_all)
+- Assertions quick reference (assert_eq, assert_true, assert_signal_emitted, etc.)
+- Running tests (editor, CLI, headless for CI/CD)
+
+**Test Doubles:**
+- Stubs (minimal implementation)
+- Spies (track method calls)
+- Mocks (verify interactions)
+- Partial mocks (override specific methods)
+
+**Testing Patterns:**
+- Testing autoload services (singleton reset, state isolation)
+- Testing scene-based systems (instantiation, node hierarchies)
+- Testing UI components (button clicks, form validation)
+- Integration testing (multi-service interactions, save/load round-trips)
+- Async & signal testing (await, wait_for_signal)
+- Parameterized tests (reduce duplication)
+
+**Test Organization:**
+- File naming: `*_test.gd`
+- Method naming: `test_[object]_[action]_[expected_result]`
+- Directory structure
+- Test discovery patterns
+
+**Common Test Anti-Patterns:**
+- ❌ Flaky tests (timing-dependent → use signals/conditions)
+- ❌ Slow tests (>1 second → remove delays, mock slow operations)
+- ❌ Coupled tests (execution order dependent → independent setup)
+- ❌ Over-mocked tests (more mocks than real code → only mock external deps)
+- ❌ Hardcoded delays (>1 second waits → use wait_for_signal)
+
+### Automated Test Quality Checks
+
+**The pre-commit hook now checks for:**
+- ⚠️ Test framework (suggests GUT migration for Node-based tests)
+- ⚠️ Test naming convention (test_[object]_[action]_[result])
+- ❌ Hardcoded delays (ERROR for >1 second, WARNING for shorter)
+- ⚠️ Lifecycle hooks (before_each, after_each recommended)
+- ⚠️ Assertions presence (at least one per test)
+- ⚠️ Class name convention (*Test suffix)
+
+**Violations are:**
+- ❌ **Errors** (block commit): Hardcoded delays >1 second, invalid test method names
+- ⚠️ **Warnings** (don't block): Missing GUT, vague test names, missing assertions
+
+### Test Structure Requirements
+
+```gdscript
+# Recommended structure (GUT framework)
+extends GutTest
+
+class_name BankingServiceTest
+
+var service: BankingService
+
+func before_each() -> void:
+    # Fresh instance for each test
+    service = BankingService.new()
+
+func after_each() -> void:
+    # Cleanup
+    service.queue_free()
+
+func test_add_funds_increases_balance() -> void:
+    service.add_funds(100)
+
+    assert_eq(service.get_balance(), 100,
+             "Adding 100 funds should increase balance to 100")
+
+func test_withdraw_insufficient_funds_returns_false() -> void:
+    var result = service.withdraw_funds(50)
+
+    assert_false(result,
+                "Withdrawing more than balance should return false")
+```
+
+### Test Naming Patterns
+
+| Pattern | Example | Quality |
+|---------|---------|---------|
+| test_[object]_[action]_[result] | `test_player_takes_damage_health_decreases` | ✅ Good |
+| test_[service]_[method]_[scenario] | `test_banking_add_funds_increases_balance` | ✅ Good |
+| test_[feature]_[condition]_[behavior] | `test_shop_insufficient_funds_purchase_fails` | ✅ Good |
+| test_[vague] | `test_player`, `test_basic`, `test1` | ❌ Bad |
+
+### Test Smells Detection
+
+| Smell | Example | Fix |
+|-------|---------|-----|
+| Hardcoded delay | `await get_tree().create_timer(1.0).timeout` | `await signal_name` or `wait_for_signal()` |
+| Missing assertion | Test method with no assert_* call | Add at least one assertion |
+| Vague name | `test_something` | `test_inventory_add_item_count_increases` |
+| No lifecycle hooks | Tests without before_each/after_each | Add setup/cleanup methods |
+| Over-coupling | Tests depend on execution order | Make tests independent |
+
+### Current Test Framework
+
+**Note**: This project currently uses simple Node-based tests with basic `assert()` calls. The test patterns validator provides helpful suggestions for migrating to GUT framework, but doesn't block commits. GUT framework provides:
+- Better test structure (lifecycle hooks)
+- Rich assertion library (assert_eq, assert_true, assert_signal_emitted)
+- Test doubles (mocks, spies, stubs)
+- Parameterized tests
+- Better CI/CD integration
+
+**These patterns are validated** but non-blocking to allow gradual GUT migration!
+
+---
+
 ## 🚀 Usage
 
 ### Run Validators Locally
