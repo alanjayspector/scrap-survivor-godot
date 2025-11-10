@@ -1,0 +1,3 @@
+# This directory contains editor-only versions of resource tests with flags enabled
+# These tests are excluded from CI and the main GUT test panel
+# Use scenes/resource_test_runner.tscn to run these tests in the editor

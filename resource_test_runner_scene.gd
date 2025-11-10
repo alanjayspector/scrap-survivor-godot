@@ -19,11 +19,11 @@ func _ready():
 		# Clear any existing scripts
 		gut.clear()
 
-		# Add only resource test scripts
-		gut.add_script("res://scripts/tests/weapon_loading_test.gd")
-		gut.add_script("res://scripts/tests/enemy_loading_test.gd")
-		gut.add_script("res://scripts/tests/entity_classes_test.gd")
-		gut.add_script("res://scripts/tests/item_resources_test.gd")
+		# Add editor-only resource test scripts (flags enabled)
+		gut.add_script("res://scripts/tests/editor_only/weapon_loading_test.gd")
+		gut.add_script("res://scripts/tests/editor_only/enemy_loading_test.gd")
+		gut.add_script("res://scripts/tests/editor_only/entity_classes_test.gd")
+		gut.add_script("res://scripts/tests/editor_only/item_resources_test.gd")
 
 		# Configure for verbose output
 		gut.log_level = gut.LOG_LEVEL_ALL_ASSERTS
