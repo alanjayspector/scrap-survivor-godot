@@ -51,6 +51,22 @@ def run_gut_tests() -> tuple[bool, str, dict]:
     Returns (success: bool, output: str, stats: dict)
     """
     try:
+        # First, run Godot in editor mode briefly to scan and register all class_name scripts
+        # This ensures custom Resource classes like WeaponResource are available in headless mode
+        scan_result = subprocess.run(
+            [
+                GODOT_EXECUTABLE,
+                "--headless",
+                "--editor",
+                "--path", str(PROJECT_ROOT),
+                "--quit"
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        # Now run the actual tests with classes properly registered
         result = subprocess.run(
             [
                 GODOT_EXECUTABLE,
