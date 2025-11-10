@@ -72,16 +72,17 @@ def check_test_structure(file_path: Path, content: str) -> List[TestPatternIssue
                 severity="warning"
             ))
 
-    # Check class_name present
+    # Check class_name present (skip for editor_only tests to avoid conflicts)
+    is_editor_only = "editor_only" in str(file_path)
     class_name_match = re.search(r'^\s*class_name\s+(\w+)', content, re.MULTILINE)
-    if not class_name_match:
+    if not class_name_match and not is_editor_only:
         issues.append(TestPatternIssue(
             line_num=1,
             issue_type="missing_class_name",
             details="Test file should have class_name declaration",
             severity="warning"
         ))
-    else:
+    elif class_name_match:
         # Check class_name follows convention (*Test)
         class_name = class_name_match.group(1)
         if not class_name.endswith("Test"):
