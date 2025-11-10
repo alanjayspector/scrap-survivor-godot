@@ -60,6 +60,16 @@ const CHARACTER_TYPES = {
 		"stat_modifiers": {"ranged_damage": 5, "attack_speed": 15, "armor": -2},
 		"aura_type": null,  # No aura (trade-off for raw DPS)
 		"unlock_condition": "subscription_active"
+	},
+	"mutant":
+	{
+		"tier_required": UserTier.SUBSCRIPTION,
+		"display_name": "Mutant",
+		"description": "Mutation specialist with powerful damage aura",
+		"color": Color(0.5, 0.2, 0.7),  # Purple (mutation theme)
+		"stat_modifiers": {"resonance": 10, "luck": 5, "pickup_range": 20},
+		"aura_type": "damage",  # Damage aura that scales with Resonance
+		"unlock_condition": "subscription_active"
 	}
 }
 

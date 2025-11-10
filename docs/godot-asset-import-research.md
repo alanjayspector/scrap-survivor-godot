@@ -1,2057 +1,1242 @@
-# GDScript Testing Patterns with GUT Framework
-## Comprehensive Guide for Godot 4.5.1 Projects
+# Godot 4.5 Asset Import Settings & Optimization Guide
+
+**For Multi-Platform Survivor Game (Mac M4, iOS, Android, HTML5)**
 
 ---
 
 ## Table of Contents
-1. [GUT Framework Fundamentals](#gut-framework-fundamentals)
-2. [Test Structure & Lifecycle](#test-structure--lifecycle)
-3. [Assertions Quick Reference](#assertions-quick-reference)
-4. [Test Doubles: Stubs, Spies, and Mocks](#test-doubles-stubs-spies-and-mocks)
-5. [Testing Autoload Services](#testing-autoload-services)
-6. [Testing Scene-Based Systems](#testing-scene-based-systems)
-7. [Testing UI Components](#testing-ui-components)
-8. [Integration Testing Patterns](#integration-testing-patterns)
-9. [Async & Signal Testing](#async--signal-testing)
-10. [Test Organization & Structure](#test-organization--structure)
-11. [Common Anti-Patterns & Fixes](#common-anti-patterns--fixes)
-12. [Enforceable Patterns](#enforceable-patterns)
-13. [Coverage & Performance](#coverage--performance)
+
+1. [Quick Start Decision Trees](#quick-start-decision-trees)
+2. [Texture Import Settings](#texture-import-settings)
+3. [Sprite Sheet Optimization](#sprite-sheet-optimization)
+4. [Platform-Specific Settings](#platform-specific-settings)
+5. [Audio Import Settings](#audio-import-settings)
+6. [Tilemap Optimization](#tilemap-optimization)
+7. [Memory Budget Management](#memory-budget-management)
+8. [Visual Quality vs Performance](#visual-quality-vs-performance)
+9. [Import Pipeline Automation](#import-pipeline-automation)
+10. [Common Mistakes & Fixes](#common-mistakes--fixes)
+11. [Enforceable Patterns](#enforceable-patterns)
 
 ---
 
-## GUT Framework Fundamentals
+## Quick Start Decision Trees
 
-### What is GUT?
+### Texture Type Decision Tree
 
-GUT (Godot Unit Test) is a native GDScript testing framework for Godot 4.x that enables writing and running tests entirely within GDScript without C++ compilation. It integrates directly into the Godot editor and supports headless execution for CI/CD pipelines.
+```
+Is it a 2D sprite/pixel art?
+â”œâ”€ YES â†’ Use LOSSLESS compression
+â”‚        â”œâ”€ Enable Detect 3D? NO (disable it!)
+â”‚        â”œâ”€ Mipmaps: NO
+â”‚        â””â”€ Filter: NEAREST
+â”‚
+â””â”€ NO â†’ Is it a UI texture?
+        â”œâ”€ YES â†’ LOSSLESS, no mipmaps
+        â”‚
+        â””â”€ NO â†’ Is it a particle texture?
+                â”œâ”€ YES â†’ VRAM COMPRESSED
+                â”‚        Mipmaps: YES
+                â”‚
+                â””â”€ NO â†’ Check platform target...
+```
 
-**Key Features:**
-- Simple test syntax with familiar lifecycle hooks
-- Comprehensive assertion library
-- Test doubles (stubs, spies, mocks, partials)
-- Parameterized tests
-- Signal and async testing
-- JUnit XML export for CI/CD
-- Memory management utilities
+### Audio Format Decision Tree
 
-### Installation (Godot 4.5.1)
-
-1. Download GUT 9.5.0+ from Asset Library or [github.com/bitwes/Gut](https://github.com/bitwes/Gut)
-2. Extract `addons/gut` folder into your project
-3. Enable the plugin in Project Settings > Plugins
-4. Restart Godot
-
-### Running Tests
-
-```gdscript
-# From editor: GUT panel (Window > GUT)
-# From CLI (headless):
-godot --headless -s addons/gut/run_tests.gd -d
-
-# CI/CD (GitHub Actions):
-- run: godot --headless -s addons/gut/run_tests.gd
+```
+What type of audio?
+â”œâ”€ Short SFX (< 2 seconds, loops often)
+â”‚  â””â”€ WAV with optional compression
+â”‚
+â”œâ”€ Music or long SFX (> 2 seconds)
+â”‚  â””â”€ OGG Vorbis 96-128 kbps
+â”‚
+â””â”€ Voice/dialogue
+   â””â”€ OGG Vorbis 128 kbps, 22 kHz (mono if acceptable)
 ```
 
 ---
 
-## Test Structure & Lifecycle
+## Texture Import Settings
 
-### Basic Test File Structure
+### Compression Mode Selection
+
+| Compression Type | Use Case | File Size Impact | Memory Impact | Quality | Best For |
+|---|---|---|---|---|---|
+| **Lossless** | 2D sprites, pixel art, UI | Larger | Lower VRAM | 100% visual | Pixel art, sprites, UI |
+| **Lossy** | Photos, backgrounds | Medium | Medium VRAM | 90-95% | High-detail backgrounds |
+| **VRAM Compressed (S3TC/DXT)** | Desktop 3D, performance-critical | Smallest | Lowest VRAM | 85-90% | Desktop/console targets |
+| **VRAM Compressed (ETC2)** | Mobile targets | Smallest | Lowest VRAM | 80-85% | Android, iOS fallback |
+| **VRAM Compressed (ASTC)** | Premium mobile devices | Smallest | Lowest VRAM | 95%+ | Modern iOS/Android |
+
+**Critical for Pixel Art:** Always use **LOSSLESS** compression. VRAM compression applies lossy algorithms that cause color banding and blur in pixel art graphics.
+
+### Recommended Import Settings by Texture Type
+
+#### 2D Sprites (Pixel Art)
+
+```
+Compress > Mode: Lossless
+Detect 3D: Disabled (CRITICAL - prevents unwanted re-compression)
+Mipmaps > Generate: No
+Filter: Nearest (set globally in project settings)
+Repeat/Clamp: Clamp (prevents edge artifacts in atlases)
+```
+
+**File Size Estimation:** A 256Ã—256 PNG sprite with lossless compression â‰ˆ 80-150 KB on disk.
+
+#### UI Textures
+
+```
+Compress > Mode: Lossless
+Detect 3D: Disabled
+Mipmaps > Generate: No
+Filter: Nearest (for sharp UI)
+Repeat/Clamp: Clamp
+SVG Scale: (if vector) Set to 1.0 for pixel-perfect UI
+```
+
+#### Particle Textures
+
+```
+Compress > Mode: VRAM Compressed (or Lossless if < 512Ã—512)
+Detect 3D: Disabled
+Mipmaps > Generate: Yes
+Filter: Linear (smooth blending for particles)
+Repeat/Clamp: Repeat (particles need tiling)
+```
+
+#### Tilemap Atlases
+
+```
+Compress > Mode: Lossless (if tiles are pixel art)
+Detect 3D: Disabled
+Mipmaps > Generate: No
+Filter: Nearest
+Repeat/Clamp: Clamp
+```
+
+### Global Project Settings for Pixel Art
+
+**Navigate:** Project > Project Settings > Rendering > Textures
+
+```
+Canvas Textures > Default Texture Filter: Nearest
+Canvas Textures > Use Nearest Mipmaps: No
+Textures > VRAM Compression > Import S3TC BPTC: Enabled
+Textures > VRAM Compression > Import ETC2 ASTC: Enabled
+```
+
+This ensures all textures default to nearest-neighbor filtering without pixel distortion.
+
+### Filter Modes Explained
+
+- **Nearest:** Preserves crisp pixel boundaries. **Use for pixel art.**
+- **Linear:** Smooths/blurs pixels. Use only for high-detail graphics.
+- **Nearest with Mipmaps:** Downsamples with crisp edges when zooming out. Rarely needed in 2D.
+- **Linear with Mipmaps:** Smooth downsampling for 3D-like AA effect. Performance cost.
+
+**Important:** In 2D games with zoom/scaling, mipmaps add performance overhead. Use only if you observe aliasing/graininess when cameras zoom out.
+
+### Size Limits & Power-of-2 Considerations
+
+**Hardware Limits:**
+- Desktop GPUs: Up to 8192Ã—8192 (older GPUs may limit to 4096Ã—4096)
+- Mobile GPUs: Maximum 4096Ã—4096, strict limitation
+- HTML5/WebGL: Maximum 4096Ã—4096, some browsers limit to 2048Ã—2048
+
+**Recommended Sprite Sizes:**
+- Single sprites: 64Ã—64 to 256Ã—256
+- Large bosses: Up to 512Ã—512
+- Avoid exceeding 1024Ã—1024 for individual textures
+
+**Power-of-2:** Not strictly required for most use cases, but recommended for:
+- Textures with repeat/wrap enabled
+- Older mobile devices
+- Memory alignment optimization
+
+**Size Limit Import Option:**
+```
+Compress > Process > Size Limit: 0 (disabled by default)
+Set to > 0 to auto-downscale oversized textures (e.g., set to 2048 for mobile)
+```
+
+### Repeat & Clamp Settings
+
+| Setting | Behavior | Use Case |
+|---|---|---|
+| **Repeat** | UV wraps around (0.5 â†’ 1.5 repeats) | Particle systems, scrolling backgrounds |
+| **Repeat Mirrored** | Ping-pongs texture (flips at edges) | Smoother repeating patterns |
+| **Clamp** | Stretches edge pixels beyond 0-1 UV range | Sprites, UI, atlases (prevents sampling adjacent textures) |
+
+**For atlases in spritesheets:** Always use **Clamp** to prevent texture bleeding when filtering is applied.
+
+---
+
+## Sprite Sheet Optimization
+
+### Atlas Packing Strategies
+
+#### Single Master Atlas vs. Multi-Atlas Approach
+
+**Single Master Atlas:**
+- âœ“ Minimum draw calls (all sprites in 1 batch)
+- âœ— Forces loading entire atlas into VRAM
+- âœ— Limits to max 4096Ã—4096 on mobile
+- âœ— Inefficient for large asset sets
+
+**Multi-Atlas (Recommended):**
+- âœ“ Load atlases per level/scene
+- âœ“ Reduce VRAM pressure
+- âœ“ Better mobile memory management
+- âœ— Slightly more draw calls
+
+**Strategy:** Group textures used together (characters + enemies, UI, level-specific objects). Typical project: 4-8 atlases.
+
+### Frame Trimming & Padding
+
+**Trimming:** Remove transparent pixels around sprites.
+
+```
+Compress > Process > Trim Alpha Border From Region: Enabled
+```
+
+**Benefits:**
+- Reduces texture atlas size by 10-40%
+- Saves VRAM
+- Requires offset adjustment in code (sprite position shifts)
+
+**Padding:** Add 1-2 pixels between frames in atlas to prevent sampling artifacts.
+
+**Example Spritesheet Layout:**
+```
+[2px padding] [Sprite 64Ã—64] [2px padding] [Sprite 64Ã—64] [2px padding]
+```
+
+Most texture atlas tools (TexturePacker, Aseprite) handle this automatically.
+
+### Animation Frame Organization
+
+**Consistent Frame Sizes:**
+- All frames in an animation must have identical dimensions
+- Use uniform grid: 64Ã—64, 128Ã—128, etc.
+- Pad with transparent pixels if sprites vary in size
+
+**Frame Layout Example:**
+```
+Spritesheet: 512Ã—512
+Grid: 8Ã—8 frames of 64Ã—64
+Organized by: Idle (row 1), Walk (row 2), Attack (row 3)
+```
+
+### Reducing Draw Calls with Atlases
+
+**Draw Call Baseline:** Each unique texture = 1 draw call minimum (in 2D).
+
+**For 100-300 entities:**
+- Without atlases: ~100-300 draw calls (if each uses unique texture)
+- With 4 shared atlases: ~4 draw calls (ideal batching)
+- Realistic with multiple layers: 8-16 draw calls
+
+**Optimization:** Share atlases across entity types. Character atlas, enemy atlas, object atlas.
+
+### Frame Trimming Implementation
+
+**Before:** 256Ã—256 sprite with 50% transparent space
+**After:** Trimmed to 128Ã—128 equivalent, offset by 64px in code
 
 ```gdscript
-# tests/services/banking_service_test.gd
-extends GutTest
+# After trimming, adjust sprite offset:
+sprite.offset = Vector2(64, 64)  # Compensate for trim
+sprite.scale = Vector2(1, 1)     # Maintain visual size
+```
 
-class_name BankingServiceTest
+---
 
-# Optional: Single-file fixture setup
-var banking_service: BankingService
-var player_data: Dictionary
+## Platform-Specific Settings
 
-# ============================================================================
-# LIFECYCLE HOOKS
-# ============================================================================
+### iOS Import Configuration
 
-# Called once before ALL tests in this file
-func before_all() -> void:
-    # Heavy setup: Load resources, initialize singletons
-    pass
+**Apple devices support ASTC and ETC2, prefer ASTC for quality:**
 
-# Called before EACH test
-func before_each() -> void:
-    # Reset state, create fresh test instances
-    banking_service = BankingService.new()
-    player_data = {
-        "coins": 1000,
-        "gems": 50
+```
+Compress > Mode: VRAM Compressed
+iOS Texture Compression: ASTC (preferred)
+Fallback: ETC2 (older devices)
+```
+
+**Project Settings:**
+```
+Rendering > Textures > VRAM Compression > Import ETC2 ASTC: Enabled
+```
+
+**Size Constraints:**
+- Max texture: 4096Ã—4096
+- Recommended: 2048Ã—2048 for sprites
+- Target: 20-30 MB total texture VRAM budget per level
+
+**M4 Mac Optimization:**
+- Uses ASTC compression (desktop-class GPU)
+- Can handle larger atlases (up to 4096Ã—4096)
+- Apply same settings as iOS for consistency
+
+### Android Import Configuration
+
+**Android GPUs primarily support ETC2 and ASTC:**
+
+```
+Compress > Mode: VRAM Compressed
+Android Texture Compression: ASTC (modern devices, API 23+)
+Fallback: ETC2 (legacy support)
+```
+
+**Project Settings:**
+```
+Rendering > Textures > VRAM Compression > Import ETC2 ASTC: Enabled
+```
+
+**Targeting older Android (API 19+):** Use ETC2 exclusively.
+
+**Size Constraints:**
+- Max texture: 4096Ã—4096
+- Recommended: 1024Ã—2048 for memory-constrained devices
+- Target: 15-20 MB texture VRAM (budget for older devices)
+
+### HTML5/WebGL Limitations
+
+**WebGL 2.0 support (Godot 4.5 requirement):**
+- Uncompressed textures only in most browsers
+- VRAM compression formats NOT supported in WebGL
+- Textures exported as PNG/WebP
+
+**Critical Settings for HTML5:**
+```
+Compress > Mode: Lossless (must use, VRAM formats ignored)
+Mipmaps > Generate: No (causes upload overhead)
+Maximum Texture Size: 2048Ã—2048 (browser compatibility)
+```
+
+**File Size Impact:**
+- Lossless PNG: 256Ã—256 sprite â‰ˆ 80-120 KB (uncompressed in VRAM)
+- Web export adds .wasm overhead (â‰ˆ5-10 MB base)
+- Asset download time critical for web games
+
+**Workaround for size:** Pre-compress with WebP format, decode at runtime (complex).
+
+### Desktop (Mac M4) Optimization
+
+**Mac with M4 GPU capabilities:**
+```
+Compress > Mode: VRAM Compressed
+Desktop Texture Format: S3TC/BPTC (preferred) or ASTC
+```
+
+**Project Settings:**
+```
+Rendering > Textures > VRAM Compression > Import S3TC BPTC: Enabled
+```
+
+**Advantages:**
+- Supports up to 8192Ã—8192 textures
+- Can use larger atlases
+- Less aggressive compression needed
+
+### Per-Platform Import Overrides
+
+**Set in Import dock after selecting texture:**
+
+1. Select texture in FileSystem
+2. Open Import tab (next to Scene tab)
+3. Scroll to **Platform Overrides** section
+4. Enable checkboxes for each platform
+5. Modify settings per platform
+6. **Reimport** button applies changes
+
+**Example Workflow:**
+- Base settings: Lossless, Nearest filter
+- iOS override: VRAM Compressed, ASTC
+- Android override: VRAM Compressed, ETC2
+- HTML5 override: Lossless (already default)
+- Mac override: VRAM Compressed, S3TC (if using)
+
+**Critical:** After changing platform overrides, delete `.godot/imported/` folder and reimport to rebuild all platform variants.
+
+---
+
+## Audio Import Settings
+
+### Sample Rate Recommendations
+
+| Sample Rate | Use Case | File Size | Quality | Recommendation |
+|---|---|---|---|---|
+| 8 kHz | 8-bit retro, phone audio | Tiny | Low | Avoid |
+| 22 kHz | UI sounds, voice | Small | Good | Acceptable for mono SFX |
+| 44 kHz | Standard CD quality | Medium | Excellent | Default choice |
+| 48 kHz | Professional audio | Larger | Best | Overkill for games |
+
+**Mobile Target:** Default to 44 kHz for music, 22 kHz for SFX acceptable.
+
+### Compression Formats Comparison
+
+| Format | Quality | File Size | CPU Load | Best For |
+|---|---|---|---|---|
+| **WAV (uncompressed)** | 100% | Largest | Lowest | Short SFX (< 2s) |
+| **WAV (QOA compressed)** | 100% | Medium | Low | SFX, no artifacts needed |
+| **OGG Vorbis 96 kbps** | 90% | Small | Medium | Music, acceptable quality |
+| **OGG Vorbis 128 kbps** | 95% | Medium | Medium | Music/voice, recommended |
+| **MP3 192 kbps** | 85% | Medium | Higher | Avoid (legacy) |
+
+**Recommended for Multi-Platform:**
+- **Music:** OGG Vorbis 128 kbps, stereo, 44 kHz
+- **SFX:** WAV (QOA) or OGG 96 kbps, mono, 44 kHz
+- **Voice:** OGG 128 kbps, mono, 44 kHz
+
+### Import Settings by Audio Type
+
+#### Music/Ambient
+
+```
+Format: OGG Vorbis
+Bitrate: 128 kbps (or 96 kbps for budget)
+Channels: Stereo
+Sample Rate: 44 kHz
+Loop Mode: Disabled (set in music player code)
+BPM: Set if using future interactive music
+```
+
+#### SFX (Short, Looping)
+
+```
+Format: WAV (QOA compression recommended)
+Alternative: OGG Vorbis 96 kbps
+Sample Rate: 44 kHz
+Channels: Mono (acceptable for SFX)
+Loop Mode: Forward (if metadata present)
+Force 8-Bit: No
+```
+
+#### Voice/Dialogue
+
+```
+Format: OGG Vorbis 128 kbps
+Sample Rate: 44 kHz or 22 kHz (voice tolerates lower)
+Channels: Mono
+Loop Mode: Disabled
+```
+
+### Looping Settings
+
+**WAV-Specific Options:**
+```
+Edit > Loop Mode:
+  - Disabled: No looping
+  - Forward: Standard loop (point A â†’ point B â†’ repeat)
+  - Ping-Pong: Reverse loop (A â†’ B â†’ A â†’ B â†’ ...)
+  - Backward: Reverse play
+```
+
+**OGG Vorbis/MP3:**
+- Looping configured in code via `AudioStreamPlayer.stream_paused`
+- Use `AudioStreamPlayer.bus` for mixing
+
+### Streaming vs. Preloaded
+
+**Preloaded (Default):**
+- Entire file loaded into RAM on first play
+- Zero latency at playback
+- Use for: SFX, short music (< 30 seconds)
+
+**Streaming:**
+- File read from disk progressively
+- Lower RAM usage
+- Use for: Long music (> 60 seconds), narration
+
+**Project Settings:**
+```
+Audio > Import > MP3 Audio Bitrate Detection: On
+Audio > General > Default Bus Layout: (keep default)
+```
+
+**In Code:**
+```gdscript
+# Preloaded (recommended for SFX)
+var sfx = preload("res://sounds/jump.wav")
+audio_player.stream = sfx
+
+# Streaming for large files
+var music_path = "res://music/long_track.ogg"
+audio_player.stream = AudioStreamOggVorbis.new()
+audio_player.play()
+```
+
+### Memory vs. Quality Trade-off
+
+**Memory Budget for Audio (per level):**
+- SFX: 2-5 MB (5-10 simultaneous sounds)
+- Music: 3-8 MB (1-2 tracks per level)
+- Total: 10-15 MB for audio subsystem
+
+**Quality vs. Size:**
+- OGG 128 kbps stereo: Imperceptible quality loss for music
+- OGG 96 kbps mono: Acceptable for SFX/voice
+- WAV uncompressed: Only if < 2 seconds and SFX variety high
+
+---
+
+## Tilemap Optimization
+
+### Tileset Atlas Organization
+
+**Tilemap Best Practices:**
+
+```
+Tileset Atlas Size: 512Ã—512 to 1024Ã—1024
+Tile Size: 32Ã—32 or 64Ã—64 (consistent)
+Margin: 1 pixel between tiles (prevents sampling artifacts)
+Total Tiles: 256-512 (depends on game variety)
+```
+
+**Organization Example:**
+```
+Terrain Section: Grass, dirt, water (rows 1-4)
+Decoration: Trees, rocks, plants (rows 5-8)
+Special: Collision tiles, animation markers (rows 9-10)
+```
+
+### Autotile Settings
+
+**Godot 4.5 Autotiling (Physics-Based):**
+
+```
+TileSet > Create Terrain Set
+â”œâ”€ Terrain 1: Grass (transitions)
+â”œâ”€ Terrain 2: Water (transitions)
+â””â”€ Terrain 3: Sand (transitions)
+
+TileSet > Setup Peering Bits
+â”œâ”€ Which adjacent tiles match this terrain?
+â””â”€ Godot auto-selects visual tile
+```
+
+**Performance Impact:** Minimal. Autotile just selects which tile variant to display.
+
+### Collision Layer Efficiency
+
+**Layers in TileMap:**
+
+```
+Layer 0: Visual (all terrain sprites)
+Layer 1: Collision (physics tiles marked)
+Layer 2: Events (trigger zones)
+Layer 3: Parallax Background (separate visual)
+```
+
+**Collision Best Practices:**
+- Use simple rect/polygon colliders, not per-pixel
+- Share collision shapes across similar tiles
+- Group collision tiles into TileMapLayer nodes for LOD
+
+### Baked vs. Runtime Shadows
+
+**Baked Lighting (2D in Godot 4.5):**
+- CanvasItem lights with static bake
+- Pre-render at edit-time
+- Zero runtime cost
+- Best for: Indoor levels, fixed lighting
+
+**Runtime Shadows:**
+- Real-time PointLight2D/DirectionalLight2D
+- Dynamic, responsive to movement
+- Performance cost: ~5-15% per light
+- Best for: Torches, day/night cycles, dynamic objects
+
+**Recommendation:** Use baked lighting for static tilemaps, runtime only for player/interactive objects.
+
+---
+
+## Memory Budget Management
+
+### Texture Memory Estimation
+
+**Formula:** Width Ã— Height Ã— Bytes Per Pixel = VRAM Usage
+
+| Compression | Bytes Per Pixel | Example 256Ã—256 | Example 1024Ã—1024 |
+|---|---|---|---|
+| Lossless PNG (in VRAM) | 4 | 256 KB | 4 MB |
+| ETC2 VRAM Compressed | 0.5 | 32 KB | 512 KB |
+| ASTC VRAM Compressed | 1 | 64 KB | 1 MB |
+
+**For 100-300 entities:**
+- Worst case (lossless): 300 Ã— 256 KB = 76 MB (impossible)
+- Typical (8 shared atlases, 1024Ã—1024 each, ETC2): 4 MB
+- Realistic (10 atlases, mixed sizes): 8-12 MB
+
+**Target Memory Budgets:**
+- Mobile total VRAM: 256-512 MB
+- Texture budget per level: 20-30 MB (leaves room for code, audio, physics)
+- Recommended texture cap: 15-20 MB per level (safe margin)
+
+### Atlas Consolidation
+
+**Step 1: Identify all unique textures used per level**
+```gdscript
+# Pseudo-code for auditing
+var textures_used = {}
+for entity in level_entities:
+    var tex_path = entity.get_texture_path()
+    if tex_path not in textures_used:
+        textures_used[tex_path] = File.get_size(tex_path)
+```
+
+**Step 2: Group by usage frequency**
+- Frequently used: Player, common enemies, core UI
+- Occasional: Projectiles, one-off items
+- Rare: Boss sprites, special events
+
+**Step 3: Pack into atlases**
+- Frequent-use atlas: Priority 1 (always loaded)
+- Occasional atlas: Load on-demand
+- Rare atlas: Stream or preload only when needed
+
+### Lazy Loading Patterns
+
+**Pattern 1: Scene-Based Loading**
+```gdscript
+func _ready():
+    # Load assets only for current level
+    var level_atlas = load("res://assets/level_01_atlas.tres")
+    # Enemies load when spawned
+    
+func spawn_enemy(type: String):
+    var enemy_scene = load("res://enemies/" + type + ".tscn")
+    var instance = enemy_scene.instantiate()
+    add_child(instance)
+```
+
+**Pattern 2: Threaded Resource Loading**
+```gdscript
+func load_resources_async(paths: Array[String]):
+    for path in paths:
+        ResourceLoader.load_threaded_request(path)
+        await get_tree().process_frame
+        var resource = ResourceLoader.load_threaded_get(path)
+        # Use resource
+```
+
+**Pattern 3: Resource Preload Optimization**
+- âœ“ Use `preload()` only for essential startup assets (< 1 MB total)
+- âœ“ Use `load()` for level-specific, boss, and optional assets
+- âœ“ Use `ResourceLoader.load_threaded_request()` for large files
+
+### Resource Preloading
+
+**What to Preload (Startup):**
+- Core UI (menu buttons, fonts): 0.5 MB
+- Player sprite/animations: 2-3 MB
+- Essential SFX: 1-2 MB
+- **Total preload target: 5-8 MB max**
+
+**Project Settings:**
+```
+Application > Run > Main Scene: Select main menu/title
+
+Autoload (preloaded on engine start):
+â”œâ”€ AudioManager (lightweight script)
+â”œâ”€ InputManager (lightweight script)
+â””â”€ GameSettings (lightweight script)
+```
+
+**Avoid:**
+- Preloading entire level atlases
+- Preloading all enemy sprites
+- Preloading all music
+
+### Unloading Unused Assets
+
+**Manual Unload:**
+```gdscript
+func clear_level():
+    # Clear all entity sprites, triggering GC
+    for entity in entities:
+        entity.queue_free()
+    
+    # Force GC (Godot 4.5+)
+    if OS.get_static_memory_usage() > MEMORY_THRESHOLD:
+        get_tree().call_group("cleanup", "queue_free")
+```
+
+**Auto-Unload with ResourceCache:**
+```gdscript
+# Godot 4.3+ ResourceLoader caching
+ResourceLoader.save_resource_in_cache(path, resource)
+# Later...
+var cached = ResourceLoader.get_cached_resource(path)
+if cached and not is_visible_in_tree(cached):
+    ResourceLoader.remove_resource_from_cache(path)
+```
+
+---
+
+## Visual Quality vs. Performance
+
+### Pixel Art Filter Settings
+
+**Global Pixel Art Configuration:**
+
+```
+Project Settings > Rendering > Textures > Canvas Textures
+â”œâ”€ Default Texture Filter: Nearest
+â”œâ”€ Use Nearest Mipmaps: No
+
+Per-Sprite Override (if needed):
+â”œâ”€ Sprite2D > CanvasItem > Texture > Filter: Inherit/Nearest
+```
+
+**Result:** Crisp, blocky pixel art without blur at any zoom level.
+
+### Upscaling Strategies
+
+**Option 1: Integer Scaling (Recommended for pixel art)**
+```
+Project Settings > Window > Stretch > Mode: Viewport
+Project Settings > Window > Stretch > Aspect: Keep Height (or Width)
+Project Settings > Window > Stretch > Scale Mode: Integer
+```
+
+**Example:** 320Ã—180 game â†’ 1280Ã—720 screen = 4Ã— integer scale (perfect pixels).
+
+**Option 2: Canvas Item Scaling**
+```
+Project Settings > Window > Stretch > Mode: Canvas Items
+Project Settings > Window > Stretch > Scale: 2.0 (or desired factor)
+```
+
+- Smoother upscaling (allows fractional scales like 1.5Ã—)
+- Each sprite scales individually
+- Use if integer scaling doesn't fit target resolutions
+
+### Viewport Scaling
+
+**For Dynamic Resolution (Performance Mode):**
+```gdscript
+# Reduce internal resolution to boost FPS
+get_viewport().set_canvas_transform(Transform2D.IDENTITY.scaled(Vector2(0.75, 0.75)))
+```
+
+**Performance Impact:**
+- 0.5Ã— scale: 4Ã— FPS improvement, visible degradation
+- 0.75Ã— scale: 2Ã— FPS improvement, acceptable quality
+- 1.0Ã— scale: Baseline (no scaling)
+
+### Shader Optimization
+
+**Avoid in Shaders (2D context):**
+- Expensive texture operations (5+ samples per fragment)
+- Complex branching (if-statements in fragment shader)
+- Loops over arrays
+
+**Optimized Shader Example:**
+```glsl
+// GOOD - single texture sample
+shader_type canvas_item;
+void fragment() {
+    COLOR = texture(TEXTURE, UV);
+}
+
+// AVOID - 25 samples (too expensive)
+vec4 blur = vec4(0.0);
+for(int i = -2; i <= 2; i++) {
+    for(int j = -2; j <= 2; j++) {
+        blur += texture(TEXTURE, UV + vec2(i,j) * 0.01);
     }
-
-# Called after EACH test
-func after_each() -> void:
-    # Clean up: Free nodes, disconnect signals
-    if banking_service:
-        banking_service.queue_free()
-
-# Called once after ALL tests
-func after_all() -> void:
-    # Final cleanup
-    pass
-
-# ============================================================================
-# TEST METHODS (MUST START WITH test_)
-# ============================================================================
-
-func test_player_gains_coins_from_reward() -> void:
-    var initial_coins = player_data["coins"]
-    banking_service.add_coins(100)
-    
-    assert_eq(banking_service.get_balance(), initial_coins + 100, 
-              "Balance should increase by reward amount")
-
-func test_insufficient_funds_prevents_purchase() -> void:
-    var initial_coins = 50
-    player_data["coins"] = initial_coins
-    
-    var purchase_success = banking_service.try_spend(100)
-    
-    assert_false(purchase_success, "Purchase should fail with insufficient coins")
-    assert_eq(banking_service.get_balance(), initial_coins,
-              "Balance unchanged after failed purchase")
+}
+COLOR = blur / 25.0;
 ```
 
-### Lifecycle Execution Order
+### LOD Strategies for 2D
 
-```
-1. before_all()      â† Runs once, before all tests
-2. before_each()     â† Runs before test 1
-3. test_first()
-4. after_each()
-5. before_each()     â† Runs before test 2
-6. test_second()
-7. after_each()
-... (repeat for each test)
-8. after_all()       â† Runs once, after all tests
-```
-
-**Important:** Use `before_each()` and `after_each()` for test isolation. Only use `before_all()`/`after_all()` for expensive one-time setup.
-
----
-
-## Assertions Quick Reference
-
-| Assertion | Example | Purpose |
-|-----------|---------|---------|
-| `assert_eq` | `assert_eq(actual, expected, "msg")` | Value equality |
-| `assert_ne` | `assert_ne(actual, unexpected, "msg")` | Value inequality |
-| `assert_true` | `assert_true(condition, "msg")` | Boolean true |
-| `assert_false` | `assert_false(condition, "msg")` | Boolean false |
-| `assert_null` | `assert_null(value, "msg")` | Is null |
-| `assert_not_null` | `assert_not_null(value, "msg")` | Not null |
-| `assert_almost_eq` | `assert_almost_eq(actual, expected, tolerance)` | Floating-point |
-| `assert_array_eq` | `assert_array_eq(actual, expected)` | Array contents |
-| `assert_has` | `assert_has(container, item, "msg")` | Array/dict contains |
-| `assert_does_not_have` | `assert_does_not_have(container, item)` | Array/dict missing |
-| `assert_is_instance_of` | `assert_is_instance_of(obj, ClassName)` | Type check |
-| `pass_test` | `pass_test("reason")` | Force pass (debugging) |
-| `fail_test` | `fail_test("reason")` | Force fail (debugging) |
-
-### Assertion Examples
+**LOD (Level of Detail) Implementation:**
 
 ```gdscript
-func test_assertions_demo() -> void:
-    var player_level = 5
-    var inventory = ["sword", "shield", "potion"]
-    var position = Vector2(10.5, 20.3)
+# Reduce sprite complexity based on screen distance
+func update_sprite_lod():
+    var distance = camera.global_position.distance_to(global_position)
     
-    assert_eq(player_level, 5)
-    assert_true(player_level > 0)
-    assert_has(inventory, "sword", "Inventory should contain sword")
-    assert_almost_eq(position.x, 10.5, 0.01)
-    assert_is_instance_of(inventory, Array)
-    
-    # Custom failure message
-    assert_ne(player_level, 1, 
-              "Player level should not be 1. Current: %s" % player_level)
-```
-
----
-
-## Test Doubles: Stubs, Spies, and Mocks
-
-Test doubles replace real dependencies, isolating the code under test.
-
-### Stub vs Spy vs Mock
-
-| Type | Purpose | Verifies | State |
-|------|---------|----------|-------|
-| **Stub** | Return preset values | Input/indirect input | Configured values |
-| **Spy** | Record method calls | How methods called | Call history |
-| **Mock** | Full replacement | Expectations before test | Pre-configured behavior |
-| **Partial** | Keep real code | Some methods stubbed | Mix of real + fake |
-
-### Creating Test Doubles
-
-```gdscript
-# tests/doubles/payment_processor_test.gd
-extends GutTest
-
-# Path to the script you want to double
-const PAYMENT_PROCESSOR_PATH = "res://services/payment_processor.gd"
-
-func test_full_double() -> void:
-    # Full double: all methods are stubbed out by default
-    var processor_double = double(PAYMENT_PROCESSOR_PATH)
-    
-    # Stub a method to return a value
-    processor_double.stub_with_args("process_payment", 
-                                     [100], true)  # Returns true when called with 100
-    
-    var result = processor_double.process_payment(100)
-    assert_true(result, "Stubbed method should return true")
-
-func test_partial_double() -> void:
-    # Partial double: keeps real code, only stub specific methods
-    var processor_double = double(PAYMENT_PROCESSOR_PATH).partial()
-    
-    # This method keeps its real implementation
-    var validation_result = processor_double.validate_payment(150)
-    
-    # This method is stubbed
-    processor_double.stub_with_args("charge_card", 
-                                     [150, "visa"], false)
-    
-    var charge_result = processor_double.charge_card(150, "visa")
-    assert_false(charge_result, "Stubbed method should return false")
-```
-
-### Spy Pattern: Recording Calls
-
-```gdscript
-extends GutTest
-
-const INVENTORY_PATH = "res://systems/inventory.gd"
-
-func test_spy_on_inventory() -> void:
-    var inventory_double = double(INVENTORY_PATH)
-    
-    # Call methods on the spy
-    inventory_double.add_item("health_potion", 5)
-    inventory_double.add_item("mana_potion", 3)
-    inventory_double.add_item("health_potion", 2)
-    
-    # Verify the spy recorded calls correctly
-    assert_call_count(inventory_double, "add_item", 3, 
-                     msg="add_item should be called 3 times")
-    
-    # Verify specific parameter match
-    assert_call_count(inventory_double, "add_item", 1, ["health_potion", 5],
-                     msg="add_item called once with health_potion, 5")
-    
-    # Get exact call count programmatically
-    var call_count = get_call_count(inventory_double, "add_item")
-    assert_eq(call_count, 3)
-```
-
-### Stubbing Methods with Arguments
-
-```gdscript
-extends GutTest
-
-const DATABASE_PATH = "res://services/database.gd"
-
-func test_stub_with_different_returns() -> void:
-    var db_double = double(DATABASE_PATH)
-    
-    # Stub different returns based on arguments
-    db_double.stub_with_args("fetch_player", 
-                             [1], 
-                             {"id": 1, "name": "Alice"})
-    
-    db_double.stub_with_args("fetch_player", 
-                             [2], 
-                             {"id": 2, "name": "Bob"})
-    
-    db_double.stub_with_args("fetch_player", 
-                             [999], 
-                             null)  # Not found
-    
-    var player1 = db_double.fetch_player(1)
-    var player2 = db_double.fetch_player(2)
-    var not_found = db_double.fetch_player(999)
-    
-    assert_eq(player1.name, "Alice")
-    assert_eq(player2.name, "Bob")
-    assert_null(not_found)
-```
-
-### Stubbing to Call Real Method (Partial Pattern)
-
-```gdscript
-func test_stub_to_call_real_method() -> void:
-    var service_double = double("res://services/calculation.gd").partial()
-    
-    # Only stub the expensive database call
-    service_double.stub_with_args("query_database", [], [])
-    
-    # The real calculation logic still runs
-    var result = service_double.calculate_total(100)
-    
-    # Database was called (spying)
-    assert_called(service_double, "query_database")
-```
-
----
-
-## Testing Autoload Services
-
-Autoload singletons require special handling: reset state between tests to prevent pollution.
-
-### Service Structure
-
-```gdscript
-# services/banking_service.gd (Autoload Singleton)
-extends Node
-
-class_name BankingService
-
-signal balance_changed(new_balance: int)
-
-var _balance: int = 0
-
-func _ready() -> void:
-    if not is_in_group("services"):
-        add_to_group("services")
-
-func add_coins(amount: int) -> void:
-    _balance += amount
-    balance_changed.emit(_balance)
-
-func try_spend(amount: int) -> bool:
-    if _balance < amount:
-        return false
-    
-    _balance -= amount
-    balance_changed.emit(_balance)
-    return true
-
-func get_balance() -> int:
-    return _balance
-
-func reset() -> void:
-    _balance = 0
-```
-
-### Testing Autoload Services
-
-```gdscript
-# tests/services/banking_service_test.gd
-extends GutTest
-
-# Important: reference the autoload by its name
-var banking: BankingService
-
-func before_each() -> void:
-    # Get the autoload singleton
-    banking = BankingService
-    
-    # CRITICAL: Reset state to prevent test pollution
-    banking.reset()
-    
-    # Clear signal connections if needed
-    for signal_name in banking.get_signal_list():
-        for connection in banking.get_signal_connection_list(signal_name):
-            banking.disconnect(signal_name, connection.callable)
-
-func test_add_coins() -> void:
-    banking.add_coins(50)
-    assert_eq(banking.get_balance(), 50)
-
-func test_balance_persists_across_calls() -> void:
-    banking.add_coins(100)
-    var first_balance = banking.get_balance()
-    
-    banking.add_coins(50)
-    var second_balance = banking.get_balance()
-    
-    assert_eq(first_balance, 100)
-    assert_eq(second_balance, 150)
-
-func test_insufficient_funds() -> void:
-    banking.add_coins(50)
-    var success = banking.try_spend(100)
-    
-    assert_false(success)
-    assert_eq(banking.get_balance(), 50, 
-              "Balance unchanged when spending fails")
-```
-
-### Mocking Autoload Dependencies
-
-```gdscript
-# services/shop_service.gd (depends on BankingService)
-extends Node
-
-class_name ShopService
-
-var banking: BankingService
-var inventory: InventoryService
-
-func _ready() -> void:
-    banking = BankingService
-    inventory = InventoryService
-
-func buy_item(item_id: int, cost: int) -> bool:
-    if not banking.try_spend(cost):
-        return false
-    
-    inventory.add_item(item_id, 1)
-    return true
-
-func get_balance() -> int:
-    return banking.get_balance()
-```
-
-```gdscript
-# tests/services/shop_service_test.gd
-extends GutTest
-
-const SHOP_SERVICE_PATH = "res://services/shop_service.gd"
-const BANKING_PATH = "res://services/banking_service.gd"
-const INVENTORY_PATH = "res://services/inventory_service.gd"
-
-var shop_double
-var banking_double
-var inventory_double
-
-func before_each() -> void:
-    # Create doubles for dependencies
-    banking_double = double(BANKING_PATH)
-    inventory_double = double(INVENTORY_PATH)
-    
-    # Configure stub behavior
-    banking_double.stub_with_args("try_spend", [100], true)
-    inventory_double.stub_with_args("add_item", [1, 1], null)
-
-func test_buy_item_success() -> void:
-    # Create shop with mocked dependencies
-    shop_double = double(SHOP_SERVICE_PATH)
-    
-    # Inject mocked services (shop must expose them)
-    shop_double.banking = banking_double
-    shop_double.inventory = inventory_double
-    
-    var success = shop_double.buy_item(1, 100)
-    
-    assert_true(success, "Buy should succeed with sufficient funds")
-    assert_called(banking_double, "try_spend", 
-                 msg="Banking service should be consulted")
-    assert_called(inventory_double, "add_item",
-                 msg="Inventory should be updated")
-
-func test_buy_item_insufficient_funds() -> void:
-    # Reconfigure stub for this test
-    banking_double.stub_with_args("try_spend", [500], false)
-    
-    shop_double = double(SHOP_SERVICE_PATH)
-    shop_double.banking = banking_double
-    shop_double.inventory = inventory_double
-    
-    var success = shop_double.buy_item(1, 500)
-    
-    assert_false(success)
-    assert_not_called(inventory_double, "add_item",
-                     msg="Inventory unchanged when purchase fails")
-```
-
-### Testing Signal Emissions
-
-```gdscript
-# tests/services/banking_service_test.gd
-extends GutTest
-
-var banking: BankingService
-
-func before_each() -> void:
-    banking = BankingService
-    banking.reset()
-
-func test_balance_changed_signal_emitted() -> void:
-    # Watch the signal
-    watch_signals(banking)
-    
-    banking.add_coins(100)
-    
-    # Verify signal was emitted
-    assert_signal_emitted(banking, "balance_changed",
-                         msg="balance_changed signal should emit on add_coins")
-
-func test_signal_emitted_with_correct_parameters() -> void:
-    watch_signals(banking)
-    
-    banking.add_coins(100)
-    
-    # Verify signal parameters
-    assert_signal_emitted_with_parameters(banking, "balance_changed", 
-                                          [100],
-                                          msg="Signal should emit with new balance")
-
-func test_multiple_signals() -> void:
-    watch_signals(banking)
-    
-    banking.add_coins(50)
-    banking.add_coins(75)
-    banking.try_spend(30)
-    
-    # Verify signal emitted 3 times
-    assert_signal_emit_count(banking, "balance_changed", 3,
-                            msg="Signal should emit for each balance change")
-```
-
----
-
-## Testing Scene-Based Systems
-
-Scene-based gameplay systems require instantiation, node hierarchy testing, and proper cleanup.
-
-### Scene Structure Example
-
-```gdscript
-# scenes/player/player.tscn
-# Structure:
-# Player (Node2D) [player.gd]
-#   â”œâ”€â”€ AnimatedSprite2D
-#   â”œâ”€â”€ CollisionShape2D
-#   â””â”€â”€ HealthComponent (Node) [health_component.gd]
-
-# scenes/player/player.gd
-extends Node2D
-
-class_name Player
-
-var health_component: HealthComponent
-
-func _ready() -> void:
-    health_component = $HealthComponent
-
-func take_damage(amount: int) -> void:
-    health_component.reduce_health(amount)
-
-func get_health() -> int:
-    return health_component.get_health()
-
-func is_alive() -> bool:
-    return get_health() > 0
-```
-
-### Testing Scene Instantiation
-
-```gdscript
-# tests/scenes/player_test.gd
-extends GutTest
-
-const PLAYER_SCENE_PATH = "res://scenes/player/player.tscn"
-
-var player_scene: PackedScene
-var player: Player
-
-func before_each() -> void:
-    player_scene = load(PLAYER_SCENE_PATH)
-
-func test_player_scene_loads() -> void:
-    assert_not_null(player_scene, "Player scene should load")
-
-func test_player_instantiates() -> void:
-    player = player_scene.instantiate()
-    
-    assert_is_instance_of(player, Player)
-    assert_not_null(player.health_component)
-
-func test_player_in_tree() -> void:
-    # Instantiate and add to scene tree
-    player = add_child_autofree(player_scene.instantiate())
-    
-    # Wait for _ready to execute
-    await get_tree().process_frame
-    
-    assert_true(player.is_inside_tree(), "Player should be in scene tree")
-    assert_true(player.health_component.is_inside_tree(), 
-               "Health component should be in tree")
-```
-
-### Testing Node Hierarchies
-
-```gdscript
-extends GutTest
-
-const LEVEL_SCENE_PATH = "res://scenes/levels/level_01.tscn"
-
-func test_level_node_structure() -> void:
-    var level_scene = load(LEVEL_SCENE_PATH)
-    var level = add_child_autofree(level_scene.instantiate())
-    
-    await get_tree().process_frame
-    
-    # Verify hierarchy structure
-    assert_true(level.has_node("EnemySpawner"), 
-               "Level should have EnemySpawner node")
-    
-    var enemy_spawner = level.get_node("EnemySpawner")
-    assert_true(enemy_spawner.has_node("SpawnPoint1"),
-               "Spawner should have SpawnPoint1")
-    
-    # Verify correct node types
-    var ui_root = level.get_node_or_null("UILayer")
-    assert_is_instance_of(ui_root, CanvasLayer,
-                         "UILayer should be CanvasLayer")
-
-func test_orphan_detection() -> void:
-    # GUT automatically warns about orphaned nodes
-    var player = add_child_autofree(preload(PLAYER_SCENE_PATH).instantiate())
-    
-    # This would trigger orphan warning without proper cleanup
-    # GUT tracks orphans automatically
-
-func test_queue_free_cleanup() -> void:
-    var player = preload(PLAYER_SCENE_PATH).instantiate()
-    player.queue_free()
-    
-    # Must wait for queue_free to process
-    await wait_seconds(0.1)
-    
-    assert_no_new_orphans("No orphans after queue_free")
-```
-
-### Memory Management
-
-```gdscript
-extends GutTest
-
-func test_autofree_automatic_cleanup() -> void:
-    # autofree automatically calls free() after test
-    var node = autofree(Node.new())
-    assert_not_null(node)
-    # Node freed automatically after test
-
-func test_autoqfree_with_queue_free() -> void:
-    # autoqfree calls queue_free() after test
-    var node = autoqfree(Node.new())
-    var parent = autoqfree(Node.new())
-    
-    parent.add_child(node)
-    assert_true(node.is_inside_tree())
-    
-    # Nodes cleaned up automatically
-
-func test_add_child_autofree() -> void:
-    # Combines add_child + autofree
-    var node = add_child_autofree(Node2D.new())
-    
-    assert_true(node.is_inside_tree(), "Should be in scene tree")
-    # Freed automatically
-
-func test_manual_orphan_check() -> void:
-    # Check orphans manually if using queue_free
-    var node = Node.new()
-    node.queue_free()
-    
-    # Don't assert orphans immediately
-    assert_new_orphans(1, "One orphan expected from queue_free")
-    
-    # Wait for queue_free to process
-    await wait_seconds(0.1)
-    assert_no_new_orphans("Orphans cleaned up after frame")
-```
-
----
-
-## Testing UI Components
-
-UI components require simulating user interactions and verifying visual changes.
-
-### Button Testing
-
-```gdscript
-# scenes/ui/shop_button.gd
-extends Button
-
-class_name ShopButton
-
-signal shop_opened
-
-func _ready() -> void:
-    pressed.connect(_on_pressed)
-
-func _on_pressed() -> void:
-    shop_opened.emit()
-```
-
-```gdscript
-# tests/ui/shop_button_test.gd
-extends GutTest
-
-const SHOP_BUTTON_PATH = "res://scenes/ui/shop_button.gd"
-
-var button: ShopButton
-
-func before_each() -> void:
-    button = add_child_autofree(ShopButton.new())
-
-func test_button_initializes() -> void:
-    assert_not_null(button)
-    assert_eq(button.button_pressed, false)
-
-func test_button_press_emits_signal() -> void:
-    watch_signals(button)
-    
-    # Simulate button press
-    button.pressed.emit()
-    
-    assert_signal_emitted(button, "shop_opened")
-
-func test_button_press_via_input_simulation() -> void:
-    button.grab_focus()
-    watch_signals(button)
-    
-    # Simulate input
-    var input_event = InputEventAction.new()
-    input_event.action = "ui_accept"
-    input_event.pressed = true
-    
-    button.get_tree().input(input_event)
-    
-    # Allow input processing
-    await wait_frames(1)
-    
-    assert_signal_emitted(button, "shop_opened")
-```
-
-### Input Validation Testing
-
-```gdscript
-# scenes/ui/coin_input.gd
-extends LineEdit
-
-class_name CoinInput
-
-const MAX_COINS = 9999
-const MIN_COINS = 1
-
-signal amount_validated(amount: int)
-
-func _ready() -> void:
-    text_changed.connect(_on_text_changed)
-    text = "0"
-
-func _on_text_changed(new_text: String) -> void:
-    if new_text.is_empty():
-        return
-    
-    var amount = int(new_text) if new_text.is_valid_int() else 0
-    amount = clampi(amount, MIN_COINS, MAX_COINS)
-    
-    if str(amount) != new_text:
-        text = str(amount)
+    if distance < 100:
+        sprite.frame = detailed_frame  # High-detail version
+    elif distance < 300:
+        sprite.frame = medium_frame     # Medium-detail
     else:
-        amount_validated.emit(amount)
-
-func get_amount() -> int:
-    return int(text) if text.is_valid_int() else 0
+        sprite.frame = low_detail_frame # Simple version or hidden
 ```
 
+**LOD for Particles:**
 ```gdscript
-# tests/ui/coin_input_test.gd
-extends GutTest
-
-const COIN_INPUT_PATH = "res://scenes/ui/coin_input.gd"
-
-var coin_input: CoinInput
-
-func before_each() -> void:
-    coin_input = add_child_autofree(CoinInput.new())
-    await get_tree().process_frame
-
-func test_initializes_with_zero() -> void:
-    assert_eq(coin_input.get_amount(), 0)
-
-func test_accepts_valid_amount() -> void:
-    watch_signals(coin_input)
-    
-    coin_input.text = "500"
-    
-    await wait_frames(1)
-    
-    assert_eq(coin_input.get_amount(), 500)
-
-func test_clamps_to_max() -> void:
-    coin_input.text = "99999"
-    
-    await wait_frames(1)
-    
-    assert_eq(coin_input.get_amount(), CoinInput.MAX_COINS)
-
-func test_rejects_negative() -> void:
-    coin_input.text = "-100"
-    
-    await wait_frames(1)
-    
-    assert_eq(coin_input.get_amount(), CoinInput.MIN_COINS)
-
-func test_ignores_non_numeric() -> void:
-    coin_input.text = "abc"
-    
-    await wait_frames(1)
-    
-    assert_eq(coin_input.get_amount(), 0)
-```
-
-### Modal/Popup Testing
-
-```gdscript
-extends GutTest
-
-const CONFIRMATION_DIALOG_PATH = "res://scenes/ui/confirmation_dialog.tscn"
-
-var dialog: ConfirmationDialog
-
-func test_dialog_initially_hidden() -> void:
-    dialog = add_child_autofree(load(CONFIRMATION_DIALOG_PATH).instantiate())
-    
-    assert_false(dialog.visible, "Dialog should be hidden initially")
-
-func test_show_dialog() -> void:
-    dialog = add_child_autofree(load(CONFIRMATION_DIALOG_PATH).instantiate())
-    
-    dialog.show_dialog("Confirm purchase?")
-    
-    assert_true(dialog.visible)
-    assert_eq(dialog.get_message(), "Confirm purchase?")
-
-func test_confirm_button_triggers_confirmed() -> void:
-    dialog = add_child_autofree(load(CONFIRMATION_DIALOG_PATH).instantiate())
-    watch_signals(dialog)
-    
-    dialog.show_dialog("Continue?")
-    dialog.get_ok_button().pressed.emit()
-    
-    assert_signal_emitted(dialog, "confirmed")
-
-func test_cancel_button_hides_dialog() -> void:
-    dialog = add_child_autofree(load(CONFIRMATION_DIALOG_PATH).instantiate())
-    
-    dialog.show_dialog("Proceed?")
-    assert_true(dialog.visible)
-    
-    dialog.get_cancel_button().pressed.emit()
-    
-    assert_false(dialog.visible)
+# Reduce particle count when off-screen or distant
+if is_on_screen():
+    particles.amount = 100
+else:
+    particles.amount = 10  # Minimal particles off-screen
 ```
 
 ---
 
-## Integration Testing Patterns
+## Import Pipeline Automation
 
-Integration tests verify multiple systems working together.
+### .import File Structure
 
-### Multi-Service Integration
+**Location:** `.godot/imported/` folder (hidden by default)
 
-```gdscript
-# tests/integration/save_integration_test.gd
-extends GutTest
+**Example .import file (asset_name.png.import):**
+```ini
+[remap]
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://w65yd8ixqw7c"
+path="res://.godot/imported/asset_name.png-abc123.ctex"
 
-var banking: BankingService
-var inventory: InventoryService
-var save_manager: SaveManager
+[deps]
+source_file="res://assets/asset_name.png"
+dest_files=["res://.godot/imported/asset_name.png-abc123.ctex"]
 
-func before_each() -> void:
-    banking = BankingService
-    inventory = InventoryService
-    save_manager = SaveManager
-    
-    # Reset all services
-    banking.reset()
-    inventory.reset()
-    save_manager.clear()
-
-func test_full_save_load_cycle() -> void:
-    # Arrange: Set game state
-    banking.add_coins(500)
-    inventory.add_item("sword", 1)
-    inventory.add_item("shield", 1)
-    
-    # Act: Save
-    var save_data = {
-        "balance": banking.get_balance(),
-        "inventory": inventory.get_items()
-    }
-    save_manager.save_game(save_data)
-    
-    # Reset services
-    banking.reset()
-    inventory.clear()
-    
-    # Load
-    var loaded_data = save_manager.load_game()
-    banking.set_balance(loaded_data.balance)
-    inventory.load_items(loaded_data.inventory)
-    
-    # Assert: Verify state restored
-    assert_eq(banking.get_balance(), 500)
-    assert_has(inventory.get_items(), "sword")
-    assert_has(inventory.get_items(), "shield")
-
-func test_concurrent_service_operations() -> void:
-    # Multiple services operate simultaneously
-    watch_signals(banking)
-    watch_signals(inventory)
-    
-    banking.add_coins(100)
-    inventory.add_item("potion", 5)
-    banking.try_spend(50)
-    inventory.use_item("potion", 1)
-    
-    # Both services processed independently
-    assert_signal_emit_count(banking, "balance_changed", 2)
-    assert_eq(banking.get_balance(), 50)
-    assert_eq(inventory.get_item_count("potion"), 4)
+[params]
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+process/ignore_svg_scale=true
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1
 ```
 
-### Save/Load Round-Trip Testing
+**Key Fields:**
+- `importer`: Type of asset (texture, scene, audio)
+- `uid`: Unique identifier (don't modify)
+- `path`: Compiled output path
+- `[params]`: Import settings (EDIT THIS when changing defaults)
 
-```gdscript
-extends GutTest
+### Batch Import Settings
 
-const SAVE_PATH = "user://test_save.dat"
+**Using Presets:**
 
-var game_state: GameState
-var save_system: SaveSystem
+1. Set import options on one texture
+2. Click **Preset** button (top of Import tab)
+3. Select **Save As Preset...** (give it a name like "PixelArt2D")
+4. Apply to other textures: **Preset > (select saved preset)**
 
-func before_each() -> void:
-    game_state = GameState.new()
-    save_system = SaveSystem.new(SAVE_PATH)
+**Presets to Create:**
+- `PixelArt2D`: Lossless, Nearest, no mipmaps, Detect3D disabled
+- `Particle`: Lossless/VRAM compressed, Nearest, mipmaps enabled
+- `UI`: Lossless, Nearest, no mipmaps
+- `MobileOptimized`: VRAM compressed, size limit 2048
 
-func after_each() -> void:
-    # Clean up test files
-    if ResourceLoader.exists(SAVE_PATH):
-        DirAccess.remove_absolute(SAVE_PATH)
+### Version Control of .import Files
 
-func test_save_and_load_player_progress() -> void:
-    # Setup initial state
-    game_state.player_level = 5
-    game_state.player_experience = 2500
-    game_state.position = Vector2(100, 200)
-    
-    # Save
-    save_system.save_state(game_state)
-    assert_true(ResourceLoader.exists(SAVE_PATH), "Save file should exist")
-    
-    # Load into new state
-    var loaded_state = save_system.load_state()
-    
-    # Verify
-    assert_eq(loaded_state.player_level, 5)
-    assert_eq(loaded_state.player_experience, 2500)
-    assert_eq(loaded_state.position, Vector2(100, 200))
+**Recommended .gitignore:**
+```
+# Ignore compiled imports (regenerated on each pull)
+.godot/imported/
+.godot/imported/*
 
-func test_complex_nested_data_preservation() -> void:
-    var complex_data = {
-        "player": {
-            "stats": {
-                "health": 100,
-                "mana": 50
-            },
-            "inventory": ["sword", "shield", "potion"]
-        },
-        "world": {
-            "enemies_defeated": 42,
-            "quests": ["main_quest", "side_quest"]
-        }
-    }
-    
-    game_state.data = complex_data
-    save_system.save_state(game_state)
-    
-    var loaded_state = save_system.load_state()
-    
-    assert_eq(loaded_state.data.player.stats.health, 100)
-    assert_eq(loaded_state.data.player.inventory.size(), 3)
-    assert_eq(loaded_state.data.world.enemies_defeated, 42)
+# Keep .import configuration files (version control)
+!*.import
+
+# Ignore platform-specific files
+.godot/
 ```
 
-### Event Flow Testing
+**Workflow:**
+1. Commit: `.png` file + `.png.import` configuration
+2. Ignore: `.godot/imported/` compiled output
+3. On pull: Godot auto-regenerates `.godot/imported/` from `.import` files
+4. If re-imports don't apply, delete `.godot/` folder manually
+
+**Issue:** Godot 4.5 occasionally re-imports unchanged assets when .import files sync via git. Workaround: Use script to skip detection if .import hash matches.
+
+### CI/CD Asset Validation
+
+**Pre-Export Checks:**
 
 ```gdscript
-extends GutTest
-
-var event_bus: EventBus
-var level_manager: LevelManager
-var player: Player
-
-func before_each() -> void:
-    event_bus = EventBus.new()
-    level_manager = LevelManager.new(event_bus)
-    player = Player.new(event_bus)
-
-func test_level_completion_event_flow() -> void:
-    watch_signals(event_bus)
-    
-    # Player wins level
-    player.complete_level()
-    
-    # Event propagates: player â†’ event_bus â†’ level_manager
-    assert_signal_emitted(event_bus, "level_completed")
-    
-    # Level manager processes event
-    await wait_frames(1)
-    
-    assert_true(level_manager.is_level_complete())
-    assert_signal_emitted(event_bus, "show_victory_screen")
-
-func test_death_event_cascade() -> void:
-    watch_signals(event_bus)
-    watch_signals(player)
-    
-    # Multiple systems react to player death
-    player.die()
-    
-    assert_signal_emitted(event_bus, "player_died")
-    assert_signal_emitted(level_manager, "restart_requested")
-    
-    # Subsequent spawning
-    level_manager.restart()
-    assert_true(player.is_alive())
-```
-
-### State Machine Testing
-
-```gdscript
-# systems/player_state.gd
+# Script: validate_assets.gd (run in CI pipeline)
 extends Node
 
-class_name PlayerState
+func _ready():
+    check_texture_compression()
+    check_audio_formats()
+    check_max_sizes()
 
-signal state_changed(new_state: PlayerState)
+func check_texture_compression():
+    var dir = DirAccess.open("res://assets/sprites")
+    for file in dir.get_files():
+        if file.ends_with(".png"):
+            var import_path = file + ".import"
+            var config = ConfigFile.new()
+            config.load(import_path)
+            var mode = config.get_value("params", "compress/mode")
+            if mode != 0:  # 0 = Lossless
+                push_error("ERROR: %s using VRAM compression instead of lossless!" % file)
 
-enum STATE { IDLE, RUNNING, JUMPING, FALLING }
+func check_audio_formats():
+    var audio_dir = DirAccess.open("res://audio")
+    for file in audio_dir.get_files():
+        if file.ends_with(".mp3"):
+            push_error("ERROR: MP3 found (%s), use OGG instead!" % file)
 
-var current_state: STATE = STATE.IDLE
+func check_max_sizes():
+    var img = Image.new()
+    var files = DirAccess.open("res://assets").get_files()
+    for file in files:
+        img.load("res://assets/" + file)
+        if img.get_width() > 4096 or img.get_height() > 4096:
+            push_error("ERROR: Oversized texture (%s) - max 4096Ã—4096!" % file)
 
-func transition_to(new_state: STATE) -> void:
-    if current_state == new_state:
-        return
-    
-    current_state = new_state
-    state_changed.emit(self)
-
-func enter_jump() -> void:
-    if current_state == STATE.IDLE or current_state == STATE.RUNNING:
-        transition_to(STATE.JUMPING)
-
-func enter_fall() -> void:
-    transition_to(STATE.FALLING)
+func _notification(NOTIFICATION_PROCESS):
+    get_tree().quit()
 ```
 
-```gdscript
-# tests/integration/state_machine_test.gd
-extends GutTest
-
-var player_state: PlayerState
-
-func before_each() -> void:
-    player_state = add_child_autofree(PlayerState.new())
-
-func test_valid_state_transitions() -> void:
-    watch_signals(player_state)
-    
-    # IDLE â†’ JUMPING
-    player_state.enter_jump()
-    assert_eq(player_state.current_state, PlayerState.STATE.JUMPING)
-    assert_signal_emitted(player_state, "state_changed")
-
-func test_invalid_transition_ignored() -> void:
-    watch_signals(player_state)
-    
-    # Try to jump while jumping (should be ignored)
-    player_state.transition_to(PlayerState.STATE.JUMPING)
-    player_state.enter_jump()
-    
-    # Signal should only emit once
-    assert_signal_emit_count(player_state, "state_changed", 1)
-
-func test_state_sequence() -> void:
-    watch_signals(player_state)
-    
-    player_state.enter_jump()
-    assert_eq(player_state.current_state, PlayerState.STATE.JUMPING)
-    
-    player_state.enter_fall()
-    assert_eq(player_state.current_state, PlayerState.STATE.FALLING)
-    
-    # Verify state changed twice
-    assert_signal_emit_count(player_state, "state_changed", 2)
-```
-
----
-
-## Async & Signal Testing
-
-Async operations and signals require special handling in tests.
-
-### Waiting for Signals
-
-```gdscript
-extends GutTest
-
-var timer: Timer
-
-func before_each() -> void:
-    timer = add_child_autofree(Timer.new())
-
-func test_wait_for_signal_success() -> void:
-    timer.wait_time = 0.1
-    timer.start()
-    
-    # Wait up to 1 second for timeout signal
-    var signal_emitted = await wait_for_signal(timer.timeout, 1.0,
-                                              "Timer should timeout")
-    
-    assert_true(signal_emitted, "Signal should have been emitted")
-
-func test_wait_for_signal_timeout() -> void:
-    timer.wait_time = 10.0
-    timer.start()
-    
-    # Wait max 0.2 seconds
-    var signal_emitted = await wait_for_signal(timer.timeout, 0.2,
-                                              "Should timeout before timer fires")
-    
-    assert_false(signal_emitted, "Signal should not emit within wait time")
-    
-    timer.stop()
-```
-
-### Frame-Based Waiting
-
-```gdscript
-extends GutTest
-
-var animated_sprite: AnimatedSprite2D
-
-func before_each() -> void:
-    animated_sprite = add_child_autofree(AnimatedSprite2D.new())
-
-func test_wait_frames() -> void:
-    # Wait for 3 process frames
-    await wait_frames(3)
-    
-    # Assertions after frame delay
-    assert_true(true, "Frames processed")
-
-func test_wait_seconds() -> void:
-    var start_time = Time.get_ticks_msec()
-    
-    # Wait 0.2 seconds
-    await wait_seconds(0.2)
-    
-    var elapsed = Time.get_ticks_msec() - start_time
-    assert_true(elapsed >= 200, "Should wait approximately 0.2 seconds")
-```
-
-### Complex Async Patterns
-
-```gdscript
-extends GutTest
-
-var async_operation: AsyncOperation
-
-func before_each() -> void:
-    async_operation = AsyncOperation.new()
-
-func test_multiple_signal_sequence() -> void:
-    watch_signals(async_operation)
-    
-    async_operation.start_process()
-    
-    # Wait for progress signal
-    var progress_fired = await wait_for_signal(async_operation.progress_updated, 1.0)
-    assert_true(progress_fired, "Should report progress")
-    
-    # Wait for completion signal
-    var complete_fired = await wait_for_signal(async_operation.operation_completed, 2.0)
-    assert_true(complete_fired, "Should complete operation")
-    
-    assert_signal_emit_count(async_operation, "progress_updated", 3)
-    assert_signal_emitted(async_operation, "operation_completed")
-
-func test_signal_with_parameters_timeout() -> void:
-    watch_signals(async_operation)
-    
-    async_operation.fetch_data("important_key")
-    
-    var fired = await wait_for_signal(async_operation.data_received, 2.0)
-    
-    if fired:
-        assert_signal_emitted_with_parameters(async_operation, "data_received",
-                                             ["important_key", true])
-    else:
-        fail_test("Operation timed out")
-```
-
-### Testing Animations with Await
-
-```gdscript
-extends GutTest
-
-var tween_animation: TweenAnimation
-
-func before_each() -> void:
-    tween_animation = add_child_autofree(TweenAnimation.new())
-
-func test_animation_completes() -> void:
-    watch_signals(tween_animation)
-    
-    tween_animation.animate_position(Vector2(100, 100), 0.5)
-    
-    # Wait for animation to finish
-    var completed = await wait_for_signal(tween_animation.animation_finished, 1.0)
-    
-    assert_true(completed, "Animation should complete")
-    assert_eq(tween_animation.position, Vector2(100, 100))
-
-func test_parallel_animations() -> void:
-    watch_signals(tween_animation)
-    
-    # Start multiple animations simultaneously
-    tween_animation.animate_position(Vector2(50, 50), 0.3)
-    tween_animation.animate_scale(Vector2(2, 2), 0.3)
-    
-    var completed = await wait_for_signal(tween_animation.animation_finished, 1.0)
-    
-    assert_true(completed)
-    assert_eq(tween_animation.position, Vector2(50, 50))
-    assert_eq(tween_animation.scale, Vector2(2, 2))
-```
-
----
-
-## Test Organization & Structure
-
-### Directory Structure
-
-```
-project/
-â”œâ”€â”€ addons/
-â”‚   â””â”€â”€ gut/                        # GUT framework
-â”œâ”€â”€ scenes/
-â”‚   â”œâ”€â”€ player/
-â”‚   â”‚   â”œâ”€â”€ player.tscn
-â”‚   â”‚   â””â”€â”€ player.gd
-â”‚   â”œâ”€â”€ ui/
-â”‚   â”‚   â”œâ”€â”€ main_menu.tscn
-â”‚   â”‚   â””â”€â”€ shop_button.gd
-â”‚   â””â”€â”€ levels/
-â”‚       â””â”€â”€ level_01.tscn
-â”œâ”€â”€ services/
-â”‚   â”œâ”€â”€ banking_service.gd         # Autoload
-â”‚   â”œâ”€â”€ inventory_service.gd       # Autoload
-â”‚   â””â”€â”€ save_system.gd
-â”œâ”€â”€ systems/
-â”‚   â”œâ”€â”€ state_machine.gd
-â”‚   â””â”€â”€ event_bus.gd
-â””â”€â”€ tests/
-    â”œâ”€â”€ services/
-    â”‚   â”œâ”€â”€ banking_service_test.gd
-    â”‚   â”œâ”€â”€ inventory_service_test.gd
-    â”‚   â””â”€â”€ save_system_test.gd
-    â”œâ”€â”€ scenes/
-    â”‚   â”œâ”€â”€ player_test.gd
-    â”‚   â””â”€â”€ ui_test.gd
-    â”œâ”€â”€ integration/
-    â”‚   â”œâ”€â”€ save_integration_test.gd
-    â”‚   â”œâ”€â”€ service_integration_test.gd
-    â”‚   â””â”€â”€ state_machine_test.gd
-    â””â”€â”€ doubles/                    # Test doubles
-        â”œâ”€â”€ mock_payment_processor.gd
-        â””â”€â”€ stub_database.gd
-```
-
-### Test Discovery & Naming Conventions
-
-**Critical Requirements:**
-- All test files must end with `_test.gd`
-- All test functions must start with `test_`
-- Place tests in `tests/` directory at project root
-- GUT auto-discovers all files matching pattern
-
-```gdscript
-# âœ“ CORRECT
-func test_player_takes_damage() -> void:
-func test_save_system_handles_corrupted_files() -> void:
-func test_inventory_persists_across_scenes() -> void:
-
-# âœ— INCORRECT (won't run)
-func test_player_damage() -> void:  # Missing complete context
-func check_player_damage() -> void: # Doesn't start with test_
-func player_damage_test() -> void:  # Wrong pattern
-```
-
-### Test Grouping by Feature
-
-```gdscript
-# tests/services/banking_service_test.gd
-extends GutTest
-
-class_name BankingServiceTest
-
-# Group 1: Coin operations
-func test_add_coins_increases_balance() -> void:
-    pass
-
-func test_add_zero_coins_no_change() -> void:
-    pass
-
-func test_negative_coins_rejected() -> void:
-    pass
-
-# Group 2: Purchase/spending
-func test_spend_insufficient_funds() -> void:
-    pass
-
-func test_spend_exact_balance() -> void:
-    pass
-
-func test_spend_more_than_balance() -> void:
-    pass
-
-# Group 3: Signal emissions
-func test_balance_changed_signal_on_add() -> void:
-    pass
-
-func test_balance_changed_signal_on_spend() -> void:
-    pass
-```
-
-### Inner Test Classes (Advanced Organization)
-
-```gdscript
-extends GutTest
-
-class_name ComplexServiceTest
-
-# Base test setup
-var service: ComplexService
-
-func before_each() -> void:
-    service = ComplexService.new()
-
-# ============================================================================
-# COIN OPERATIONS
-# ============================================================================
-class CoinOperations:
-    extends GutTest
-    
-    var service: ComplexService
-    
-    func before_each() -> void:
-        service = ComplexService.new()
-    
-    func test_add_coins() -> void:
-        service.add_coins(50)
-        assert_eq(service.get_balance(), 50)
-    
-    func test_subtract_coins() -> void:
-        service.add_coins(100)
-        service.subtract_coins(30)
-        assert_eq(service.get_balance(), 70)
-
-# ============================================================================
-# INVENTORY OPERATIONS
-# ============================================================================
-class InventoryOperations:
-    extends GutTest
-    
-    var service: ComplexService
-    
-    func before_each() -> void:
-        service = ComplexService.new()
-    
-    func test_add_item() -> void:
-        service.add_item("sword", 1)
-        assert_true(service.has_item("sword"))
-    
-    func test_remove_item() -> void:
-        service.add_item("sword", 2)
-        service.remove_item("sword", 1)
-        assert_eq(service.get_item_count("sword"), 1)
-```
-
-### Running Specific Tests
-
+**Run in CI:**
 ```bash
-# Run all tests
-godot --headless -s addons/gut/run_tests.gd
-
-# Run specific test file
-godot --headless -s addons/gut/run_tests.gd -d tests/services/banking_service_test.gd
-
-# Run tests matching pattern
-godot --headless -s addons/gut/run_tests.gd -f "*_test.gd"
-
-# Run with output to file
-godot --headless -s addons/gut/run_tests.gd > test_results.txt 2>&1
-
-# Generate JUnit XML for CI/CD
-godot --headless -s addons/gut/run_tests.gd --junit_output="test_results.xml"
+godot --headless --script validate_assets.gd
+if [ $? -ne 0 ]; then exit 1; fi
 ```
 
 ---
 
-## Common Anti-Patterns & Fixes
+## Common Mistakes & Fixes
 
-### Anti-Pattern 1: Test Interdependence
+### Mistake 1: Wrong Compression for Pixel Art
 
-```gdscript
-# âœ— WRONG: Tests depend on execution order
-var total_coins = 0
+**Problem:** Pixel art appears blurry or color-shifted after import.
 
-func test_1_add_coins() -> void:
-    total_coins += 100
-    assert_eq(total_coins, 100)
+**Cause:** VRAM compression (ETC2, ASTC, S3TC) applied to pixel sprites.
 
-func test_2_add_more_coins() -> void:
-    # Depends on test_1 running first!
-    total_coins += 50
-    assert_eq(total_coins, 150)  # Fails if run alone
+**Fix:**
+1. Select sprite texture â†’ Import tab
+2. Set `Compress > Mode: Lossless`
+3. Set `Detect 3D > Compress To: Disabled` (prevents unwanted re-compression)
+4. Click **Reimport**
 
-# âœ“ CORRECT: Each test is independent
-func before_each() -> void:
-    total_coins = 0
+**Verification:** Open `.import` file, confirm `compress/mode=0`.
 
-func test_add_coins() -> void:
-    total_coins += 100
-    assert_eq(total_coins, 100)
+### Mistake 2: Oversized Textures
 
-func test_add_more_coins() -> void:
-    total_coins += 50
-    assert_eq(total_coins, 50)  # Independent of other tests
-```
+**Problem:** 1024Ã—1024 or larger single-sprite textures cause mobile memory spike.
 
-### Anti-Pattern 2: Flaky Async Tests
+**Solution:**
+- Break large sprites into 256Ã—256 or 512Ã—512 pieces
+- Use smaller atlases (max 1024Ã—1024 for mobile)
+- Set size limit: `Compress > Process > Size Limit: 2048` (for auto-downscale)
 
-```gdscript
-# âœ— WRONG: Relies on hardcoded timing
-func test_animation_completes() -> void:
-    animation.play()
-    await wait_seconds(0.5)  # What if animation is slower?
-    assert_true(animation.is_finished())
+### Mistake 3: Unnecessary Mipmaps
 
-# âœ“ CORRECT: Wait for actual signal/condition
-func test_animation_completes() -> void:
-    watch_signals(animation)
-    animation.play()
-    
-    var completed = await wait_for_signal(animation.finished, 2.0,
-                                          "Animation should complete")
-    assert_true(completed, "Signal should have fired")
-```
+**Problem:** Enabling mipmaps increases memory and causes performance drops.
 
-### Anti-Pattern 3: Over-Mocking
+**When Mipmaps Are Needed (2D):**
+- Camera zoom-out observed with aliasing/graininess
+- Downsampling backgrounds at distance
 
-```gdscript
-# âœ— WRONG: Mocks too much implementation detail
-func test_save_data() -> void:
-    var db_double = double(DATABASE_PATH)
-    var fs_double = double(FILE_SYSTEM_PATH)
-    var compression_double = double(COMPRESSION_PATH)
-    
-    # Testing mock behavior, not actual code
-    db_double.stub_with_args("connect", [], true)
-    fs_double.stub_with_args("write", [[]], true)
-    compression_double.stub_with_args("compress", [{}], {})
-    
-    # Now what are we testing?
+**When NOT Needed:**
+- Fixed resolution games
+- Pixel art (mipmaps blur pixels)
+- UI elements
+- **99% of 2D games**
 
-# âœ“ CORRECT: Test real logic with necessary mocks
-func test_save_data() -> void:
-    # Only mock external dependencies
-    var file_system_double = double(FILE_SYSTEM_PATH)
-    file_system_double.stub_with_args("write", [SAVE_PATH, "data"], true)
-    
-    var save_manager = SaveManager.new()
-    save_manager.file_system = file_system_double
-    
-    # Test actual save logic
-    var result = save_manager.save({"coins": 100})
-    
-    assert_true(result)
-    assert_called(file_system_double, "write")
-```
+**Fix:** Set `Mipmaps > Generate: No` for all 2D sprites.
 
-### Anti-Pattern 4: Slow Tests (>1 second each)
+### Mistake 4: Missing Platform Overrides
 
-```gdscript
-# âœ— WRONG: Unnecessary waits bloat test suite
-func test_player_spawn() -> void:
-    player.spawn()
-    
-    # Testing doesn't need full animation
-    await wait_seconds(5)  # Animation plays completely
-    
-    assert_true(player.is_visible())
+**Problem:** iOS/Android export uses desktop compression settings, causing bloated APKs or color issues.
 
-# âœ“ CORRECT: Mock or skip unnecessary delays
-func test_player_spawn() -> void:
-    player.spawn()
-    
-    # Only wait for actual logic
-    await wait_frames(1)  # One frame for setup
-    
-    assert_true(player.is_visible())
+**Fix:**
+1. Select texture â†’ Import tab
+2. Scroll to **Platform Overrides**
+3. Check boxes: iOS, Android, Web
+4. Set iOS: VRAM Compressed, ASTC
+5. Set Android: VRAM Compressed, ETC2
+6. Set Web: Lossless (already default)
+7. **Reimport**
 
-# Alternative: Skip animation during tests
-func before_each() -> void:
-    # Disable slow animations during tests
-    player.skip_animations = true
-```
+### Mistake 5: Unoptimized Sprite Sheets
 
-### Anti-Pattern 5: Testing Implementation vs Behavior
+**Problem:** Inconsistent frame sizes, padding, or improper trimming.
 
-```gdscript
-# âœ— WRONG: Tests internal implementation
-func test_calculate_damage() -> void:
-    var calculator = DamageCalculator.new()
-    
-    # Tests specific formula, not behavior
-    var result = calculator._apply_armor_modifier(100, 50)
-    assert_eq(result, 75)  # Breaks if formula changes
-    
-    result = calculator._apply_critical_modifier(100, true)
-    assert_eq(result, 150)  # Tightly coupled to implementation
+**Verification Checklist:**
+- [ ] All frames in animation same size
+- [ ] 1-2 pixel padding between frames
+- [ ] No large transparent areas (consider trimming)
+- [ ] Atlas size power-of-2 (recommended) or 512Ã—512/1024Ã—1024
+- [ ] Frames in logical groups (idle, walk, attack)
 
-# âœ“ CORRECT: Tests public behavior
-func test_calculate_damage() -> void:
-    var attacker = Character.new()
-    attacker.attack_power = 100
-    
-    var defender = Character.new()
-    defender.armor = 50
-    
-    var damage = attacker.get_damage_against(defender)
-    
-    # Only assert the behavior, not implementation
-    assert_true(damage > 0, "Should deal positive damage")
-    assert_true(damage < 100, "Armor should reduce damage")
-```
+**Tool Recommendation:** Use Aseprite or TexturePacker for automatic optimization.
 
-### Anti-Pattern 6: Singleton State Pollution
+### Mistake 6: Preloading Too Much
 
-```gdscript
-# âœ— WRONG: Singletons retain state across tests
-func test_add_item() -> void:
-    inventory.add_item("sword", 1)
-    assert_eq(inventory.get_item_count("sword"), 1)
+**Problem:** Game startup takes 10+ seconds, initial load spike.
 
-func test_item_count_starts_empty() -> void:
-    # Fails because previous test added sword
-    assert_eq(inventory.get_item_count("sword"), 0)
+**Cause:** Preloading 50+ MB of assets unnecessarily.
 
-# âœ“ CORRECT: Reset state in before_each
-func before_each() -> void:
-    inventory = Inventory
-    inventory.clear()  # Reset state
-    inventory.get_tree().disconnect_all_signals()  # Clear connections
-
-func test_add_item() -> void:
-    inventory.add_item("sword", 1)
-    assert_eq(inventory.get_item_count("sword"), 1)
-
-func test_item_count_starts_empty() -> void:
-    # Now passes: state reset before each test
-    assert_eq(inventory.get_item_count("sword"), 0)
-```
+**Fix:**
+- Preload only: 5-8 MB (UI, player, core SFX)
+- Load on-demand: Levels, bosses, optional content
+- Use `load()` or `ResourceLoader.load_threaded_request()` instead of `preload()`
 
 ---
 
 ## Enforceable Patterns
 
-### Required Test Structure Checklist
+### Detectable Import Misconfigurations
 
-**Every test file must include:**
-
-```gdscript
-âœ“ extends GutTest
-âœ“ class_name [ServiceName]Test
-âœ“ before_each() for setup
-âœ“ Proper cleanup (autofree/autoqfree)
-âœ“ Descriptive test names (test_specific_behavior)
-âœ“ At least one meaningful assertion per test
-âœ“ No hardcoded delays (use wait_for_signal)
-```
-
-### Test Naming Convention Enforcement
+**Pattern 1: Pixel Art with VRAM Compression**
 
 ```gdscript
-# PATTERN: test_[object]_[action]_[expected_result]
-
-âœ“ test_player_takes_damage_health_decreases
-âœ“ test_inventory_add_item_count_increases
-âœ“ test_save_system_corrupted_file_returns_error
-âœ“ test_button_pressed_emits_clicked_signal
-
-âœ— test_player (too vague)
-âœ— test_does_it_work (unclear)
-âœ— test1_test2 (uninformative)
-âœ— check_player_damage (wrong prefix)
+# Detector: Flag if sprite uses non-lossless compression
+func check_sprite_compression(texture_path: String) -> bool:
+    var import_file = texture_path + ".import"
+    var config = ConfigFile.new()
+    config.load(import_file)
+    var compress_mode = config.get_value("params", "compress/mode")
+    
+    # Mode 0 = Lossless, 1 = Lossy, 2 = VRAM Compressed
+    if compress_mode != 0:
+        push_warning("Pixel art using non-lossless: " + texture_path)
+        return false
+    return true
 ```
 
-### Common Test Smells & Detection
-
-| Smell | Detection | Fix |
-|-------|-----------|-----|
-| **Flaky** | Fails randomly, timing dependent | Use signals/conditions, not hardcoded waits |
-| **Slow** | Single test >1 second | Remove unnecessary delays, mock slow ops |
-| **Coupled** | Requires specific test order | Independent setup, reset state each test |
-| **Over-mocked** | More mocks than real code | Only mock external dependencies |
-| **Unclear** | Test name doesn't match behavior | Rename to test_[object]_[action]_[result] |
-| **Duplicate** | Multiple tests check same thing | Combine or use parameterized tests |
-
-### Severity Levels
-
-**ERROR (Must Fix):**
-- Test depends on execution order
-- Test pollution between tests
-- Hardcoded timing (>1 sec waits)
-- Mocking concrete implementation details
-
-**WARNING (Should Fix):**
-- Test name unclear
-- Multiple assertions testing different things
-- Test slower than others
-- Duplicated test logic
-
-**INFO (Consider):**
-- Test could be parameterized
-- Test could use helper functions
-- Similar tests could be grouped
-
----
-
-## Parameterized Tests
-
-Parameterized tests reduce duplication by running the same logic with different inputs.
-
-### Basic Parameterized Test
+**Pattern 2: 3D Detection Not Disabled on Sprites**
 
 ```gdscript
-extends GutTest
-
-func test_damage_calculation(p = use_parameters([
-    [10, 5, 5],      # [attacker_power, defender_armor, expected_damage]
-    [50, 20, 30],
-    [100, 50, 50],
-    [25, 100, 0],    # Armor exceeds power
-])) -> void:
-    var attacker_power = p[0]
-    var defender_armor = p[1]
-    var expected_damage = p[2]
+func check_detect_3d_disabled(texture_path: String) -> bool:
+    var config = ConfigFile.new()
+    config.load(texture_path + ".import")
+    var detect_3d = config.get_value("params", "detect_3d/compress_to")
     
-    var damage = max(0, attacker_power - defender_armor)
-    
-    assert_eq(damage, expected_damage,
-             "Damage with power %d vs armor %d should be %d" % 
-             [attacker_power, defender_armor, expected_damage])
-
-# This generates 4 separate test runs with the parameters above
+    # 1 = VRAM Compressed (bad), 0 = Disabled (good)
+    if detect_3d != 0:
+        push_warning("Detect 3D not disabled: " + texture_path)
+        return false
+    return true
 ```
 
-### Named Parameters for Clarity
+### File Size Thresholds
+
+**Enforce Asset Size Limits:**
+
+| Asset Type | Max Size | Threshold |
+|---|---|---|
+| Sprite sheet | 2 MB | 2.5 MB (alert) |
+| Tileset atlas | 1 MB | 1.5 MB (alert) |
+| Music track | 8 MB | 10 MB (alert) |
+| UI texture | 500 KB | 750 KB (alert) |
+
+**Script to Enforce:**
+```gdscript
+func validate_asset_size(path: String, max_size_mb: float):
+    var file = FileAccess.open(path, FileAccess.READ)
+    var size_mb = float(file.get_length()) / (1024 * 1024)
+    
+    if size_mb > max_size_mb:
+        push_error("%s exceeds limit: %.1f MB > %.1f MB" % [path, size_mb, max_size_mb])
+        return false
+    return true
+```
+
+### Format Requirements
+
+**Enforceable Formats:**
+
+| File Type | Required Format | Reason |
+|---|---|---|
+| Sprite/texture | PNG | Lossless, good compression |
+| Music | OGG Vorbis | Streaming-friendly, mobile optimized |
+| SFX | WAV or OGG | Low latency, crisp quality |
+| Tileset | PNG | Must be lossless for pixel accuracy |
+
+**Reject:** JPEG (lossy artifacts), BMP (uncompressed), MP3 (patent/licensing issues).
+
+### Naming Conventions
+
+**Establish Standard Naming:**
+
+```
+res://assets/sprites/
+â”œâ”€â”€ characters_player_idle.png
+â”œâ”€â”€ characters_player_walk.png
+â”œâ”€â”€ characters_enemy_goblin.png
+â”œâ”€â”€ ui_button_normal.png
+â”œâ”€â”€ ui_button_hover.png
+
+res://audio/
+â”œâ”€â”€ sfx_jump_01.wav
+â”œâ”€â”€ sfx_footstep_01.ogg
+â”œâ”€â”€ music_level_01_main.ogg
+â”œâ”€â”€ music_level_01_combat.ogg
+```
+
+**Pattern:** `[category]_[entity]_[variant].[format]`
+
+### Validation Scripts
+
+**Comprehensive Validation Suite:**
 
 ```gdscript
-extends GutTest
+# validate_imports.gd - Run before export
+extends Node
 
-class TestData:
-    var name: String
-    var input: int
-    var expected: int
+const VALIDATION_RULES = {
+    "*.png": {
+        "compress/mode": 0,              # Lossless
+        "detect_3d/compress_to": 0,      # Disabled
+        "mipmaps/generate": false,
+        "filter": "nearest",
+    },
+    "*.ogg": {
+        "format": "ogg_vorbis",
+        "max_size_mb": 10,
+    },
+    "*.wav": {
+        "max_size_mb": 5,
+    }
+}
+
+func validate_all():
+    var failed = 0
+    for rule_pattern in VALIDATION_RULES:
+        var files = find_files_matching(rule_pattern)
+        for file in files:
+            if not validate_file(file, VALIDATION_RULES[rule_pattern]):
+                failed += 1
     
-    func _init(n: String, i: int, e: int) -> void:
-        name = n
-        input = i
-        expected = e
+    if failed > 0:
+        push_error("Validation failed: %d assets" % failed)
+        return false
+    push_notification("All assets validated!")
+    return true
 
-func test_price_calculation(p = use_parameters([
-    TestData.new("bronze_item", 10, 100),
-    TestData.new("silver_item", 50, 500),
-    TestData.new("gold_item", 100, 1000),
-    TestData.new("free_item", 0, 0),
-])) -> void:
-    var price = p.input * 10
+func validate_file(path: String, rules: Dictionary) -> bool:
+    var config = ConfigFile.new()
+    if not config.load(path + ".import"):
+        push_error("Missing .import file: " + path)
+        return false
     
-    assert_eq(price, p.expected,
-             "Price for %s should be correct" % p.name)
-```
-
-### Complex Parameterized Scenarios
-
-```gdscript
-extends GutTest
-
-func test_inventory_operations(p = use_parameters([
-    # [action, item, quantity, should_succeed, expected_count]
-    ["add", "sword", 1, true, 1],
-    ["add", "sword", 5, true, 5],
-    ["remove", "shield", 1, false, 0],  # Doesn't exist
-    ["add", "potion", 10, true, 10],
-    ["remove", "potion", 5, true, 5],
-    ["remove", "potion", 10, false, 5],  # Removing more than available
-])) -> void:
-    var inventory = Inventory.new()
+    for rule_key in rules:
+        var expected = rules[rule_key]
+        var actual = config.get_value("params", rule_key)
+        if actual != expected:
+            push_error("%s: %s = %s (expected %s)" % [path, rule_key, actual, expected])
+            return false
     
-    var action = p[0]
-    var item = p[1]
-    var quantity = p[2]
-    var should_succeed = p[3]
-    var expected_count = p[4]
-    
-    var result: bool
-    if action == "add":
-        result = inventory.add_item(item, quantity)
-    else:
-        result = inventory.remove_item(item, quantity)
-    
-    assert_eq(result, should_succeed)
-    assert_eq(inventory.get_item_count(item), expected_count)
-```
+    return true
 
----
-
-## Coverage & Performance
-
-### What Coverage Means in Godot
-
-Coverage measures which lines/branches of code execute during tests. It's a tool to find gaps, not a quality metric.
-
-**High coverage â‰  Good tests**
-**Low coverage = Likely gaps**
-
-### Critical Paths to Test
-
-Priority testing order:
-
-1. **Core Game Logic** (High Priority)
-   - Damage calculations
-   - Save/load systems
-   - Resource management
-   - Win/lose conditions
-
-2. **Player Interactions** (High Priority)
-   - Input handling
-   - State transitions
-   - Signal emissions
-
-3. **Error Handling** (Medium Priority)
-   - Invalid input validation
-   - Resource loading failures
-   - Network error recovery
-
-4. **UI Behavior** (Medium Priority)
-   - Button clicks
-   - Form validation
-   - Dialog flows
-
-5. **Performance/Edge Cases** (Low Priority)
-   - Large dataset handling
-   - Boundary conditions
-   - Memory leaks
-
-### Testing Priorities Matrix
-
-```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Business Logic (Must Test)              â”‚
-â”‚ - Game progression                      â”‚
-â”‚ - Resource economy                      â”‚
-â”‚ - Win/loss conditions                   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-         â†“
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ User Interactions (Should Test)         â”‚
-â”‚ - Input handling                        â”‚
-â”‚ - Signal emissions                      â”‚
-â”‚ - State changes                         â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-         â†“
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Error Cases (Could Test)                â”‚
-â”‚ - Invalid inputs                        â”‚
-â”‚ - Edge cases                            â”‚
-â”‚ - Boundary conditions                   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-```
-
-### When to Skip Tests
-
-Skip tests for:
-- Godot engine code (already tested)
-- Third-party library functionality
-- Visual/rendering code (hard to verify)
-- Platform-specific code (test in CI/CD only)
-- Animation playback timing (test signal, not frame count)
-
-```gdscript
-# DON'T TEST (engine code)
-func test_node_position_via_set_position() -> void:
-    var node = Node.new()
-    node.position = Vector2(100, 100)
-    # Don't test Godot's set_position implementation
-
-# DO TEST (your logic)
-func test_player_moves_to_target() -> void:
-    var player = Player.new()
-    player.move_to(Vector2(100, 100))
-    assert_eq(player.get_target(), Vector2(100, 100))
-```
-
-### Performance Benchmarks
-
-Guideline test execution times:
-
-```
-Unit Test:           < 0.1 seconds
-Integration Test:    < 0.5 seconds
-Full Suite:          < 10 seconds (all tests combined)
-```
-
-### Performance Assertions
-
-```gdscript
-extends GutTest
-
-func test_operation_completes_quickly() -> void:
-    var start_time = Time.get_ticks_msec()
-    
-    # Run operation
-    perform_expensive_calculation()
-    
-    var elapsed = Time.get_ticks_msec() - start_time
-    
-    assert_true(elapsed < 100, 
-               "Operation should complete in <100ms (took %dms)" % elapsed)
-
-func test_large_dataset_handles_efficiently() -> void:
-    var start_time = Time.get_ticks_msec()
-    
-    # Process 10000 items
-    for i in range(10000):
-        inventory.add_item("item_%d" % i, 1)
-    
-    var elapsed = Time.get_ticks_msec() - start_time
-    
-    assert_true(elapsed < 500,
-               "Processing 10k items should be fast")
+func find_files_matching(pattern: String) -> Array:
+    var result = []
+    # Implement recursive file search
+    return result
 ```
 
 ---
 
-## Advanced Topics
+## Platform Compatibility Matrix
 
-### Testing Complex Dependencies
+| Setting | Desktop (Mac M4) | iOS | Android | HTML5 | Recommendation |
+|---|---|---|---|---|---|
+| **Compression** | S3TC/ASTC | ASTC | ETC2/ASTC | Lossless | Per-platform override |
+| **Max Texture** | 8192Ã—8192 | 4096Ã—4096 | 4096Ã—4096 | 2048Ã—2048 | Lossless 1024Ã—1024 |
+| **Filter** | Nearest (pixel art) | Nearest | Nearest | Nearest | Global nearest |
+| **Mipmaps** | No (2D) | No (2D) | No (2D) | No | Avoid in 2D |
+| **Audio Format** | WAV/OGG | OGG | OGG | OGG/WAV | OGG standard |
+| **Sample Rate** | 44 kHz | 44 kHz | 44 kHz | 44 kHz | Standardize 44 kHz |
+| **Draw Calls** | 10-50 | 5-10 | 5-10 | 8-16 | Use atlases |
 
-```gdscript
-# When services depend on other services
-extends GutTest
+---
 
-const SHOP_PATH = "res://services/shop.gd"
-const BANKING_PATH = "res://services/banking.gd"
+## Quick Reference Import Settings Table
 
-func test_shop_with_mock_banking() -> void:
-    # Create mocks for all dependencies
-    var banking_mock = double(BANKING_PATH)
-    var shop = Shop.new()
-    
-    # Inject mocks into shop
-    shop.banking = banking_mock
-    
-    # Configure mock behavior
-    banking_mock.stub_with_args("try_spend", [100], true)
-    
-    # Test shop behavior with mocked dependency
-    var purchase_success = shop.buy_item(1, 100)
-    
-    assert_true(purchase_success)
-    assert_called(banking_mock, "try_spend")
+**Copy-Paste for Your Import Dialogs:**
+
+### 2D Pixel Art Sprite
+
+```
+Compress > Mode: Lossless
+Compress > Lossy Quality: N/A
+Compress > HDR Compression: Disabled
+Compress > Normal Map: Disabled
+Detect 3D > Compress To: Disabled
+Mipmaps > Generate: No
+Filter: (inherit â†’ set globally to Nearest)
+Repeat/Clamp: Clamp
 ```
 
-### Testing Error Conditions
+### UI Texture
 
-```gdscript
-extends GutTest
-
-func test_file_not_found_handling() -> void:
-    var save_system = SaveSystem.new()
-    
-    # Try to load non-existent file
-    var result = save_system.load_game("nonexistent.save")
-    
-    assert_null(result, "Should return null for missing file")
-    assert_signal_emitted(save_system, "error_occurred")
-
-func test_corrupted_save_file_recovery() -> void:
-    # Create corrupted save file
-    var corrupted_data = "invalid%%%corrupted"
-    var save_file = FileAccess.open("user://corrupted.save", 
-                                   FileAccess.WRITE)
-    save_file.store_string(corrupted_data)
-    
-    var save_system = SaveSystem.new()
-    var result = save_system.load_game("user://corrupted.save")
-    
-    assert_null(result, "Should handle corruption gracefully")
-    
-    # Cleanup
-    DirAccess.remove_absolute("user://corrupted.save")
+```
+Compress > Mode: Lossless
+Detect 3D > Compress To: Disabled
+Mipmaps > Generate: No
+Filter: Nearest
 ```
 
-### Testing Resource Loading
+### Tilemap Atlas
 
-```gdscript
-extends GutTest
+```
+Compress > Mode: Lossless
+Detect 3D > Compress To: Disabled
+Mipmaps > Generate: No
+Filter: Nearest
+Repeat/Clamp: Clamp
+```
 
-func test_scene_resource_loads() -> void:
-    var scene_path = "res://scenes/player/player.tscn"
-    
-    var scene = load(scene_path)
-    
-    assert_not_null(scene, "Scene should load successfully")
-    assert_is_instance_of(scene, PackedScene)
+### Particle Texture
 
-func test_invalid_resource_path_returns_null() -> void:
-    var invalid_path = "res://nonexistent/scene.tscn"
-    
-    var scene = load(invalid_path)
-    
-    assert_null(scene, "Invalid path should return null")
+```
+Compress > Mode: VRAM Compressed (or Lossless if < 512Ã—512)
+Detect 3D > Compress To: Disabled
+Mipmaps > Generate: Yes
+Filter: Linear
+Repeat/Clamp: Repeat
+```
+
+### Music (OGG)
+
+```
+Sample Rate: 44000 Hz
+Channels: Stereo
+Loop: (set in code, not import)
+Bitrate: 128000 bps
+```
+
+### SFX (WAV/OGG)
+
+```
+Sample Rate: 44000 Hz
+Channels: Mono
+Loop Mode: Forward (if looping)
+Bitrate: 96000 bps (OGG)
 ```
 
 ---
 
-## GUT CLI Reference
+## Official Documentation References
 
-```bash
-# Help
-godot --headless -s addons/gut/run_tests.gd --help
-
-# Run tests with verbose output
-godot --headless -s addons/gut/run_tests.gd -v
-
-# Run specific test file
-godot --headless -s addons/gut/run_tests.gd -d tests/services/banking_service_test.gd
-
-# Run tests matching pattern
-godot --headless -s addons/gut/run_tests.gd -f "*integration*"
-
-# Output to file
-godot --headless -s addons/gut/run_tests.gd > results.txt
-
-# JUnit XML output for CI/CD
-godot --headless -s addons/gut/run_tests.gd --junit_output="tests.xml"
-
-# List all tests without running
-godot --headless -s addons/gut/run_tests.gd --list
-```
+- **Godot 4.5 Import Documentation:** `https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html`
+- **Texture Compression Formats:** `https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d/index.html#vram-compression`
+- **Exporting for iOS:** `https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html`
+- **Exporting for Android:** `https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html`
+- **Exporting for Web:** `https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html`
+- **Audio Import:** `https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_audio.html`
+- **Optimization (Batching):** `https://docs.godotengine.org/en/stable/tutorials/performance/batching/index.html`
 
 ---
 
-## Conclusion & Best Practices Summary
-
-### Before You Write Tests:
-1. Understand what you're testing (unit vs integration)
-2. Identify external dependencies that need mocking
-3. Plan test isolation strategy
-4. Design for fast execution
-
-### While Writing Tests:
-1. One assertion per test when possible (or one concept)
-2. Use clear, descriptive names
-3. Test behavior, not implementation
-4. Reset state in `before_each()`
-5. Use `autofree`/`autoqfree` for cleanup
-
-### After Tests Pass:
-1. Review for slow tests (>1 second)
-2. Check for test interdependence
-3. Look for over-mocking
-4. Verify coverage on critical paths
-5. Update documentation
-
-### GUT Resources:
-- GitHub: https://github.com/bitwes/Gut
-- Documentation: https://gut.readthedocs.io/
-- Asset Library: Search "GUT" in Godot 4.5
-- Examples: See `addons/gut/examples/` folder
-
----
-
-## Appendix: Quick Reference Templates
-
-### Minimal Test Template
-
-```gdscript
-extends GutTest
-
-var service: MyService
-
-func before_each() -> void:
-    service = MyService.new()
-
-func test_basic_functionality() -> void:
-    service.do_something()
-    assert_true(service.is_done())
-```
-
-### Full Integration Test Template
-
-```gdscript
-extends GutTest
-
-var service_a: ServiceA
-var service_b: ServiceB
-var event_bus: EventBus
-
-func before_each() -> void:
-    event_bus = EventBus.new()
-    service_a = ServiceA.new()
-    service_b = ServiceB.new()
-
-func test_systems_work_together() -> void:
-    watch_signals(event_bus)
-    
-    service_a.trigger_action()
-    
-    await wait_for_signal(event_bus.action_completed, 2.0)
-    
-    assert_true(service_b.processed_action())
-```
-
-### Scene Test Template
-
-```gdscript
-extends GutTest
-
-const SCENE_PATH = "res://scenes/my_scene.tscn"
-
-var scene_instance: Node
-
-func before_each() -> void:
-    var scene = load(SCENE_PATH)
-    scene_instance = add_child_autofree(scene.instantiate())
-    await get_tree().process_frame
-
-func test_scene_setup() -> void:
-    assert_not_null(scene_instance)
-    # Add assertions
-```
-
----
-
-**Document Version:** 1.0 | **Godot Version:** 4.5.1 | **GUT Version:** 9.5.0+
+**Document Version:** 1.0 (Godot 4.5.1)  
+**Last Updated:** November 2025  
+**Audience:** Developers new to Godot asset optimization  
+**Target Complexity:** 100-300 on-screen entities, pixel art, multi-platform

@@ -9,6 +9,9 @@ extends GutTest
 
 class_name AuraFoundationTest
 
+# Preload AuraVisual to avoid duplicate loads
+const AuraVisual = preload("res://scripts/components/aura_visual.gd")
+
 
 func before_each() -> void:
 	# Reset service state before each test
@@ -244,3 +247,156 @@ func test_all_aura_types_have_required_fields() -> void:
 			assert_true(
 				aura_def.has(field), "Aura type '%s' should have field '%s'" % [aura_key, field]
 			)
+
+
+## ============================================================================
+## SECTION 5: Aura Visual Component Tests (Week 8 Phase 2)
+## User Story: "As a player, I want to see particle effects for my character's aura"
+## ============================================================================
+
+
+func test_aura_visual_can_be_instantiated() -> void:
+	# Arrange & Act
+	var aura_visual = AuraVisual.new()
+
+	# Assert
+	assert_not_null(aura_visual, "AuraVisual should instantiate successfully")
+	assert_eq(aura_visual.aura_type, "collect", "Should have default aura type")
+	assert_eq(aura_visual.radius, 100.0, "Should have default radius")
+
+	# Cleanup
+	aura_visual.queue_free()
+
+
+func test_aura_visual_creates_child_nodes() -> void:
+	# Arrange
+	var aura_visual = AuraVisual.new()
+	add_child_autofree(aura_visual)
+
+	# Wait for _ready() to be called
+	await wait_frames(2)
+
+	# Assert - Should have Line2D (ring) and GPUParticles2D
+	var has_line2d = false
+	var has_particles = false
+
+	for child in aura_visual.get_children():
+		if child is Line2D:
+			has_line2d = true
+		if child is GPUParticles2D:
+			has_particles = true
+
+	assert_true(has_line2d, "AuraVisual should create Line2D for ring visual")
+	assert_true(has_particles, "AuraVisual should create GPUParticles2D for particle system")
+
+
+func test_aura_visual_update_changes_parameters() -> void:
+	# Arrange
+	var aura_visual = AuraVisual.new()
+	add_child_autofree(aura_visual)
+	await wait_frames(2)
+
+	# Act - Update to damage aura with larger radius
+	aura_visual.update_aura("damage", 150.0)
+	await wait_frames(2)
+
+	# Assert
+	assert_eq(aura_visual.aura_type, "damage", "Aura type should update")
+	assert_eq(aura_visual.radius, 150.0, "Radius should update")
+	assert_eq(
+		aura_visual.color, AuraTypes.AURA_TYPES["damage"].color, "Color should match damage aura"
+	)
+
+
+func test_aura_visual_set_emitting() -> void:
+	# Arrange
+	var aura_visual = AuraVisual.new()
+	add_child_autofree(aura_visual)
+	await wait_frames(2)
+
+	# Act - Disable particles
+	aura_visual.set_emitting(false)
+
+	# Assert - Find GPUParticles2D and check emitting state
+	var particles: GPUParticles2D = null
+	for child in aura_visual.get_children():
+		if child is GPUParticles2D:
+			particles = child
+			break
+
+	assert_not_null(particles, "Should have GPUParticles2D child")
+	assert_false(particles.emitting, "Particles should stop emitting")
+
+	# Act - Re-enable particles
+	aura_visual.set_emitting(true)
+
+	# Assert
+	assert_true(particles.emitting, "Particles should resume emitting")
+
+
+func test_aura_visual_colors_match_aura_types() -> void:
+	# Arrange
+	var test_types = ["damage", "heal", "collect", "shield", "slow", "knockback"]
+
+	# Act & Assert - Test each aura type
+	for aura_type in test_types:
+		var aura_visual = AuraVisual.new()
+		add_child_autofree(aura_visual)
+		await wait_frames(1)
+
+		aura_visual.update_aura(aura_type, 100.0)
+		await wait_frames(1)
+
+		var expected_color = AuraTypes.AURA_TYPES[aura_type].color
+		assert_eq(
+			aura_visual.color,
+			expected_color,
+			"Aura visual color should match %s aura type" % aura_type
+		)
+
+
+func test_aura_visual_ring_has_correct_point_count() -> void:
+	# Arrange
+	var aura_visual = AuraVisual.new()
+	add_child_autofree(aura_visual)
+	await wait_frames(2)
+
+	# Act - Find the Line2D ring
+	var ring: Line2D = null
+	for child in aura_visual.get_children():
+		if child is Line2D:
+			ring = child
+			break
+
+	# Assert
+	assert_not_null(ring, "Should have Line2D ring visual")
+	assert_eq(ring.points.size(), 65, "Ring should have 65 points (64 segments + 1 to close)")
+
+
+func test_mutant_has_damage_aura_visual() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+	var mutant_id = CharacterService.create_character("MutantVisual", "mutant")
+	var mutant = CharacterService.get_character(mutant_id)
+
+	# Assert - Mutant should have damage aura
+	assert_eq(mutant.aura.type, "damage", "Mutant should have damage aura")
+
+	# Create visual for mutant aura
+	var aura_visual = AuraVisual.new()
+	add_child_autofree(aura_visual)
+
+	# Calculate aura parameters from mutant stats
+	var aura_power = AuraTypes.calculate_aura_power(mutant.aura.type, mutant.stats.resonance)
+	var aura_radius = AuraTypes.calculate_aura_radius(mutant.stats.pickup_range)
+
+	aura_visual.update_aura(mutant.aura.type, aura_radius)
+	await wait_frames(2)
+
+	# Assert - Visual should be configured for damage aura
+	assert_eq(aura_visual.aura_type, "damage", "Visual should show damage aura")
+	assert_eq(
+		aura_visual.color, AuraTypes.AURA_TYPES["damage"].color, "Should use damage aura color"
+	)
+	# Mutant has +10 resonance and +20 pickup_range, so radius should be 120
+	assert_eq(aura_visual.radius, 120.0, "Mutant aura radius should be 120 (100 + 20)")

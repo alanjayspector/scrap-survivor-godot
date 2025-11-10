@@ -70,6 +70,20 @@ func test_commando_has_correct_stat_modifiers() -> void:
 	assert_eq(character.stats.armor, -2, "Commando should have -2 armor (0 - 2)")
 
 
+func test_mutant_has_correct_stat_modifiers() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+
+	# Act
+	var character_id = CharacterService.create_character("TestMutant", "mutant")
+	var character = CharacterService.get_character(character_id)
+
+	# Assert
+	assert_eq(character.stats.resonance, 10, "Mutant should have +10 resonance")
+	assert_eq(character.stats.luck, 5, "Mutant should have +5 luck")
+	assert_eq(character.stats.pickup_range, 120, "Mutant should have 120 pickup range (100 + 20)")
+
+
 func test_character_type_stored_correctly() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
@@ -121,6 +135,17 @@ func test_free_tier_cannot_create_commando() -> void:
 	assert_eq(character_id, "", "FREE tier should NOT be able to create commando")
 
 
+func test_free_tier_cannot_create_mutant() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.FREE)
+
+	# Act
+	var character_id = CharacterService.create_character("FreeMutant", "mutant")
+
+	# Assert
+	assert_eq(character_id, "", "FREE tier should NOT be able to create mutant")
+
+
 func test_premium_tier_can_create_scavenger() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
@@ -154,6 +179,17 @@ func test_premium_tier_cannot_create_commando() -> void:
 	assert_eq(character_id, "", "PREMIUM tier should NOT be able to create commando")
 
 
+func test_premium_tier_cannot_create_mutant() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
+
+	# Act
+	var character_id = CharacterService.create_character("PremiumMutant", "mutant")
+
+	# Assert
+	assert_eq(character_id, "", "PREMIUM tier should NOT be able to create mutant")
+
+
 func test_subscription_tier_can_create_all_types() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
@@ -162,11 +198,13 @@ func test_subscription_tier_can_create_all_types() -> void:
 	var scavenger_id = CharacterService.create_character("SubScavenger", "scavenger")
 	var tank_id = CharacterService.create_character("SubTank", "tank")
 	var commando_id = CharacterService.create_character("SubCommando", "commando")
+	var mutant_id = CharacterService.create_character("SubMutant", "mutant")
 
 	# Assert
 	assert_ne(scavenger_id, "", "SUBSCRIPTION tier should create scavenger")
 	assert_ne(tank_id, "", "SUBSCRIPTION tier should create tank")
 	assert_ne(commando_id, "", "SUBSCRIPTION tier should create commando")
+	assert_ne(mutant_id, "", "SUBSCRIPTION tier should create mutant")
 
 
 ## ============================================================================
@@ -212,6 +250,20 @@ func test_commando_has_no_aura() -> void:
 
 	# Assert
 	assert_eq(character.aura.type, null, "Commando should have no aura (null)")
+
+
+func test_mutant_has_damage_aura() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+
+	# Act
+	var character_id = CharacterService.create_character("AuraMutant", "mutant")
+	var character = CharacterService.get_character(character_id)
+
+	# Assert
+	assert_eq(character.aura.type, "damage", "Mutant should have damage aura")
+	assert_eq(character.aura.enabled, true, "Mutant aura should be enabled by default")
+	assert_eq(character.aura.level, 1, "Mutant aura should start at level 1")
 
 
 ## ============================================================================
@@ -276,18 +328,21 @@ func test_multiple_characters_with_different_types() -> void:
 	var scavenger_id = CharacterService.create_character("Multi1", "scavenger")
 	var tank_id = CharacterService.create_character("Multi2", "tank")
 	var commando_id = CharacterService.create_character("Multi3", "commando")
+	var mutant_id = CharacterService.create_character("Multi4", "mutant")
 
 	# Assert
 	var all_chars = CharacterService.get_all_characters()
-	assert_eq(all_chars.size(), 3, "Should have 3 characters")
+	assert_eq(all_chars.size(), 4, "Should have 4 characters")
 
 	var scavenger = CharacterService.get_character(scavenger_id)
 	var tank = CharacterService.get_character(tank_id)
 	var commando = CharacterService.get_character(commando_id)
+	var mutant = CharacterService.get_character(mutant_id)
 
 	assert_eq(scavenger.stats.scavenging, 5, "Scavenger should have unique stats")
 	assert_eq(tank.stats.max_hp, 120, "Tank should have unique stats")
 	assert_eq(commando.stats.ranged_damage, 5, "Commando should have unique stats")
+	assert_eq(mutant.stats.resonance, 10, "Mutant should have unique stats")
 
 
 func test_character_type_defaults_to_scavenger() -> void:
@@ -301,3 +356,21 @@ func test_character_type_defaults_to_scavenger() -> void:
 	# Assert
 	assert_eq(character.character_type, "scavenger", "Should default to scavenger")
 	assert_eq(character.stats.scavenging, 5, "Should have scavenger stat modifiers")
+
+
+func test_mutant_type_persists_after_save_load() -> void:
+	# Arrange
+	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+	var mutant_id = CharacterService.create_character("PersistMutant", "mutant")
+
+	# Act - Serialize and deserialize
+	var saved_data = CharacterService.serialize()
+	CharacterService.reset()
+	CharacterService.deserialize(saved_data)
+
+	# Assert
+	var mutant = CharacterService.get_character(mutant_id)
+	assert_eq(mutant.character_type, "mutant", "Mutant type should persist")
+	assert_eq(mutant.stats.resonance, 10, "Mutant resonance should persist")
+	assert_eq(mutant.stats.luck, 5, "Mutant luck should persist")
+	assert_eq(mutant.aura.type, "damage", "Mutant aura type should persist")
