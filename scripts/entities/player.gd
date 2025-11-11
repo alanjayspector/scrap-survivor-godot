@@ -35,6 +35,9 @@ const SPINUP_RESET_TIME: float = 1.0  # Reset after 1 second of not firing
 var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
 
+## Touch input (mobile controls)
+var touch_movement_direction: Vector2 = Vector2.ZERO
+
 ## DEBUG: Weapon switching state (REMOVE BEFORE SHIPPING!)
 var _last_pressed_key: int = -1
 
@@ -63,6 +66,12 @@ func _ready() -> void:
 	# Add to player group
 	add_to_group("player")
 	print("[Player] Added to 'player' group")
+
+	# Connect to virtual joystick if it exists (mobile controls)
+	var joystick = get_tree().get_first_node_in_group("virtual_joystick")
+	if joystick:
+		joystick.direction_changed.connect(_on_joystick_direction_changed)
+		print("[Player] Connected to virtual joystick")
 
 	GameLogger.info("Player initialized", {"character_id": character_id})
 	print("[Player] _ready() complete")
@@ -118,8 +127,17 @@ func _physics_process(delta: float) -> void:
 	if spinup_timer >= SPINUP_RESET_TIME:
 		consecutive_shots = 0
 
-	# WASD movement
-	var input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	# Get input direction (touch OR keyboard)
+	var input_direction: Vector2 = Vector2.ZERO
+
+	if touch_movement_direction != Vector2.ZERO:
+		# Use touch input if active (mobile)
+		input_direction = touch_movement_direction
+	else:
+		# Fall back to keyboard (desktop)
+		input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+
+	# Apply movement
 	var speed = stats.get("speed", 200)
 	velocity = input_direction * speed
 	move_and_slide()
@@ -407,6 +425,11 @@ func _on_weapon_fired(_weapon_id: String, _position: Vector2, _direction: Vector
 	# Could add muzzle flash, sound effects, etc.
 	# TODO Week 10 Phase 2: Add muzzle flash visual effect
 	return
+
+
+func _on_joystick_direction_changed(direction: Vector2) -> void:
+	"""Handle virtual joystick direction changes (mobile controls)"""
+	touch_movement_direction = direction
 
 
 func get_stat(stat_name: String) -> float:

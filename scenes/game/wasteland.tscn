@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://c4vwm8p3qw1yd"]
+[gd_scene load_steps=7 format=3 uid="uid://c4vwm8p3qw1yd"]
 
 [ext_resource type="Script" path="res://scenes/game/wasteland.gd" id="1_wasteland"]
 [ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="2_wave_manager"]
 [ext_resource type="PackedScene" uid="uid://cqy8j7xvx3kh5" path="res://scenes/ui/hud.tscn" id="3_hud"]
 [ext_resource type="Script" path="res://scenes/ui/wave_complete_screen.gd" id="3_wave_complete_screen"]
 [ext_resource type="Script" path="res://scenes/ui/game_over_screen.gd" id="4_game_over_screen"]
+[ext_resource type="PackedScene" uid="uid://ccvk0p2xb8iny" path="res://scenes/ui/virtual_joystick.tscn" id="5_virtual_joystick"]
 
 [node name="Wasteland" type="Node2D"]
 script = ExtResource("1_wasteland")
@@ -28,6 +29,9 @@ position_smoothing_speed = 5.0
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="UI" instance=ExtResource("3_hud")]
+
+[node name="VirtualJoystick" parent="UI" instance=ExtResource("5_virtual_joystick")]
+z_index = 100
 
 [node name="WaveCompleteScreen" type="Panel" parent="UI" groups=["wave_complete_screen"]]
 visible = false
