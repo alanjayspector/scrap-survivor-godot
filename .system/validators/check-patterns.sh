@@ -88,7 +88,13 @@ SERVICE_FILES=$(find scripts/services -name "*_service.gd" 2>/dev/null || true)
 
 if [ -n "$SERVICE_FILES" ]; then
   for file in $SERVICE_FILES; do
-    # Check for extends Node
+    # Check if it's a static utility class (has class_name and static funcs, but no extends)
+    if grep -q "class_name" "$file" && grep -q "static func" "$file" && ! grep -q "^extends" "$file"; then
+      echo -e "${GREEN}✅ Static utility service: $file${NC}"
+      continue
+    fi
+
+    # Check for extends Node (required for autoload services)
     if ! grep -q "extends Node" "$file"; then
       echo -e "${RED}❌ Service must extend Node: $file${NC}"
       ((ERRORS++))
