@@ -302,10 +302,10 @@ func test_wave_manager_tracks_living_enemies() -> void:
 	wave_manager._on_enemy_died("enemy_2", {})
 	assert_eq(wave_manager.living_enemies.size(), 1, "Should have 1 enemy after second death")
 
-	# Clean up mock enemies
-	enemy1.queue_free()
-	enemy2.queue_free()
-	enemy3.queue_free()
+	# Clean up mock enemies (immediate cleanup in tests)
+	enemy1.free()
+	enemy2.free()
+	enemy3.free()
 
 
 ## Test: WaveManager calculates wave_time correctly

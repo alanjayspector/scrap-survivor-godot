@@ -14,11 +14,16 @@ signal character_created(character_id: String)
 signal tier_upgrade_requested(required_tier: int)
 signal free_trial_requested(character_type: String)
 
-## UI References (automatically found from scene)
-var character_cards_container: HBoxContainer
-var stat_comparison_panel: Panel
-var create_button: Button
-var back_button: Button
+## UI References (cached from scene tree with @onready for performance)
+@onready var character_cards_container: HBoxContainer = get_node(
+	"MarginContainer/VBoxContainer/CharacterCardsContainer"
+)
+@onready
+var stat_comparison_panel: Panel = get_node("MarginContainer/VBoxContainer/StatComparisonPanel")
+@onready
+var create_button: Button = get_node("MarginContainer/VBoxContainer/ButtonsContainer/CreateButton")
+@onready
+var back_button: Button = get_node("MarginContainer/VBoxContainer/ButtonsContainer/BackButton")
 
 ## Currently selected character type
 var selected_character_type: String = "scavenger"
@@ -26,21 +31,14 @@ var character_type_cards: Dictionary = {}
 
 
 func _ready() -> void:
-	_find_ui_nodes()
+	_validate_ui_nodes()
 	_create_character_type_cards()
 	_connect_signals()
 	_update_ui_for_tier()
 
 
-func _find_ui_nodes() -> void:
-	# Find nodes by path in the scene tree
-	character_cards_container = get_node_or_null(
-		"MarginContainer/VBoxContainer/CharacterCardsContainer"
-	)
-	stat_comparison_panel = get_node_or_null("MarginContainer/VBoxContainer/StatComparisonPanel")
-	create_button = get_node_or_null("MarginContainer/VBoxContainer/ButtonsContainer/CreateButton")
-	back_button = get_node_or_null("MarginContainer/VBoxContainer/ButtonsContainer/BackButton")
-
+func _validate_ui_nodes() -> void:
+	# Validate that @onready nodes were found successfully
 	if not character_cards_container:
 		push_error("CharacterSelection: Failed to find CharacterCardsContainer node")
 	if not stat_comparison_panel:
