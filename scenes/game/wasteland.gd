@@ -81,6 +81,11 @@ func _setup_wave_manager() -> void:
 	wave_manager.wave_completed.connect(_on_wave_completed)
 	print("[Wasteland] wave_manager.wave_completed signal connected")
 
+	# Connect wave manager enemy died signal for screen shake
+	print("[Wasteland] Connecting to wave_manager.enemy_died...")
+	wave_manager.enemy_died.connect(_on_enemy_died_screen_shake)
+	print("[Wasteland] wave_manager.enemy_died signal connected for screen shake")
+
 	# Connect CharacterService level-up signal for visual feedback
 	print("[Wasteland] Connecting to CharacterService.character_level_up_post...")
 	CharacterService.character_level_up_post.connect(_on_character_level_up)
@@ -170,6 +175,10 @@ func _spawn_player(char_id: String) -> void:
 	# Connect player death signal
 	player_instance.died.connect(_on_player_died)
 	print("[Wasteland] Player death signal connected")
+
+	# Connect player damaged signal for screen shake
+	player_instance.player_damaged.connect(_on_player_damaged)
+	print("[Wasteland] Player damaged signal connected for screen shake")
 
 	# Connect player to HudService for HP/XP tracking
 	print("[Wasteland] Connecting player to HudService...")
@@ -299,3 +308,43 @@ func _show_level_up_feedback(new_level: int) -> void:
 	tween.tween_callback(level_up_label.queue_free)
 
 	print("[Wasteland] Level up feedback displayed")
+
+
+func _on_player_damaged(_current_hp: float, _max_hp: float) -> void:
+	"""Handle player taking damage - trigger screen shake"""
+	screen_shake(5.0, 0.2)
+
+
+func _on_enemy_died_screen_shake(_enemy_id: String) -> void:
+	"""Handle enemy death - trigger small screen shake"""
+	screen_shake(2.0, 0.1)
+
+
+func screen_shake(intensity: float, duration: float) -> void:
+	"""Shake the camera for visual impact"""
+	if not camera:
+		return
+
+	# Cancel any existing shake
+	var existing_tweens = camera.get_tree().get_processed_tweens()
+	for tween in existing_tweens:
+		if tween.is_valid():
+			tween.kill()
+
+	# Create shake tween
+	var shake_tween = create_tween()
+	shake_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+
+	# Shake with random offsets
+	var shake_count = int(duration * 60)  # 60 shakes per second
+	var time_per_shake = duration / shake_count
+
+	for i in range(shake_count):
+		var shake_amount = intensity * (1.0 - float(i) / shake_count)  # Decay intensity
+		var offset = Vector2(
+			randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)
+		)
+		shake_tween.tween_property(camera, "offset", offset, time_per_shake)
+
+	# Return to center
+	shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)

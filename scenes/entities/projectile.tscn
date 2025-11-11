@@ -19,3 +19,7 @@ offset_top = -4.0
 offset_right = 4.0
 offset_bottom = 4.0
 color = Color(1, 1, 0, 1)
+
+[node name="Trail" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(1, 1, 0, 0.5)

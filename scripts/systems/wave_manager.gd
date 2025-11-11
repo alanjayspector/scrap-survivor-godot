@@ -8,6 +8,7 @@ enum WaveState { IDLE, SPAWNING, COMBAT, VICTORY, GAME_OVER }
 signal wave_started(wave: int)
 signal wave_completed(wave: int, stats: Dictionary)
 signal all_enemies_killed
+signal enemy_died(enemy_id: String)
 
 @export var spawn_container: Node2D  # Enemies node
 var current_wave: int = 1
@@ -162,6 +163,9 @@ func _on_enemy_died(enemy_id: String, _drop_data: Dictionary) -> void:
 
 	# Update wave stats
 	wave_stats.enemies_killed += 1
+
+	# Emit enemy died signal for visual feedback (screen shake, etc.)
+	enemy_died.emit(enemy_id)
 
 	# Note: Drop tracking moved to _on_drops_collected() to track actually collected drops
 

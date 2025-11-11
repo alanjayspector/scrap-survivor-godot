@@ -33,8 +33,14 @@ var enemies_hit: Array[Enemy] = []
 ## Collision layers
 const ENEMY_LAYER = 2  # Assuming enemies are on layer 2
 
+## Trail
+var trail: Line2D = null
+const TRAIL_MAX_LENGTH: int = 15  # Maximum number of trail points
+
 
 func _ready() -> void:
+	# Get trail node reference
+	trail = get_node_or_null("Trail")
 	# Set up collision
 	collision_layer = 0  # Projectiles don't collide with each other
 	collision_mask = 1 << (ENEMY_LAYER - 1)  # Only collide with enemies
@@ -68,6 +74,20 @@ func _physics_process(delta: float) -> void:
 	if not is_active:
 		return
 
+	# Update trail before moving
+	if trail:
+		# Add current position to trail (in local coordinates)
+		trail.add_point(Vector2.ZERO)
+
+		# Limit trail length
+		if trail.get_point_count() > TRAIL_MAX_LENGTH:
+			trail.remove_point(0)
+
+		# Shift all points back (since we're moving forward)
+		for i in range(trail.get_point_count() - 1):
+			var point = trail.get_point_position(i)
+			trail.set_point_position(i, point - velocity * delta)
+
 	# Move projectile
 	var movement = velocity * delta
 	position += movement
@@ -100,6 +120,10 @@ func activate(
 	distance_traveled = 0.0
 	enemies_hit.clear()
 
+	# Clear trail
+	if trail:
+		trail.clear_points()
+
 	# Set rotation to face direction
 	rotation = direction.angle()
 
@@ -116,6 +140,10 @@ func deactivate() -> void:
 	visible = false
 	set_physics_process(false)
 	monitoring = false
+
+	# Clear trail
+	if trail:
+		trail.clear_points()
 
 	# Emit destroyed signal
 	destroyed.emit()
