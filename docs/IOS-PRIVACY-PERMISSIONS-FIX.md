@@ -247,6 +247,55 @@ Make sure NONE of these are enabled:
 
 ## ⚠️ Troubleshooting
 
+### Issue: Fields Are Empty in Godot But Permissions Still Show in Xcode ⚠️ COMMON ISSUE
+
+**Symptom**: You've left all privacy description fields **empty** in Godot export settings (which is correct!), but when you export to Xcode and validate, you still get errors like:
+```
+The value for NSCameraUsageDescription must be a non-empty string.
+The value for NSMicrophoneUsageDescription must be a non-empty string.
+```
+
+**Root Cause**: Godot 4.x's iOS export template includes system frameworks (AVFoundation, CoreMotion, Photos) that **automatically add permission keys with empty strings** to Info.plist during Xcode compilation, even though you didn't fill them in Godot.
+
+**Solution**: Use the automated script to remove these keys from the **exported** Xcode project:
+
+1. **Export your project from Godot** to a folder (e.g., `~/Desktop/scrap-survivor-ios`)
+
+2. **Run the cleanup script**:
+   ```bash
+   ./scripts/ios/remove-unused-permissions.sh ~/Desktop/scrap-survivor-ios
+   ```
+
+3. **Open the project in Xcode**
+
+4. **Clean build folder**: Product → Clean Build Folder (⇧⌘K)
+
+5. **Verify Info.plist** (optional):
+   - In Xcode, navigate to your project
+   - Open `Info.plist` (or YourAppName-Info.plist)
+   - Search for `NSCamera`, `NSMicrophone`, `NSPhotoLibrary`, `NSMotion`
+   - These keys should **NOT** appear at all
+
+6. **Archive and validate**: Product → Archive, then Validate App
+
+**Why This Happens**:
+- Empty fields in Godot = Correct ✅
+- But Godot's iOS frameworks add `<key>NSCameraUsageDescription</key><string></string>` to Info.plist
+- App Store sees the key present with empty value = Rejection ❌
+- Script removes the keys entirely = Approved ✅
+
+**Automated Workflow**:
+```bash
+# 1. Export from Godot to iOS
+# 2. Run cleanup script
+./scripts/ios/remove-unused-permissions.sh ~/path/to/export
+
+# 3. Open in Xcode and archive
+open ~/path/to/export/YourProject.xcodeproj
+```
+
+---
+
 ### Issue: Permissions Still Requested After Export
 
 **Cause**: Godot 4.x includes iOS frameworks that auto-request permissions
