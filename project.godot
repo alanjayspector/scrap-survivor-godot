@@ -29,6 +29,7 @@ WeaponService="*res://scripts/services/weapon_service.gd"
 EnemyService="*res://scripts/services/enemy_service.gd"
 CombatService="*res://scripts/services/combat_service.gd"
 DropSystem="*res://scripts/systems/drop_system.gd"
+HudService="*res://scripts/autoload/hud_service.gd"
 AuraTypes="*res://scripts/systems/aura_types.gd"
 ConversionFlow="*res://scripts/ui/conversion_flow.gd"
 
