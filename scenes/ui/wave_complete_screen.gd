@@ -4,9 +4,9 @@ extends Panel
 
 signal next_wave_pressed
 
-@onready var victory_label: Label = $VictoryLabel
-@onready var stats_display: VBoxContainer = $StatsDisplay
-@onready var next_wave_button: Button = $NextWaveButton
+@onready var victory_label: Label = $Content/VictoryLabel
+@onready var stats_display: VBoxContainer = $Content/StatsDisplay
+@onready var next_wave_button: Button = $Content/NextWaveButton
 
 
 func _ready() -> void:
