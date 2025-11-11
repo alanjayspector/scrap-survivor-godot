@@ -135,7 +135,7 @@ func _fire_weapon(direction: Vector2) -> void:
 		return
 
 	# Get weapon definition
-	var weapon_def = WeaponService.get_weapon_definition(equipped_weapon_id)
+	var weapon_def = WeaponService.get_weapon(equipped_weapon_id)
 	if weapon_def.is_empty():
 		return
 
