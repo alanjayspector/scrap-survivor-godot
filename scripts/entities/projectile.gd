@@ -114,7 +114,10 @@ func activate(
 	proj_speed: float,
 	proj_range: float,
 	proj_splash_damage: float = 0.0,
-	proj_splash_radius: float = 0.0
+	proj_splash_radius: float = 0.0,
+	proj_color: Color = Color.WHITE,
+	trail_color: Color = Color.WHITE,
+	trail_width: float = 2.0
 ) -> void:
 	"""Activate projectile with given parameters"""
 	# Set properties
@@ -127,13 +130,19 @@ func activate(
 	splash_damage = proj_splash_damage
 	splash_radius = proj_splash_radius
 
+	# Apply visual properties (Phase 1.5)
+	modulate = proj_color  # Color the entire projectile
+	projectile_color = proj_color
+
 	# Reset tracking
 	distance_traveled = 0.0
 	enemies_hit.clear()
 
-	# Clear trail
+	# Clear and configure trail
 	if trail:
 		trail.clear_points()
+		trail.default_color = trail_color
+		trail.width = trail_width
 
 	# Set rotation to face direction
 	rotation = direction.angle()

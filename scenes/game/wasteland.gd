@@ -131,17 +131,40 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 	var splash_damage = weapon_def.get("splash_damage", 0.0)
 	var splash_radius = weapon_def.get("splash_radius", 0.0)
 
+	# Get visual properties (Phase 1.5)
+	var projectile_color = weapon_def.get("projectile_color", Color.WHITE)
+	var trail_color = weapon_def.get("trail_color", Color.WHITE)
+	var trail_width = weapon_def.get("trail_width", 2.0)
+
 	# Handle special behaviors
 	match special_behavior:
 		"spread":
 			# Scattergun: Fire multiple projectiles in a spread pattern
 			_spawn_spread_projectiles(
-				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
+				position,
+				direction,
+				damage,
+				speed,
+				range,
+				projectiles_per_shot,
+				weapon_def,
+				projectile_color,
+				trail_color,
+				trail_width
 			)
 		"cone":
 			# Scorcher: Similar to spread but with piercing
 			_spawn_spread_projectiles(
-				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
+				position,
+				direction,
+				damage,
+				speed,
+				range,
+				projectiles_per_shot,
+				weapon_def,
+				projectile_color,
+				trail_color,
+				trail_width
 			)
 		_:
 			# Default: Single projectile with optional pierce/splash
@@ -153,7 +176,10 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 				range,
 				pierce_count,
 				splash_damage,
-				splash_radius
+				splash_radius,
+				projectile_color,
+				trail_color,
+				trail_width
 			)
 
 	print("[Wasteland] Projectile(s) spawned with damage: ", damage, " speed: ", speed)
@@ -167,7 +193,10 @@ func _spawn_projectile(
 	range: float,
 	pierce_count: int = 0,
 	splash_damage: float = 0.0,
-	splash_radius: float = 0.0
+	splash_radius: float = 0.0,
+	projectile_color: Color = Color.WHITE,
+	trail_color: Color = Color.WHITE,
+	trail_width: float = 2.0
 ) -> void:
 	"""Spawn a single projectile with given properties"""
 	const PROJECTILE_SCENE = preload("res://scenes/entities/projectile.tscn")
@@ -178,8 +207,19 @@ func _spawn_projectile(
 	if pierce_count > 0:
 		projectile.pierce_count = pierce_count
 
-	# Activate projectile with all properties including splash damage
-	projectile.activate(position, direction, damage, speed, range, splash_damage, splash_radius)
+	# Activate projectile with all properties including visual properties (Phase 1.5)
+	projectile.activate(
+		position,
+		direction,
+		damage,
+		speed,
+		range,
+		splash_damage,
+		splash_radius,
+		projectile_color,
+		trail_color,
+		trail_width
+	)
 
 
 func _spawn_spread_projectiles(
@@ -189,7 +229,10 @@ func _spawn_spread_projectiles(
 	speed: float,
 	range: float,
 	projectile_count: int,
-	weapon_def: Dictionary
+	weapon_def: Dictionary,
+	projectile_color: Color = Color.WHITE,
+	trail_color: Color = Color.WHITE,
+	trail_width: float = 2.0
 ) -> void:
 	"""Spawn multiple projectiles in a spread pattern"""
 	var spread_angle = weapon_def.get("spread_angle", 40.0)  # Default 40° total spread
@@ -209,7 +252,19 @@ func _spawn_spread_projectiles(
 		var angle_offset = start_angle + (angle_step * i)
 		var spread_direction = direction.rotated(deg_to_rad(angle_offset))
 
-		_spawn_projectile(position, spread_direction, damage, speed, range, pierce_count, 0.0, 0.0)
+		_spawn_projectile(
+			position,
+			spread_direction,
+			damage,
+			speed,
+			range,
+			pierce_count,
+			0.0,
+			0.0,
+			projectile_color,
+			trail_color,
+			trail_width
+		)
 
 
 func _spawn_player(char_id: String) -> void:

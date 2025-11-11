@@ -49,8 +49,14 @@ func trigger_shake(intensity: float) -> void:
 	shake_amount = intensity
 
 
-func _on_weapon_fired(_weapon_id: String) -> void:
-	trigger_shake(2.0)  # Light shake for firing
+func _on_weapon_fired(weapon_id: String, _position: Vector2, _direction: Vector2) -> void:
+	# Get weapon-specific shake intensity (Phase 1.5)
+	var weapon_def = WeaponService.get_weapon(weapon_id)
+	if not weapon_def.is_empty():
+		var shake_intensity = weapon_def.get("screen_shake_intensity", 2.0)
+		trigger_shake(shake_intensity)
+	else:
+		trigger_shake(2.0)  # Fallback to default
 
 
 func _on_damage_dealt(_enemy_id: String, _damage: float, killed: bool) -> void:

@@ -33,7 +33,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.8, 0.4, 0.2),  # Rusty orange
+		"trail_width": 0.0,  # No trail for melee
+		"trail_color": Color(0.8, 0.4, 0.2, 0.5),
+		"trail_length": 0.0,
+		"screen_shake_intensity": 3.0  # Light-medium
 	},
 	"plasma_pistol":
 	{
@@ -49,7 +55,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.3, 0.6, 1.0),  # Electric blue
+		"trail_width": 3.0,
+		"trail_color": Color(0.3, 0.6, 1.0, 0.7),
+		"trail_length": 80.0,
+		"screen_shake_intensity": 2.0  # Light
 	},
 	"steel_sword":
 	{
@@ -64,7 +76,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.7, 0.7, 0.8),  # Metallic silver
+		"trail_width": 0.0,  # No trail for melee
+		"trail_color": Color(0.7, 0.7, 0.8, 0.5),
+		"trail_length": 0.0,
+		"screen_shake_intensity": 4.0  # Medium
 	},
 	"shock_rifle":
 	{
@@ -80,7 +98,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.6, 0.3, 1.0),  # Purple lightning
+		"trail_width": 3.0,
+		"trail_color": Color(0.6, 0.3, 1.0, 0.6),
+		"trail_length": 100.0,
+		"screen_shake_intensity": 5.0  # Medium
 	},
 	"shotgun":
 	{
@@ -97,7 +121,13 @@ const WEAPON_DEFINITIONS = {
 		"pierce_count": 0,
 		"splash_radius": 0.0,
 		"splash_damage": 0.0,
-		"spread_angle": 40.0  # Total spread cone: -20° to +20°
+		"spread_angle": 40.0,  # Total spread cone: -20° to +20°
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(1.0, 0.8, 0.3),  # Bright yellow pellets
+		"trail_width": 2.0,
+		"trail_color": Color(1.0, 0.8, 0.3, 0.5),
+		"trail_length": 60.0,
+		"screen_shake_intensity": 7.0  # Medium-strong
 	},
 	"sniper_rifle":
 	{
@@ -113,7 +143,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 2,  # Pierce through 2 enemies
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.0, 1.0, 1.0),  # Cyan tracer
+		"trail_width": 4.0,
+		"trail_color": Color(0.0, 1.0, 1.0, 0.8),
+		"trail_length": 120.0,
+		"screen_shake_intensity": 6.0  # Medium, sharp
 	},
 	"flamethrower":
 	{
@@ -130,7 +166,13 @@ const WEAPON_DEFINITIONS = {
 		"pierce_count": 99,  # Pierce infinite enemies
 		"splash_radius": 0.0,
 		"splash_damage": 0.0,
-		"cone_angle": 30.0  # 30° cone spread
+		"cone_angle": 30.0,  # 30° cone spread
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(1.0, 0.5, 0.0),  # Orange fire
+		"trail_width": 5.0,
+		"trail_color": Color(1.0, 0.5, 0.0, 0.6),
+		"trail_length": 50.0,
+		"screen_shake_intensity": 1.5  # Continuous subtle
 	},
 	"laser_rifle":
 	{
@@ -146,7 +188,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 0.0,
-		"splash_damage": 0.0
+		"splash_damage": 0.0,
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(0.0, 1.0, 0.3),  # Green laser
+		"trail_width": 4.0,
+		"trail_color": Color(0.0, 1.0, 0.3, 0.7),
+		"trail_length": 150.0,
+		"screen_shake_intensity": 4.0  # Medium
 	},
 	"minigun":
 	{
@@ -163,7 +211,13 @@ const WEAPON_DEFINITIONS = {
 		"pierce_count": 0,
 		"splash_radius": 0.0,
 		"splash_damage": 0.0,
-		"spinup_shots": 3  # First 3 shots have increased cooldown
+		"spinup_shots": 3,  # First 3 shots have increased cooldown
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(1.0, 1.0, 0.5),  # Yellow tracers
+		"trail_width": 2.0,
+		"trail_color": Color(1.0, 1.0, 0.5, 0.4),
+		"trail_length": 70.0,
+		"screen_shake_intensity": 2.5  # Rapid light shakes
 	},
 	"rocket_launcher":
 	{
@@ -179,7 +233,13 @@ const WEAPON_DEFINITIONS = {
 		"projectiles_per_shot": 1,
 		"pierce_count": 0,
 		"splash_radius": 50.0,  # 50px explosion radius
-		"splash_damage": 30.0  # Increased from 20 for better AOE damage
+		"splash_damage": 30.0,  # Increased from 20 for better AOE damage
+		# Visual properties (Phase 1.5)
+		"projectile_color": Color(1.0, 0.3, 0.1),  # Bright red/orange missile
+		"trail_width": 6.0,
+		"trail_color": Color(1.0, 0.3, 0.1, 0.8),
+		"trail_length": 100.0,
+		"screen_shake_intensity": 12.0  # Heavy (+ extra on explosion)
 	}
 }
 
