@@ -1,8 +1,8 @@
 # Week 12 Implementation Plan - Weapon Variety & Pickup Magnets
 
-**Status**: Phase 1 Complete ✅
+**Status**: Phase 1 Complete ✅, Phase 1.5 In Progress 🚧
 **Started**: 2025-01-11
-**Target Completion**: Phase 2-3 TBD
+**Target Completion**: Phase 1.5 TBD, Phase 2-3 TBD
 
 ## Overview
 
@@ -202,6 +202,148 @@ Week 12 expands the combat variety established in Week 11 by adding multiple wea
 - Week 11 Phase 2 (Drop collection system)
 - [scripts/services/weapon_service.gd](../../scripts/services/weapon_service.gd)
 - [scripts/entities/projectile.gd](../../scripts/entities/projectile.gd)
+
+---
+
+## Phase 1.5: Weapon Visual Identity & Game Feel
+
+**Goal**: Make weapons feel distinct and satisfying to use through visual and kinesthetic feedback. Players should instantly recognize which weapon they're using without reading UI. This addresses the "all weapons feel the same" issue from manual QA feedback.
+
+**Design Principle**: Players don't read stats during combat - they FEEL weapon differences through visual feedback, audio, and screen shake. Each weapon needs a unique visual identity.
+
+### Problem Statement (Manual QA Feedback)
+- ❌ All weapons look identical when firing (same projectile color/shape)
+- ❌ Projectile trails are boring (single color line, no visual interest)
+- ❌ Cannot tell which weapon is equipped by watching gameplay
+- ❌ Impact effects are missing or weak
+- ❌ Weapons lack "punch" and satisfaction
+
+### Tasks
+
+#### P0: Must Fix (Visual Identity Baseline)
+
+1. **Weapon-specific projectile colors** (`scripts/entities/projectile.gd`)
+   - Add `projectile_color: Color` to weapon definitions
+   - Apply color via `modulate` property on projectile sprite/ColorRect
+   - **Color palette** (wasteland-themed):
+     - **Plasma Pistol**: `Color(0.3, 0.6, 1.0)` - Electric blue
+     - **Rusty Blade**: `Color(0.8, 0.4, 0.2)` - Rusty orange (melee slash)
+     - **Scattergun**: `Color(1.0, 0.8, 0.3)` - Bright yellow (pellets)
+     - **Dead Eye**: `Color(0.0, 1.0, 1.0)` - Cyan tracer (sniper)
+     - **Boom Tube**: `Color(1.0, 0.3, 0.1)` - Bright red/orange (missile)
+     - **Scorcher**: `Color(1.0, 0.5, 0.0)` - Orange fire
+     - **Shredder**: `Color(1.0, 1.0, 0.5)` - Yellow tracers (bullets)
+     - **Beam Gun**: `Color(0.0, 1.0, 0.3)` - Green laser
+     - **Shock Rifle**: `Color(0.6, 0.3, 1.0)` - Purple lightning
+     - **Steel Sword**: `Color(0.7, 0.7, 0.8)` - Metallic silver (melee slash)
+
+2. **Improve projectile trails** (`scripts/entities/projectile.gd`)
+   - **Option A** (Quick): Enhance current Line2D trail
+     - Add weapon-specific trail colors (match projectile color)
+     - Add gradient (bright at projectile, fade to transparent)
+     - Vary trail width by weapon (2px bullets, 6px rockets)
+     - Vary trail length by projectile speed (faster = longer trail)
+   - **Option B** (Better): Replace with GPUParticles2D
+     - Particle trail emitter attached to projectile
+     - Natural fade-out and glow effect
+     - More dynamic and "juicy"
+     - Better performance than manual Line2D drawing
+   - **Implementation**:
+     ```gdscript
+     # Add to weapon definitions
+     "trail_width": 3.0,  # Pixels
+     "trail_color": Color(1.0, 0.8, 0.3),  # Match projectile
+     "trail_length": 100.0,  # Distance in pixels
+     ```
+
+3. **Weapon-specific screen shake** (`scripts/services/weapon_service.gd` + `scenes/game/wasteland.gd`)
+   - Add `screen_shake_intensity: float` to weapon definitions
+   - Pass shake intensity when spawning projectiles
+   - **Intensity values**:
+     - **Plasma Pistol**: 2.0 (light)
+     - **Rusty Blade**: 3.0 (light-medium)
+     - **Scattergun**: 7.0 (medium-strong)
+     - **Dead Eye**: 6.0 (medium, sharp)
+     - **Boom Tube**: 12.0 (heavy + longer duration on explosion)
+     - **Scorcher**: 1.5 (continuous subtle)
+     - **Shredder**: 2.5 (rapid light shakes)
+     - **Beam Gun**: 4.0 (medium)
+     - **Shock Rifle**: 5.0 (medium)
+     - **Steel Sword**: 4.0 (medium)
+   - Modify existing screen shake system to accept intensity parameter
+
+#### P1: High Impact (Should Fix)
+
+4. **Impact visual effects** (`scripts/entities/projectile.gd` + `scenes/game/wasteland.gd`)
+   - Create impact VFX when projectile hits enemy
+   - **Bullet impact** (Plasma, Shredder, Scattergun):
+     - Small white/yellow flash (CPUParticles2D burst, 5-8 particles)
+     - 0.1s duration, scale 0.5-1.0
+   - **Explosion impact** (Boom Tube):
+     - Large orange fireball (CPUParticles2D burst, 15-20 particles)
+     - Expanding shockwave ring (AnimatedSprite2D or ColorRect scale tween)
+     - 0.3s duration, scale 2.0-3.0
+   - **Laser impact** (Beam Gun):
+     - Electric arc/zap (small lightning sprite flash)
+     - 0.15s duration
+   - **Melee impact** (Rusty Blade, Steel Sword):
+     - Slash effect at enemy position
+     - 0.2s duration
+   - Spawn VFX at `projectile.global_position` on hit/expire
+
+5. **Rocket explosion visual upgrade** (`scripts/entities/projectile.gd`)
+   - Replace current ColorRect scale-up with particle burst
+   - Add CPUParticles2D emitter:
+     - 20-30 particles in explosion
+     - Orange/red/yellow gradient
+     - Radial spread pattern
+     - Scale up + fade out over 0.3s
+   - Add expanding shockwave ring (Line2D circle or sprite)
+   - Play camera shake at explosion position (12.0 intensity)
+
+6. **Flamethrower as particle system** (`scripts/entities/player.gd` or dedicated flame emitter scene)
+   - **Problem**: Flamethrower currently fires 99-pierce projectiles, which is hacky
+   - **Solution**: Replace with CPUParticles2D cone emitter
+     - Emit fire particles in 30° cone
+     - Particles fade after 0.3s (simulating flame travel)
+     - Query enemies overlapping particles for damage (Area2D)
+     - Continuous emission while firing (0.1s damage tick)
+   - **Visual properties**:
+     - Orange/red gradient particles
+     - Scale 0.5-1.5 variation
+     - Velocity 200-300 px/s
+     - Fade out naturally
+   - This will look WAY better than projectiles
+
+### Success Criteria
+- [ ] Each weapon has unique projectile color (10 weapons = 10 colors)
+- [ ] Trails have weapon-specific colors and visual interest (gradient, varying width)
+- [ ] Screen shake intensity varies by weapon (rockets shake more than pistols)
+- [ ] Bullet impacts show flash VFX
+- [ ] Rocket explosions have particle burst + shockwave ring
+- [ ] Flamethrower uses particle system instead of projectiles
+- [ ] Manual QA: "I can tell which weapon I'm using just by watching projectiles"
+- [ ] Manual QA: "Weapons feel punchy and satisfying"
+
+### Implementation Notes
+**Approach**: Iterate on visual feedback until it "feels right"
+- Start with projectile colors (easiest, highest impact)
+- Then trails (medium effort, high impact)
+- Then screen shake variation (easy)
+- Then impact VFX (higher effort, high satisfaction)
+- Finally flamethrower particles (highest effort, best visual payoff)
+
+**Testing**: Primarily manual QA
+- Fire each weapon and observe visual differences
+- Get second opinion: "Can you tell which weapon this is?"
+- Iterate on colors/effects until distinct
+
+### Dependencies
+- Phase 1 (Weapon mechanics must work)
+- [scripts/entities/projectile.gd](../../scripts/entities/projectile.gd)
+- [scripts/services/weapon_service.gd](../../scripts/services/weapon_service.gd)
+- [scripts/entities/player.gd](../../scripts/entities/player.gd)
+- Week 11 Phase 6 (Screen shake system)
 
 ### Testing
 ```gdscript
@@ -422,20 +564,23 @@ Week 12 expands the combat variety established in Week 11 by adding multiple wea
 ## Success Criteria (Overall Week 12)
 
 ### Must Have
-- [ ] 6+ new weapons with unique behaviors (shotgun, sniper, rocket, flamethrower, minigun, laser)
-- [ ] Shotgun fires spread pattern (5 projectiles)
-- [ ] Sniper pierces enemies (2 pierce count)
-- [ ] Rocket explodes with splash damage (50px radius)
+- [x] 6+ new weapons with unique behaviors (shotgun, sniper, rocket, flamethrower, minigun, laser) ✅ Phase 1
+- [x] Shotgun fires spread pattern (5 projectiles) ✅ Phase 1
+- [x] Sniper pierces enemies (2 pierce count) ✅ Phase 1
+- [x] Rocket explodes with splash damage (50px radius) ✅ Phase 1
+- [ ] Each weapon has distinct visual identity (color, trails, shake) 🚧 Phase 1.5
+- [ ] Weapons feel punchy and satisfying to fire 🚧 Phase 1.5
 - [ ] Pickup magnet system functional (drops fly toward player)
 - [ ] pickup_range stat integrated into character system
 - [ ] Visual indicator for pickup range
 
 ### Should Have
-- [ ] Flamethrower continuous cone damage
-- [ ] Minigun spin-up mechanic (slower first shots)
+- [x] Flamethrower continuous cone damage ✅ Phase 1
+- [x] Minigun spin-up mechanic (slower first shots) ✅ Phase 1
+- [ ] Impact VFX (bullet hits, explosions) 🚧 Phase 1.5
 - [ ] Magnetized drops have visual feedback (glow, trail)
-- [ ] Weapon variety balanced for fun gameplay
-- [ ] All weapons feel distinct and viable
+- [x] Weapon variety balanced for fun gameplay ✅ Phase 1
+- [ ] All weapons feel distinct and viable (mechanics ✅, visuals 🚧)
 
 ### Nice to Have
 - [ ] Laser rifle instant-hit mechanic (no projectile)
@@ -514,6 +659,83 @@ None expected. All changes are additive.
 
 ---
 
+## Tech Debt & Future Polish
+
+This section tracks quality improvements that are valuable but not critical for current phase completion. These should be revisited when time allows or when related systems are being worked on.
+
+### Weapon Polish (P2 - Deferred from Phase 1.5)
+
+**Audio Identity** (High Value, Medium Effort)
+- Each weapon needs distinct sound effects
+- Current state: No weapon-specific audio (silent or placeholder)
+- Impact: Audio is 50% of game feel in mobile games
+- **Sounds needed**:
+  - **Plasma Pistol**: "Pew" sci-fi sound (clean, light)
+  - **Scattergun**: Deep "BOOM" shotgun blast
+  - **Dead Eye**: Sharp crack + echo (sniper rifle)
+  - **Boom Tube**: "FWOOSH" launch sound + delayed "BOOM" explosion
+  - **Scorcher**: Continuous "WHOOSH" flamethrower
+  - **Shredder**: "BRRRRT" rapid minigun fire
+  - **Beam Gun**: Electric "BZZT" laser sound
+  - **Shock Rifle**: Electric crackle + zap
+  - **Rusty Blade**: Metal "SHING" slash
+  - **Steel Sword**: Heavier metal "CLANG" slash
+- **Resources**:
+  - Free sounds: [Freesound.org](https://freesound.org)
+  - Free game audio: [Kenney.nl Audio Assets](https://kenney.nl/assets?q=audio)
+  - Recommended: Search for "sci-fi weapon" or "laser gun" tags
+- **Implementation**: Add `AudioStreamPlayer2D` to projectile spawn, play weapon-specific sound on fire
+- **Estimated effort**: 2-3 hours (finding + integrating sounds)
+
+**Muzzle Flash** (Medium Value, Low Effort)
+- Visual feedback at player position when weapon fires
+- Current state: No muzzle flash (projectiles appear instantly)
+- Impact: Adds "punch" to firing, makes rapid-fire weapons feel more impactful
+- **Implementation**:
+  - Small sprite/particle burst at player position when firing
+  - 0.05-0.1s duration
+  - Scale varies by weapon (small for pistol, large for shotgun/rocket)
+  - Color matches projectile color
+- **Estimated effort**: 1 hour
+
+**Player Recoil Animation** (Medium Value, Medium Effort)
+- Player sprite pushes back slightly when firing heavy weapons
+- Current state: Player is static when firing
+- Impact: Reinforces weapon "weight" feel
+- **Implementation**:
+  - Tween player sprite position back 2-5 pixels based on weapon recoil
+  - Duration: 0.1s push + 0.2s return
+  - Recoil intensity per weapon (pistol: 2px, shotgun: 5px, rocket: 8px)
+  - Combine with screen shake for maximum impact
+- **Estimated effort**: 1-2 hours
+
+**Projectile Size Variation** (Low Value, Low Effort)
+- Different projectile sizes per weapon type
+- Current state: All projectiles same size
+- Impact: Visual clarity, makes rockets/missiles look appropriately large
+- **Sizes**:
+  - Bullets (Plasma, Shredder, Scattergun): 1.0x (base)
+  - Sniper: 0.8x (thin tracer)
+  - Laser: 1.2x width, 0.5x height (beam-like)
+  - Rocket: 2.0x (large missile)
+  - Flamethrower: N/A (particles)
+  - Melee: 1.5x (slash effect)
+- **Estimated effort**: 30 min
+
+### Other Systems
+
+**Pickup Magnet Audio** (Low Priority)
+- "Whoosh" or "ding" sound when drops magnetize to player
+- Add to Phase 2 if time allows
+- **Estimated effort**: 30 min
+
+**Weapon Switch Animation** (Low Priority)
+- Brief visual feedback when switching weapons via debug hotkeys
+- Flash player sprite, play "equip" sound
+- **Estimated effort**: 1 hour
+
+---
+
 ## Rollback Plan
 
 If Week 12 blocked:
@@ -558,11 +780,18 @@ If Week 12 blocked:
 
 ## Timeline Estimate
 
-**Phase 1 (Weapon Variety)**: 3-4 hours
+**Phase 1 (Weapon Variety)**: 3-4 hours ✅ Complete
 - Weapon definitions: 1 hour
 - Special behaviors (spread, pierce, explosive): 1.5 hours
 - Balance tuning: 1 hour
 - Testing: 30 min
+
+**Phase 1.5 (Visual Identity & Game Feel)**: 3-4 hours
+- P0: Projectile colors + trails + screen shake: 1.5 hours
+- P1: Impact VFX: 1 hour
+- P1: Rocket explosion upgrade: 30 min
+- P1: Flamethrower particles: 1 hour
+- Manual QA iteration: 30 min
 
 **Phase 2 (Pickup Magnets)**: 2-3 hours
 - Magnet behavior: 1 hour
@@ -576,7 +805,7 @@ If Week 12 blocked:
 - Player stat queries: 30 min
 - Testing: 30 min
 
-**Total**: 6-9 hours (1-1.5 work days)
+**Total**: 9-13 hours (1.5-2 work days)
 
 ---
 
