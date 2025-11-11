@@ -73,6 +73,13 @@ def extract_service_api(file_path: Path) -> ServiceAPI:
 
     api = ServiceAPI(service_name)
 
+    # All GDScript classes can be instantiated with .new()
+    # Evidence from docs/godot-reference.md:365 shows `var sprite = Sprite2D.new()`
+    # Evidence from docs/godot-testing-research.md shows 30+ examples of .new() in tests
+    # This is a built-in method for ALL GDScript classes, not just autoloads
+    # See: https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+    api.methods.add('new')
+
     if not file_path.exists():
         return api
 
