@@ -32,45 +32,67 @@ var damage_flash_duration: float = 0.1
 
 
 func _ready() -> void:
+	print("[Player] _ready() called, character_id: ", character_id)
+
 	# Load character stats from CharacterService
+	print("[Player] Loading character stats...")
 	await _load_character_stats()
+	print("[Player] Character stats loaded")
 
 	# Connect to character signals
+	print("[Player] Connecting to CharacterService signals...")
 	CharacterService.character_level_up_post.connect(_on_character_level_up_post)
 	CharacterService.character_death_post.connect(_on_character_death_post)
+	print("[Player] CharacterService signals connected")
 
 	# Connect to weapon service signals
+	print("[Player] Checking WeaponService...")
 	if WeaponService:
+		print("[Player] Connecting to WeaponService signals...")
 		WeaponService.weapon_fired.connect(_on_weapon_fired)
+		print("[Player] WeaponService signals connected")
 
 	# Add to player group
 	add_to_group("player")
+	print("[Player] Added to 'player' group")
 
 	GameLogger.info("Player initialized", {"character_id": character_id})
+	print("[Player] _ready() complete")
 
 
 func _load_character_stats() -> void:
 	"""Load character stats from CharacterService"""
+	print("[Player] _load_character_stats() called")
+	print("[Player] Current character_id: '", character_id, "'")
+
 	if character_id.is_empty():
+		print("[Player] character_id is empty, getting active character...")
 		# Get active character
 		var active_char = CharacterService.get_active_character()
 		if active_char:
 			character_id = active_char.id
+			print("[Player] Got active character ID: ", character_id)
 		else:
+			print("[Player] ERROR: No active character found!")
 			GameLogger.error("Player: No character ID and no active character")
 			return
 
 	# Get character data
+	print("[Player] Getting character data for ID: ", character_id)
 	var character = CharacterService.get_character(character_id)
 	if character:
+		print("[Player] Character found: ", character)
 		stats = character.stats.duplicate()
 		current_hp = stats.get("max_hp", 100)
+		print("[Player] Stats loaded - max_hp: ", current_hp)
 
 		# Emit initial health
 		health_changed.emit(current_hp, stats.get("max_hp", 100))
+		print("[Player] health_changed signal emitted")
 
 		GameLogger.info("Player stats loaded", {"character_id": character_id, "stats": stats})
 	else:
+		print("[Player] ERROR: Character not found for ID: ", character_id)
 		GameLogger.error("Player: Failed to load character stats", {"character_id": character_id})
 
 

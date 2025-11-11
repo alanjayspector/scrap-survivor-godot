@@ -22,56 +22,79 @@ func _ready() -> void:
 
 
 func start_wave() -> void:
+	print("[WaveManager] start_wave() called for wave ", current_wave)
 	current_state = WaveState.SPAWNING
 	wave_stats = {"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}}
+	print("[WaveManager] State set to SPAWNING")
 
 	# Update HUD
+	print("[WaveManager] Updating HUD...")
 	HudService.update_wave(current_wave)
+	print("[WaveManager] Emitting wave_started signal")
 	wave_started.emit(current_wave)
 
 	# Spawn enemies
+	print("[WaveManager] Getting enemy count for wave ", current_wave)
 	var enemy_count = EnemyService.get_enemy_count_for_wave(current_wave)
+	print("[WaveManager] Will spawn ", enemy_count, " enemies")
 	_spawn_wave_enemies(enemy_count)
 
 	current_state = WaveState.COMBAT
+	print("[WaveManager] State set to COMBAT")
 
 
 func _spawn_wave_enemies(count: int) -> void:
+	print("[WaveManager] _spawn_wave_enemies() called with count: ", count)
 	enemies_remaining = count
 
 	# Get spawn rate for this wave
 	var spawn_rate = EnemyService.get_spawn_rate(current_wave)
+	print("[WaveManager] Spawn rate: ", spawn_rate, " seconds")
 
 	# Spawn enemies over time (not all at once)
+	print("[WaveManager] Starting enemy spawn loop...")
 	for i in range(count):
+		print("[WaveManager] Spawning enemy ", i + 1, "/", count)
 		await get_tree().create_timer(spawn_rate).timeout
 		_spawn_single_enemy()
+	print("[WaveManager] All enemies spawned")
 
 
 func _spawn_single_enemy() -> void:
+	print("[WaveManager] _spawn_single_enemy() called")
+
 	# Load enemy scene
 	const ENEMY_SCENE = preload("res://scenes/entities/enemy.tscn")
 	var enemy = ENEMY_SCENE.instantiate()
+	print("[WaveManager] Enemy instance created: ", enemy)
 
 	# Random enemy type
 	var enemy_types = ["scrap_bot", "mutant_rat", "rust_spider"]
 	var random_type = enemy_types[randi() % enemy_types.size()]
+	print("[WaveManager] Random enemy type: ", random_type)
 
 	# Generate unique enemy ID
 	var enemy_id = "enemy_%d_%d" % [current_wave, randi()]
+	print("[WaveManager] Enemy ID: ", enemy_id)
 
 	# Setup enemy
+	print("[WaveManager] Calling enemy.setup()...")
 	enemy.setup(enemy_id, random_type, current_wave)
+	print("[WaveManager] Enemy setup complete")
 
 	# Connect death signal
 	enemy.died.connect(_on_enemy_died)
+	print("[WaveManager] Death signal connected")
 
 	# Random spawn position (off-screen)
 	var spawn_pos = _get_random_spawn_position()
 	enemy.global_position = spawn_pos
+	print("[WaveManager] Enemy positioned at: ", spawn_pos)
 
 	# Add to scene
+	print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
 	spawn_container.add_child(enemy)
+	print("[WaveManager] Enemy added to scene")
 
 
 func _get_random_spawn_position() -> Vector2:

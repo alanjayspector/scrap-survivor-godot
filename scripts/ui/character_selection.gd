@@ -280,11 +280,22 @@ func _on_create_character_pressed() -> void:
 
 func _launch_demo(character_id: String) -> void:
 	"""Launch the gameplay demo with the selected/created character"""
+	print("[CharacterSelection] _launch_demo called with character_id: ", character_id)
+
 	# Set as active character
 	CharacterService.set_active_character(character_id)
+	print("[CharacterSelection] Active character set")
 
-	# Change to demo scene
-	get_tree().change_scene_to_file("res://scenes/demo/gameplay_demo.tscn")
+	# Verify active character was set
+	var active = CharacterService.get_active_character()
+	if active:
+		print("[CharacterSelection] Verified active character: ", active.id)
+	else:
+		print("[CharacterSelection] ERROR: Failed to set active character!")
+
+	# Change to Wasteland scene for wave-based combat
+	print("[CharacterSelection] Changing scene to wasteland.tscn")
+	get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
 
 
 func _on_back_pressed() -> void:
