@@ -127,6 +127,12 @@ if [ -f .system/validators/service_architecture_validator.py ]; then
     fi
 fi
 
+# Data model consistency validator (Week 10 Phase 3 - NON-BLOCKING warnings for field name mismatches)
+if [ -f .system/validators/data_model_consistency_validator.py ]; then
+    python3 .system/validators/data_model_consistency_validator.py
+    # Don't fail - this is informational to catch potential typos
+fi
+
 # Test patterns validator (testing patterns - Week 6 Day 5 - NON-BLOCKING)
 if [ -f .system/validators/test_patterns_validator.py ]; then
     python3 .system/validators/test_patterns_validator.py

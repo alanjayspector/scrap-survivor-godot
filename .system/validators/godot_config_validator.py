@@ -8,6 +8,7 @@ This would have caught the missing autoloads and input actions.
 
 import sys
 import re
+import argparse
 from pathlib import Path
 
 
@@ -82,8 +83,11 @@ class GodotConfigValidator:
             # Check for missing autoloads
             for name, expected_path in expected_autoloads.items():
                 if name not in registered:
+                    # Extract filename for hint
+                    filename = expected_path.name
                     self.errors.append(
-                        f"Autoload '{name}' not registered. Add: {name}=\"*res://{expected_path}\""
+                        f"Autoload '{name}' not registered. Add: {name}=\"*res://{expected_path}\"\n"
+                        f"  💡 Naming: snake_case files → PascalCase autoloads ({filename} → {name})"
                     )
                 else:
                     # Verify path is correct
@@ -157,7 +161,90 @@ class GodotConfigValidator:
             print("✅ Godot configuration valid")
 
 
+def explain():
+    """Print explanation of validation rules"""
+    print("""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              Godot Configuration Validator - Rules Explained                 ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 WHAT THIS VALIDATOR CHECKS:
+
+1️⃣  Autoload Registration
+   ────────────────────────────────────────────────────────────────────────────
+   • All files in scripts/autoload/*.gd must be registered in [autoload] section
+   • All services extending Node in scripts/services/*.gd need autoload registration
+
+   Naming Convention:
+     snake_case filenames → PascalCase autoload names
+     Examples:
+       hud_service.gd     → HudService
+       game_state.gd      → GameState
+       error_service.gd   → ErrorService
+
+   Required Format:
+     [autoload]
+     ServiceName="*res://scripts/path/to/service.gd"
+
+   Why This Matters:
+     Missing autoloads cause "identifier not found" errors at runtime
+
+2️⃣  Input Action Configuration
+   ────────────────────────────────────────────────────────────────────────────
+   • All Input.get_vector() calls must have corresponding [input] actions
+   • All Input.is_action_pressed() calls need configured actions
+
+   Example:
+     Code:  Input.get_vector("move_left", "move_right", "move_up", "move_down")
+     Needs: [input] section with move_left, move_right, move_up, move_down defined
+
+   Why This Matters:
+     Missing input actions crash the game when input is read
+
+3️⃣  Required Sections
+   ────────────────────────────────────────────────────────────────────────────
+   • [application] - Project name, main scene, features
+   • [display] - Window size, viewport settings
+   • [rendering] - Rendering method, compression settings
+
+   Why This Matters:
+     Missing sections may cause undefined behavior
+
+💡 COMMON ISSUES & FIXES:
+
+   Issue: "Autoload 'HUDService' not registered"
+   Fix:   Change to 'HudService' (PascalCase, not ACRONYM_CASE)
+
+   Issue: "Input action 'move_left' not configured"
+   Fix:   Add to [input] section in project.godot
+
+   Issue: Path mismatch
+   Fix:   Use exact path: "*res://scripts/autoload/service.gd"
+
+🔧 USAGE:
+
+   Normal run:     python3 godot_config_validator.py
+   Show this help: python3 godot_config_validator.py --explain
+
+📚 SEE ALSO:
+
+   • docs/godot-service-architecture.md - Service patterns
+   • docs/godot-community-research.md - Best practices
+   • project.godot - Your project configuration
+
+════════════════════════════════════════════════════════════════════════════════
+""")
+
+
 def main():
+    parser = argparse.ArgumentParser(description='Validate Godot project configuration')
+    parser.add_argument('--explain', action='store_true', help='Show detailed explanation of validation rules')
+    args = parser.parse_args()
+
+    if args.explain:
+        explain()
+        return 0
+
     project_root = Path(__file__).parent.parent.parent
 
     validator = GodotConfigValidator(project_root)

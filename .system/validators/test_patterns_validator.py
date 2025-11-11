@@ -307,6 +307,61 @@ def check_assertions_presence(content: str, lines: List[str]) -> List[TestPatter
     return issues
 
 
+def check_memory_management(content: str, lines: List[str]) -> List[TestPatternIssue]:
+    """
+    Check for proper memory management in tests:
+    - Node/CharacterBody2D/Player instances should be freed with .free() not .queue_free()
+    - Tests creating instances should have cleanup in after_each() or test method
+    - Watch for orphaned instances (created but never freed)
+    """
+    issues = []
+
+    # Pattern 1: Find all instance creations of Node-based classes
+    instance_creations = []
+    for line_num, line in enumerate(lines, 1):
+        # Match patterns like: var player = Player.new()
+        match = re.search(r'var\s+(\w+)\s*=\s*(Player|Enemy|CharacterBody2D|Node2D|Node|Control)\.new\(\)', line)
+        if match:
+            var_name = match.group(1)
+            class_name = match.group(2)
+            instance_creations.append((line_num, var_name, class_name))
+
+    # Pattern 2: Check if instances are freed
+    for create_line, var_name, class_name in instance_creations:
+        # Look for .free() or .queue_free() calls for this variable
+        freed_with_free = any(f"{var_name}.free()" in line for line in lines)
+        freed_with_queue_free = any(f"{var_name}.queue_free()" in line for line in lines)
+
+        if not freed_with_free and not freed_with_queue_free:
+            issues.append(TestPatternIssue(
+                line_num=create_line,
+                issue_type="missing_free",
+                details=f"Variable '{var_name}' ({class_name}) created but never freed - potential memory leak",
+                severity="warning"
+            ))
+        elif freed_with_queue_free and not freed_with_free:
+            # Find the line where queue_free() is used
+            queue_free_line = next((i+1 for i, line in enumerate(lines) if f"{var_name}.queue_free()" in line), create_line)
+            issues.append(TestPatternIssue(
+                line_num=queue_free_line,
+                issue_type="queue_free_in_test",
+                details=f"Use '{var_name}.free()' instead of '.queue_free()' in tests (immediate vs deferred)",
+                severity="warning"
+            ))
+
+    # Pattern 3: Check for after_each() cleanup
+    has_after_each = re.search(r'func\s+after_each\s*\(\s*\)', content)
+    if instance_creations and not has_after_each:
+        issues.append(TestPatternIssue(
+            line_num=1,
+            issue_type="missing_after_each_cleanup",
+            details="Tests create instances but lack after_each() for cleanup",
+            severity="warning"
+        ))
+
+    return issues
+
+
 def validate_file(file_path: Path) -> List[TestPatternIssue]:
     """Run all test pattern checks on a file."""
     try:
@@ -321,6 +376,7 @@ def validate_file(file_path: Path) -> List[TestPatternIssue]:
         all_issues.extend(check_hardcoded_delays(content, lines))
         all_issues.extend(check_lifecycle_hooks(content))
         all_issues.extend(check_assertions_presence(content, lines))
+        all_issues.extend(check_memory_management(content, lines))
 
         return all_issues
 
