@@ -57,6 +57,11 @@ func _setup_wave_manager() -> void:
 	wave_complete_screen.next_wave_pressed.connect(_on_next_wave_pressed)
 	print("[Wasteland] Signal connected")
 
+	# Connect weapon fired signal for projectile spawning
+	print("[Wasteland] Connecting to WeaponService.weapon_fired...")
+	WeaponService.weapon_fired.connect(_on_weapon_fired)
+	print("[Wasteland] WeaponService.weapon_fired signal connected")
+
 	# Start first wave
 	print("[Wasteland] Waiting 1 second before starting wave...")
 	await get_tree().create_timer(1.0).timeout
@@ -68,6 +73,34 @@ func _setup_wave_manager() -> void:
 func _on_next_wave_pressed() -> void:
 	"""Handle next wave button press"""
 	wave_manager.next_wave()
+
+
+func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) -> void:
+	"""Spawn projectile when weapon fires"""
+	print("[Wasteland] _on_weapon_fired called: ", weapon_id, " at ", position)
+
+	# Get weapon definition for projectile properties
+	var weapon_def = WeaponService.get_weapon(weapon_id)
+	if weapon_def.is_empty():
+		print("[Wasteland] ERROR: Weapon definition not found for ", weapon_id)
+		return
+
+	# Calculate damage with player stats
+	var damage = weapon_def.get("damage", 10)
+	if player_instance:
+		damage = WeaponService.get_weapon_damage(weapon_id, player_instance.character_id)
+
+	# Load and spawn projectile
+	const PROJECTILE_SCENE = preload("res://scenes/entities/projectile.tscn")
+	var projectile = PROJECTILE_SCENE.instantiate()
+	projectiles_container.add_child(projectile)
+
+	# Activate projectile with weapon properties
+	var speed = weapon_def.get("projectile_speed", 400)
+	var range = weapon_def.get("range", 500)
+	projectile.activate(position, direction, damage, speed, range)
+
+	print("[Wasteland] Projectile spawned with damage: ", damage, " speed: ", speed)
 
 
 func _spawn_player(char_id: String) -> void:

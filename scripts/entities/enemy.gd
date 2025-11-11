@@ -33,6 +33,10 @@ var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
 var base_color: Color = Color(1, 0.3, 0.3, 1)
 
+## Contact damage cooldown
+var contact_damage_cooldown: float = 0.0
+var contact_damage_rate: float = 1.0  # Deal damage once per second
+
 
 func _ready() -> void:
 	# Add to enemy group
@@ -97,6 +101,10 @@ func _physics_process(delta: float) -> void:
 		if damage_flash_timer <= 0 and visual:
 			visual.color = base_color
 
+	# Update contact damage cooldown
+	if contact_damage_cooldown > 0:
+		contact_damage_cooldown -= delta
+
 	# Find player if needed
 	if not player:
 		player = get_tree().get_first_node_in_group("player") as Player
@@ -111,6 +119,20 @@ func _physics_process(delta: float) -> void:
 		# Flip visual based on direction
 		if visual and direction.x != 0:
 			visual.scale.x = -1 if direction.x < 0 else 1
+
+		# Check for collision with player (contact damage)
+		if contact_damage_cooldown <= 0:
+			for i in range(get_slide_collision_count()):
+				var collision = get_slide_collision(i)
+				var collider = collision.get_collider()
+				if collider == player:
+					# Deal contact damage to player
+					player.take_damage(damage, global_position)
+					contact_damage_cooldown = contact_damage_rate
+					GameLogger.debug(
+						"Enemy dealt contact damage", {"id": enemy_id, "damage": damage}
+					)
+					break  # Only deal damage once per cooldown period
 
 
 func take_damage(dmg: float) -> bool:
