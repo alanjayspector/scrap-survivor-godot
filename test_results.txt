@@ -1,5 +1,483 @@
-timestamp: 2025-11-10 21:52:04
-passed: 442
-failed: 0
-total: 466
-status: PASS
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
+
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/aura_foundation_test.gd:18)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/aura_foundation_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: BankingService
+          at: GDScript::reload (res://scripts/tests/banking_service_test.gd:15)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/banking_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/character_service_test.gd:16)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/character_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/character_stats_expansion_test.gd:18)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/character_stats_expansion_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/character_types_test.gd:16)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/character_types_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/combat_service_test.gd:16)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/combat_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/drop_system_test.gd:15)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/drop_system_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: EnemyService
+          at: GDScript::reload (res://scripts/tests/enemy_service_test.gd:16)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/enemy_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/entity_classes_test.gd:34)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/entity_classes_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: ErrorService
+          at: GDScript::reload (res://scripts/tests/error_service_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/error_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: GameState
+          at: GDScript::reload (res://scripts/tests/game_state_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/game_state_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: HudService
+          at: GDScript::reload (res://scripts/tests/hud_service_test.gd:20)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/hud_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: WeaponService
+          at: GDScript::reload (res://scripts/components/camera_controller.gd:19)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+          at: GDScript::reload (res://scripts/tests/input_system_test.gd:0)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/input_system_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: RecyclerService
+          at: GDScript::reload (res://scripts/tests/recycler_service_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/recycler_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: BankingService
+          at: GDScript::reload (res://scripts/tests/save_integration_test.gd:15)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/save_integration_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: SaveSystem
+          at: GDScript::reload (res://scripts/tests/save_system_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/save_system_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: CharacterService
+          at: GDScript::reload (res://scripts/tests/scene_integration_test.gd:14)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/scene_integration_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: BankingService
+          at: GDScript::reload (res://scripts/tests/service_integration_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/service_integration_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: ShopRerollService
+          at: GDScript::reload (res://scripts/tests/shop_reroll_service_test.gd:13)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/shop_reroll_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: TargetingService
+          at: GDScript::reload (res://scripts/tests/targeting_service_test.gd:74)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/targeting_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: HudService
+          at: GDScript::reload (res://scripts/tests/wave_manager_test.gd:20)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/wave_manager_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+SCRIPT ERROR: Compile Error: Identifier not found: WeaponService
+          at: GDScript::reload (res://scripts/tests/weapon_service_test.gd:16)
+          GDScript backtrace (most recent call first):
+              [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+              [1] _parse_script (res://addons/gut/test_collector.gd:76)
+              [2] add_script (res://addons/gut/test_collector.gd:127)
+              [3] add_script (res://addons/gut/gut.gd:1053)
+              [4] add_directory (res://addons/gut/gut.gd:1076)
+              [5] _init (res://test_runner.gd:10)
+ERROR: Failed to load script "res://scripts/tests/weapon_service_test.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript.cpp:3041)
+   GDScript backtrace (most recent call first):
+       [0] load_script_using_custom_warnings (res://addons/gut/warnings_manager.gd:159)
+       [1] _parse_script (res://addons/gut/test_collector.gd:76)
+       [2] add_script (res://addons/gut/test_collector.gd:127)
+       [3] add_script (res://addons/gut/gut.gd:1053)
+       [4] add_directory (res://addons/gut/gut.gd:1076)
+       [5] _init (res://test_runner.gd:10)
+=== GUT Test Discovery ===
+Scanning: res://scripts/tests
+Pattern: *_test.gd
+
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+          at: get_new (res://addons/gut/collected_script.gd:45)
+          GDScript backtrace (most recent call first):
+              [0] get_new (res://addons/gut/collected_script.gd:45)
+              [1] _create_script_instance (res://addons/gut/gut.gd:518)
+              [2] _test_the_scripts (res://addons/gut/gut.gd:776)
+              [3] test_scripts (res://addons/gut/gut.gd:1030)
+              [4] run_tests (res://addons/gut/gut.gd:1034)
+              [5] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid assignment of property or key 'gut' with value of type 'Node (GutMain)' on a base object of type 'Nil'.
+          at: GutMain._create_script_instance (res://addons/gut/gut.gd:520)
+          GDScript backtrace (most recent call first):
+              [0] _create_script_instance (res://addons/gut/gut.gd:520)
+              [1] _test_the_scripts (res://addons/gut/gut.gd:776)
+              [2] test_scripts (res://addons/gut/gut.gd:1030)
+              [3] run_tests (res://addons/gut/gut.gd:1034)
+              [4] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get' in base 'Nil'.
+          at: GutMain._should_skip_script (res://addons/gut/gut.gd:706)
+          GDScript backtrace (most recent call first):
+              [0] _should_skip_script (res://addons/gut/gut.gd:706)
+              [1] _test_the_scripts (res://addons/gut/gut.gd:782)
+              [2] test_scripts (res://addons/gut/gut.gd:1030)
+              [3] run_tests (res://addons/gut/gut.gd:1034)
+              [4] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid call. Nonexistent function 'before_all' in base 'Nil'.
+          at: GutMain._call_before_all (res://addons/gut/gut.gd:668)
+          GDScript backtrace (most recent call first):
+              [0] _call_before_all (res://addons/gut/gut.gd:668)
+              [1] _test_the_scripts (res://addons/gut/gut.gd:796)
+              [2] test_scripts (res://addons/gut/gut.gd:1030)
+              [3] run_tests (res://addons/gut/gut.gd:1034)
+              [4] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid call. Nonexistent function 'after_all' in base 'Nil'.
+          at: GutMain._call_after_all (res://addons/gut/gut.gd:693)
+          GDScript backtrace (most recent call first):
+              [0] _call_after_all (res://addons/gut/gut.gd:693)
+              [1] _test_the_scripts (res://addons/gut/gut.gd:842)
+              [2] test_scripts (res://addons/gut/gut.gd:1030)
+              [3] run_tests (res://addons/gut/gut.gd:1034)
+              [4] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_children' in base 'Nil'.
+          at: GutMain._log_test_children_warning (res://addons/gut/gut.gd:374)
+          GDScript backtrace (most recent call first):
+              [0] _log_test_children_warning (res://addons/gut/gut.gd:374)
+              [1] _test_the_scripts (res://addons/gut/gut.gd:848)
+              [2] test_scripts (res://addons/gut/gut.gd:1030)
+              [3] run_tests (res://addons/gut/gut.gd:1034)
+              [4] _init (res://test_runner.gd:21)
+ERROR: Parameter "p_child" is null.
+   at: remove_child (scene/main/node.cpp:1717)
+   GDScript backtrace (most recent call first):
+       [0] _test_the_scripts (res://addons/gut/gut.gd:853)
+       [1] test_scripts (res://addons/gut/gut.gd:1030)
+       [2] run_tests (res://addons/gut/gut.gd:1034)
+       [3] _init (res://test_runner.gd:21)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_assert_count' in base 'Nil'.
+          at: GutMain._test_the_scripts (res://addons/gut/gut.gd:856)
+          GDScript backtrace (most recent call first):
+              [0] _test_the_scripts (res://addons/gut/gut.gd:856)
+              [1] test_scripts (res://addons/gut/gut.gd:1030)
+              [2] run_tests (res://addons/gut/gut.gd:1034)
+              [3] _init (res://test_runner.gd:21)
+
+=== Test Discovery Complete ===
+Check output above for test files found
+ERROR: Failed to instantiate an autoload, script 'res://scripts/systems/save_system.gd' does not inherit from 'Node'.
+   at: start (main/main.cpp:4335)
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2514)
+ERROR: 18 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

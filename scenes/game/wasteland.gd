@@ -86,6 +86,16 @@ func _setup_wave_manager() -> void:
 	BankingService.currency_changed.connect(_on_currency_changed)
 	print("[Wasteland] BankingService.currency_changed signal connected")
 
+	# Connect wave manager signals for kill tracking
+	print("[Wasteland] Connecting to wave_manager.wave_completed...")
+	wave_manager.wave_completed.connect(_on_wave_completed)
+	print("[Wasteland] wave_manager.wave_completed signal connected")
+
+	# Connect CharacterService level-up signal for visual feedback
+	print("[Wasteland] Connecting to CharacterService.character_level_up_post...")
+	CharacterService.character_level_up_post.connect(_on_character_level_up)
+	print("[Wasteland] CharacterService.character_level_up_post signal connected")
+
 	# Initialize HUD currency display
 	_update_currency_display()
 
@@ -243,3 +253,64 @@ func _update_currency_display() -> void:
 	nanites_label.text = " | Nanites: 0"  # TODO: When BankingService adds NANITES
 
 	print("[Wasteland] HUD updated - Scrap: ", scrap_balance)
+
+
+func _on_wave_completed(wave: int, stats: Dictionary) -> void:
+	"""Handle wave completion - track kills"""
+	print("[Wasteland] Wave ", wave, " completed with stats: ", stats)
+
+	# Add wave kills to total kills
+	var wave_kills = stats.get("enemies_killed", 0)
+	total_kills += wave_kills
+
+	print("[Wasteland] Total kills updated: ", total_kills)
+	GameLogger.info(
+		"Wave completed", {"wave": wave, "wave_kills": wave_kills, "total_kills": total_kills}
+	)
+
+
+func _on_character_level_up(context: Dictionary) -> void:
+	"""Handle character level up - show visual feedback"""
+	var character_id = context.get("character_id", "")
+	var new_level = context.get("new_level", 1)
+
+	# Only show feedback if this is the player's character
+	if player_instance and player_instance.character_id == character_id:
+		print("[Wasteland] Player leveled up to level ", new_level, "!")
+		_show_level_up_feedback(new_level)
+		GameLogger.info("Player level up", {"character_id": character_id, "level": new_level})
+
+
+func _show_level_up_feedback(new_level: int) -> void:
+	"""Display 'LEVEL UP!' visual feedback"""
+	print("[Wasteland] Showing level up feedback for level ", new_level)
+
+	# Create temporary label for level up text
+	var level_up_label = Label.new()
+	level_up_label.text = "LEVEL UP!\nLevel %d" % new_level
+	level_up_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	level_up_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	# Style the label
+	level_up_label.add_theme_font_size_override("font_size", 48)
+	level_up_label.modulate = Color(1, 1, 0, 1)  # Yellow
+
+	# Position at center of screen
+	level_up_label.position = Vector2(
+		get_viewport().get_visible_rect().size.x / 2 - 200,
+		get_viewport().get_visible_rect().size.y / 2 - 50
+	)
+	level_up_label.size = Vector2(400, 100)
+
+	# Add to UI layer
+	$UI.add_child(level_up_label)
+
+	# Animate: fade in, stay, fade out
+	var tween = create_tween()
+	level_up_label.modulate.a = 0.0
+	tween.tween_property(level_up_label, "modulate:a", 1.0, 0.3)
+	tween.tween_interval(1.5)  # Stay visible for 1.5 seconds
+	tween.tween_property(level_up_label, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(level_up_label.queue_free)
+
+	print("[Wasteland] Level up feedback displayed")
