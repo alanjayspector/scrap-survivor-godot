@@ -243,6 +243,10 @@ func _spawn_spread_projectiles(
 	# Use cone_angle for flamethrower, spread_angle for shotgun
 	var total_angle = cone_angle if special_behavior == "cone" else spread_angle
 
+	# Spawn particle effects for flamethrower (Phase 1.5 P1)
+	if special_behavior == "cone":
+		_spawn_flamethrower_particles(position, direction, projectile_color, cone_angle, range)
+
 	# Calculate angle step between projectiles
 	var angle_step = total_angle / max(1, projectile_count - 1) if projectile_count > 1 else 0.0
 	var start_angle = -total_angle / 2.0  # Start from leftmost angle
@@ -265,6 +269,57 @@ func _spawn_spread_projectiles(
 			trail_color,
 			trail_width
 		)
+
+
+func _spawn_flamethrower_particles(
+	spawn_position: Vector2, direction: Vector2, color: Color, cone_angle: float, max_range: float
+) -> void:
+	"""Spawn CPUParticles2D cone emitter for flamethrower visual (Phase 1.5 P1)"""
+	var particles = CPUParticles2D.new()
+	particles.global_position = spawn_position
+	particles.z_index = 0
+
+	# Emission settings - continuous short burst
+	particles.emitting = true
+	particles.one_shot = true
+	particles.explosiveness = 0.0  # Continuous stream
+	particles.amount = 12
+	particles.lifetime = 0.4  # Short-lived particles
+	particles.preprocess = 0.0
+
+	# Particle appearance
+	particles.color = color
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 6.0
+
+	# Cone emission
+	var angle_rad = direction.angle()
+	particles.direction = Vector2(cos(angle_rad), sin(angle_rad))
+	particles.spread = cone_angle
+
+	# Velocity to match range
+	var particle_speed = max_range / particles.lifetime
+	particles.initial_velocity_min = particle_speed * 0.8
+	particles.initial_velocity_max = particle_speed * 1.2
+
+	# Fade and shrink over lifetime
+	particles.scale_amount_curve = _create_fade_curve()
+
+	# Add to scene
+	projectiles_container.add_child(particles)
+
+	# Auto-cleanup
+	await get_tree().create_timer(particles.lifetime + 0.1).timeout
+	if is_instance_valid(particles):
+		particles.queue_free()
+
+
+func _create_fade_curve() -> Curve:
+	"""Create a curve for particle fade-out"""
+	var curve = Curve.new()
+	curve.add_point(Vector2(0.0, 1.0))
+	curve.add_point(Vector2(1.0, 0.2))
+	return curve
 
 
 func _spawn_player(char_id: String) -> void:

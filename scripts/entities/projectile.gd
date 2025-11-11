@@ -216,6 +216,10 @@ func hit_enemy(enemy: Enemy) -> void:
 	print("[Projectile] Enemy killed: ", killed)
 	enemies_hit.append(enemy)
 
+	# Create impact VFX (Phase 1.5 P1)
+	if splash_radius <= 0.0:  # Don't create impact for explosives (they have their own effect)
+		_create_impact_visual(global_position)
+
 	# Emit signal
 	enemy_hit.emit(enemy, damage)
 
@@ -265,25 +269,98 @@ func _explode() -> void:
 
 
 func _create_explosion_visual() -> void:
-	"""Create a simple explosion visual effect"""
-	# Create explosion circle
-	var explosion = ColorRect.new()
-	explosion.color = Color(1.0, 0.5, 0.0, 0.6)  # Orange
-	explosion.size = Vector2(splash_radius * 2, splash_radius * 2)
-	explosion.position = global_position - Vector2(splash_radius, splash_radius)
-	explosion.z_index = -1
+	"""Create particle burst explosion visual (Phase 1.5 P1)"""
+	var particles = CPUParticles2D.new()
+	particles.global_position = global_position
+	particles.z_index = 1
+
+	# Emission settings
+	particles.emitting = true
+	particles.one_shot = true
+	particles.explosiveness = 1.0
+	particles.amount = 24  # More particles for larger explosion
+	particles.lifetime = 0.5
+
+	# Particle appearance - use rocket color
+	particles.color = Color(1.0, 0.4, 0.0)  # Orange/red explosion
+	particles.scale_amount_min = 4.0
+	particles.scale_amount_max = 8.0
+
+	# Particle physics - radial burst
+	particles.direction = Vector2(0, -1)
+	particles.spread = 180.0
+	particles.initial_velocity_min = 80.0
+	particles.initial_velocity_max = 150.0
+	particles.gravity = Vector2(0, 50)
+	particles.linear_accel_min = -60.0
+	particles.linear_accel_max = -100.0
+
+	# Fade out
+	particles.scale_amount_curve = _create_fade_curve()
+
+	# Add screen shake for explosion
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("trigger_shake"):
+		camera.trigger_shake(8.0)  # Extra shake for explosion impact
 
 	# Add to parent scene
 	var parent = get_parent()
 	if parent:
-		parent.add_child(explosion)
+		parent.add_child(particles)
 
-		# Animate: scale up and fade out
-		var tween = explosion.create_tween()
-		tween.set_parallel(true)
-		tween.tween_property(explosion, "scale", Vector2(1.5, 1.5), 0.3)
-		tween.tween_property(explosion, "modulate:a", 0.0, 0.3)
-		tween.tween_callback(explosion.queue_free).set_delay(0.3)
+		# Auto-cleanup after lifetime
+		await get_tree().create_timer(particles.lifetime + 0.1).timeout
+		if is_instance_valid(particles):
+			particles.queue_free()
+
+
+func _create_impact_visual(impact_position: Vector2) -> void:
+	"""Create bullet impact particle burst (Phase 1.5 P1)"""
+	var particles = CPUParticles2D.new()
+	particles.global_position = impact_position
+	particles.z_index = 1
+
+	# Emission settings
+	particles.emitting = true
+	particles.one_shot = true
+	particles.explosiveness = 1.0
+	particles.amount = 8
+	particles.lifetime = 0.3
+
+	# Particle appearance
+	particles.color = projectile_color
+	particles.scale_amount_min = 2.0
+	particles.scale_amount_max = 4.0
+
+	# Particle physics
+	particles.direction = Vector2(0, -1)
+	particles.spread = 180.0
+	particles.initial_velocity_min = 30.0
+	particles.initial_velocity_max = 60.0
+	particles.gravity = Vector2(0, 100)
+	particles.linear_accel_min = -20.0
+	particles.linear_accel_max = -40.0
+
+	# Fade out
+	particles.scale_amount_curve = _create_fade_curve()
+
+	# Add to parent scene
+	var parent = get_parent()
+	if parent:
+		parent.add_child(particles)
+
+		# Auto-cleanup after lifetime
+		await get_tree().create_timer(particles.lifetime + 0.1).timeout
+		if is_instance_valid(particles):
+			particles.queue_free()
+
+
+func _create_fade_curve() -> Curve:
+	"""Create a curve for particle fade-out"""
+	var curve = Curve.new()
+	curve.add_point(Vector2(0.0, 1.0))
+	curve.add_point(Vector2(1.0, 0.0))
+	return curve
 
 
 func set_pierce(pierce_amount: int) -> void:

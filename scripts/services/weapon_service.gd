@@ -162,8 +162,8 @@ const WEAPON_DEFINITIONS = {
 		"projectile_speed": 300,  # Slower projectile
 		"tier_required": UserTier.PREMIUM,
 		"special_behavior": "cone",
-		"projectiles_per_shot": 1,
-		"pierce_count": 99,  # Pierce infinite enemies
+		"projectiles_per_shot": 3,  # 3 flame particles per shot
+		"pierce_count": 5,  # Reduced from 99 - proper multi-hit (Phase 1.5 P1)
 		"splash_radius": 0.0,
 		"splash_damage": 0.0,
 		"cone_angle": 30.0,  # 30° cone spread
