@@ -153,7 +153,7 @@ func hit_enemy(enemy: Enemy) -> void:
 		return
 
 	# Deal damage
-	enemy.take_damage(damage, global_position)
+	enemy.take_damage(damage)
 	enemies_hit.append(enemy)
 
 	# Emit signal

@@ -88,7 +88,7 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 	# Calculate damage with player stats
 	var damage = weapon_def.get("damage", 10)
 	if player_instance:
-		damage = WeaponService.get_weapon_damage(weapon_id, player_instance.character_id)
+		damage = WeaponService.get_weapon_damage(weapon_id, player_instance.stats)
 
 	# Load and spawn projectile
 	const PROJECTILE_SCENE = preload("res://scenes/entities/projectile.tscn")
