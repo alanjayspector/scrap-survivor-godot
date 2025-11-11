@@ -35,6 +35,9 @@ const SPINUP_RESET_TIME: float = 1.0  # Reset after 1 second of not firing
 var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
 
+## DEBUG: Weapon switching state (REMOVE BEFORE SHIPPING!)
+var _last_pressed_key: int = -1
+
 
 func _ready() -> void:
 	print("[Player] _ready() called, character_id: ", character_id)
@@ -129,6 +132,54 @@ func _physics_process(delta: float) -> void:
 	# Auto-fire weapon with auto-targeting (if equipped and cooldown ready)
 	if not equipped_weapon_id.is_empty() and weapon_cooldown <= 0:
 		_fire_weapon_with_targeting()
+
+	# DEBUG: Weapon switching hotkeys (REMOVE BEFORE SHIPPING!)
+	var current_key = -1
+	if Input.is_physical_key_pressed(KEY_1):
+		current_key = KEY_1
+	elif Input.is_physical_key_pressed(KEY_2):
+		current_key = KEY_2
+	elif Input.is_physical_key_pressed(KEY_3):
+		current_key = KEY_3
+	elif Input.is_physical_key_pressed(KEY_4):
+		current_key = KEY_4
+	elif Input.is_physical_key_pressed(KEY_5):
+		current_key = KEY_5
+	elif Input.is_physical_key_pressed(KEY_6):
+		current_key = KEY_6
+	elif Input.is_physical_key_pressed(KEY_7):
+		current_key = KEY_7
+	elif Input.is_physical_key_pressed(KEY_8):
+		current_key = KEY_8
+
+	if current_key != -1 and current_key != _last_pressed_key:
+		match current_key:
+			KEY_1:
+				equip_weapon("plasma_pistol")
+				print("[Player] DEBUG: Switched to Plasma Pistol")
+			KEY_2:
+				equip_weapon("shotgun")
+				print("[Player] DEBUG: Switched to Scattergun")
+			KEY_3:
+				equip_weapon("sniper_rifle")
+				print("[Player] DEBUG: Switched to Dead Eye")
+			KEY_4:
+				equip_weapon("rocket_launcher")
+				print("[Player] DEBUG: Switched to Boom Tube")
+			KEY_5:
+				equip_weapon("minigun")
+				print("[Player] DEBUG: Switched to Shredder")
+			KEY_6:
+				equip_weapon("flamethrower")
+				print("[Player] DEBUG: Switched to Scorcher")
+			KEY_7:
+				equip_weapon("laser_rifle")
+				print("[Player] DEBUG: Switched to Beam Gun")
+			KEY_8:
+				equip_weapon("shock_rifle")
+				print("[Player] DEBUG: Switched to Arc Blaster")
+
+	_last_pressed_key = current_key
 
 
 func _fire_weapon_with_targeting() -> void:
