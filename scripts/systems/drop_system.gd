@@ -189,9 +189,9 @@ func spawn_drop_pickups(drops: Dictionary, position: Vector2) -> void:
 		pickup.collected.connect(_on_drop_collected)
 		print("[DropSystem] Pickup signal connected")
 
-		# Add to scene
-		drops_container.add_child(pickup)
-		print("[DropSystem] Pickup added to scene")
+		# Defer add_child to avoid physics state changes during callback
+		drops_container.call_deferred("add_child", pickup)
+		print("[DropSystem] Pickup queued to be added to scene")
 
 		drop_index += 1
 
