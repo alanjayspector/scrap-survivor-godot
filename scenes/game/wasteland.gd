@@ -18,6 +18,11 @@ extends Node2D
 @onready var wave_complete_screen: Panel = $UI/WaveCompleteScreen
 @onready var game_over_screen: Panel = $UI/GameOverScreen
 
+# HUD currency labels (get in _ready to avoid validator issues with nested paths)
+var scrap_label: Label
+var components_label: Label
+var nanites_label: Label
+
 var player_instance: Player = null
 var character_id: String = ""
 var start_time: float = 0.0
@@ -26,6 +31,11 @@ var total_kills: int = 0
 
 func _ready() -> void:
 	print("[Wasteland] _ready() called")
+
+	# Get HUD currency labels
+	scrap_label = $UI/HUD/TopBar/RightCurrency/CurrencyDisplay/ScrapLabel
+	components_label = $UI/HUD/TopBar/RightCurrency/CurrencyDisplay/ComponentsLabel
+	nanites_label = $UI/HUD/TopBar/RightCurrency/CurrencyDisplay/NanitesLabel
 
 	# Verify scene nodes loaded
 	print("[Wasteland] Camera: ", camera)
@@ -70,6 +80,14 @@ func _setup_wave_manager() -> void:
 	print("[Wasteland] Connecting to WeaponService.weapon_fired...")
 	WeaponService.weapon_fired.connect(_on_weapon_fired)
 	print("[Wasteland] WeaponService.weapon_fired signal connected")
+
+	# Connect BankingService currency_changed signal for HUD updates
+	print("[Wasteland] Connecting to BankingService.currency_changed...")
+	BankingService.currency_changed.connect(_on_currency_changed)
+	print("[Wasteland] BankingService.currency_changed signal connected")
+
+	# Initialize HUD currency display
+	_update_currency_display()
 
 	# Start game timer
 	start_time = Time.get_ticks_msec() / 1000.0
@@ -204,3 +222,24 @@ func _on_main_menu_pressed() -> void:
 	"""Return to main menu"""
 	print("[Wasteland] Main menu pressed - returning to character selection")
 	get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+
+
+func _on_currency_changed(currency_type: BankingService.CurrencyType, new_balance: int) -> void:
+	"""Handle currency changes and update HUD"""
+	print("[Wasteland] Currency changed: type=", currency_type, " new_balance=", new_balance)
+	_update_currency_display()
+
+
+func _update_currency_display() -> void:
+	"""Update all currency labels in the HUD"""
+	# Get current balances from BankingService
+	var scrap_balance = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+	var premium_balance = BankingService.get_balance(BankingService.CurrencyType.PREMIUM)
+
+	# Update labels
+	# Note: Currently all currencies map to SCRAP, so we show the same value
+	scrap_label.text = "Scrap: %d" % scrap_balance
+	components_label.text = " | Components: 0"  # TODO: When BankingService adds COMPONENTS
+	nanites_label.text = " | Nanites: 0"  # TODO: When BankingService adds NANITES
+
+	print("[Wasteland] HUD updated - Scrap: ", scrap_balance)
