@@ -440,6 +440,23 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 
 ## Testing Strategy
 
+### Running Tests
+
+**Automated Tests (GUT Framework)**:
+```bash
+# Run all tests via proper test runner (ALWAYS use this)
+python3 .system/validators/godot_test_runner.py
+
+# This runner handles:
+# - Scanning project to register custom classes
+# - Running GUT tests in headless mode with autoload services
+# - Caching results for fast verification when Godot is open
+```
+
+**Location**: Test runner is at `.system/validators/godot_test_runner.py`
+
+**DO NOT** run tests directly via godot CLI or test_runner.gd - use the Python runner above.
+
 ### Unit Tests
 - TargetingService: All targeting logic
 - CharacterService: Level-up calculations
