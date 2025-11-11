@@ -26,6 +26,11 @@ var equipped_weapon_id: String = ""
 ## Weapon firing state
 var weapon_cooldown: float = 0.0
 
+## Spin-up mechanic (Minigun)
+var consecutive_shots: int = 0  # Track consecutive shots for spin-up
+var spinup_timer: float = 0.0  # Reset counter if no shots for a while
+const SPINUP_RESET_TIME: float = 1.0  # Reset after 1 second of not firing
+
 ## Visual feedback
 var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
@@ -105,6 +110,11 @@ func _physics_process(delta: float) -> void:
 	if weapon_cooldown > 0:
 		weapon_cooldown -= delta
 
+	# Update spin-up timer (reset consecutive shots if not firing)
+	spinup_timer += delta
+	if spinup_timer >= SPINUP_RESET_TIME:
+		consecutive_shots = 0
+
 	# WASD movement
 	var input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var speed = stats.get("speed", 200)
@@ -179,6 +189,16 @@ func _fire_weapon(direction: Vector2) -> void:
 	var base_cooldown = weapon_def.get("cooldown", 1.0)
 	weapon_cooldown = base_cooldown / (1.0 + attack_speed_bonus)
 
+	# Apply spin-up mechanic for Minigun
+	var spinup_shots = weapon_def.get("spinup_shots", 0)
+	if spinup_shots > 0 and consecutive_shots < spinup_shots:
+		# Weapon is spinning up - apply cooldown penalty (2x cooldown for first shots)
+		weapon_cooldown *= 2.0
+		GameLogger.debug(
+			"Minigun spinning up",
+			{"consecutive_shots": consecutive_shots, "spinup_shots": spinup_shots}
+		)
+
 	# Get fire position (weapon pivot or player position)
 	var fire_position = weapon_pivot.global_position if weapon_pivot else global_position
 
@@ -188,6 +208,10 @@ func _fire_weapon(direction: Vector2) -> void:
 	)
 
 	if success:
+		# Track consecutive shots for spin-up mechanic
+		consecutive_shots += 1
+		spinup_timer = 0.0  # Reset timer on successful shot
+
 		GameLogger.debug("Player fired weapon", {"weapon_id": equipped_weapon_id})
 
 

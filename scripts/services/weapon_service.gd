@@ -28,18 +28,28 @@ const WEAPON_DEFINITIONS = {
 		"cooldown": 0.5,  # 2 attacks per second
 		"range": 50,  # Melee range (pixels)
 		"projectile": null,
-		"tier_required": UserTier.FREE
+		"tier_required": UserTier.FREE,
+		"special_behavior": "none",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
 	},
 	"plasma_pistol":
 	{
 		"display_name": "Plasma Pistol",
 		"type": WeaponType.RANGED,
-		"base_damage": 10,
+		"base_damage": 20,  # Increased from 10 for 25 DPS (20/0.8 = 25)
 		"cooldown": 0.8,  # 1.25 attacks per second
 		"range": 500,  # Auto-targeting detection radius (medium range)
 		"projectile": "plasma_bolt",
 		"projectile_speed": 400,
-		"tier_required": UserTier.FREE
+		"tier_required": UserTier.FREE,
+		"special_behavior": "none",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
 	},
 	"steel_sword":
 	{
@@ -49,18 +59,127 @@ const WEAPON_DEFINITIONS = {
 		"cooldown": 0.6,
 		"range": 60,
 		"projectile": null,
-		"tier_required": UserTier.PREMIUM
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "none",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
 	},
 	"shock_rifle":
 	{
 		"display_name": "Shock Rifle",
 		"type": WeaponType.RANGED,
-		"base_damage": 20,
+		"base_damage": 30,  # Increased from 20 for 30 DPS (30/1.0 = 30)
 		"cooldown": 1.0,
 		"range": 400,
 		"projectile": "shock_bolt",
 		"projectile_speed": 500,
-		"tier_required": UserTier.PREMIUM
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "none",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
+	},
+	"shotgun":
+	{
+		"display_name": "Shotgun",
+		"type": WeaponType.RANGED,
+		"base_damage": 8,  # Per projectile (5 projectiles = 40 total at close range)
+		"cooldown": 1.2,  # Medium-slow cooldown
+		"range": 300,  # Short range
+		"projectile": "shotgun_pellet",
+		"projectile_speed": 500,
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "spread",
+		"projectiles_per_shot": 5,  # 5 pellets in spread pattern
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0,
+		"spread_angle": 40.0  # Total spread cone: -20° to +20°
+	},
+	"sniper_rifle":
+	{
+		"display_name": "Sniper Rifle",
+		"type": WeaponType.RANGED,
+		"base_damage": 50,  # Increased from 35 for 25 DPS (50/2.0 = 25, burst damage)
+		"cooldown": 2.0,  # Slow cooldown
+		"range": 800,  # Very long range
+		"projectile": "sniper_bullet",
+		"projectile_speed": 800,  # Fast bullet
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "pierce",
+		"projectiles_per_shot": 1,
+		"pierce_count": 2,  # Pierce through 2 enemies
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
+	},
+	"flamethrower":
+	{
+		"display_name": "Flamethrower",
+		"type": WeaponType.RANGED,
+		"base_damage": 4,  # Increased from 2 for 40 DPS (4/0.1 = 40)
+		"cooldown": 0.1,  # Ultra-fast (continuous fire)
+		"range": 200,  # Short range
+		"projectile": "flame",
+		"projectile_speed": 300,  # Slower projectile
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "cone",
+		"projectiles_per_shot": 1,
+		"pierce_count": 99,  # Pierce infinite enemies
+		"splash_radius": 0.0,
+		"splash_damage": 0.0,
+		"cone_angle": 30.0  # 30° cone spread
+	},
+	"laser_rifle":
+	{
+		"display_name": "Laser Rifle",
+		"type": WeaponType.RANGED,
+		"base_damage": 27,  # Increased from 18 for 30 DPS (27/0.9 = 30)
+		"cooldown": 0.9,  # Medium cooldown
+		"range": 600,  # Long range
+		"projectile": "laser_beam",
+		"projectile_speed": 2000,  # Nearly instant (very fast)
+		"tier_required": UserTier.PREMIUM,
+		"special_behavior": "instant",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0
+	},
+	"minigun":
+	{
+		"display_name": "Minigun",
+		"type": WeaponType.RANGED,
+		"base_damage": 7,  # Increased from 4 for 46.7 DPS (7/0.15 = 46.7)
+		"cooldown": 0.15,  # Very fast (rapid fire)
+		"range": 450,  # Medium range
+		"projectile": "minigun_bullet",
+		"projectile_speed": 600,
+		"tier_required": UserTier.SUBSCRIPTION,
+		"special_behavior": "spinup",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 0.0,
+		"splash_damage": 0.0,
+		"spinup_shots": 3  # First 3 shots have increased cooldown
+	},
+	"rocket_launcher":
+	{
+		"display_name": "Rocket Launcher",
+		"type": WeaponType.RANGED,
+		"base_damage": 60,  # Increased from 40 for 24 DPS direct (60/2.5 = 24) + splash
+		"cooldown": 2.5,  # Very slow cooldown
+		"range": 700,  # Long range
+		"projectile": "rocket",
+		"projectile_speed": 400,  # Slower projectile
+		"tier_required": UserTier.SUBSCRIPTION,
+		"special_behavior": "explosive",
+		"projectiles_per_shot": 1,
+		"pierce_count": 0,
+		"splash_radius": 50.0,  # 50px explosion radius
+		"splash_damage": 30.0  # Increased from 20 for better AOE damage
 	}
 }
 

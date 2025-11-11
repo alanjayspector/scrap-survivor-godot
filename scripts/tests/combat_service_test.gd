@@ -70,9 +70,9 @@ func test_calculate_damage_adds_ranged_bonus() -> void:
 	var damage = CombatService.calculate_damage(weapon_id, character_stats)
 
 	# Assert
-	# 10 (base) + 5 (character) + 8 (ranged) = 23
+	# 20 (base, Week 12 balance) + 5 (character) + 8 (ranged) = 33
 	# Should ignore melee_damage for ranged weapon
-	assert_almost_eq(damage, 23.0, 0.01, "Should add ranged bonus, ignore melee")
+	assert_almost_eq(damage, 33.0, 0.01, "Should add ranged bonus, ignore melee")
 
 
 ## ============================================================================

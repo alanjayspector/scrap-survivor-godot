@@ -54,7 +54,7 @@ func test_get_weapon_returns_valid_data() -> void:
 	# Assert
 	assert_eq(weapon.display_name, "Plasma Pistol", "Should return correct display name")
 	assert_eq(weapon.type, WeaponService.WeaponType.RANGED, "Should be RANGED type")
-	assert_eq(weapon.base_damage, 10, "Should have base damage 10")
+	assert_eq(weapon.base_damage, 20, "Should have base damage 20 (Week 12 balance)")
 	assert_almost_eq(weapon.cooldown, 0.8, 0.01, "Should have 0.8s cooldown")
 	assert_eq(weapon.range, 500, "Should have 500 range (Week 11 auto-targeting range)")
 
@@ -212,7 +212,9 @@ func test_get_weapon_damage_with_ranged_bonus() -> void:
 	var damage = WeaponService.get_weapon_damage(weapon_id, character_stats)
 
 	# Assert
-	assert_almost_eq(damage, 23.0, 0.01, "Should add ranged bonus (10 + 5 + 8 = 23)")
+	assert_almost_eq(
+		damage, 33.0, 0.01, "Should add ranged bonus (20 + 5 + 8 = 33, Week 12 balance)"
+	)
 
 
 func test_get_weapon_damage_ignores_wrong_type_bonus() -> void:

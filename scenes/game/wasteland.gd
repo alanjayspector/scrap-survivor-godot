@@ -118,21 +118,98 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 		return
 
 	# Calculate damage with player stats
-	var damage = weapon_def.get("damage", 10)
+	var damage = weapon_def.get("base_damage", 10)
 	if player_instance:
 		damage = WeaponService.get_weapon_damage(weapon_id, player_instance.stats)
 
-	# Load and spawn projectile
+	# Get weapon properties
+	var speed = weapon_def.get("projectile_speed", 400)
+	var range = weapon_def.get("range", 500)
+	var special_behavior = weapon_def.get("special_behavior", "none")
+	var projectiles_per_shot = weapon_def.get("projectiles_per_shot", 1)
+	var pierce_count = weapon_def.get("pierce_count", 0)
+	var splash_damage = weapon_def.get("splash_damage", 0.0)
+	var splash_radius = weapon_def.get("splash_radius", 0.0)
+
+	# Handle special behaviors
+	match special_behavior:
+		"spread":
+			# Shotgun: Fire multiple projectiles in a spread pattern
+			_spawn_spread_projectiles(
+				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
+			)
+		"cone":
+			# Flamethrower: Similar to spread but with piercing
+			_spawn_spread_projectiles(
+				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
+			)
+		_:
+			# Default: Single projectile with optional pierce/splash
+			_spawn_projectile(
+				position,
+				direction,
+				damage,
+				speed,
+				range,
+				pierce_count,
+				splash_damage,
+				splash_radius
+			)
+
+	print("[Wasteland] Projectile(s) spawned with damage: ", damage, " speed: ", speed)
+
+
+func _spawn_projectile(
+	position: Vector2,
+	direction: Vector2,
+	damage: float,
+	speed: float,
+	range: float,
+	pierce_count: int = 0,
+	splash_damage: float = 0.0,
+	splash_radius: float = 0.0
+) -> void:
+	"""Spawn a single projectile with given properties"""
 	const PROJECTILE_SCENE = preload("res://scenes/entities/projectile.tscn")
 	var projectile = PROJECTILE_SCENE.instantiate()
 	projectiles_container.add_child(projectile)
 
-	# Activate projectile with weapon properties
-	var speed = weapon_def.get("projectile_speed", 400)
-	var range = weapon_def.get("range", 500)
-	projectile.activate(position, direction, damage, speed, range)
+	# Set pierce count if applicable
+	if pierce_count > 0:
+		projectile.pierce_count = pierce_count
 
-	print("[Wasteland] Projectile spawned with damage: ", damage, " speed: ", speed)
+	# Activate projectile with all properties including splash damage
+	projectile.activate(position, direction, damage, speed, range, splash_damage, splash_radius)
+
+
+func _spawn_spread_projectiles(
+	position: Vector2,
+	direction: Vector2,
+	damage: float,
+	speed: float,
+	range: float,
+	projectile_count: int,
+	weapon_def: Dictionary
+) -> void:
+	"""Spawn multiple projectiles in a spread pattern"""
+	var spread_angle = weapon_def.get("spread_angle", 40.0)  # Default 40° total spread
+	var cone_angle = weapon_def.get("cone_angle", 30.0)  # For flamethrower
+	var pierce_count = weapon_def.get("pierce_count", 0)
+	var special_behavior = weapon_def.get("special_behavior", "spread")
+
+	# Use cone_angle for flamethrower, spread_angle for shotgun
+	var total_angle = cone_angle if special_behavior == "cone" else spread_angle
+
+	# Calculate angle step between projectiles
+	var angle_step = total_angle / max(1, projectile_count - 1) if projectile_count > 1 else 0.0
+	var start_angle = -total_angle / 2.0  # Start from leftmost angle
+
+	# Spawn projectiles in spread pattern
+	for i in range(projectile_count):
+		var angle_offset = start_angle + (angle_step * i)
+		var spread_direction = direction.rotated(deg_to_rad(angle_offset))
+
+		_spawn_projectile(position, spread_direction, damage, speed, range, pierce_count, 0.0, 0.0)
 
 
 func _spawn_player(char_id: String) -> void:

@@ -30,6 +30,10 @@ var is_active: bool = false
 @export var pierce_count: int = 0  # 0 = no pierce, 1 = pierce once, etc.
 var enemies_hit: Array[Enemy] = []
 
+## Explosive properties
+@export var splash_damage: float = 0.0  # Damage dealt to enemies in splash radius
+@export var splash_radius: float = 0.0  # Radius for splash damage (0 = no splash)
+
 ## Collision layers
 const ENEMY_LAYER = 2  # Assuming enemies are on layer 2
 
@@ -97,6 +101,9 @@ func _physics_process(delta: float) -> void:
 
 	# Check if exceeded range
 	if distance_traveled >= max_range:
+		# Trigger explosion for explosive projectiles before deactivating
+		if splash_radius > 0.0:
+			_explode()
 		deactivate()
 
 
@@ -105,7 +112,9 @@ func activate(
 	direction: Vector2,
 	proj_damage: float,
 	proj_speed: float,
-	proj_range: float
+	proj_range: float,
+	proj_splash_damage: float = 0.0,
+	proj_splash_radius: float = 0.0
 ) -> void:
 	"""Activate projectile with given parameters"""
 	# Set properties
@@ -115,6 +124,8 @@ func activate(
 	damage = proj_damage
 	projectile_speed = proj_speed
 	max_range = proj_range
+	splash_damage = proj_splash_damage
+	splash_radius = proj_splash_radius
 
 	# Reset tracking
 	distance_traveled = 0.0
@@ -201,10 +212,69 @@ func hit_enemy(enemy: Enemy) -> void:
 
 	# Check pierce
 	if enemies_hit.size() > pierce_count:
-		# Exceeded pierce count, deactivate
+		# Exceeded pierce count, trigger explosion if applicable, then deactivate
 		print("[Projectile] Pierce count exceeded, deactivating")
+		if splash_radius > 0.0:
+			_explode()
 		deactivate()
 	# Otherwise, continue flying (piercing)
+
+
+func _explode() -> void:
+	"""Handle explosion for explosive projectiles"""
+	print("[Projectile] Exploding at position: ", global_position, " radius: ", splash_radius)
+
+	# Get all enemies in splash radius
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsShapeQueryParameters2D.new()
+	var circle_shape = CircleShape2D.new()
+	circle_shape.radius = splash_radius
+	query.shape = circle_shape
+	query.transform = Transform2D(0, global_position)
+	query.collision_mask = 1 << (ENEMY_LAYER - 1)  # Only check enemy layer
+
+	var results = space_state.intersect_shape(query)
+	print("[Projectile] Explosion found ", results.size(), " colliders")
+
+	# Deal splash damage to all enemies in radius
+	for result in results:
+		var collider = result.collider
+		# Try to get enemy from collider or its owner
+		var enemy = collider as Enemy
+		if not enemy and collider.owner:
+			enemy = collider.owner as Enemy
+
+		if enemy and enemy.is_alive():
+			print(
+				"[Projectile] Splash damage to enemy: ", enemy.enemy_id, " damage: ", splash_damage
+			)
+			enemy.take_damage(splash_damage)
+			enemy_hit.emit(enemy, splash_damage)
+
+	# Create visual explosion effect
+	_create_explosion_visual()
+
+
+func _create_explosion_visual() -> void:
+	"""Create a simple explosion visual effect"""
+	# Create explosion circle
+	var explosion = ColorRect.new()
+	explosion.color = Color(1.0, 0.5, 0.0, 0.6)  # Orange
+	explosion.size = Vector2(splash_radius * 2, splash_radius * 2)
+	explosion.position = global_position - Vector2(splash_radius, splash_radius)
+	explosion.z_index = -1
+
+	# Add to parent scene
+	var parent = get_parent()
+	if parent:
+		parent.add_child(explosion)
+
+		# Animate: scale up and fade out
+		var tween = explosion.create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(explosion, "scale", Vector2(1.5, 1.5), 0.3)
+		tween.tween_property(explosion, "modulate:a", 0.0, 0.3)
+		tween.tween_callback(explosion.queue_free).set_delay(0.3)
 
 
 func set_pierce(pierce_amount: int) -> void:
