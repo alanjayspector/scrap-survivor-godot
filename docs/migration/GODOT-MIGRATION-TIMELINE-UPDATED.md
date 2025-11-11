@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-11-10
-**Status**: Week 10 Phase 4 Complete
-**Current Progress**: Combat scene integration complete - playable wave-based combat loop (427/451 tests passing)
+**Last Updated**: 2025-01-11
+**Status**: Week 12 Phase 1 Complete
+**Current Progress**: Weapon variety system complete - 8 distinct weapons with unique behaviors (455/479 tests passing)
 
 ---
 
@@ -18,8 +18,9 @@
 | **Week 8** | Complete | ✅ | Mutant character, aura visuals, UI |
 | **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
 | **Week 10** | Complete | ✅ | Combat scene integration (playable wave loop) |
-| **Week 11** | In Progress | 🚧 | Combat polish, auto-targeting, XP progression, currency expansion |
-| **Week 12-13** | Planned | 📅 | Minions system, The Lab |
+| **Week 11** | Complete | ✅ | Combat polish, auto-targeting, XP progression, camera shake |
+| **Week 12** | Phase 1 Complete | 🚧 | Weapon variety (8 weapons), pickup magnets (planned) |
+| **Week 13+** | Planned | 📅 | Minions system, The Lab |
 | **Week 14+** | Planned | 📅 | Perks, monetization, polish |
 
 ---
@@ -301,11 +302,11 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🚧 Week 11: Combat Polish & Auto-Targeting (In Progress)
+## ✅ Week 11: Combat Polish & Auto-Targeting (Complete)
 
 **Goal**: Polish the combat loop established in Week 10 by adding auto-targeting for weapons, implementing drop collection, enhancing player progression, and expanding the currency system.
 
-**Status**: Phase 3 Complete (XP Progression & Leveling)
+**Status**: All 6 Phases Complete
 
 ### Phase 1: Auto-Targeting System ✅
 - `TargetingService` - Finds nearest enemy within weapon range
@@ -329,30 +330,84 @@ CharacterService: 43/43 passing
 - XP bar in HUD fills correctly with level display
 - Stats improve on level-up (HP, damage, etc.)
 
-### Phase 4: Currency System Expansion (Next)
-- Expand BankingService to support COMPONENTS and NANITES currencies
-- Remove temporary SCRAP mapping for components/nanites
-- Fix HUD/wave screen currency count discrepancies
-- Update serialization to preserve all 4 currencies
-- Add balance caps for new currencies by tier
+### Phase 4: Currency System Expansion ✅
+- Expanded BankingService to support COMPONENTS and NANITES currencies
+- Removed temporary SCRAP mapping for components/nanites
+- Fixed HUD/wave screen currency count discrepancies
+- Updated serialization to preserve all 4 currencies
+- Added balance caps for new currencies by tier
 
-### Phase 5: Wave Completion Logic (Planned)
-- Track living enemies in WaveManager
-- Detect wave completion when all enemies dead
-- Show WaveCompleteScreen with accurate stats
+### Phase 5: Wave Completion & Game Over ✅
+- Tracked living enemies in WaveManager
+- Wave completion detection when all enemies dead
+- WaveCompleteScreen shows accurate stats (kills, time)
 - "Next Wave" button increments difficulty
+- Game over screen on player death with retry/main menu
+- Game pauses on death (no loot collection exploit)
 
-### Phase 6: Camera & Visual Polish (Planned)
-- Camera follow smoothing
-- Screen shake on player hit
-- Projectile visual trails
-- Optional: damage numbers, targeting reticle
+### Phase 6: Camera & Visual Polish ✅
+- Camera shake on player damage (5.0 intensity, 0.2s)
+- Camera shake on enemy death (2.0 intensity, 0.1s)
+- Projectile visual trails with Line2D
+- Smooth camera offset with decay
+- Level-up visual feedback ("LEVEL UP!" yellow text)
 
 **See**: [docs/migration/week11-implementation-plan.md](week11-implementation-plan.md)
 
 ---
 
-## 🤖 Week 12-13: Minions + The Lab (Planned)
+## 🚧 Week 12: Weapon Variety & Pickup Magnets (Phase 1 Complete)
+
+**Goal**: Expand combat variety with 6+ new weapon types featuring unique firing patterns (spread, pierce, explosive) and implement quality-of-life pickup magnet system.
+
+**Status**: Phase 1 Complete (Weapon Variety System)
+
+### Phase 1: Weapon Variety System ✅
+**Delivered** (2025-01-11):
+- 6 new weapons with unique behaviors added (8 total weapons)
+- Wasteland-themed weapon naming (Fallout/Mad Max inspired)
+- DPS balanced across weapon categories:
+  - Fast weapons (40-50 DPS): Scorcher, Shredder
+  - Medium weapons (25-35 DPS): Plasma Pistol, Beam Gun, Arc Blaster
+  - Slow weapons (20-30 DPS): Dead Eye, Boom Tube
+
+**New Weapons**:
+1. **Scattergun** (shotgun) - 5-projectile spread, 40° cone, 8 dmg/pellet, 1.2s cooldown
+2. **Dead Eye** (sniper) - Pierce 2 enemies, 50 dmg, 800px range, 2.0s cooldown
+3. **Boom Tube** (rocket) - 60 direct + 30 splash (50px radius), 2.5s cooldown
+4. **Scorcher** (flamethrower) - 0.1s cooldown, 99 pierce, 30° cone, 40 DPS
+5. **Shredder** (minigun) - 0.15s rapid fire, spin-up mechanic (2x first 3 shots), 46.7 DPS
+6. **Beam Gun** (laser) - 2000 projectile speed (instant-hit feel), 600px range, 30 DPS
+
+**Technical Implementation**:
+- Extended `weapon_service.gd` with 6 new weapon definitions
+- Added weapon properties: `special_behavior`, `projectiles_per_shot`, `pierce_count`, `splash_damage`, `splash_radius`
+- Implemented `projectile.gd` splash damage system with `_explode()` and physics queries
+- Added spread/cone projectile spawning in `wasteland.gd` (`_spawn_spread_projectiles`)
+- Implemented Shredder spin-up mechanic in `player.gd` with `consecutive_shots` tracking
+- Debug hotkeys (1-8) for manual QA weapon switching during gameplay
+
+**Testing**:
+- All 455 tests passing (24 skipped tests unrelated)
+- Manual QA enabled with number key hotkeys for instant weapon switching
+
+### Phase 2: Pickup Magnet System (Planned)
+- Drops fly toward player when within pickup_range
+- `pickup_range` stat integration into CharacterService
+- Visual indicator for pickup range radius
+- Magnetized drop visual feedback (glow, trail)
+- Default range: 80px, scalable with stat
+
+### Phase 3: Stat Integration (Planned)
+- Wire pickup_range into character stat system
+- HUD display for pickup_range value
+- Save/load persistence for pickup_range stat
+
+**See**: [docs/migration/week12-implementation-plan.md](week12-implementation-plan.md)
+
+---
+
+## 🤖 Week 13+: Minions + The Lab (Planned)
 
 ### Minions System
 - Minion types (biological, mechanical, hybrid)
@@ -414,9 +469,21 @@ CharacterService: 43/43 passing
 - HudService (signal-driven HUD updates)
 - WaveManager (state machine, spawning, completion)
 - Wave completion flow (victory screen, stat tracking)
+- TargetingService (auto-targeting, nearest enemy detection)
+- Drop collection system (Area2D pickups, BankingService integration)
+- XP progression & leveling (dynamic thresholds, stat improvements)
+- Currency system expansion (4 currencies: scrap, gems, components, nanites)
+- Game over system (pause on death, retry/main menu)
+- Camera & visual polish (screen shake, projectile trails, level-up feedback)
+- Weapon variety system (8 weapons with unique behaviors)
+  - Spread patterns (Scattergun)
+  - Piercing (Dead Eye, Scorcher)
+  - Explosive (Boom Tube with splash damage)
+  - Spin-up mechanic (Shredder)
 
 ### In Progress (🚧)
-- Manual QA testing (pending user validation in Godot Editor)
+- Pickup magnet system (Phase 2 of Week 12)
+- Pickup range stat integration (Phase 3 of Week 12)
 
 ### Planned (📅)
 - Minions system
@@ -469,6 +536,6 @@ CharacterService: 43/43 passing
 
 ---
 
-**Timeline Version**: 3.2
-**Last Updated**: 2025-11-10 (updated during Week 11 Phase 3)
-**Next Review**: After Week 11 Phase 4 completion
+**Timeline Version**: 3.3
+**Last Updated**: 2025-01-11 (updated after Week 12 Phase 1 completion)
+**Next Review**: After Week 12 Phase 2 completion (pickup magnets)
