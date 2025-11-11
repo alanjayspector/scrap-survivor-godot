@@ -17,8 +17,9 @@ var wave_stats: Dictionary = {}
 
 
 func _ready() -> void:
-	# Connect to enemy death signals handled per-enemy in setup()
-	pass
+	# Connect to drop collection signal to track collected drops (not generated)
+	if DropSystem:
+		DropSystem.drops_collected.connect(_on_drops_collected)
 
 
 func start_wave() -> void:
@@ -148,20 +149,25 @@ func _get_random_spawn_position() -> Vector2:
 	return player_pos  # Fallback
 
 
-func _on_enemy_died(_enemy_id: String, drop_data: Dictionary) -> void:
+func _on_enemy_died(_enemy_id: String, _drop_data: Dictionary) -> void:
 	# Update wave stats
 	wave_stats.enemies_killed += 1
 
-	for currency in drop_data.keys():
-		if not wave_stats.drops_collected.has(currency):
-			wave_stats.drops_collected[currency] = 0
-		wave_stats.drops_collected[currency] += drop_data[currency]
+	# Note: Drop tracking moved to _on_drops_collected() to track actually collected drops
 
 	# Decrement remaining count
 	enemies_remaining -= 1
 
 	if enemies_remaining <= 0:
 		_complete_wave()
+
+
+## Handler for drops actually collected by player
+func _on_drops_collected(drops: Dictionary) -> void:
+	for currency in drops.keys():
+		if not wave_stats.drops_collected.has(currency):
+			wave_stats.drops_collected[currency] = 0
+		wave_stats.drops_collected[currency] += drops[currency]
 
 
 func _complete_wave() -> void:

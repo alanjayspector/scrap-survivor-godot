@@ -369,14 +369,14 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
    - Verify tier restrictions apply to components/nanites
 
 ### Success Criteria
-- [ ] BankingService supports 4 currency types (SCRAP, PREMIUM, COMPONENTS, NANITES)
-- [ ] DropSystem correctly maps components/nanites to their own types
-- [ ] HUD displays separate counts: "Scrap: 11 Components: 3 Nanites: 0"
-- [ ] Wave complete screen matches HUD display
-- [ ] Balance caps apply to all currencies based on tier
-- [ ] Save/load preserves all 4 currency balances
-- [ ] All existing BankingService tests still pass
-- [ ] New currency-specific tests pass
+- [x] BankingService supports 4 currency types (SCRAP, PREMIUM, COMPONENTS, NANITES)
+- [x] DropSystem correctly maps components/nanites to their own types
+- [x] HUD displays separate counts: "Scrap: 9 Components: 0 Nanites: 0"
+- [x] Wave complete screen matches HUD display (fixed wave stats bug)
+- [x] Balance caps apply to all currencies based on tier
+- [x] Save/load preserves all 4 currency balances
+- [x] All existing BankingService tests still pass (22/22 passing)
+- [x] New currency-specific tests pass (10 new tests added)
 
 ### Dependencies
 - Week 5 Phase 1 (BankingService)
@@ -400,6 +400,18 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 - See HUD: "Scrap: 1 Nanites: 1"
 - Complete wave: wave screen matches HUD counts exactly
 ```
+
+### Implementation Notes
+
+**Wave Stats Bug Fix** (discovered during Phase 4 testing):
+- **Issue**: WaveManager was tracking drops GENERATED (from enemy deaths) instead of drops COLLECTED (picked up by player)
+- **Fix**: Changed WaveManager to connect to `DropSystem.drops_collected` signal instead of tracking from `_on_enemy_died()`
+- **Files changed**:
+  - [wave_manager.gd:19-22](scripts/systems/wave_manager.gd#L19-L22) - Added signal connection in `_ready()`
+  - [wave_manager.gd:165-170](scripts/systems/wave_manager.gd#L165-L170) - Added `_on_drops_collected()` handler
+  - [wave_manager.gd:152-162](scripts/systems/wave_manager.gd#L152-L162) - Removed drop tracking from `_on_enemy_died()`
+  - [wave_manager_test.gd:157-163](scripts/tests/wave_manager_test.gd#L157-L163) - Updated test to simulate collected drops
+- **Result**: Wave complete screen now accurately shows drops collected (matching HUD), not drops generated
 
 ---
 
@@ -538,8 +550,8 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 - [x] Wave stats tracked accurately
 
 ### Should Have
-- [ ] Components and Nanites currencies properly tracked (not lumped into Scrap)
-- [ ] HUD and wave screen show consistent currency counts
+- [x] Components and Nanites currencies properly tracked (not lumped into Scrap)
+- [x] HUD and wave screen show consistent currency counts
 - [x] Camera smoothing tuned
 - [x] Screen shake on player hit
 - [x] Projectile visual trails

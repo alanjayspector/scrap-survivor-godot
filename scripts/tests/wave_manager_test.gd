@@ -154,9 +154,13 @@ func test_wave_manager_tracks_wave_stats() -> void:
 		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
 	}
 
-	# Simulate enemy deaths with different drops
-	wave_manager._on_enemy_died("enemy_1", {"scrap": 10, "components": 2})
-	wave_manager._on_enemy_died("enemy_2", {"scrap": 5, "nanites": 1})
+	# Simulate enemy deaths (tracks kill count only)
+	wave_manager._on_enemy_died("enemy_1", {})
+	wave_manager._on_enemy_died("enemy_2", {})
+
+	# Simulate drops being collected by player
+	wave_manager._on_drops_collected({"scrap": 10, "components": 2})
+	wave_manager._on_drops_collected({"scrap": 5, "nanites": 1})
 
 	# Wait for signal processing
 	await get_tree().process_frame
