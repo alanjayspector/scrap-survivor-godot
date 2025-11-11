@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-01-10
-**Status**: Week 8 Complete
-**Current Progress**: Character system complete with 4 types, aura visuals, and conversion flow (313/313 tests passing)
+**Last Updated**: 2025-11-10
+**Status**: Week 10 Phase 3 Complete
+**Current Progress**: Combat scene integration with input, camera, and HUD systems (419/443 tests passing)
 
 ---
 
@@ -16,7 +16,8 @@
 | **Week 6** | Complete | ✅ | CharacterService + SaveManager integration |
 | **Week 7** | Complete | ✅ | Character expansion (stats, types, auras) |
 | **Week 8** | Complete | ✅ | Mutant character, aura visuals, UI |
-| **Week 9-10** | Current | 🚀 | Combat system, weapons, enemies |
+| **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
+| **Week 10** | Phase 3 Complete | 🚧 | Combat scene integration (input, camera, HUD) |
 | **Week 11-12** | Planned | 📅 | Minions system, The Lab |
 | **Week 13+** | Planned | 📅 | Perks, monetization, polish |
 
@@ -212,22 +213,73 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🎮 Week 9-10: Combat System (Planned)
+## ✅ Week 9: Combat Services (Complete)
 
-### Core Combat Features
-- Weapon system (melee + ranged)
-- Enemy spawning (waves)
-- Collision detection (weapons vs enemies)
-- Aura collision detection (auras vs enemies)
-- Damage calculation (base + melee_damage/ranged_damage + resonance)
-- XP drops (enemy kill → character XP)
-- Currency drops (scrap, components, nanites with scavenging multiplier)
+**Completion Date**: ~2025-10-15
+**Test Results**: 393/411 tests passing
+**Documentation**: [week9-implementation-plan.md](./week9-implementation-plan.md)
 
-### Combat Services
-- `WeaponService` - Weapon management, firing, cooldowns
-- `EnemyService` - Spawning, AI, health, death
-- `CombatService` - Damage calculation, collision handling
-- `WaveService` - Wave progression, difficulty scaling
+### Delivered Services
+- ✅ `WeaponService` - Weapon management, firing, cooldowns
+- ✅ `EnemyService` - Spawning, AI, health, death, wave scaling
+- ✅ `CombatService` - Damage calculation (base + melee/ranged + resonance)
+- ✅ `DropSystem` - XP awards, currency drops (scrap, components, nanites)
+
+### Key Features
+- Weapon cooldown management with attack speed scaling
+- Enemy HP scaling per wave (10% per wave)
+- Spawn rate progression (decreases with wave)
+- Damage calculation with stat bonuses
+- Aura damage scaling with resonance
+- Currency drop generation with scavenging multiplier
+
+---
+
+## 🚧 Week 10: Combat Scene Integration (Phase 3 Complete)
+
+**Status**: Phase 3 Complete (Phases 1-3 of 4)
+**Test Results**: 419/443 tests passing
+**Documentation**: [week10-implementation-plan.md](./week10-implementation-plan.md)
+
+### ✅ Phase 1: Scene Architecture (Complete - commit bf616ba)
+**Features**:
+- Player entity (CharacterBody2D) with character stats integration
+- Enemy entity (CharacterBody2D) with wave scaling
+- Scene structure with containers for entities, projectiles, drops
+
+### ✅ Phase 2: Input & Camera Systems (Complete - commit bf616ba)
+**Features**:
+- Input configuration (WASD movement keys)
+- Camera controller with smooth follow and boundaries
+- Screen shake system for combat feedback
+
+### ✅ Phase 3: HUD Implementation (Complete - commit ab0957e)
+**Features**:
+- `HudService` autoload - Signal-driven HUD updates
+- HP bar with damage flash animation
+- XP bar with level-up popup
+- Wave counter with transition animation
+- Currency display (scrap, components, nanites)
+
+**Test Coverage**: 11/11 HUD tests passing
+
+**Artifacts**:
+- `scripts/autoload/hud_service.gd` - Central HUD service
+- `scenes/ui/hud.gd` - HUD UI controller
+- `scenes/ui/hud.tscn` - HUD scene
+- `scripts/tests/hud_service_test.gd` - HUD tests
+
+**Learnings** (captured in validator improvements):
+- Field name consistency: "experience" not "xp"
+- Autoload naming: "HudService" not "HUDService" (PascalCase)
+- Memory management: `.free()` not `.queue_free()` in tests
+
+### ⏳ Phase 4: Wave Management & State Machine (Not Started)
+**Planned Features**:
+- Wave manager with state machine
+- Enemy spawning system
+- Wave completion flow
+- Victory screen with stats summary
 
 ---
 
@@ -279,18 +331,24 @@ CharacterService: 43/43 passing
 - SaveSystem (file I/O, corruption recovery)
 - SaveManager (service coordination, auto-save)
 - CharacterService (CRUD, slots, progression, perks)
-
-### In Progress (🚧)
 - Character stat expansion (14 stats)
-- Character type system (3 types + tier gating)
-- Aura system foundation (data structures + visual stub)
-
-### Planned (📅)
-- Mutant character type
-- Aura visual effects (particles)
+- Character type system (4 types: Scavenger, Tank, Commando, Mutant)
+- Aura system foundation (data structures + visual particles)
 - Character selection UI
 - Conversion flow UI
-- Combat system (weapons, enemies, damage)
+- WeaponService (weapon management, firing, cooldowns)
+- EnemyService (spawning, AI, health, wave scaling)
+- CombatService (damage calculation, stat bonuses)
+- DropSystem (XP awards, currency drops)
+- Player/Enemy entities (scene architecture)
+- Input & Camera systems
+- HudService (signal-driven HUD updates)
+
+### In Progress (🚧)
+- Wave Management system (Phase 4 of Week 10)
+
+### Planned (📅)
+- Wave completion flow
 - Minions system
 - The Lab services
 - Perks system
@@ -300,15 +358,17 @@ CharacterService: 43/43 passing
 
 ## 🎯 Key Milestones
 
-| Milestone | Target Date | Status |
-|-----------|-------------|--------|
-| Week 6: CharacterService Complete | 2025-01-09 | ✅ Complete |
-| Week 7: Character Expansion Complete | 2025-01-16 | 📋 In Planning |
-| Week 8: Mutant + UI Complete | 2025-01-23 | 📅 Planned |
-| Week 10: Combat Playable | 2025-02-06 | 📅 Planned |
-| Week 12: The Lab Functional | 2025-02-20 | 📅 Planned |
-| Week 14: Perks System Live | 2025-03-06 | 📅 Planned |
-| Week 16: Alpha Release | 2025-03-20 | 📅 Planned |
+| Milestone | Target Date | Actual Date | Status |
+|-----------|-------------|-------------|--------|
+| Week 6: CharacterService Complete | 2025-01-09 | 2025-01-09 | ✅ Complete |
+| Week 7: Character Expansion Complete | 2025-01-16 | ~2025-01-16 | ✅ Complete |
+| Week 8: Mutant + UI Complete | 2025-01-23 | 2025-01-10 | ✅ Complete |
+| Week 9: Combat Services Complete | ~2025-10-01 | ~2025-10-15 | ✅ Complete |
+| Week 10 Phase 3: HUD Implementation | ~2025-11-01 | 2025-11-10 | ✅ Complete |
+| Week 10: Combat Fully Playable | 2025-11-15 | - | 🚧 In Progress |
+| Week 12: The Lab Functional | 2025-12-01 | - | 📅 Planned |
+| Week 14: Perks System Live | 2025-12-15 | - | 📅 Planned |
+| Week 16: Alpha Release | 2026-01-01 | - | 📅 Planned |
 
 ---
 
@@ -330,11 +390,14 @@ CharacterService: 43/43 passing
 - [gut-migration-phase3-status.md](../gut-migration-phase3-status.md)
 
 ### Week Plans
-- [week7-implementation-plan.md](./week7-implementation-plan.md) (current)
+- [week10-implementation-plan.md](./week10-implementation-plan.md) (current)
+- [week9-implementation-plan.md](./week9-implementation-plan.md)
+- [week8-completion.md](./week8-completion.md)
+- [week7-implementation-plan.md](./week7-implementation-plan.md)
 - [week6-days1-3-completion.md](./week6-days1-3-completion.md)
 
 ---
 
-**Timeline Version**: 2.0
-**Last Updated**: 2025-01-09
-**Next Review**: After Week 7 completion (2025-01-16)
+**Timeline Version**: 3.0
+**Last Updated**: 2025-11-10
+**Next Review**: After Week 10 Phase 4 completion
