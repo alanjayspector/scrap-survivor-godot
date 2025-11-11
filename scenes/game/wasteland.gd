@@ -204,6 +204,10 @@ func _on_player_died() -> void:
 	"""Handle player death"""
 	print("[Wasteland] Player died!")
 
+	# FREEZE GAME - prevent player movement/shooting/loot collection
+	get_tree().paused = true
+	print("[Wasteland] Game paused")
+
 	# Calculate survival time
 	var survival_time = (Time.get_ticks_msec() / 1000.0) - start_time
 
@@ -217,12 +221,22 @@ func _on_player_died() -> void:
 func _on_retry_pressed() -> void:
 	"""Retry the game"""
 	print("[Wasteland] Retry pressed - reloading scene")
+
+	# Unpause before reloading (otherwise new scene starts paused)
+	get_tree().paused = false
+	print("[Wasteland] Game unpaused")
+
 	get_tree().reload_current_scene()
 
 
 func _on_main_menu_pressed() -> void:
 	"""Return to main menu"""
 	print("[Wasteland] Main menu pressed - returning to character selection")
+
+	# Unpause before transitioning (otherwise main menu starts paused)
+	get_tree().paused = false
+	print("[Wasteland] Game unpaused")
+
 	get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
 
 

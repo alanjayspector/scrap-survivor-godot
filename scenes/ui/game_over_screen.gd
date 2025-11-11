@@ -11,6 +11,9 @@ signal main_menu_pressed
 
 
 func _ready() -> void:
+	# Allow UI to work when game is paused (PROCESS_MODE_ALWAYS)
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	hide()  # Hidden by default
 	retry_button.pressed.connect(_on_retry_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
