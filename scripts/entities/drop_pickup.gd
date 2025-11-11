@@ -27,10 +27,8 @@ const CURRENCY_COLORS = {
 func _ready() -> void:
 	print("[DropPickup] _ready() called for ", currency_type, " x", amount, " at ", global_position)
 
-	# Set up collision
-	collision_layer = 8  # Layer 4 (2^3 = 8)
-	collision_mask = 1  # Detect player on layer 1
-	print("[DropPickup] Collision configured: layer=8, mask=1")
+	# Defer collision setup to avoid physics state changes during callbacks
+	call_deferred("_setup_collision")
 
 	# Connect signals for player detection
 	body_entered.connect(_on_body_entered)
@@ -47,6 +45,16 @@ func _ready() -> void:
 	# Add eye-catching animations
 	_start_idle_animations()
 	print("[DropPickup] Initialization complete")
+
+
+func _setup_collision() -> void:
+	"""Setup collision properties (deferred to avoid physics callback issues)"""
+	# Set up collision
+	collision_layer = 8  # Layer 4 (2^3 = 8)
+	collision_mask = 1  # Detect player on layer 1
+	monitoring = true
+	monitorable = true
+	print("[DropPickup] Collision configured: layer=8, mask=1")
 
 
 func setup(type: String, amt: int) -> void:

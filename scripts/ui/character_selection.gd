@@ -200,9 +200,10 @@ func _get_tier_name(tier: int) -> String:
 
 
 func _connect_signals() -> void:
-	if create_button:
+	# Prevent double-connection errors
+	if create_button and not create_button.is_connected("pressed", _on_create_character_pressed):
 		create_button.pressed.connect(_on_create_character_pressed)
-	if back_button:
+	if back_button and not back_button.is_connected("pressed", _on_back_pressed):
 		back_button.pressed.connect(_on_back_pressed)
 
 
