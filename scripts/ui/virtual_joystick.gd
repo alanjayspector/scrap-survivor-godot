@@ -8,8 +8,11 @@ signal direction_changed(direction: Vector2)
 @onready var stick: ColorRect = $Stick
 
 var is_pressed: bool = false
-var max_distance: float = 50.0  # pixels from center
+var max_distance: float = 85.0  # pixels from center (85% of base radius for comfortable movement)
 var current_direction: Vector2 = Vector2.ZERO
+
+# Dead zone - user must move thumb >12px before player moves (prevents accidental movement)
+const DEAD_ZONE_THRESHOLD: float = 12.0  # pixels
 
 
 func _ready() -> void:
@@ -38,11 +41,21 @@ func _gui_input(event: InputEvent) -> void:
 func _update_stick_position(touch_pos: Vector2) -> void:
 	var center: Vector2 = base.size / 2
 	var offset: Vector2 = touch_pos - center
+	var offset_length: float = offset.length()
 
 	# Clamp to max distance
-	if offset.length() > max_distance:
+	if offset_length > max_distance:
 		offset = offset.normalized() * max_distance
+		offset_length = max_distance
 
+	# Always update stick visual position (shows where thumb is)
 	stick.position = offset
-	current_direction = offset.normalized() if offset.length() > 0 else Vector2.ZERO
-	direction_changed.emit(current_direction)
+
+	# Only emit movement direction if outside dead zone (prevents accidental movement)
+	if offset_length > DEAD_ZONE_THRESHOLD:
+		current_direction = offset.normalized()
+		direction_changed.emit(current_direction)
+	else:
+		# Within dead zone - no movement
+		current_direction = Vector2.ZERO
+		direction_changed.emit(Vector2.ZERO)
