@@ -159,7 +159,7 @@ func spawn_drop_pickups(drops: Dictionary, position: Vector2) -> void:
 
 		drop_index += 1
 
-	GameLogger.debug(
+	GameLogger.info(
 		"Drop pickups spawned", {"drops": drops, "position": position, "count": drop_index}
 	)
 
@@ -188,6 +188,6 @@ func _on_drop_collected(currency_type: String, amount: int) -> void:
 	var drops_dict = {currency_type: amount}
 	drops_collected.emit(drops_dict)
 
-	GameLogger.debug("Drop collected", {"currency": currency_type, "amount": amount})
+	GameLogger.info("Drop collected", {"currency": currency_type, "amount": amount})
 
 	# TODO: Show floating text "+5 Scrap" (future polish)

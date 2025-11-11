@@ -39,6 +39,9 @@ func _ready() -> void:
 	# Update visual based on currency type
 	update_visual()
 
+	# Add eye-catching animations
+	_start_idle_animations()
+
 
 func setup(type: String, amt: int) -> void:
 	"""Initialize drop with currency type and amount"""
@@ -75,13 +78,33 @@ func collect() -> void:
 	# Emit signal for DropSystem to handle
 	collected.emit(currency_type, amount)
 
-	# TODO: Add collection animation/effect (future polish)
-	# - Scale tween
-	# - Move toward player
-	# - Particle effect
+	# Play collection animation (scale up + fade out)
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.2)
+	tween.tween_property(self, "modulate:a", 0.0, 0.2)
+	tween.tween_callback(queue_free)
 
-	# Remove the pickup
-	queue_free()
+
+func _start_idle_animations() -> void:
+	"""Start looping animations for visual appeal"""
+	# Bobbing animation (up and down)
+	var bob_tween = create_tween()
+	bob_tween.set_loops()
+	bob_tween.tween_property(self, "position:y", position.y - 3, 0.6).set_ease(Tween.EASE_IN_OUT)
+	bob_tween.tween_property(self, "position:y", position.y + 3, 0.6).set_ease(Tween.EASE_IN_OUT)
+
+	# Pulsing scale animation (breathing effect)
+	var pulse_tween = create_tween()
+	pulse_tween.set_loops()
+	pulse_tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.5).set_ease(Tween.EASE_IN_OUT)
+	pulse_tween.tween_property(self, "scale", Vector2(0.9, 0.9), 0.5).set_ease(Tween.EASE_IN_OUT)
+
+	# Slight rotation for extra flair
+	var rotate_tween = create_tween()
+	rotate_tween.set_loops()
+	rotate_tween.tween_property(self, "rotation", deg_to_rad(5), 0.8).set_ease(Tween.EASE_IN_OUT)
+	rotate_tween.tween_property(self, "rotation", deg_to_rad(-5), 0.8).set_ease(Tween.EASE_IN_OUT)
 
 
 func _to_string() -> String:
