@@ -33,6 +33,11 @@ func show_stats(wave: int, stats: Dictionary) -> void:
 	if stats.has("xp_earned"):
 		_add_stat_label("XP Earned: %d" % stats.xp_earned)
 
+	# Wave time (if available)
+	if stats.has("wave_time"):
+		var time_str = "%.1f" % stats.wave_time
+		_add_stat_label("Time: %s seconds" % time_str)
+
 
 func _add_stat_label(text: String) -> void:
 	var label = Label.new()

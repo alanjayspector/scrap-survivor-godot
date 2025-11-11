@@ -12,7 +12,9 @@ signal all_enemies_killed
 @export var spawn_container: Node2D  # Enemies node
 var current_wave: int = 1
 var current_state: WaveState = WaveState.IDLE
-var enemies_remaining: int = 0
+var enemies_remaining: int = 0  # Kept for backward compatibility with existing tests
+var living_enemies: Dictionary = {}  # enemy_id -> Enemy reference for accurate tracking
+var wave_start_time: float = 0.0
 var wave_stats: Dictionary = {}
 
 
@@ -25,8 +27,10 @@ func _ready() -> void:
 func start_wave() -> void:
 	print("[WaveManager] start_wave() called for wave ", current_wave)
 	current_state = WaveState.SPAWNING
+	living_enemies.clear()
+	wave_start_time = Time.get_ticks_msec() / 1000.0
 	wave_stats = {"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}}
-	print("[WaveManager] State set to SPAWNING")
+	print("[WaveManager] State set to SPAWNING, wave start time: ", wave_start_time)
 
 	# Update HUD
 	print("[WaveManager] Updating HUD...")
@@ -97,6 +101,10 @@ func _spawn_single_enemy() -> void:
 	spawn_container.add_child(enemy)
 	print("[WaveManager] Enemy added to scene")
 
+	# Track in living_enemies for wave completion detection
+	living_enemies[enemy_id] = enemy
+	print("[WaveManager] Enemy tracked in living_enemies. Total living: ", living_enemies.size())
+
 
 func _get_random_spawn_position() -> Vector2:
 	# Spawn at edge of viewport (off-screen)
@@ -149,17 +157,35 @@ func _get_random_spawn_position() -> Vector2:
 	return player_pos  # Fallback
 
 
-func _on_enemy_died(_enemy_id: String, _drop_data: Dictionary) -> void:
+func _on_enemy_died(enemy_id: String, _drop_data: Dictionary) -> void:
+	print("[WaveManager] _on_enemy_died called for enemy: ", enemy_id)
+
 	# Update wave stats
 	wave_stats.enemies_killed += 1
 
 	# Note: Drop tracking moved to _on_drops_collected() to track actually collected drops
 
-	# Decrement remaining count
+	# Remove from living_enemies tracking
+	if living_enemies.has(enemy_id):
+		living_enemies.erase(enemy_id)
+		print("[WaveManager] Enemy removed from living_enemies. Remaining: ", living_enemies.size())
+	else:
+		print("[WaveManager] WARNING: Enemy ", enemy_id, " not found in living_enemies")
+
+	# Decrement remaining count (kept for backward compatibility)
 	enemies_remaining -= 1
 
-	if enemies_remaining <= 0:
+	# Check if wave is complete (all enemies dead)
+	if living_enemies.is_empty() and current_state == WaveState.COMBAT:
+		print("[WaveManager] All enemies dead, completing wave")
 		_complete_wave()
+	elif enemies_remaining <= 0 and living_enemies.size() > 0:
+		# Safety check: counter vs actual living enemies mismatch
+		print(
+			"[WaveManager] WARNING: enemies_remaining is 0 but ",
+			living_enemies.size(),
+			" enemies still living"
+		)
 
 
 ## Handler for drops actually collected by player
@@ -171,9 +197,17 @@ func _on_drops_collected(drops: Dictionary) -> void:
 
 
 func _complete_wave() -> void:
+	print("[WaveManager] _complete_wave() called")
 	current_state = WaveState.VICTORY
 
+	# Calculate wave completion time
+	var wave_end_time = Time.get_ticks_msec() / 1000.0
+	var wave_time = wave_end_time - wave_start_time
+	wave_stats["wave_time"] = wave_time
+	print("[WaveManager] Wave completed in ", wave_time, " seconds")
+
 	# Emit wave completion
+	print("[WaveManager] Emitting wave_completed signal with stats: ", wave_stats)
 	wave_completed.emit(current_wave, wave_stats)
 	all_enemies_killed.emit()
 

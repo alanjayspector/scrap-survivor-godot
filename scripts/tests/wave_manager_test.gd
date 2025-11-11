@@ -266,3 +266,131 @@ func test_wave_manager_emits_wave_completed_with_stats() -> void:
 	assert_eq(signal_params[0], 1, "Wave number should be 1")
 	assert_true(signal_params[1].has("enemies_killed"), "Stats should include enemies_killed")
 	assert_eq(signal_params[1]["enemies_killed"], 1, "Should have killed 1 enemy")
+
+
+## Test: WaveManager tracks living_enemies correctly
+func test_wave_manager_tracks_living_enemies() -> void:
+	# Create wave manager
+	var wave_manager = WaveManager.new()
+	var spawn_container = Node2D.new()
+	wave_manager.spawn_container = spawn_container
+	add_child_autofree(wave_manager)
+	add_child_autofree(spawn_container)
+
+	# Set up wave
+	wave_manager.current_state = WaveManager.WaveState.COMBAT
+	wave_manager.wave_stats = {
+		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
+	}
+
+	# Manually add enemies to living_enemies (simulating spawn)
+	var enemy1 = Node2D.new()  # Mock enemy
+	var enemy2 = Node2D.new()
+	var enemy3 = Node2D.new()
+	wave_manager.living_enemies["enemy_1"] = enemy1
+	wave_manager.living_enemies["enemy_2"] = enemy2
+	wave_manager.living_enemies["enemy_3"] = enemy3
+	wave_manager.enemies_remaining = 3
+
+	# Assert all enemies tracked
+	assert_eq(wave_manager.living_enemies.size(), 3, "Should track 3 living enemies")
+
+	# Simulate enemy deaths
+	wave_manager._on_enemy_died("enemy_1", {})
+	assert_eq(wave_manager.living_enemies.size(), 2, "Should have 2 enemies after first death")
+
+	wave_manager._on_enemy_died("enemy_2", {})
+	assert_eq(wave_manager.living_enemies.size(), 1, "Should have 1 enemy after second death")
+
+	# Clean up mock enemies
+	enemy1.queue_free()
+	enemy2.queue_free()
+	enemy3.queue_free()
+
+
+## Test: WaveManager calculates wave_time correctly
+func test_wave_manager_calculates_wave_time() -> void:
+	# Create wave manager
+	var wave_manager = WaveManager.new()
+	var spawn_container = Node2D.new()
+	wave_manager.spawn_container = spawn_container
+	add_child_autofree(wave_manager)
+	add_child_autofree(spawn_container)
+
+	# Watch for signals
+	watch_signals(wave_manager)
+
+	# Set up wave with start time in the past (so wave_time will be positive)
+	wave_manager.current_state = WaveManager.WaveState.COMBAT
+	wave_manager.wave_start_time = (Time.get_ticks_msec() / 1000.0) - 1.0  # 1 second ago
+	wave_manager.enemies_remaining = 1
+	wave_manager.living_enemies["enemy_1"] = Node2D.new()
+	wave_manager.wave_stats = {
+		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
+	}
+
+	# Simulate enemy death (triggers wave completion)
+	wave_manager._on_enemy_died("enemy_1", {})
+
+	# Wait for signal processing
+	await get_tree().process_frame
+
+	# Assert wave_time is included in stats
+	assert_signal_emitted(wave_manager, "wave_completed")
+	var signal_params = get_signal_parameters(wave_manager, "wave_completed", 0)
+	assert_true(signal_params[1].has("wave_time"), "Stats should include wave_time")
+	assert_gte(signal_params[1]["wave_time"], 0.5, "Wave time should be at least 0.5 seconds")
+
+
+## Test: WaveManager only completes wave in COMBAT state
+func test_wave_manager_only_completes_in_combat_state() -> void:
+	# Create wave manager
+	var wave_manager = WaveManager.new()
+	var spawn_container = Node2D.new()
+	wave_manager.spawn_container = spawn_container
+	add_child_autofree(wave_manager)
+	add_child_autofree(spawn_container)
+
+	# Watch for signals
+	watch_signals(wave_manager)
+
+	# Set up wave in SPAWNING state (not COMBAT)
+	wave_manager.current_state = WaveManager.WaveState.SPAWNING
+	wave_manager.enemies_remaining = 1
+	wave_manager.living_enemies["enemy_1"] = Node2D.new()
+	wave_manager.wave_stats = {
+		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
+	}
+
+	# Simulate enemy death
+	wave_manager._on_enemy_died("enemy_1", {})
+
+	# Wait for signal processing
+	await get_tree().process_frame
+
+	# Assert wave did NOT complete (still in SPAWNING state)
+	assert_eq(
+		wave_manager.current_state,
+		WaveManager.WaveState.SPAWNING,
+		"Should remain in SPAWNING state"
+	)
+	assert_signal_not_emitted(wave_manager, "wave_completed")
+
+
+## Test: WaveManager next_wave increases enemy count
+func test_next_wave_increases_enemy_count() -> void:
+	# Create wave manager
+	var wave_manager = WaveManager.new()
+	var spawn_container = Node2D.new()
+	wave_manager.spawn_container = spawn_container
+	add_child_autofree(wave_manager)
+	add_child_autofree(spawn_container)
+
+	# Get enemy count for wave 1 and wave 2
+	var wave1_count = EnemyService.get_enemy_count_for_wave(1)
+	var wave2_count = EnemyService.get_enemy_count_for_wave(2)
+
+	# Assert wave 2 has more enemies than wave 1
+	assert_gt(
+		wave2_count, wave1_count, "Wave 2 should have more enemies than wave 1 (difficulty scaling)"
+	)
