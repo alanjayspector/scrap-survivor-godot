@@ -126,34 +126,46 @@ func deactivate() -> void:
 
 func _on_area_entered(area: Area2D) -> void:
 	"""Handle collision with areas (if enemies use Area2D)"""
+	print("[Projectile] _on_area_entered called, area: ", area)
 	if not is_active:
+		print("[Projectile] Projectile not active, ignoring")
 		return
 
 	# Check if the area's owner is an enemy
 	var enemy = area.owner as Enemy
+	print("[Projectile] Area owner as Enemy: ", enemy)
 	if enemy and enemy.is_alive():
+		print("[Projectile] Hitting enemy: ", enemy.enemy_id)
 		hit_enemy(enemy)
 
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Handle collision with bodies (if enemies use CharacterBody2D)"""
+	print("[Projectile] _on_body_entered called, body: ", body)
 	if not is_active:
+		print("[Projectile] Projectile not active, ignoring")
 		return
 
 	# Check if it's an enemy
 	var enemy = body as Enemy
+	print("[Projectile] Body as Enemy: ", enemy)
 	if enemy and enemy.is_alive():
+		print("[Projectile] Hitting enemy: ", enemy.enemy_id)
 		hit_enemy(enemy)
 
 
 func hit_enemy(enemy: Enemy) -> void:
 	"""Deal damage to an enemy"""
+	print("[Projectile] hit_enemy called for: ", enemy.enemy_id, " damage: ", damage)
 	# Check if already hit this enemy (for pierce)
 	if enemy in enemies_hit:
+		print("[Projectile] Already hit this enemy, skipping")
 		return
 
 	# Deal damage
-	enemy.take_damage(damage)
+	print("[Projectile] Calling enemy.take_damage(", damage, ")")
+	var killed = enemy.take_damage(damage)
+	print("[Projectile] Enemy killed: ", killed)
 	enemies_hit.append(enemy)
 
 	# Emit signal
@@ -162,6 +174,7 @@ func hit_enemy(enemy: Enemy) -> void:
 	# Check pierce
 	if enemies_hit.size() > pierce_count:
 		# Exceeded pierce count, deactivate
+		print("[Projectile] Pierce count exceeded, deactivating")
 		deactivate()
 	# Otherwise, continue flying (piercing)
 

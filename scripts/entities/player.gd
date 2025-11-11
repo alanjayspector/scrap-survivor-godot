@@ -224,17 +224,21 @@ func heal(amount: float) -> void:
 
 func die() -> void:
 	"""Handle player death"""
+	print("[Player] die() called for character: ", character_id)
 	died.emit()
 
 	# Disable physics
 	set_physics_process(false)
+	print("[Player] Physics processing disabled")
 
 	# Trigger character death event
 	if CharacterService:
 		CharacterService.on_character_death(character_id)
+		print("[Player] Character death event triggered")
 
 	GameLogger.info("Player died", {"character_id": character_id})
 
+	print("[Player] Game over - no game over screen implemented yet")
 	# TODO Week 10 Phase 4: Show game over screen
 	# get_tree().change_scene_to_file("res://scenes/ui/game_over.tscn")
 
