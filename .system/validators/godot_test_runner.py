@@ -7,11 +7,14 @@ Runs GUT tests in headless mode during pre-commit to catch test failures.
 Uses GUT (Godot Unit Test) framework for proper test isolation, assertions,
 and lifecycle hooks. Replaces manual test scene orchestration.
 
-Only runs when Godot is NOT already open (to avoid project lock).
+UPDATED: Now supports cached test results when Godot is running.
+If test_results.txt is fresh (<5 minutes), trusts cached results.
+Otherwise, requires closing Godot or running tests manually.
 """
 
 import subprocess
 import sys
+import time
 from pathlib import Path
 import re
 
@@ -30,6 +33,46 @@ GUT_CLI_SCRIPT = "res://addons/gut/gut_cmdln.gd"
 
 # Test directory (GUT will discover all *_test.gd files)
 TEST_DIR = "res://scripts/tests/"
+
+# Test results files
+TEST_RESULTS_FILE = PROJECT_ROOT / "test_results.txt"
+TEST_LOG_FILE = PROJECT_ROOT / "test_run.log"
+
+# Freshness threshold (5 minutes)
+FRESHNESS_THRESHOLD_SECONDS = 300
+
+
+def check_test_results_freshness() -> tuple[bool, dict]:
+    """
+    Check if test_results.txt exists and is fresh (< 5 minutes).
+    Returns (is_fresh: bool, stats: dict)
+    """
+    if not TEST_RESULTS_FILE.exists():
+        return False, {}
+
+    # Check file age
+    age_seconds = time.time() - TEST_RESULTS_FILE.stat().st_mtime
+    if age_seconds > FRESHNESS_THRESHOLD_SECONDS:
+        return False, {}
+
+    # Parse results
+    stats = {}
+    try:
+        with open(TEST_RESULTS_FILE) as f:
+            for line in f:
+                line = line.strip()
+                if ': ' in line:
+                    key, value = line.split(': ', 1)
+                    stats[key] = value
+    except Exception as e:
+        print(f"{YELLOW}⚠️  Warning: Could not parse test_results.txt: {e}{NC}")
+        return False, {}
+
+    # Verify required fields
+    if not all(k in stats for k in ['timestamp', 'passed', 'failed', 'total']):
+        return False, {}
+
+    return True, stats
 
 
 def is_godot_running():
@@ -115,6 +158,25 @@ def run_gut_tests() -> tuple[bool, str, dict]:
         # - No tests found (during GUT migration phase)
         success = (result.returncode == 0 and stats["failed"] == 0) or nothing_ran
 
+        # Write results to test_results.txt for caching
+        try:
+            from datetime import datetime
+            with open(TEST_RESULTS_FILE, 'w') as f:
+                f.write(f"timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"passed: {stats['passed']}\n")
+                f.write(f"failed: {stats['failed']}\n")
+                f.write(f"total: {stats['total']}\n")
+                f.write(f"status: {'PASS' if success else 'FAIL'}\n")
+        except Exception as e:
+            print(f"{YELLOW}⚠️  Warning: Could not write test_results.txt: {e}{NC}")
+
+        # Write full output to test_run.log for debugging
+        try:
+            with open(TEST_LOG_FILE, 'w') as f:
+                f.write(output)
+        except Exception as e:
+            print(f"{YELLOW}⚠️  Warning: Could not write test_run.log: {e}{NC}")
+
         return success, output, stats
 
     except subprocess.TimeoutExpired:
@@ -126,11 +188,50 @@ def run_gut_tests() -> tuple[bool, str, dict]:
 def main():
     """Run all GUT tests and report results."""
 
-    # Skip if Godot is running
+    # If Godot is running, check for fresh cached results
     if is_godot_running():
-        print(f"{YELLOW}⚠️  Godot is running - skipping automated tests{NC}")
-        print(f"   Run tests manually in Godot, or close Godot to enable automated testing")
-        return 0
+        print(f"{CYAN}Godot is running - checking for cached test results...{NC}")
+
+        fresh, stats = check_test_results_freshness()
+
+        if fresh:
+            # Fresh results available - trust them
+            age_seconds = int(time.time() - TEST_RESULTS_FILE.stat().st_mtime)
+            print(f"{GREEN}✓ Using cached test results (age: {age_seconds}s){NC}")
+            print(f"  Timestamp: {stats.get('timestamp')}")
+            print(f"  Passed: {stats.get('passed')}/{stats.get('total')}")
+            print()
+
+            # Check if tests are passing
+            failed = int(stats.get('failed', 0))
+            if failed > 0:
+                print(f"{RED}❌ Cached tests show {failed} failure(s){NC}")
+                print(f"  Fix tests and rerun in Godot Editor")
+                print(f"  Or view failures: cat test_run.log")
+                return 1
+
+            return 0
+        else:
+            # No fresh results - must run tests or close Godot
+            if TEST_RESULTS_FILE.exists():
+                age_seconds = int(time.time() - TEST_RESULTS_FILE.stat().st_mtime)
+                age_minutes = age_seconds // 60
+                print(f"{YELLOW}⚠️  Cached results are stale (age: {age_minutes}m {age_seconds % 60}s > 5m threshold){NC}")
+            else:
+                print(f"{YELLOW}⚠️  No cached test results found{NC}")
+
+            print()
+            print(f"{RED}❌ Cannot verify tests: Godot is running AND no fresh results{NC}")
+            print()
+            print(f"  {CYAN}Fix Option 1:{NC} Run tests in Godot Editor (GUT panel)")
+            print(f"               This updates test_results.txt and test_run.log")
+            print()
+            print(f"  {CYAN}Fix Option 2:{NC} Close Godot and retry commit")
+            print(f"               Tests will run automatically in headless mode")
+            print()
+            print(f"  {YELLOW}Bypass (NOT recommended):{NC} git commit --no-verify")
+            print()
+            return 1
 
     print(f"{CYAN}Running GUT tests in headless mode...{NC}")
 

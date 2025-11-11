@@ -133,6 +133,13 @@ if [ -f .system/validators/test_patterns_validator.py ]; then
     # Don't fail on warnings - this is informational for GUT migration
 fi
 
+# Asset import validator (BLOCKING - Week 9)
+if [ -f .system/validators/check-imports.sh ]; then
+    if ! bash .system/validators/check-imports.sh; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Godot runtime validator (DISABLED - needs better strategy)
 # if [ -f .system/validators/godot_runtime_validator.py ]; then
 #     if ! python3 .system/validators/godot_runtime_validator.py; then

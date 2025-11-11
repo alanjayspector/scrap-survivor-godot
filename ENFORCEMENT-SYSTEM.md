@@ -12,6 +12,7 @@ The enforcement system has been fully configured for the Godot project with GDSc
 - Runs `gdlint` on all staged `.gd` files
 - Runs `gdformat --check` to verify formatting
 - Runs pattern validators (`.system/validators/check-patterns.sh`)
+- Runs asset import validator (`.system/validators/check-imports.sh`)
 
 **Commit message hook** (`.system/hooks/commit-msg`):
 - Enforces conventional commit format
@@ -531,6 +532,324 @@ func test_withdraw_insufficient_funds_returns_false() -> void:
 
 **These patterns are validated** but non-blocking to allow gradual GUT migration!
 
+### Test Validation Workflow
+
+**Validator**: `.system/validators/godot_test_runner.py`
+
+The test runner implements a **strict verification strategy** to prevent committing code when test status is unknown.
+
+#### Test Result Caching
+
+**Files Generated:**
+- `test_results.txt` - Structured test summary (timestamp, passed, failed, total, status)
+- `test_run.log` - Full GUT output for debugging and real-time monitoring
+- `test_results.xml` - JUnit XML format for CI/CD integration
+
+**Result Format** (test_results.txt):
+```
+timestamp: 2025-11-10 14:32:15
+passed: 393
+failed: 0
+total: 393
+status: PASS
+```
+
+**Freshness Threshold**: 5 minutes
+
+#### Validation Scenarios
+
+**Scenario 1: Godot Closed**
+```bash
+git commit -m "feat: add new feature"
+# → Runs tests in headless mode
+# → Writes test_results.txt and test_run.log
+# → Commit succeeds if tests pass
+```
+
+**Scenario 2: Godot Open + Fresh Results (< 5 minutes)**
+```bash
+# You run tests in Godot Editor at 14:30
+# Tests pass, files written: test_results.txt, test_run.log
+
+git commit -m "fix: correct bug"
+# At 14:32 (2 minutes later):
+# → Detects Godot is running
+# → Checks test_results.txt freshness
+# → Age: 2 minutes (< 5 minute threshold)
+# → ✅ Trusts cached results
+# → Commit succeeds
+```
+
+**Scenario 3: Godot Open + Stale Results (> 5 minutes)**
+```bash
+# Last test run: 14:00
+# Current time: 14:10 (10 minutes later)
+
+git commit -m "feat: add feature"
+# → Detects Godot is running
+# → Checks test_results.txt freshness
+# → Age: 10 minutes (> 5 minute threshold)
+# → ❌ Fails with instructions:
+#
+#   ❌ Cannot verify tests: Godot is running AND no fresh results
+#
+#   Fix Option 1: Run tests in Godot Editor (GUT panel)
+#                 This updates test_results.txt and test_run.log
+#
+#   Fix Option 2: Close Godot and retry commit
+#                 Tests will run automatically in headless mode
+#
+#   Bypass (NOT recommended): git commit --no-verify
+```
+
+**Scenario 4: Godot Open + No Results**
+```bash
+# No test_results.txt file exists
+
+git commit -m "feat: add feature"
+# → Detects Godot is running
+# → No test_results.txt found
+# → ❌ Fails with instructions (same as Scenario 3)
+```
+
+**Scenario 5: Cached Tests Failing**
+```bash
+# Last test run: 14:32 (2 minutes ago)
+# Status: FAIL (3 tests failing)
+
+git commit -m "fix: attempt to fix bug"
+# → Detects Godot is running
+# → Checks test_results.txt freshness
+# → Age: 2 minutes (fresh)
+# → ❌ Fails because cached tests show failures:
+#
+#   ❌ Cached tests show 3 failure(s)
+#   Fix tests and rerun in Godot Editor
+#   Or view failures: cat test_run.log
+```
+
+#### Real-Time Test Monitoring
+
+**While tests are running in Godot Editor**, you can monitor progress:
+
+```bash
+# Watch test output in real-time
+tail -f test_run.log
+
+# Check current test status
+cat test_results.txt
+```
+
+This allows visibility into test execution without blocking the editor.
+
+#### Why This Approach
+
+**Problem**: Previous behavior returned success when Godot was running without actually running tests, leading to false confidence that "all tests are passing."
+
+**Solution**:
+1. **Strict validation** - Never claim success without proof
+2. **Result caching** - Trust recent test runs to avoid redundant execution
+3. **Clear instructions** - Guide developers to fix the situation
+4. **Real-time visibility** - Enable monitoring of test progress
+
+**Benefits**:
+- ✅ No false positives ("tests passing" without verification)
+- ✅ Fast commits when tests recently run (< 5 minutes)
+- ✅ Clear error messages with actionable fixes
+- ✅ Real-time test monitoring via log files
+- ✅ Strict enforcement by default, bypass available if needed
+
+---
+
+## 🎨 Asset Import Validation
+
+### Asset Import Reference
+
+**See [docs/godot-import-research.md](docs/godot-import-research.md)** for comprehensive import optimization guide covering:
+
+**Texture Import Settings:**
+- Compression modes (Lossless, Lossy, VRAM Compressed)
+- Platform-specific overrides (iOS, Android, HTML5, Desktop)
+- Filter modes (Nearest for pixel art, Linear for smooth graphics)
+- Mipmap settings (generally disabled for 2D)
+- Size limits and power-of-2 considerations
+
+**Audio Import Settings:**
+- Format recommendations (OGG Vorbis for music, WAV/OGG for SFX)
+- Sample rate guidance (44kHz standard, 22kHz acceptable for SFX)
+- Compression bitrates (128kbps music, 96kbps SFX)
+- Streaming vs preloaded strategies
+
+**Memory Budget Management:**
+- Texture memory estimation formulas
+- Atlas consolidation strategies
+- Lazy loading patterns
+- Target budgets for mobile (20-30 MB per level)
+
+### Automated Import Checks
+
+**The pre-commit hook now checks for:**
+- ❌ **BLOCKING**: Pixel art using VRAM compression (compress/mode != 0)
+- ❌ **BLOCKING**: Detect 3D enabled on sprites (causes auto-recompression)
+- ❌ **BLOCKING**: Sprite sheets >2 MB (performance issue)
+- ❌ **BLOCKING**: MP3 audio files (use OGG Vorbis instead)
+- ⚠️ **WARNING**: Mipmaps enabled on pixel art (blurs pixels)
+- ⚠️ **WARNING**: Music tracks >8 MB (compress to 128kbps)
+- ⚠️ **WARNING**: SFX files >1 MB (use compression)
+- ⚠️ **WARNING**: Asset naming violations (should use snake_case)
+
+**Violations are:**
+- ❌ **Errors** (block commit): Critical import misconfigurations, oversized assets, wrong formats
+- ⚠️ **Warnings** (don't block): Size optimization opportunities, naming conventions
+
+### Import Configuration Requirements
+
+**2D Sprites (Pixel Art):**
+```
+Compress > Mode: Lossless (0)
+Detect 3D: Disabled (0)
+Mipmaps > Generate: No (false)
+Filter: Nearest (set globally in project settings)
+Repeat/Clamp: Clamp
+```
+
+**Why this matters:**
+- VRAM compression applies lossy algorithms causing color banding and blur
+- Detect 3D auto-converts sprites to VRAM compressed on 3D detection
+- Mipmaps add memory overhead and blur pixel art
+- Linear filtering causes blurry pixel edges
+
+**Audio (Music/SFX):**
+```
+Format: OGG Vorbis (NOT MP3)
+Music: 128 kbps, 44 kHz, stereo
+SFX: 96 kbps, 44 kHz, mono (or WAV for short <2s)
+```
+
+**Why this matters:**
+- MP3 has licensing/patent concerns across platforms
+- OGG Vorbis is open-source, smaller, and streaming-friendly
+- Proper bitrates balance quality and file size
+
+**File Size Limits:**
+- Sprite sheet: ≤2 MB (mobile memory constraints)
+- Tileset atlas: ≤1 MB (frequently loaded)
+- Music track: ≤8 MB (streaming overhead)
+- UI texture: ≤500 KB (always in memory)
+
+**Why this matters:**
+- Mobile devices have 256-512 MB VRAM budgets
+- Oversized textures cause memory spikes and crashes
+- Web exports must download all assets (loading time critical)
+
+### Asset Naming Convention
+
+**Pattern:** `[category]_[entity]_[variant].[format]`
+
+**Examples:**
+- ✅ `characters_player_idle.png`
+- ✅ `ui_button_hover.png`
+- ✅ `music_level_01_main.ogg`
+- ✅ `sfx_jump_01.wav`
+- ✅ `enemies_goblin_walk.png`
+- ❌ `PlayerSprite.png` (PascalCase not allowed)
+- ❌ `random-sprite.png` (no category)
+- ❌ `IMG_1234.png` (not descriptive)
+
+**Why this matters:**
+- Consistent naming enables automated validation
+- Category prefixes organize assets by system
+- Snake_case matches GDScript conventions
+- Searchability and maintainability
+
+### Platform-Specific Import Considerations
+
+**iOS (ASTC compression):**
+- Max texture: 4096×4096
+- Compression: ASTC preferred, ETC2 fallback
+- Target: 20-30 MB VRAM per level
+
+**Android (ETC2/ASTC compression):**
+- Max texture: 4096×4096
+- Compression: ETC2 (API 19+), ASTC (API 23+)
+- Target: 15-20 MB VRAM (older devices)
+
+**HTML5/WebGL (no VRAM compression):**
+- Max texture: 2048×2048 (browser limits)
+- Compression: Lossless only (VRAM formats ignored)
+- File size critical: Assets downloaded on load
+
+**Desktop (Mac M4):**
+- Max texture: 8192×8192
+- Compression: S3TC/BPTC or ASTC
+- Less restrictive but consistency recommended
+
+### Common Import Mistakes
+
+**Mistake 1: Wrong Compression for Pixel Art**
+- **Problem:** Blurry or color-shifted sprites
+- **Cause:** VRAM compression (ETC2, ASTC, S3TC)
+- **Fix:** Set `Compress > Mode: Lossless` and `Detect 3D: Disabled`
+
+**Mistake 2: Oversized Textures**
+- **Problem:** Memory spikes on mobile
+- **Solution:** Break large sprites into smaller atlases (max 1024×1024)
+
+**Mistake 3: Unnecessary Mipmaps**
+- **Problem:** Increased memory, performance drops
+- **When needed:** Camera zoom-out with aliasing (rare in 2D)
+- **Fix:** Set `Mipmaps > Generate: No` for all 2D sprites
+
+**Mistake 4: Missing Platform Overrides**
+- **Problem:** Wrong compression on mobile, bloated APKs
+- **Fix:** Set platform-specific overrides (iOS: ASTC, Android: ETC2, Web: Lossless)
+
+**Mistake 5: Using MP3 Audio**
+- **Problem:** Licensing concerns, larger file sizes
+- **Fix:** Convert to OGG Vorbis (music 128kbps, SFX 96kbps)
+
+### Validation Script
+
+**Location:** `.system/validators/check-imports.sh`
+
+**What it checks:**
+- Parses `.import` files for compression settings
+- Validates file sizes against thresholds
+- Checks audio format (rejects MP3)
+- Validates naming conventions (snake_case, category prefixes)
+- Reports errors (blocking) and warnings (informational)
+
+**Run manually:**
+```bash
+bash .system/validators/check-imports.sh
+```
+
+**Runs automatically:**
+- On every commit (via pre-commit hook)
+- In CI/CD pipeline (GitHub Actions)
+
+### Why Asset Import Validation Matters
+
+**Silent failures that only appear in production:**
+- 🐛 **Visual bugs**: Blurry pixel art from VRAM compression (only visible after export)
+- 📱 **Mobile crashes**: Oversized textures exceed VRAM limits (device-specific)
+- 🌐 **Web bloat**: Unoptimized assets increase download time (users abandon)
+- 🎵 **Audio issues**: MP3 licensing violations (platform rejection)
+- 💾 **Memory spikes**: Uncompressed textures loaded all at once (OOM crashes)
+
+**These are NOT detected by Godot editor** - Validation prevents production issues!
+
+### Quick Reference Import Settings Table
+
+| Asset Type | Compression | Detect 3D | Mipmaps | Filter | Max Size |
+|---|---|---|---|---|---|
+| 2D Sprite (Pixel Art) | Lossless (0) | Disabled (0) | No | Nearest | 2 MB |
+| Tilemap Atlas | Lossless (0) | Disabled (0) | No | Nearest | 1 MB |
+| UI Texture | Lossless (0) | Disabled (0) | No | Nearest | 500 KB |
+| Particle Texture | VRAM/Lossless | Disabled | Yes | Linear | 1 MB |
+| Music (OGG) | N/A | N/A | N/A | N/A | 8 MB |
+| SFX (WAV/OGG) | N/A | N/A | N/A | N/A | 1 MB |
+
 ---
 
 ## 🚀 Usage
@@ -552,10 +871,14 @@ gdformat --check scripts/
 # Validate patterns
 bash .system/validators/check-patterns.sh
 
+# Validate asset imports
+bash .system/validators/check-imports.sh
+
 # Run all checks (same as Cmd+Shift+B in VS Code)
 gdlint --config .gdlintrc scripts/ && \
 gdformat --check scripts/ && \
-bash .system/validators/check-patterns.sh
+bash .system/validators/check-patterns.sh && \
+bash .system/validators/check-imports.sh
 ```
 
 ### Configure External Editor
@@ -711,10 +1034,11 @@ ls -la .vscode/tasks.json
 
 **The enforcement system is fully operational and Godot-specific!**
 
-- ✅ Git hooks run on every commit
+- ✅ Git hooks run on every commit (code + assets)
 - ✅ CI runs on every push/PR
 - ✅ IDE integration for quick validation
 - ✅ GDScript-specific pattern enforcement
+- ✅ Asset import validation (compression, format, size)
 - ✅ All configured for Godot project structure
 
 **No stale references** - TypeScript files in `.system/` are clearly marked as reference only. All active enforcement uses GDScript-specific tools.

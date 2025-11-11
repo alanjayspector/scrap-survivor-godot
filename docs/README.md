@@ -27,6 +27,7 @@ This directory contains all game design, system specifications, and technical ar
 - Design patterns → [core-architecture/PATTERN-CATALOG.md](core-architecture/PATTERN-CATALOG.md)
 - Monetization system → [core-architecture/monetization-architecture.md](core-architecture/monetization-architecture.md)
 - UI design tokens → [core-architecture/ui-design-system.md](core-architecture/ui-design-system.md)
+- Asset import optimization → [godot-import-research.md](godot-import-research.md)
 
 **Working on migration?** See:
 - Original migration plan → [migration/GODOT-MIGRATION-PLAN.md](migration/GODOT-MIGRATION-PLAN.md)
@@ -148,6 +149,7 @@ See [migration/week6-days1-3-completion.md](migration/week6-days1-3-completion.m
 **Godot Documentation:**
 - [Godot 4.5 Docs](https://docs.godotengine.org/en/stable/)
 - [GDScript Reference](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/index.html)
+- [Asset Import Research](godot-import-research.md) (textures, audio, optimization)
 
 **Testing:**
 - [GUT (Godot Unit Test)](https://github.com/bitwes/Gut)
