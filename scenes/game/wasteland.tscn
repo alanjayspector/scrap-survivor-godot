@@ -22,7 +22,7 @@ position_smoothing_speed = 5.0
 
 [node name="Projectiles" type="Node2D" parent="."]
 
-[node name="Drops" type="Node2D" parent="."]
+[node name="Drops" type="Node2D" parent="." groups=["drops_container"]]
 
 [node name="UI" type="CanvasLayer" parent="."]
 

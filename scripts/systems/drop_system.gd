@@ -44,7 +44,9 @@ func generate_drops(enemy_type: String, character_scavenging: int) -> Dictionary
 		if randf() <= drop_def.chance:
 			var amount = randi_range(drop_def.min, drop_def.max)
 			var final_amount = int(amount * scavenge_mult)
-			drops[currency] = final_amount
+			# Only add non-zero drops to the dictionary
+			if final_amount > 0:
+				drops[currency] = final_amount
 
 	# Emit signal
 	drops_generated.emit(enemy_type, drops)
@@ -111,33 +113,81 @@ func process_enemy_kill(
 	return {"drops": drops, "xp_awarded": xp_awarded, "leveled_up": leveled_up}
 
 
-## Spawn drop pickups (Week 10 - auto-collect for now, visual pickups in Week 11)
-## For Week 10, immediately collect drops and add to BankingService
+## Spawn drop pickups as collectible entities
+## Week 11 Phase 2: Visual pickups that player collects by walking over
 func spawn_drop_pickups(drops: Dictionary, position: Vector2) -> void:
 	if drops.is_empty():
 		return
 
-	# Week 10: Auto-collect drops (no visual pickups yet)
-	# Add currency directly to BankingService
+	# Preload the DropPickup scene
+	const DROP_PICKUP_SCENE = preload("res://scenes/entities/drop_pickup.tscn")
+
+	# Find the Drops container in the current scene
+	var drops_container = get_tree().get_first_node_in_group("drops_container")
+	if not drops_container:
+		# Fallback: try to find by name in current scene
+		var current_scene = get_tree().current_scene
+		if current_scene:
+			drops_container = current_scene.get_node_or_null("Drops")
+
+	if not drops_container:
+		GameLogger.warning("No drops container found, cannot spawn pickups")
+		return
+
+	# Spawn a pickup for each currency drop
+	var drop_index = 0
 	for currency in drops.keys():
 		var amount = drops[currency]
 
-		# Map currency strings to BankingService.CurrencyType enum
-		# For now, map scrap/components/nanites all to SCRAP
-		# TODO Week 11: Add components and nanites to BankingService
-		var currency_type
-		match currency:
-			"scrap", "components", "nanites":
-				currency_type = BankingService.CurrencyType.SCRAP
-			"premium":
-				currency_type = BankingService.CurrencyType.PREMIUM
-			_:
-				GameLogger.warning("Unknown currency type", {"currency": currency})
-				continue
+		# Instantiate pickup
+		var pickup = DROP_PICKUP_SCENE.instantiate()
 
-		BankingService.add_currency(currency_type, amount)
+		# Setup the pickup with currency type and amount
+		pickup.setup(currency, amount)
 
-	# Emit drops collected signal
-	drops_collected.emit(drops)
+		# Position with random offset to spread drops (Brotato-style)
+		var offset_angle = randf() * TAU
+		var offset_distance = randf_range(10, 30)
+		var offset = Vector2(cos(offset_angle), sin(offset_angle)) * offset_distance
+		pickup.global_position = position + offset
 
-	GameLogger.debug("Drops auto-collected", {"drops": drops, "position": position})
+		# Connect collected signal
+		pickup.collected.connect(_on_drop_collected)
+
+		# Add to scene
+		drops_container.add_child(pickup)
+
+		drop_index += 1
+
+	GameLogger.debug(
+		"Drop pickups spawned", {"drops": drops, "position": position, "count": drop_index}
+	)
+
+
+## Handle drop collection when player picks up a drop
+func _on_drop_collected(currency_type: String, amount: int) -> void:
+	# Map currency strings to BankingService.CurrencyType enum
+	var currency_enum
+	match currency_type:
+		"scrap":
+			currency_enum = BankingService.CurrencyType.SCRAP
+		"components", "nanites":
+			# TODO: BankingService currently only has SCRAP and PREMIUM
+			# For now, all currencies go to SCRAP
+			currency_enum = BankingService.CurrencyType.SCRAP
+		"premium":
+			currency_enum = BankingService.CurrencyType.PREMIUM
+		_:
+			GameLogger.warning("Unknown currency type collected", {"currency": currency_type})
+			return
+
+	# Add currency to player's bank
+	BankingService.add_currency(currency_enum, amount)
+
+	# Emit signal
+	var drops_dict = {currency_type: amount}
+	drops_collected.emit(drops_dict)
+
+	GameLogger.debug("Drop collected", {"currency": currency_type, "amount": amount})
+
+	# TODO: Show floating text "+5 Scrap" (future polish)
