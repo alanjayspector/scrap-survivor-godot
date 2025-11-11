@@ -53,6 +53,46 @@ godot --headless -s addons/gut/run_tests.gd -d
 - run: godot --headless -s addons/gut/run_tests.gd
 ```
 
+### Log Files for Debugging
+
+**IMPORTANT**: When debugging gameplay issues, always check these log locations:
+
+**Game Runtime Logs (macOS):**
+```bash
+# Application logs (GameLogger output)
+~/Library/Application Support/Godot/app_userdata/Scrap Survivor/logs/scrap_survivor_YYYY-MM-DD.log
+
+# Godot engine logs (print() statements)
+~/Library/Application Support/Godot/app_userdata/Scrap Survivor/logs/godot.log
+~/Library/Application Support/Godot/app_userdata/Scrap Survivor/logs/godotYYYY-MM-DDTHH.MM.SS.log
+```
+
+**Viewing Logs:**
+```bash
+# Latest game log
+tail -100 ~/Library/Application\ Support/Godot/app_userdata/Scrap\ Survivor/logs/scrap_survivor_$(date +%Y-%m-%d).log
+
+# Latest Godot engine log
+tail -100 ~/Library/Application\ Support/Godot/app_userdata/Scrap\ Survivor/logs/godot.log
+
+# Watch logs in real-time (run before starting game)
+tail -f ~/Library/Application\ Support/Godot/app_userdata/Scrap\ Survivor/logs/godot.log
+```
+
+**Linux:**
+```bash
+~/.local/share/godot/app_userdata/Scrap Survivor/logs/
+```
+
+**Windows:**
+```
+%APPDATA%\Godot\app_userdata\Scrap Survivor\logs\
+```
+
+**Test Logs:**
+- Headless test output: `test_run.log` (project root)
+- Test results: `test_results.xml` (project root)
+
 ---
 
 ## Test Structure & Lifecycle
