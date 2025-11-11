@@ -131,10 +131,12 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 	var splash_damage = weapon_def.get("splash_damage", 0.0)
 	var splash_radius = weapon_def.get("splash_radius", 0.0)
 
-	# Get visual properties (Phase 1.5)
+	# Get visual properties (Phase 1.5+)
 	var projectile_color = weapon_def.get("projectile_color", Color.WHITE)
 	var trail_color = weapon_def.get("trail_color", Color.WHITE)
 	var trail_width = weapon_def.get("trail_width", 2.0)
+	var proj_shape = weapon_def.get("projectile_shape", 0)
+	var proj_shape_size = weapon_def.get("projectile_shape_size", Vector2(8, 8))
 
 	# Handle special behaviors
 	match special_behavior:
@@ -150,7 +152,9 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 				weapon_def,
 				projectile_color,
 				trail_color,
-				trail_width
+				trail_width,
+				proj_shape,
+				proj_shape_size
 			)
 		"cone":
 			# Scorcher: Similar to spread but with piercing
@@ -164,7 +168,9 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 				weapon_def,
 				projectile_color,
 				trail_color,
-				trail_width
+				trail_width,
+				proj_shape,
+				proj_shape_size
 			)
 		_:
 			# Default: Single projectile with optional pierce/splash
@@ -179,7 +185,9 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 				splash_radius,
 				projectile_color,
 				trail_color,
-				trail_width
+				trail_width,
+				proj_shape,
+				proj_shape_size
 			)
 
 	print("[Wasteland] Projectile(s) spawned with damage: ", damage, " speed: ", speed)
@@ -196,7 +204,9 @@ func _spawn_projectile(
 	splash_radius: float = 0.0,
 	projectile_color: Color = Color.WHITE,
 	trail_color: Color = Color.WHITE,
-	trail_width: float = 2.0
+	trail_width: float = 2.0,
+	proj_shape: int = 0,
+	proj_shape_size: Vector2 = Vector2(8, 8)
 ) -> void:
 	"""Spawn a single projectile with given properties"""
 	const PROJECTILE_SCENE = preload("res://scenes/entities/projectile.tscn")
@@ -207,7 +217,7 @@ func _spawn_projectile(
 	if pierce_count > 0:
 		projectile.pierce_count = pierce_count
 
-	# Activate projectile with all properties including visual properties (Phase 1.5)
+	# Activate projectile with all properties including visual properties (Phase 1.5+)
 	projectile.activate(
 		position,
 		direction,
@@ -218,7 +228,9 @@ func _spawn_projectile(
 		splash_radius,
 		projectile_color,
 		trail_color,
-		trail_width
+		trail_width,
+		proj_shape,
+		proj_shape_size
 	)
 
 
@@ -232,7 +244,9 @@ func _spawn_spread_projectiles(
 	weapon_def: Dictionary,
 	projectile_color: Color = Color.WHITE,
 	trail_color: Color = Color.WHITE,
-	trail_width: float = 2.0
+	trail_width: float = 2.0,
+	proj_shape: int = 0,
+	proj_shape_size: Vector2 = Vector2(8, 8)
 ) -> void:
 	"""Spawn multiple projectiles in a spread pattern"""
 	var spread_angle = weapon_def.get("spread_angle", 40.0)  # Default 40° total spread
@@ -267,7 +281,9 @@ func _spawn_spread_projectiles(
 			0.0,
 			projectile_color,
 			trail_color,
-			trail_width
+			trail_width,
+			proj_shape,
+			proj_shape_size
 		)
 
 
@@ -437,7 +453,7 @@ func _on_main_menu_pressed() -> void:
 
 
 func _on_wave_completed(wave: int, stats: Dictionary) -> void:
-	"""Handle wave completion - track kills"""
+	"""Handle wave completion - track kills and freeze gameplay"""
 	print("[Wasteland] Wave ", wave, " completed with stats: ", stats)
 
 	# Add wave kills to total kills
@@ -448,6 +464,21 @@ func _on_wave_completed(wave: int, stats: Dictionary) -> void:
 	GameLogger.info(
 		"Wave completed", {"wave": wave, "wave_kills": wave_kills, "total_kills": total_kills}
 	)
+
+	# Freeze gameplay - disable player and enemies
+	if player_instance:
+		player_instance.set_physics_process(false)
+		player_instance.set_process_input(false)
+		print("[Wasteland] Player movement/input disabled")
+
+	# Disable all enemies
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if enemy.has_method("set_physics_process"):
+			enemy.set_physics_process(false)
+		if enemy.has_method("set_process"):
+			enemy.set_process(false)
+	print("[Wasteland] Disabled ", enemies.size(), " enemies")
 
 
 func _on_character_level_up(context: Dictionary) -> void:

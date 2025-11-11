@@ -18,6 +18,9 @@ enum UserTier { FREE, PREMIUM, SUBSCRIPTION }
 ## Weapon types
 enum WeaponType { MELEE, RANGED }
 
+## Projectile shapes (Phase 1.5+: Visual differentiation)
+enum ProjectileShape { CIRCLE, RECTANGLE, TRIANGLE, SMALL_DOT, WIDE_RECTANGLE }
+
 ## Weapon definitions
 const WEAPON_DEFINITIONS = {
 	"rusty_blade":
@@ -58,6 +61,8 @@ const WEAPON_DEFINITIONS = {
 		"splash_damage": 0.0,
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(0.3, 0.6, 1.0),  # Electric blue
+		"projectile_shape": ProjectileShape.CIRCLE,  # Standard energy ball
+		"projectile_shape_size": Vector2(10, 10),
 		"trail_width": 3.0,
 		"trail_color": Color(0.3, 0.6, 1.0, 0.7),
 		"trail_length": 80.0,
@@ -101,6 +106,8 @@ const WEAPON_DEFINITIONS = {
 		"splash_damage": 0.0,
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(0.6, 0.3, 1.0),  # Purple lightning
+		"projectile_shape": ProjectileShape.CIRCLE,  # Energy bolt
+		"projectile_shape_size": Vector2(12, 12),
 		"trail_width": 3.0,
 		"trail_color": Color(0.6, 0.3, 1.0, 0.6),
 		"trail_length": 100.0,
@@ -124,6 +131,8 @@ const WEAPON_DEFINITIONS = {
 		"spread_angle": 40.0,  # Total spread cone: -20° to +20°
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(1.0, 0.8, 0.3),  # Bright yellow pellets
+		"projectile_shape": ProjectileShape.SMALL_DOT,  # Small pellets
+		"projectile_shape_size": Vector2(6, 6),
 		"trail_width": 2.0,
 		"trail_color": Color(1.0, 0.8, 0.3, 0.5),
 		"trail_length": 60.0,
@@ -146,6 +155,8 @@ const WEAPON_DEFINITIONS = {
 		"splash_damage": 0.0,
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(0.0, 1.0, 1.0),  # Cyan tracer
+		"projectile_shape": ProjectileShape.RECTANGLE,  # Long bullet tracer
+		"projectile_shape_size": Vector2(16, 4),  # Long and thin
 		"trail_width": 4.0,
 		"trail_color": Color(0.0, 1.0, 1.0, 0.8),
 		"trail_length": 120.0,
@@ -169,6 +180,8 @@ const WEAPON_DEFINITIONS = {
 		"cone_angle": 30.0,  # 30° cone spread
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(1.0, 0.5, 0.0),  # Orange fire
+		"projectile_shape": ProjectileShape.WIDE_RECTANGLE,  # Wide flame
+		"projectile_shape_size": Vector2(12, 8),
 		"trail_width": 5.0,
 		"trail_color": Color(1.0, 0.5, 0.0, 0.6),
 		"trail_length": 50.0,
@@ -191,6 +204,8 @@ const WEAPON_DEFINITIONS = {
 		"splash_damage": 0.0,
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(0.0, 1.0, 0.3),  # Green laser
+		"projectile_shape": ProjectileShape.RECTANGLE,  # Laser beam
+		"projectile_shape_size": Vector2(20, 3),  # Very long, very thin
 		"trail_width": 4.0,
 		"trail_color": Color(0.0, 1.0, 0.3, 0.7),
 		"trail_length": 150.0,
@@ -214,6 +229,8 @@ const WEAPON_DEFINITIONS = {
 		"spinup_shots": 3,  # First 3 shots have increased cooldown
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(1.0, 1.0, 0.5),  # Yellow tracers
+		"projectile_shape": ProjectileShape.SMALL_DOT,  # Small rapid bullets
+		"projectile_shape_size": Vector2(5, 5),
 		"trail_width": 2.0,
 		"trail_color": Color(1.0, 1.0, 0.5, 0.4),
 		"trail_length": 70.0,
@@ -236,6 +253,8 @@ const WEAPON_DEFINITIONS = {
 		"splash_damage": 30.0,  # Increased from 20 for better AOE damage
 		# Visual properties (Phase 1.5)
 		"projectile_color": Color(1.0, 0.3, 0.1),  # Bright red/orange missile
+		"projectile_shape": ProjectileShape.TRIANGLE,  # Rocket/missile shape
+		"projectile_shape_size": Vector2(16, 12),  # Large rocket
 		"trail_width": 6.0,
 		"trail_color": Color(1.0, 0.3, 0.1, 0.8),
 		"trail_length": 100.0,

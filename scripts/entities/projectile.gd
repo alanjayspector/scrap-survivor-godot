@@ -25,6 +25,8 @@ var is_active: bool = false
 ## Visual properties
 @export var projectile_color: Color = Color.YELLOW
 @export var projectile_size: float = 8.0
+@export var projectile_shape: int = 0  # 0=circle, 1=rect, 2=triangle, 3=small_dot, 4=wide_rect
+@export var projectile_shape_size: Vector2 = Vector2(8, 8)
 
 ## Piercing properties
 @export var pierce_count: int = 0  # 0 = no pierce, 1 = pierce once, etc.
@@ -74,6 +76,56 @@ func create_default_visual() -> void:
 	add_child(visual)
 
 
+func _update_projectile_visual() -> void:
+	"""Update projectile visual based on shape (Phase 1.5+)"""
+	# Remove old visual (keep collision shape and trail)
+	for child in get_children():
+		if child is ColorRect or child is Polygon2D:
+			child.queue_free()
+
+	# Create shape based on projectile_shape enum
+	match projectile_shape:
+		0:  # CIRCLE
+			var visual = ColorRect.new()
+			visual.color = projectile_color
+			visual.size = projectile_shape_size
+			visual.position = -projectile_shape_size / 2
+			add_child(visual)
+
+		1:  # RECTANGLE (long bullets, lasers)
+			var visual = ColorRect.new()
+			visual.color = projectile_color
+			visual.size = projectile_shape_size
+			visual.position = -projectile_shape_size / 2
+			add_child(visual)
+
+		2:  # TRIANGLE (rockets)
+			var polygon = Polygon2D.new()
+			polygon.polygon = PackedVector2Array(
+				[
+					Vector2(projectile_shape_size.x / 2, 0),  # Tip (front)
+					Vector2(-projectile_shape_size.x / 2, projectile_shape_size.y / 2),  # Bottom left
+					Vector2(-projectile_shape_size.x / 2, -projectile_shape_size.y / 2)  # Top left
+				]
+			)
+			polygon.color = projectile_color
+			add_child(polygon)
+
+		3:  # SMALL_DOT (pellets, rapid fire)
+			var visual = ColorRect.new()
+			visual.color = projectile_color
+			visual.size = projectile_shape_size
+			visual.position = -projectile_shape_size / 2
+			add_child(visual)
+
+		4:  # WIDE_RECTANGLE (flames)
+			var visual = ColorRect.new()
+			visual.color = projectile_color
+			visual.size = projectile_shape_size
+			visual.position = -projectile_shape_size / 2
+			add_child(visual)
+
+
 func _physics_process(delta: float) -> void:
 	if not is_active:
 		return
@@ -117,7 +169,9 @@ func activate(
 	proj_splash_radius: float = 0.0,
 	proj_color: Color = Color.WHITE,
 	trail_color: Color = Color.WHITE,
-	trail_width: float = 2.0
+	trail_width: float = 2.0,
+	proj_shape: int = 0,
+	proj_shape_size: Vector2 = Vector2(8, 8)
 ) -> void:
 	"""Activate projectile with given parameters"""
 	# Set properties
@@ -133,6 +187,11 @@ func activate(
 	# Apply visual properties (Phase 1.5)
 	modulate = proj_color  # Color the entire projectile
 	projectile_color = proj_color
+	projectile_shape = proj_shape
+	projectile_shape_size = proj_shape_size
+
+	# Update visual based on shape
+	_update_projectile_visual()
 
 	# Reset tracking
 	distance_traveled = 0.0
