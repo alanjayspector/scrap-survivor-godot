@@ -26,7 +26,7 @@ var equipped_weapon_id: String = ""
 ## Weapon firing state
 var weapon_cooldown: float = 0.0
 
-## Spin-up mechanic (Minigun)
+## Spin-up mechanic (Shredder)
 var consecutive_shots: int = 0  # Track consecutive shots for spin-up
 var spinup_timer: float = 0.0  # Reset counter if no shots for a while
 const SPINUP_RESET_TIME: float = 1.0  # Reset after 1 second of not firing
@@ -189,13 +189,13 @@ func _fire_weapon(direction: Vector2) -> void:
 	var base_cooldown = weapon_def.get("cooldown", 1.0)
 	weapon_cooldown = base_cooldown / (1.0 + attack_speed_bonus)
 
-	# Apply spin-up mechanic for Minigun
+	# Apply spin-up mechanic for Shredder
 	var spinup_shots = weapon_def.get("spinup_shots", 0)
 	if spinup_shots > 0 and consecutive_shots < spinup_shots:
 		# Weapon is spinning up - apply cooldown penalty (2x cooldown for first shots)
 		weapon_cooldown *= 2.0
 		GameLogger.debug(
-			"Minigun spinning up",
+			"Shredder spinning up",
 			{"consecutive_shots": consecutive_shots, "spinup_shots": spinup_shots}
 		)
 

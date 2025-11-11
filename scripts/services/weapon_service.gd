@@ -53,7 +53,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"steel_sword":
 	{
-		"display_name": "Steel Sword",
+		"display_name": "Scrap Cleaver",
 		"type": WeaponType.MELEE,
 		"base_damage": 25,
 		"cooldown": 0.6,
@@ -68,7 +68,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"shock_rifle":
 	{
-		"display_name": "Shock Rifle",
+		"display_name": "Arc Blaster",
 		"type": WeaponType.RANGED,
 		"base_damage": 30,  # Increased from 20 for 30 DPS (30/1.0 = 30)
 		"cooldown": 1.0,
@@ -84,7 +84,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"shotgun":
 	{
-		"display_name": "Shotgun",
+		"display_name": "Scattergun",
 		"type": WeaponType.RANGED,
 		"base_damage": 8,  # Per projectile (5 projectiles = 40 total at close range)
 		"cooldown": 1.2,  # Medium-slow cooldown
@@ -101,7 +101,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"sniper_rifle":
 	{
-		"display_name": "Sniper Rifle",
+		"display_name": "Dead Eye",
 		"type": WeaponType.RANGED,
 		"base_damage": 50,  # Increased from 35 for 25 DPS (50/2.0 = 25, burst damage)
 		"cooldown": 2.0,  # Slow cooldown
@@ -117,7 +117,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"flamethrower":
 	{
-		"display_name": "Flamethrower",
+		"display_name": "Scorcher",
 		"type": WeaponType.RANGED,
 		"base_damage": 4,  # Increased from 2 for 40 DPS (4/0.1 = 40)
 		"cooldown": 0.1,  # Ultra-fast (continuous fire)
@@ -134,7 +134,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"laser_rifle":
 	{
-		"display_name": "Laser Rifle",
+		"display_name": "Beam Gun",
 		"type": WeaponType.RANGED,
 		"base_damage": 27,  # Increased from 18 for 30 DPS (27/0.9 = 30)
 		"cooldown": 0.9,  # Medium cooldown
@@ -150,7 +150,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"minigun":
 	{
-		"display_name": "Minigun",
+		"display_name": "Shredder",
 		"type": WeaponType.RANGED,
 		"base_damage": 7,  # Increased from 4 for 46.7 DPS (7/0.15 = 46.7)
 		"cooldown": 0.15,  # Very fast (rapid fire)
@@ -167,7 +167,7 @@ const WEAPON_DEFINITIONS = {
 	},
 	"rocket_launcher":
 	{
-		"display_name": "Rocket Launcher",
+		"display_name": "Boom Tube",
 		"type": WeaponType.RANGED,
 		"base_damage": 60,  # Increased from 40 for 24 DPS direct (60/2.5 = 24) + splash
 		"cooldown": 2.5,  # Very slow cooldown

@@ -134,12 +134,12 @@ func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) 
 	# Handle special behaviors
 	match special_behavior:
 		"spread":
-			# Shotgun: Fire multiple projectiles in a spread pattern
+			# Scattergun: Fire multiple projectiles in a spread pattern
 			_spawn_spread_projectiles(
 				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
 			)
 		"cone":
-			# Flamethrower: Similar to spread but with piercing
+			# Scorcher: Similar to spread but with piercing
 			_spawn_spread_projectiles(
 				position, direction, damage, speed, range, projectiles_per_shot, weapon_def
 			)
