@@ -5,7 +5,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 16.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 1
 collision_mask = 2
 script = ExtResource("1_player")
@@ -20,5 +20,11 @@ offset_right = 16.0
 offset_bottom = 16.0
 color = Color(0.2, 0.6, 1, 1)
 
-[node name="WeaponMount" type="Node2D" parent="."]
-position = Vector2(20, 0)
+[node name="WeaponPivot" type="Node2D" parent="."]
+
+[node name="WeaponSprite" type="ColorRect" parent="WeaponPivot"]
+offset_left = 10.0
+offset_top = -3.0
+offset_right = 25.0
+offset_bottom = 3.0
+color = Color(0.8, 0.8, 0.2, 1)

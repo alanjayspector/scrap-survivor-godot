@@ -1,271 +1,283 @@
-class_name Player
 extends CharacterBody2D
-## Player entity for Scrap Survivor
+class_name Player
+## Player entity for Scrap Survivor - Week 10 Combat Integration
 ##
-## Handles player movement, health, weapon management, and combat.
-## Integrates with WeaponResource and ItemResource systems.
+## Integrates with CharacterService, WeaponService, and combat systems
+## Handles movement, aiming, auto-fire, and health management
 
-## Emitted when player health changes
+## Signals
 signal health_changed(current_health: float, max_health: float)
-
-## Emitted when player takes damage
-signal damage_taken(amount: float)
-
-## Emitted when player dies
+signal player_damaged(current_hp: float, max_hp: float)
+signal player_healed(current_hp: float, max_hp: float)
+signal player_leveled_up(new_level: int, stats: Dictionary)
 signal died
 
-## Emitted when weapon is equipped
-signal weapon_equipped(weapon: WeaponResource)
+## Character integration
+@export var character_id: String = ""
 
-## Emitted when player fires weapon
-signal weapon_fired(projectile_data: Dictionary)
+## Node references
+@onready var weapon_pivot: Node2D = $WeaponPivot if has_node("WeaponPivot") else null
 
-## Base stats
-@export_group("Base Stats")
-@export var max_health: float = 100.0
-@export var base_speed: float = 200.0
-@export var base_damage: float = 10.0
-@export var base_armor: float = 0.0
+## Character stats (loaded from CharacterService)
+var stats: Dictionary = {}
+var current_hp: float = 100.0
+var equipped_weapon_id: String = ""
 
-## Current stats (modified by items)
-var current_health: float = 100.0
-var current_speed: float = 200.0
-var current_damage: float = 10.0
-var current_armor: float = 0.0
-
-## Combat properties
-@export_group("Combat")
-@export var invulnerability_duration: float = 0.5
-@export var knockback_resistance: float = 0.5
-
-var is_invulnerable: bool = false
-var invulnerability_timer: float = 0.0
-
-## Weapon management
-var equipped_weapon: WeaponResource = null
+## Weapon firing state
 var weapon_cooldown: float = 0.0
 
-## Item effects
-var stat_modifiers: Dictionary = {
-	"maxHp": 0,
-	"damage": 0,
-	"speed": 0,
-	"armor": 0,
-	"luck": 0,
-	"lifeSteal": 0,
-	"scrapGain": 0,
-	"dodge": 0,
-	"attackSpeed": 0,
-	"pickupRange": 0,
-	"range": 0
-}
-
-## Movement
-var move_direction: Vector2 = Vector2.ZERO
-var aim_direction: Vector2 = Vector2.RIGHT
+## Visual feedback
+var damage_flash_timer: float = 0.0
+var damage_flash_duration: float = 0.1
 
 
 func _ready() -> void:
-	current_health = max_health
-	current_speed = base_speed
-	current_damage = base_damage
-	current_armor = base_armor
+	# Load character stats from CharacterService
+	await _load_character_stats()
 
-	health_changed.emit(current_health, max_health)
+	# Connect to character signals
+	CharacterService.character_level_up_post.connect(_on_character_level_up_post)
+	CharacterService.character_death_post.connect(_on_character_death_post)
+
+	# Connect to weapon service signals
+	if WeaponService:
+		WeaponService.weapon_fired.connect(_on_weapon_fired)
+
+	# Add to player group
+	add_to_group("player")
+
+	GameLogger.info("Player initialized", {"character_id": character_id})
+
+
+func _load_character_stats() -> void:
+	"""Load character stats from CharacterService"""
+	if character_id.is_empty():
+		# Get active character
+		var active_char = CharacterService.get_active_character()
+		if active_char:
+			character_id = active_char.id
+		else:
+			GameLogger.error("Player: No character ID and no active character")
+			return
+
+	# Get character data
+	var character = CharacterService.get_character(character_id)
+	if character:
+		stats = character.stats.duplicate()
+		current_hp = stats.get("max_hp", 100)
+
+		# Emit initial health
+		health_changed.emit(current_hp, stats.get("max_hp", 100))
+
+		GameLogger.info("Player stats loaded", {"character_id": character_id, "stats": stats})
+	else:
+		GameLogger.error("Player: Failed to load character stats", {"character_id": character_id})
 
 
 func _physics_process(delta: float) -> void:
-	# Update invulnerability timer
-	if is_invulnerable:
-		invulnerability_timer -= delta
-		if invulnerability_timer <= 0:
-			is_invulnerable = false
+	# Update damage flash
+	if damage_flash_timer > 0:
+		damage_flash_timer -= delta
 
 	# Update weapon cooldown
 	if weapon_cooldown > 0:
 		weapon_cooldown -= delta
 
-	# Handle movement
-	handle_movement(delta)
-
-	# Handle weapon firing
-	if equipped_weapon and weapon_cooldown <= 0:
-		if should_fire_weapon():
-			fire_weapon()
-
-
-func handle_movement(_delta: float) -> void:
-	"""Handle player movement with physics"""
-	# Get input direction
-	move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-
-	# Apply speed
-	velocity = move_direction * current_speed
-
-	# Move with collision
+	# WASD movement
+	var input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var speed = stats.get("speed", 200)
+	velocity = input_direction * speed
 	move_and_slide()
 
-	# Update aim direction (towards mouse or last movement)
-	var mouse_pos = get_global_mouse_position()
-	aim_direction = (mouse_pos - global_position).normalized()
+	# Mouse aiming (rotate weapon pivot if it exists)
+	if weapon_pivot:
+		var mouse_pos = get_global_mouse_position()
+		weapon_pivot.look_at(mouse_pos)
 
-	# Rotate sprite to face movement direction (optional)
-	if move_direction.length() > 0.1:
-		rotation = move_direction.angle()
-
-
-func should_fire_weapon() -> bool:
-	"""Check if weapon should fire (auto-fire or manual)"""
-	# Auto-fire for now (can be changed to manual with Input.is_action_pressed)
-	return true
+		# Auto-fire weapon (if equipped and cooldown ready)
+		if not equipped_weapon_id.is_empty() and weapon_cooldown <= 0:
+			var direction = (mouse_pos - global_position).normalized()
+			_fire_weapon(direction)
 
 
-func fire_weapon() -> void:
-	"""Fire the equipped weapon"""
-	if not equipped_weapon:
+func _fire_weapon(direction: Vector2) -> void:
+	"""Fire the equipped weapon using WeaponService"""
+	if not WeaponService:
 		return
 
-	# Apply weapon cooldown (affected by attack speed modifier)
-	var attack_speed_bonus = 1.0 + (stat_modifiers.get("attackSpeed", 0) / 100.0)
-	weapon_cooldown = 1.0 / (equipped_weapon.fire_rate * attack_speed_bonus)
+	# Generate weapon instance ID for cooldown tracking
+	var weapon_instance_id = "%s_%s" % [character_id, equipped_weapon_id]
 
-	# Calculate damage with modifiers
-	var total_damage = equipped_weapon.damage + current_damage + stat_modifiers.get("damage", 0)
+	# Check if can fire
+	if not WeaponService.can_fire_weapon(weapon_instance_id):
+		return
 
-	# Calculate range with modifiers
-	var total_range = equipped_weapon.weapon_range + stat_modifiers.get("range", 0)
+	# Get weapon definition
+	var weapon_def = WeaponService.get_weapon_definition(equipped_weapon_id)
+	if weapon_def.is_empty():
+		return
 
-	# Emit projectile data for weapon system to handle
-	var projectile_data = {
-		"position": global_position,
-		"direction": aim_direction,
-		"damage": total_damage,
-		"speed": equipped_weapon.projectile_speed,
-		"range": total_range,
-		"weapon_id": equipped_weapon.weapon_id
-	}
+	# Calculate cooldown with attack speed modifier
+	var attack_speed_bonus = stats.get("attack_speed", 0) / 100.0
+	var base_cooldown = weapon_def.get("cooldown", 1.0)
+	weapon_cooldown = base_cooldown / (1.0 + attack_speed_bonus)
 
-	weapon_fired.emit(projectile_data)
+	# Get fire position (weapon pivot or player position)
+	var fire_position = weapon_pivot.global_position if weapon_pivot else global_position
+
+	# Fire through WeaponService (4 arguments required)
+	var success = WeaponService.fire_weapon(
+		equipped_weapon_id, weapon_instance_id, fire_position, direction
+	)
+
+	if success:
+		GameLogger.debug("Player fired weapon", {"weapon_id": equipped_weapon_id})
 
 
-func equip_weapon(weapon: WeaponResource) -> void:
-	"""Equip a weapon"""
-	equipped_weapon = weapon
-	weapon_cooldown = 0.0
-	weapon_equipped.emit(weapon)
+func equip_weapon(weapon_id: String) -> bool:
+	"""Equip a weapon for the player"""
+	if not WeaponService:
+		return false
+
+	# Try to equip through service
+	var success = WeaponService.equip_weapon(character_id, weapon_id)
+
+	if success:
+		equipped_weapon_id = weapon_id
+		weapon_cooldown = 0.0
+		GameLogger.info("Player equipped weapon", {"weapon_id": weapon_id})
+
+	return success
 
 
 func take_damage(amount: float, source_position: Vector2 = Vector2.ZERO) -> void:
-	"""Take damage with armor reduction and invulnerability"""
-	if is_invulnerable:
+	"""Take damage with armor reduction"""
+	if current_hp <= 0:
 		return
 
-	# Apply armor reduction (each point of armor reduces damage by ~2%)
-	var armor_reduction = 1.0 - (current_armor * 0.02)
-	armor_reduction = clamp(armor_reduction, 0.2, 1.0)  # Min 20% damage, max 100%
-
-	var final_damage = amount * armor_reduction
+	# Apply armor reduction
+	var armor = stats.get("armor", 0)
+	var armor_multiplier = 1.0 / (1.0 + armor * 0.01)  # 1% damage reduction per armor point
+	var actual_damage = amount * armor_multiplier
+	actual_damage = max(actual_damage, amount * 0.2)  # Minimum 20% damage
 
 	# Apply damage
-	current_health -= final_damage
-	current_health = max(0, current_health)
+	current_hp -= actual_damage
+	current_hp = max(0, current_hp)
 
 	# Emit signals
-	damage_taken.emit(final_damage)
-	health_changed.emit(current_health, max_health)
+	player_damaged.emit(current_hp, stats.get("max_hp", 100))
+	health_changed.emit(current_hp, stats.get("max_hp", 100))
 
-	# Apply knockback if source position provided
+	# Visual feedback
+	damage_flash_timer = damage_flash_duration
+	_flash_damage()
+
+	# Apply knockback if source provided
 	if source_position != Vector2.ZERO:
-		apply_knockback(source_position)
-
-	# Set invulnerability
-	is_invulnerable = true
-	invulnerability_timer = invulnerability_duration
+		var knockback_direction = (global_position - source_position).normalized()
+		velocity = knockback_direction * 300.0
 
 	# Check for death
-	if current_health <= 0:
+	if current_hp <= 0:
 		die()
 
-
-func apply_knockback(source_position: Vector2) -> void:
-	"""Apply knockback away from damage source"""
-	var knockback_direction = (global_position - source_position).normalized()
-	var knockback_force = 300.0 * (1.0 - knockback_resistance)
-	velocity = knockback_direction * knockback_force
+	GameLogger.debug("Player took damage", {"damage": actual_damage, "current_hp": current_hp})
 
 
 func heal(amount: float) -> void:
 	"""Heal the player"""
-	current_health = min(current_health + amount, max_health)
-	health_changed.emit(current_health, max_health)
+	if current_hp <= 0:
+		return
+
+	var max_hp = stats.get("max_hp", 100)
+	current_hp = min(current_hp + amount, max_hp)
+
+	# Emit signals
+	player_healed.emit(current_hp, max_hp)
+	health_changed.emit(current_hp, max_hp)
+
+	GameLogger.debug("Player healed", {"amount": amount, "current_hp": current_hp})
 
 
 func die() -> void:
 	"""Handle player death"""
 	died.emit()
+
 	# Disable physics
 	set_physics_process(false)
-	# Visual feedback (fade out, animation, etc.)
-	# Game over logic handled by game manager
+
+	# Trigger character death event
+	if CharacterService:
+		CharacterService.on_character_death(character_id)
+
+	GameLogger.info("Player died", {"character_id": character_id})
+
+	# TODO Week 10 Phase 4: Show game over screen
+	# get_tree().change_scene_to_file("res://scenes/ui/game_over.tscn")
 
 
-func apply_item_modifiers(item: ItemResource) -> void:
-	"""Apply stat modifiers from an item"""
-	for stat_name in item.stat_modifiers.keys():
-		var value = item.stat_modifiers[stat_name]
-		stat_modifiers[stat_name] = stat_modifiers.get(stat_name, 0) + value
-
-	# Recalculate stats
-	recalculate_stats()
-
-
-func recalculate_stats() -> void:
-	"""Recalculate current stats based on base stats and modifiers"""
-	# Max health
-	var old_max_health = max_health
-	var base_max_health = 100.0  # Base max health value
-	max_health = base_max_health + stat_modifiers.get("maxHp", 0)
-	max_health = max(1, max_health)  # Minimum 1 HP
-
-	# Adjust current health proportionally if max changed
-	if old_max_health > 0:
-		var health_ratio = current_health / old_max_health
-		current_health = max_health * health_ratio
-
-	# Speed
-	current_speed = base_speed + stat_modifiers.get("speed", 0)
-	current_speed = max(50, current_speed)  # Minimum 50 speed
-
-	# Damage
-	current_damage = base_damage + stat_modifiers.get("damage", 0)
-
-	# Armor
-	current_armor = base_armor + stat_modifiers.get("armor", 0)
-	current_armor = max(0, current_armor)  # No negative armor
-
-	# Emit health changed
-	health_changed.emit(current_health, max_health)
+func _flash_damage() -> void:
+	"""Visual feedback for taking damage"""
+	# Find Visual child and flash red
+	for child in get_children():
+		if child is ColorRect:
+			var tween = create_tween()
+			tween.tween_property(child, "color", Color.RED, 0.1)
+			tween.tween_property(child, "color", Color(0.2, 0.6, 1, 1), 0.1)
+		elif child is Sprite2D:
+			var tween = create_tween()
+			tween.tween_property(child, "modulate", Color.RED, 0.1)
+			tween.tween_property(child, "modulate", Color.WHITE, 0.1)
 
 
-func get_stat_value(stat_name: String) -> float:
-	"""Get the current value of a stat including modifiers"""
-	match stat_name:
-		"maxHp":
-			return max_health
-		"health":
-			return current_health
-		"speed":
-			return current_speed
-		"damage":
-			return current_damage
-		"armor":
-			return current_armor
-		_:
-			return stat_modifiers.get(stat_name, 0)
+## Signal Handlers
 
 
-func _to_string() -> String:
-	return (
-		"Player(hp=%.0f/%.0f, spd=%.0f, dmg=%.0f, armor=%.0f)"
-		% [current_health, max_health, current_speed, current_damage, current_armor]
-	)
+func _on_character_level_up_post(context: Dictionary) -> void:
+	"""Handle character level up"""
+	var char_id = context.get("character_id", "")
+	if char_id != character_id:
+		return
+
+	var new_level = context.get("new_level", 1)
+
+	# Reload stats after level up
+	var character = CharacterService.get_character(character_id)
+	if character:
+		stats = character.stats.duplicate()
+
+		# Heal to full on level up
+		var max_hp = stats.get("max_hp", 100)
+		current_hp = max_hp
+		health_changed.emit(current_hp, max_hp)
+
+		# Emit level up signal
+		player_leveled_up.emit(new_level, stats)
+
+		GameLogger.info("Player leveled up", {"level": new_level, "stats": stats})
+
+
+func _on_character_death_post(context: Dictionary) -> void:
+	"""Handle character death signal"""
+	var char_id = context.get("character_id", "")
+	if char_id == character_id:
+		# Already handled in die(), this is just for cleanup
+		return
+
+
+func _on_weapon_fired(_weapon_id: String, _position: Vector2, _direction: Vector2) -> void:
+	"""Handle weapon fired event (for visual/audio feedback)"""
+	# Could add muzzle flash, sound effects, etc.
+	# TODO Week 10 Phase 2: Add muzzle flash visual effect
+	return
+
+
+func get_stat(stat_name: String) -> float:
+	"""Get a stat value"""
+	return stats.get(stat_name, 0)
+
+
+func is_alive() -> bool:
+	"""Check if player is alive"""
+	return current_hp > 0

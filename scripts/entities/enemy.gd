@@ -1,247 +1,194 @@
-class_name Enemy
 extends CharacterBody2D
-## Enemy entity for Scrap Survivor
+class_name Enemy
+## Enemy entity for Scrap Survivor - Week 10 Combat Integration
 ##
-## Handles enemy behavior, health, movement, and wave scaling.
-## Integrates with EnemyResource for data-driven enemy types.
+## Integrates with EnemyService, DropSystem, and combat systems
+## Handles AI pathfinding, health, and drop spawning
 
-## Emitted when enemy takes damage
-signal damage_taken(amount: float)
+## Signals
+signal died(enemy_id: String, drops: Dictionary)
+signal damaged(damage: float)
 
-## Emitted when enemy dies
-signal died(enemy: Enemy, scrap_value: int)
+## Enemy configuration
+@export var enemy_id: String = ""
+@export var enemy_type: String = "scrap_bot"
 
-## Emitted when enemy hits player
-signal player_hit(damage: float)
+## Node references
+@onready var health_bar: ProgressBar = $HealthBar if has_node("HealthBar") else null
+@onready var visual: ColorRect = $Visual if has_node("Visual") else null
 
-## Enemy resource defining base stats
-@export var enemy_resource: EnemyResource
+## Enemy stats (from EnemyService)
+var current_hp: float = 50.0
+var max_hp: float = 50.0
+var speed: float = 80.0
+var damage: float = 5.0
+var xp_reward: int = 10
 
-## Current wave number (affects scaling)
+## AI state
+var player: Player = null
 var current_wave: int = 1
 
-## Current stats (scaled by wave)
-var max_health: float = 100.0
-var current_health: float = 100.0
-var move_speed: float = 100.0
-var damage: float = 10.0
-var scrap_value: int = 5
-
-## Combat properties
-@export_group("Combat")
-@export var attack_cooldown: float = 1.0
-@export var attack_range: float = 50.0
-@export var knockback_force: float = 200.0
-
-var attack_timer: float = 0.0
-var is_attacking: bool = false
-
-## AI properties
-var target: Node2D = null
-var chase_distance: float = 800.0
-var stop_distance: float = 40.0
-
-## Visual properties
-var base_color: Color = Color.WHITE
-var damage_flash_duration: float = 0.1
+## Visual feedback
 var damage_flash_timer: float = 0.0
+var damage_flash_duration: float = 0.1
+var base_color: Color = Color(1, 0.3, 0.3, 1)
 
 
 func _ready() -> void:
-	# Initialize with resource if available
-	if enemy_resource:
-		initialize_from_resource(enemy_resource, current_wave)
+	# Add to enemy group
+	add_to_group("enemies")
 
 
-func initialize(resource: EnemyResource, wave: int) -> void:
-	"""Initialize enemy with resource and wave number"""
-	enemy_resource = resource
+func setup(id: String, type: String, wave: int) -> void:
+	"""Initialize enemy with type and wave scaling"""
+	enemy_id = id
+	enemy_type = type
 	current_wave = wave
-	initialize_from_resource(resource, wave)
 
-
-func initialize_from_resource(resource: EnemyResource, wave: int) -> void:
-	"""Set up enemy stats from resource with wave scaling"""
-	if not resource:
-		push_error("Enemy: No resource provided")
+	# Get enemy definition from EnemyService
+	if not EnemyService.enemy_type_exists(type):
+		GameLogger.error("Enemy: Invalid enemy type", {"type": type})
 		return
 
-	# Get scaled stats for current wave
-	var scaled_stats = resource.get_scaled_stats(wave)
+	var enemy_def = EnemyService.get_enemy_type(type)
 
-	max_health = scaled_stats.hp
-	current_health = max_health
-	move_speed = scaled_stats.speed
-	damage = scaled_stats.damage
-	scrap_value = scaled_stats.value
+	# Get wave-scaled HP
+	var hp_multiplier = EnemyService.get_enemy_hp_multiplier(wave)
+	max_hp = enemy_def.base_hp * hp_multiplier
+	current_hp = max_hp
 
-	# Set visual properties
-	base_color = resource.color
+	# Set other stats
+	speed = enemy_def.speed
+	damage = enemy_def.base_damage
+	xp_reward = enemy_def.xp_reward
 
-	# Apply color to sprite/visual (assuming a ColorRect or Sprite2D child)
-	apply_visual_color()
+	# Update health bar
+	if health_bar:
+		health_bar.max_value = max_hp
+		health_bar.value = current_hp
+
+	# Set visual color (basic for now)
+	base_color = _get_enemy_color(type)
+	if visual:
+		visual.color = base_color
+
+	GameLogger.debug(
+		"Enemy setup complete", {"id": enemy_id, "type": type, "wave": wave, "hp": max_hp}
+	)
 
 
-func apply_visual_color() -> void:
-	"""Apply color to visual representation"""
-	# Look for ColorRect or Sprite2D child
-	for child in get_children():
-		if child is ColorRect:
-			child.color = base_color
-		elif child is Sprite2D:
-			child.modulate = base_color
+func _get_enemy_color(type: String) -> Color:
+	"""Get color for enemy type"""
+	match type:
+		"scrap_bot":
+			return Color(0.6, 0.4, 0.2, 1)  # Brown
+		"mutant_rat":
+			return Color(0.4, 0.6, 0.3, 1)  # Green
+		"rust_spider":
+			return Color(0.8, 0.3, 0.3, 1)  # Red
+		_:
+			return Color(1, 0.3, 0.3, 1)  # Default red
 
 
 func _physics_process(delta: float) -> void:
-	# Update attack cooldown
-	if attack_timer > 0:
-		attack_timer -= delta
-
 	# Update damage flash
 	if damage_flash_timer > 0:
 		damage_flash_timer -= delta
-		if damage_flash_timer <= 0:
-			reset_visual_color()
+		if damage_flash_timer <= 0 and visual:
+			visual.color = base_color
 
-	# AI behavior
-	if target:
-		handle_ai_behavior(delta)
-
-	# Move with physics
-	move_and_slide()
-
-
-func handle_ai_behavior(_delta: float) -> void:
-	"""Handle enemy AI - chase and attack player"""
-	if not target:
+	# Find player if needed
+	if not player:
+		player = get_tree().get_first_node_in_group("player") as Player
 		return
 
-	var distance_to_target = global_position.distance_to(target.global_position)
+	# AI: Move toward player
+	if player and player.is_alive():
+		var direction = (player.global_position - global_position).normalized()
+		velocity = direction * speed
+		move_and_slide()
 
-	# Check if in attack range
-	if distance_to_target <= attack_range:
-		# Stop moving and attack
-		velocity = Vector2.ZERO
-		attempt_attack()
-	elif distance_to_target <= chase_distance:
-		# Chase player
-		var direction = (target.global_position - global_position).normalized()
-
-		# Stop at minimum distance
-		if distance_to_target > stop_distance:
-			velocity = direction * move_speed
-		else:
-			velocity = Vector2.ZERO
-
-		# Face target
-		rotation = direction.angle()
-	else:
-		# Too far, stop moving
-		velocity = Vector2.ZERO
+		# Flip visual based on direction
+		if visual and direction.x != 0:
+			visual.scale.x = -1 if direction.x < 0 else 1
 
 
-func attempt_attack() -> void:
-	"""Attempt to attack the target"""
-	if attack_timer > 0 or is_attacking:
-		return
+func take_damage(dmg: float) -> bool:
+	"""Take damage and return true if killed"""
+	current_hp -= dmg
+	current_hp = max(0, current_hp)
 
-	if not target or not target.has_method("take_damage"):
-		return
+	# Update health bar
+	if health_bar:
+		health_bar.value = current_hp
 
-	# Start attack
-	is_attacking = true
-	attack_timer = attack_cooldown
-
-	# Deal damage to target
-	target.take_damage(damage, global_position)
-	player_hit.emit(damage)
-
-	# End attack (can be delayed for animation)
-	is_attacking = false
-
-
-func set_target(new_target: Node2D) -> void:
-	"""Set the target to chase (usually the player)"""
-	target = new_target
-
-
-func take_damage(amount: float, source_position: Vector2 = Vector2.ZERO) -> void:
-	"""Take damage and handle death"""
-	current_health -= amount
-	current_health = max(0, current_health)
+	# Visual feedback (flash white)
+	_flash_damage()
 
 	# Emit damage signal
-	damage_taken.emit(amount)
+	damaged.emit(dmg)
 
-	# Visual feedback
-	flash_damage()
-
-	# Apply knockback
-	if source_position != Vector2.ZERO:
-		apply_knockback(source_position)
+	GameLogger.debug("Enemy took damage", {"id": enemy_id, "damage": dmg, "hp": current_hp})
 
 	# Check for death
-	if current_health <= 0:
+	if current_hp <= 0:
 		die()
+		return true
+
+	return false
 
 
-func apply_knockback(source_position: Vector2) -> void:
-	"""Apply knockback away from damage source"""
-	var knockback_direction = (global_position - source_position).normalized()
-	velocity = knockback_direction * knockback_force
-
-
-func flash_damage() -> void:
-	"""Flash white when taking damage"""
+func _flash_damage() -> void:
+	"""Visual feedback for taking damage"""
 	damage_flash_timer = damage_flash_duration
 
-	# Flash white
-	for child in get_children():
-		if child is ColorRect:
-			child.color = Color.WHITE
-		elif child is Sprite2D:
-			child.modulate = Color.WHITE
-
-
-func reset_visual_color() -> void:
-	"""Reset to base color after damage flash"""
-	for child in get_children():
-		if child is ColorRect:
-			child.color = base_color
-		elif child is Sprite2D:
-			child.modulate = base_color
+	if visual:
+		var tween = create_tween()
+		tween.tween_property(visual, "color", Color.WHITE, 0.1)
+		tween.tween_property(visual, "color", base_color, 0.1)
 
 
 func die() -> void:
 	"""Handle enemy death"""
-	# Emit death signal with scrap value
-	died.emit(self, scrap_value)
+	# Generate drops using DropSystem
+	var drops = {}
+	if DropSystem:
+		# Get player scavenging stat for drop calculation
+		var player_scavenging = 0
+		if player:
+			player_scavenging = player.get_stat("scavenging")
 
-	# Disable physics
-	set_physics_process(false)
+		# Generate drops
+		drops = DropSystem.generate_drops(enemy_type, player_scavenging)
 
-	# Visual feedback (fade out, particle effect, etc.)
-	# Can be handled by game manager or animation
+		# Spawn drop pickups at death location
+		if not drops.is_empty():
+			DropSystem.spawn_drop_pickups(drops, global_position)
 
-	# Queue for removal
-	queue_free()
+		# Award XP to player
+		if player:
+			DropSystem.award_xp_for_kill(player.character_id, enemy_type)
+
+	# Emit death signal
+	died.emit(enemy_id, drops)
+
+	# Death animation (fade out + scale down)
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "modulate:a", 0.0, 0.3)
+	tween.tween_property(self, "scale", Vector2(0.5, 0.5), 0.3)
+	tween.tween_callback(queue_free)
+
+	GameLogger.info("Enemy died", {"id": enemy_id, "type": enemy_type, "drops": drops})
 
 
 func get_health_percentage() -> float:
 	"""Get current health as percentage (0.0 to 1.0)"""
-	if max_health <= 0:
+	if max_hp <= 0:
 		return 0.0
-	return current_health / max_health
+	return current_hp / max_hp
 
 
 func is_alive() -> bool:
 	"""Check if enemy is alive"""
-	return current_health > 0
-
-
-func _to_string() -> String:
-	var enemy_name = enemy_resource.enemy_name if enemy_resource else "Unknown"
-	return (
-		"Enemy(%s, wave=%d, hp=%.0f/%.0f, dmg=%.0f)"
-		% [enemy_name, current_wave, current_health, max_health, damage]
-	)
+	return current_hp > 0

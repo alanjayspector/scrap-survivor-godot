@@ -14,6 +14,7 @@ extends Node
 ## Signals
 signal drops_generated(enemy_type: String, drops: Dictionary)
 signal xp_awarded(character_id: String, xp: int, leveled_up: bool)
+signal drops_collected(drops: Dictionary)
 
 
 ## Initialize system
@@ -108,3 +109,35 @@ func process_enemy_kill(
 	var xp_awarded = enemy_def.xp_reward if not enemy_def.is_empty() else 0
 
 	return {"drops": drops, "xp_awarded": xp_awarded, "leveled_up": leveled_up}
+
+
+## Spawn drop pickups (Week 10 - auto-collect for now, visual pickups in Week 11)
+## For Week 10, immediately collect drops and add to BankingService
+func spawn_drop_pickups(drops: Dictionary, position: Vector2) -> void:
+	if drops.is_empty():
+		return
+
+	# Week 10: Auto-collect drops (no visual pickups yet)
+	# Add currency directly to BankingService
+	for currency in drops.keys():
+		var amount = drops[currency]
+
+		# Map currency strings to BankingService.CurrencyType enum
+		# For now, map scrap/components/nanites all to SCRAP
+		# TODO Week 11: Add components and nanites to BankingService
+		var currency_type
+		match currency:
+			"scrap", "components", "nanites":
+				currency_type = BankingService.CurrencyType.SCRAP
+			"premium":
+				currency_type = BankingService.CurrencyType.PREMIUM
+			_:
+				GameLogger.warning("Unknown currency type", {"currency": currency})
+				continue
+
+		BankingService.add_currency(currency_type, amount)
+
+	# Emit drops collected signal
+	drops_collected.emit(drops)
+
+	GameLogger.debug("Drops auto-collected", {"drops": drops, "position": position})
