@@ -139,15 +139,29 @@ def run_gut_tests() -> tuple[bool, str, dict]:
         output = result.stdout + result.stderr
 
         # Parse GUT output for test statistics
-        # GUT prints: "X of Y tests passed"
+        # GUT prints totals section like:
+        # Tests               411
+        # Passing Tests       393
+        # Risky/Pending        18
         stats = {"passed": 0, "failed": 0, "total": 0}
 
-        # Look for GUT's summary line
-        passed_match = re.search(r'(\d+)\s+of\s+(\d+)\s+tests?\s+passed', output)
-        if passed_match:
+        # Look for GUT's totals section
+        total_match = re.search(r'Tests\s+(\d+)', output)
+        passed_match = re.search(r'Passing Tests\s+(\d+)', output)
+        pending_match = re.search(r'Risky/Pending\s+(\d+)', output)
+
+        if total_match and passed_match:
+            stats["total"] = int(total_match.group(1))
             stats["passed"] = int(passed_match.group(1))
-            stats["total"] = int(passed_match.group(2))
-            stats["failed"] = stats["total"] - stats["passed"]
+
+            # Calculate failed tests (exclude pending/risky tests)
+            # Failed = Total - Passing - Pending
+            pending = int(pending_match.group(1)) if pending_match else 0
+            stats["failed"] = stats["total"] - stats["passed"] - pending
+        elif passed_match:  # Fallback: only "Passing Tests" found
+            stats["passed"] = int(passed_match.group(1))
+            stats["total"] = stats["passed"]  # Assume all tests passed
+            stats["failed"] = 0
 
         # Check for "Nothing was run" (no tests found - OK during migration)
         # GUT outputs this with ANSI codes, so check for substring
