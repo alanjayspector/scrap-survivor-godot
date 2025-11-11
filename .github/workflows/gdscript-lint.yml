@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "::group::Running gdlint"
           if [ -d "scripts" ]; then
-            gdlint --config .gdlintrc scripts/ || {
+            gdlint scripts/ || {
               echo "lint_failed=true" >> $GITHUB_OUTPUT
               exit 1
             }
