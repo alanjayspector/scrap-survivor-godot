@@ -19,7 +19,7 @@ const ENEMY_TYPES = {
 	{
 		"display_name": "Scrap Bot",
 		"base_hp": 50,
-		"base_damage": 5,
+		"base_damage": 3,  # Reduced from 5 for better balance
 		"speed": 80,
 		"xp_reward": 10,
 		"drop_table":
@@ -32,7 +32,7 @@ const ENEMY_TYPES = {
 	{
 		"display_name": "Mutant Rat",
 		"base_hp": 30,
-		"base_damage": 8,
+		"base_damage": 5,  # Reduced from 8 for better balance
 		"speed": 120,  # Faster, lower HP
 		"xp_reward": 8,
 		"drop_table":
@@ -45,7 +45,7 @@ const ENEMY_TYPES = {
 	{
 		"display_name": "Rust Spider",
 		"base_hp": 40,
-		"base_damage": 6,
+		"base_damage": 4,  # Reduced from 6 for better balance
 		"speed": 100,
 		"xp_reward": 12,
 		"drop_table":

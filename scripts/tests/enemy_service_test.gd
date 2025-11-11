@@ -50,7 +50,7 @@ func test_get_enemy_type_returns_valid_data() -> void:
 	# Assert
 	assert_eq(enemy_type.display_name, "Mutant Rat", "Should return correct display name")
 	assert_eq(enemy_type.base_hp, 30, "Should have base HP 30")
-	assert_eq(enemy_type.base_damage, 8, "Should have base damage 8")
+	assert_eq(enemy_type.base_damage, 5, "Should have base damage 5")
 	assert_eq(enemy_type.speed, 120, "Should have speed 120")
 	assert_eq(enemy_type.xp_reward, 8, "Should reward 8 XP")
 
@@ -96,7 +96,7 @@ func test_spawn_enemy_creates_valid_enemy() -> void:
 	assert_eq(enemy.position, position, "Enemy should have correct position")
 	assert_almost_eq(enemy.max_hp, 50.0, 0.01, "Enemy should have 50 max HP")
 	assert_almost_eq(enemy.current_hp, 50.0, 0.01, "Enemy should start at full HP")
-	assert_eq(enemy.damage, 5, "Enemy should have 5 damage")
+	assert_eq(enemy.damage, 3, "Enemy should have 3 damage")
 	assert_eq(enemy.speed, 80, "Enemy should have 80 speed")
 	assert_true(enemy.alive, "Enemy should be alive")
 

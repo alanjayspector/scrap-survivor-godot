@@ -16,9 +16,12 @@ extends Node2D
 @onready var drops_container: Node2D = $Drops
 @onready var wave_manager: WaveManager = $GameController
 @onready var wave_complete_screen: Panel = $UI/WaveCompleteScreen
+@onready var game_over_screen: Panel = $UI/GameOverScreen
 
 var player_instance: Player = null
 var character_id: String = ""
+var start_time: float = 0.0
+var total_kills: int = 0
 
 
 func _ready() -> void:
@@ -57,10 +60,19 @@ func _setup_wave_manager() -> void:
 	wave_complete_screen.next_wave_pressed.connect(_on_next_wave_pressed)
 	print("[Wasteland] Signal connected")
 
+	# Connect game over screen signals
+	print("[Wasteland] Connecting game over screen signals...")
+	game_over_screen.retry_pressed.connect(_on_retry_pressed)
+	game_over_screen.main_menu_pressed.connect(_on_main_menu_pressed)
+	print("[Wasteland] Game over screen signals connected")
+
 	# Connect weapon fired signal for projectile spawning
 	print("[Wasteland] Connecting to WeaponService.weapon_fired...")
 	WeaponService.weapon_fired.connect(_on_weapon_fired)
 	print("[Wasteland] WeaponService.weapon_fired signal connected")
+
+	# Start game timer
+	start_time = Time.get_ticks_msec() / 1000.0
 
 	# Start first wave
 	print("[Wasteland] Waiting 1 second before starting wave...")
@@ -140,6 +152,10 @@ func _spawn_player(char_id: String) -> void:
 	var equipped = player_instance.equip_weapon("plasma_pistol")
 	print("[Wasteland] Weapon equipped: ", equipped)
 
+	# Connect player death signal
+	player_instance.died.connect(_on_player_died)
+	print("[Wasteland] Player death signal connected")
+
 	GameLogger.info("Player spawned in Wasteland", {"character_id": char_id})
 	print("[Wasteland] Player spawn complete")
 
@@ -162,3 +178,29 @@ func get_projectiles_container() -> Node2D:
 func get_drops_container() -> Node2D:
 	"""Get the drops container for spawning"""
 	return drops_container
+
+
+func _on_player_died() -> void:
+	"""Handle player death"""
+	print("[Wasteland] Player died!")
+
+	# Calculate survival time
+	var survival_time = (Time.get_ticks_msec() / 1000.0) - start_time
+
+	# Show game over screen with stats
+	var stats = {"wave": wave_manager.current_wave, "kills": total_kills, "time": survival_time}
+	game_over_screen.show_game_over(stats)
+
+	GameLogger.info("Player died", stats)
+
+
+func _on_retry_pressed() -> void:
+	"""Retry the game"""
+	print("[Wasteland] Retry pressed - reloading scene")
+	get_tree().reload_current_scene()
+
+
+func _on_main_menu_pressed() -> void:
+	"""Return to main menu"""
+	print("[Wasteland] Main menu pressed - returning to character selection")
+	get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
