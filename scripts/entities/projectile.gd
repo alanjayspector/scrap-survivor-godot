@@ -156,7 +156,8 @@ func _physics_process(delta: float) -> void:
 		# Trigger explosion for explosive projectiles before deactivating
 		if splash_radius > 0.0:
 			_explode()
-		deactivate()
+		# Defer deactivation to avoid modifying physics state during physics process
+		call_deferred("deactivate")
 
 
 func activate(
@@ -215,10 +216,14 @@ func activate(
 
 func deactivate() -> void:
 	"""Deactivate projectile (for object pooling)"""
+	# Mark as inactive immediately (safe)
 	is_active = false
 	visible = false
 	set_physics_process(false)
-	monitoring = false
+
+	# Defer physics state changes to avoid modifying during physics callback
+	set_deferred("monitoring", false)
+	set_deferred("monitorable", false)
 
 	# Clear trail
 	if trail:
@@ -227,8 +232,8 @@ func deactivate() -> void:
 	# Emit destroyed signal
 	destroyed.emit()
 
-	# For now, just queue free (object pooling can be added later)
-	queue_free()
+	# Defer queue_free to avoid double-free during physics callback
+	call_deferred("queue_free")
 
 
 func _on_area_entered(area: Area2D) -> void:
@@ -288,7 +293,8 @@ func hit_enemy(enemy: Enemy) -> void:
 		print("[Projectile] Pierce count exceeded, deactivating")
 		if splash_radius > 0.0:
 			_explode()
-		deactivate()
+		# Defer deactivation to avoid modifying physics state during callback
+		call_deferred("deactivate")
 	# Otherwise, continue flying (piercing)
 
 
