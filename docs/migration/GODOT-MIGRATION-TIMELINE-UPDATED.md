@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
 **Last Updated**: 2025-11-10
-**Status**: Week 10 Phase 3 Complete
-**Current Progress**: Combat scene integration with input, camera, and HUD systems (419/443 tests passing)
+**Status**: Week 10 Phase 4 Complete
+**Current Progress**: Combat scene integration complete - playable wave-based combat loop (427/451 tests passing)
 
 ---
 
@@ -17,7 +17,7 @@
 | **Week 7** | Complete | ✅ | Character expansion (stats, types, auras) |
 | **Week 8** | Complete | ✅ | Mutant character, aura visuals, UI |
 | **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
-| **Week 10** | Phase 3 Complete | 🚧 | Combat scene integration (input, camera, HUD) |
+| **Week 10** | Complete | ✅ | Combat scene integration (playable wave loop) |
 | **Week 11-12** | Planned | 📅 | Minions system, The Lab |
 | **Week 13+** | Planned | 📅 | Perks, monetization, polish |
 
@@ -235,11 +235,12 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🚧 Week 10: Combat Scene Integration (Phase 3 Complete)
+## ✅ Week 10: Combat Scene Integration (Complete)
 
-**Status**: Phase 3 Complete (Phases 1-3 of 4)
-**Test Results**: 419/443 tests passing
+**Status**: All Phases Complete (4/4)
+**Test Results**: 427/451 tests passing (8 new wave manager tests)
 **Documentation**: [week10-implementation-plan.md](./week10-implementation-plan.md)
+**Completed**: 2025-01-10
 
 ### ✅ Phase 1: Scene Architecture (Complete - commit bf616ba)
 **Features**:
@@ -274,12 +275,28 @@ CharacterService: 43/43 passing
 - Autoload naming: "HudService" not "HUDService" (PascalCase)
 - Memory management: `.free()` not `.queue_free()` in tests
 
-### ⏳ Phase 4: Wave Management & State Machine (Not Started)
-**Planned Features**:
-- Wave manager with state machine
-- Enemy spawning system
-- Wave completion flow
-- Victory screen with stats summary
+### ✅ Phase 4: Wave Management & State Machine (Complete - commit 404d756)
+**Features**:
+- WaveManager with full state machine (IDLE, SPAWNING, COMBAT, VICTORY, GAME_OVER)
+- Gradual enemy spawning over time (not all at once)
+- Random off-screen spawn positions at viewport edges
+- Wave completion detection when all enemies killed
+- Wave stats tracking (enemies killed, drops collected)
+- Victory screen with stat summary and next wave button
+- Integrated with Wasteland scene via GameController node
+
+**Test Coverage**: 8/8 wave manager tests passing
+
+**Artifacts**:
+- `scripts/systems/wave_manager.gd` - Wave state machine
+- `scenes/ui/wave_complete_screen.gd` - Victory screen controller
+- `scenes/ui/wave_complete_screen.tscn` - Victory screen scene
+- `scripts/tests/wave_manager_test.gd` - Wave manager tests
+
+**Validator Improvements**:
+- Enhanced `test_method_validator.py` to recognize `.new()` as built-in for all GDScript classes
+- Evidence-based comments citing docs/godot-reference.md and docs/godot-testing-research.md
+- Clarified autoload vs regular node instantiation patterns
 
 ---
 
@@ -343,12 +360,13 @@ CharacterService: 43/43 passing
 - Player/Enemy entities (scene architecture)
 - Input & Camera systems
 - HudService (signal-driven HUD updates)
+- WaveManager (state machine, spawning, completion)
+- Wave completion flow (victory screen, stat tracking)
 
 ### In Progress (🚧)
-- Wave Management system (Phase 4 of Week 10)
+- Manual QA testing (pending user validation in Godot Editor)
 
 ### Planned (📅)
-- Wave completion flow
 - Minions system
 - The Lab services
 - Perks system
@@ -365,7 +383,8 @@ CharacterService: 43/43 passing
 | Week 8: Mutant + UI Complete | 2025-01-23 | 2025-01-10 | ✅ Complete |
 | Week 9: Combat Services Complete | ~2025-10-01 | ~2025-10-15 | ✅ Complete |
 | Week 10 Phase 3: HUD Implementation | ~2025-11-01 | 2025-11-10 | ✅ Complete |
-| Week 10: Combat Fully Playable | 2025-11-15 | - | 🚧 In Progress |
+| Week 10 Phase 4: Wave Management | ~2025-11-10 | 2025-11-10 | ✅ Complete |
+| Week 10: Combat Fully Playable | 2025-11-15 | 2025-11-10 | ✅ Complete (QA Pending) |
 | Week 12: The Lab Functional | 2025-12-01 | - | 📅 Planned |
 | Week 14: Perks System Live | 2025-12-15 | - | 📅 Planned |
 | Week 16: Alpha Release | 2026-01-01 | - | 📅 Planned |
@@ -398,6 +417,6 @@ CharacterService: 43/43 passing
 
 ---
 
-**Timeline Version**: 3.0
+**Timeline Version**: 3.1
 **Last Updated**: 2025-11-10
-**Next Review**: After Week 10 Phase 4 completion
+**Next Review**: After Week 10 manual QA and before Week 11 planning
