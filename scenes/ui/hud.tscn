@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://cqy8j7xvx3kh5"]
+[gd_scene load_steps=3 format=3 uid="uid://cqy8j7xvx3kh5"]
 
 [ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_hud_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_fill"]
+bg_color = Color(0.8, 0.6, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.8, 0, 1)
 
 [node name="HUD" type="Control"]
 layout_mode = 3
@@ -23,13 +31,27 @@ value = 100.0
 show_percentage = false
 
 [node name="XPBar" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(300, 20)
 layout_mode = 0
 offset_left = 20.0
 offset_top = 50.0
 offset_right = 320.0
 offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/fill = SubResource("StyleBoxFlat_xp_fill")
 max_value = 100.0
 show_percentage = false
+
+[node name="XPLabel" type="Label" parent="XPBar"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 0.0
+offset_right = 295.0
+offset_bottom = 20.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "XP: 0 / 100 (Level 1)"
+vertical_alignment = 1
 
 [node name="WaveLabel" type="Label" parent="."]
 layout_mode = 0

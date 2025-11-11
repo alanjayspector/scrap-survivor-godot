@@ -14,6 +14,7 @@ extends Control
 ## Node references (set when nodes are available)
 @onready var hp_bar: ProgressBar = $HPBar if has_node("HPBar") else null
 @onready var xp_bar: ProgressBar = $XPBar if has_node("XPBar") else null
+@onready var xp_label: Label = $XPBar/XPLabel if has_node("XPBar/XPLabel") else null
 @onready var wave_label: Label = $WaveLabel if has_node("WaveLabel") else null
 @onready
 var currency_display: HBoxContainer = $CurrencyDisplay if has_node("CurrencyDisplay") else null
@@ -31,6 +32,9 @@ var currency_display: HBoxContainer = $CurrencyDisplay if has_node("CurrencyDisp
 var scrap: int = 0
 var components: int = 0
 var nanites: int = 0
+
+## XP tracking (for detecting actual level-ups)
+var previous_xp: int = -1  # -1 = uninitialized
 
 
 func _ready() -> void:
@@ -86,9 +90,17 @@ func _on_xp_changed(current: int, required: int, level: int) -> void:
 	xp_bar.max_value = required
 	xp_bar.value = current
 
+	# Update XP label text
+	if xp_label:
+		xp_label.text = "XP: %d / %d (Level %d)" % [current, required, level]
+
 	# Show level up effect when XP resets to 0 (leveled up)
-	if current == 0:
+	# Only show if previous XP was > 0 (actual level-up, not initial state)
+	if current == 0 and previous_xp > 0:
 		_show_level_up_popup(level)
+
+	# Track previous XP for next update
+	previous_xp = current
 
 
 func _on_wave_changed(wave: int) -> void:
