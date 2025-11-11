@@ -172,24 +172,46 @@ func _flash_damage() -> void:
 
 func die() -> void:
 	"""Handle enemy death"""
+	print("[Enemy] die() called for ", enemy_type, " at position ", global_position)
+	GameLogger.info(
+		"Enemy died - START", {"id": enemy_id, "type": enemy_type, "position": global_position}
+	)
+
 	# Generate drops using DropSystem
 	var drops = {}
 	if DropSystem:
+		print("[Enemy] DropSystem found, generating drops...")
 		# Get player scavenging stat for drop calculation
 		var player_scavenging = 0
 		if player:
 			player_scavenging = player.get_stat("scavenging")
 
 		# Generate drops
+		print(
+			"[Enemy] Calling DropSystem.generate_drops for ",
+			enemy_type,
+			" with scavenging: ",
+			player_scavenging
+		)
 		drops = DropSystem.generate_drops(enemy_type, player_scavenging)
+		print("[Enemy] Drops generated: ", drops)
 
 		# Spawn drop pickups at death location
 		if not drops.is_empty():
+			print("[Enemy] Spawning drop pickups at ", global_position)
 			DropSystem.spawn_drop_pickups(drops, global_position)
+			print("[Enemy] Drop pickups spawned")
+		else:
+			print("[Enemy] No drops to spawn (empty drops dict)")
 
 		# Award XP to player
 		if player:
+			print("[Enemy] Awarding XP to player ", player.character_id)
 			DropSystem.award_xp_for_kill(player.character_id, enemy_type)
+
+	# Log completion BEFORE animation
+	print("[Enemy] Enemy death complete: ", enemy_type, " drops: ", drops)
+	GameLogger.info("Enemy died - COMPLETE", {"id": enemy_id, "type": enemy_type, "drops": drops})
 
 	# Emit death signal
 	died.emit(enemy_id, drops)
@@ -200,8 +222,6 @@ func die() -> void:
 	tween.tween_property(self, "modulate:a", 0.0, 0.3)
 	tween.tween_property(self, "scale", Vector2(0.5, 0.5), 0.3)
 	tween.tween_callback(queue_free)
-
-	GameLogger.info("Enemy died", {"id": enemy_id, "type": enemy_type, "drops": drops})
 
 
 func get_health_percentage() -> float:

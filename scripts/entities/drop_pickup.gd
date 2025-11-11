@@ -25,29 +25,37 @@ const CURRENCY_COLORS = {
 
 
 func _ready() -> void:
+	print("[DropPickup] _ready() called for ", currency_type, " x", amount, " at ", global_position)
+
 	# Set up collision
 	collision_layer = 8  # Layer 4 (2^3 = 8)
 	collision_mask = 1  # Detect player on layer 1
+	print("[DropPickup] Collision configured: layer=8, mask=1")
 
 	# Connect signals for player detection
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
+	print("[DropPickup] Signals connected")
 
 	# Get visual node reference
 	visual_node = get_node_or_null("Visual")
+	print("[DropPickup] Visual node: ", visual_node)
 
 	# Update visual based on currency type
 	update_visual()
 
 	# Add eye-catching animations
 	_start_idle_animations()
+	print("[DropPickup] Initialization complete")
 
 
 func setup(type: String, amt: int) -> void:
 	"""Initialize drop with currency type and amount"""
+	print("[DropPickup] setup() called: ", type, " x", amt)
 	currency_type = type
 	amount = amt
 	update_visual()
+	print("[DropPickup] Setup complete")
 
 
 func update_visual() -> void:
@@ -61,22 +69,30 @@ func update_visual() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Handle collision with player (CharacterBody2D)"""
+	print("[DropPickup] _on_body_entered: ", body, " is_player: ", body.is_in_group("player"))
 	# Check if it's the player
 	if body.is_in_group("player"):
+		print("[DropPickup] Player body detected, collecting!")
 		collect()
 
 
 func _on_area_entered(area: Area2D) -> void:
 	"""Handle collision with player area (if player uses Area2D)"""
+	print("[DropPickup] _on_area_entered: ", area)
 	# Check if area belongs to player
 	if area.is_in_group("player") or (area.owner and area.owner.is_in_group("player")):
+		print("[DropPickup] Player area detected, collecting!")
 		collect()
 
 
 func collect() -> void:
 	"""Collect the drop - emit signal and remove"""
+	print("[DropPickup] collect() called for ", currency_type, " x", amount)
+
 	# Emit signal for DropSystem to handle
+	print("[DropPickup] Emitting collected signal...")
 	collected.emit(currency_type, amount)
+	print("[DropPickup] Signal emitted")
 
 	# Play collection animation (scale up + fade out)
 	var tween = create_tween()
