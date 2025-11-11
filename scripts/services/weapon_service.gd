@@ -36,7 +36,7 @@ const WEAPON_DEFINITIONS = {
 		"type": WeaponType.RANGED,
 		"base_damage": 10,
 		"cooldown": 0.8,  # 1.25 attacks per second
-		"range": 300,  # Projectile range
+		"range": 500,  # Auto-targeting detection radius (medium range)
 		"projectile": "plasma_bolt",
 		"projectile_speed": 400,
 		"tier_required": UserTier.FREE

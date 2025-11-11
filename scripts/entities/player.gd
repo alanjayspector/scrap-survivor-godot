@@ -111,15 +111,50 @@ func _physics_process(delta: float) -> void:
 	velocity = input_direction * speed
 	move_and_slide()
 
-	# Mouse aiming (rotate weapon pivot if it exists)
+	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:
 		var mouse_pos = get_global_mouse_position()
 		weapon_pivot.look_at(mouse_pos)
 
-		# Auto-fire weapon (if equipped and cooldown ready)
-		if not equipped_weapon_id.is_empty() and weapon_cooldown <= 0:
-			var direction = (mouse_pos - global_position).normalized()
-			_fire_weapon(direction)
+	# Auto-fire weapon with auto-targeting (if equipped and cooldown ready)
+	if not equipped_weapon_id.is_empty() and weapon_cooldown <= 0:
+		_fire_weapon_with_targeting()
+
+
+func _fire_weapon_with_targeting() -> void:
+	"""Fire weapon with auto-targeting - targets nearest enemy within weapon range"""
+	if not WeaponService or not TargetingService:
+		return
+
+	# Get weapon definition to retrieve range
+	var weapon_def = WeaponService.get_weapon(equipped_weapon_id)
+	if weapon_def.is_empty():
+		return
+
+	var weapon_range = weapon_def.get("range", 500.0)
+
+	# Try to find nearest enemy within range
+	var target_enemy = TargetingService.get_nearest_enemy(global_position, weapon_range)
+
+	var direction: Vector2
+	if target_enemy:
+		# Target found - fire at enemy
+		direction = (target_enemy.global_position - global_position).normalized()
+		GameLogger.debug(
+			"Player targeting enemy",
+			{
+				"weapon_id": equipped_weapon_id,
+				"enemy_id": target_enemy.enemy_id,
+				"range": weapon_range
+			}
+		)
+	else:
+		# No target - fire in facing direction (fallback)
+		var mouse_pos = get_global_mouse_position()
+		direction = (mouse_pos - global_position).normalized()
+
+	# Fire weapon in calculated direction
+	_fire_weapon(direction)
 
 
 func _fire_weapon(direction: Vector2) -> void:
