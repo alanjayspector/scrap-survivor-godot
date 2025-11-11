@@ -292,7 +292,118 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 
 ---
 
-## Phase 4: Wave Completion Logic
+## Phase 4: Currency System Expansion
+
+**Goal**: Add proper support for Components and Nanites currencies to BankingService, fixing the discrepancy where they're currently lumped into Scrap balance.
+
+### Current Problem
+- BankingService only supports SCRAP and PREMIUM currencies
+- Components and nanites are temporarily mapped to SCRAP ([drop_system.gd:213-217](scripts/systems/drop_system.gd#L213-L217))
+- This creates display inconsistencies:
+  - Wave complete screen: "Scrap: 11, Components: 3"
+  - HUD display: "Scrap: 14" (11 + 3 lumped together)
+- DropSystem tracks currencies separately, but BankingService can't store them
+
+### Tasks
+
+1. **Expand BankingService currency types** (`scripts/services/banking_service.gd`)
+   - Add to `CurrencyType` enum (line 17):
+     ```gdscript
+     enum CurrencyType { SCRAP, PREMIUM, COMPONENTS, NANITES }
+     ```
+   - Update `balances` dictionary (line 40):
+     ```gdscript
+     var balances: Dictionary = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
+     ```
+   - Update `get_balance_caps()` to handle new currencies:
+     - Components and Nanites use same caps as Scrap
+     - FREE tier: 0 cap (blocks all)
+     - PREMIUM tier: 10,000 per character
+     - SUBSCRIPTION tier: 100,000 per character
+
+2. **Update currency mapping** (`scripts/systems/drop_system.gd`)
+   - Remove temporary SCRAP mapping (lines 213-217)
+   - Add proper mapping:
+     ```gdscript
+     "components":
+         currency_enum = BankingService.CurrencyType.COMPONENTS
+         print("[DropSystem] Mapped to COMPONENTS enum")
+     "nanites":
+         currency_enum = BankingService.CurrencyType.NANITES
+         print("[DropSystem] Mapped to NANITES enum")
+     ```
+
+3. **Update HudService signal handling** (`scripts/autoload/hud_service.gd`)
+   - Update `_on_banking_currency_changed()` (line 164):
+     ```gdscript
+     var currency_type_str = match type:
+         BankingService.CurrencyType.SCRAP: "scrap"
+         BankingService.CurrencyType.PREMIUM: "premium"
+         BankingService.CurrencyType.COMPONENTS: "components"
+         BankingService.CurrencyType.NANITES: "nanites"
+         _: "unknown"
+     ```
+   - Update `_get_currency_total()` (line 179) to return balances for new types
+
+4. **Update BankingService serialization** (`scripts/services/banking_service.gd`)
+   - `serialize()` (line 165): Already handles dictionary, should work automatically
+   - `deserialize()` (line 176):
+     - Add fallback for missing keys: `balances.get("components", 0)`
+     - Emit currency_changed signals for all four types (lines 200-201):
+       ```gdscript
+       currency_changed.emit(CurrencyType.COMPONENTS, balances.get("components", 0))
+       currency_changed.emit(CurrencyType.NANITES, balances.get("nanites", 0))
+       ```
+   - `reset()` (line 155): Add new currency resets
+
+5. **Update BankingService helper functions**
+   - `get_balance()` (line 133): Add mapping for COMPONENTS/NANITES
+   - `add_currency()` (line 70): Should work automatically with enum
+   - `subtract_currency()` (line 104): Should work automatically with enum
+
+6. **Update tests** (`scripts/tests/banking_service_test.gd`)
+   - Add test for components currency add/subtract
+   - Add test for nanites currency add/subtract
+   - Add test for balance caps on new currencies
+   - Add test for serialization with all 4 currencies
+   - Verify tier restrictions apply to components/nanites
+
+### Success Criteria
+- [ ] BankingService supports 4 currency types (SCRAP, PREMIUM, COMPONENTS, NANITES)
+- [ ] DropSystem correctly maps components/nanites to their own types
+- [ ] HUD displays separate counts: "Scrap: 11 Components: 3 Nanites: 0"
+- [ ] Wave complete screen matches HUD display
+- [ ] Balance caps apply to all currencies based on tier
+- [ ] Save/load preserves all 4 currency balances
+- [ ] All existing BankingService tests still pass
+- [ ] New currency-specific tests pass
+
+### Dependencies
+- Week 5 Phase 1 (BankingService)
+- Week 9 Phase 3 (DropSystem)
+- Week 10 Phase 3 (HUD)
+- Week 11 Phase 2 (Drop collection)
+
+### Testing
+```gdscript
+# scripts/tests/banking_service_test.gd (new tests)
+- test_add_components_currency()
+- test_add_nanites_currency()
+- test_components_respects_tier_caps()
+- test_serialize_includes_all_currencies()
+- test_deserialize_handles_missing_new_currencies()
+
+# Manual testing
+- Kill rust_spider (drops components)
+- See HUD: "Components: 2" (not lumped into scrap)
+- Kill mutant_rat (drops scrap and nanites)
+- See HUD: "Scrap: 1 Nanites: 1"
+- Complete wave: wave screen matches HUD counts exactly
+```
+
+---
+
+## Phase 5: Wave Completion Logic
 
 **Goal**: Detect when all enemies are dead, show wave complete screen, track stats.
 
@@ -361,7 +472,7 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 
 ---
 
-## Phase 5: Camera & Visual Polish
+## Phase 6: Camera & Visual Polish
 
 **Goal**: Add camera smoothing, screen shake, and visual juice to combat.
 
@@ -427,6 +538,8 @@ Week 11 focuses on polishing the combat loop established in Week 10 by adding au
 - [x] Wave stats tracked accurately
 
 ### Should Have
+- [ ] Components and Nanites currencies properly tracked (not lumped into Scrap)
+- [ ] HUD and wave screen show consistent currency counts
 - [x] Camera smoothing tuned
 - [x] Screen shake on player hit
 - [x] Projectile visual trails

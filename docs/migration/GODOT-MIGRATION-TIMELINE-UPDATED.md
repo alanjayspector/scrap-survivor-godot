@@ -18,8 +18,9 @@
 | **Week 8** | Complete | ✅ | Mutant character, aura visuals, UI |
 | **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
 | **Week 10** | Complete | ✅ | Combat scene integration (playable wave loop) |
-| **Week 11-12** | Planned | 📅 | Minions system, The Lab |
-| **Week 13+** | Planned | 📅 | Perks, monetization, polish |
+| **Week 11** | In Progress | 🚧 | Combat polish, auto-targeting, XP progression, currency expansion |
+| **Week 12-13** | Planned | 📅 | Minions system, The Lab |
+| **Week 14+** | Planned | 📅 | Perks, monetization, polish |
 
 ---
 
@@ -300,7 +301,58 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🤖 Week 11-12: Minions + The Lab (Planned)
+## 🚧 Week 11: Combat Polish & Auto-Targeting (In Progress)
+
+**Goal**: Polish the combat loop established in Week 10 by adding auto-targeting for weapons, implementing drop collection, enhancing player progression, and expanding the currency system.
+
+**Status**: Phase 3 Complete (XP Progression & Leveling)
+
+### Phase 1: Auto-Targeting System ✅
+- `TargetingService` - Finds nearest enemy within weapon range
+- Player weapons automatically target closest enemy
+- Each weapon independently targets based on its own range and fire rate
+- Multiple weapons can fire at different targets simultaneously
+- Fallback to facing direction if no enemy in range
+
+### Phase 2: Drop Collection System ✅
+- Drop pickups spawn as visible Area2D nodes at enemy death locations
+- Player collision with drops triggers collection
+- Currency added to BankingService on pickup
+- Pickup plays animation and disappears
+- HUD currency display updates immediately
+
+### Phase 3: XP Progression & Leveling ✅
+- Enemy kills tracked across waves
+- XP awarded on kill via DropSystem
+- Level-up detection with dynamic thresholds (100 + level * 50)
+- "LEVEL UP!" visual feedback on level-up
+- XP bar in HUD fills correctly with level display
+- Stats improve on level-up (HP, damage, etc.)
+
+### Phase 4: Currency System Expansion (Next)
+- Expand BankingService to support COMPONENTS and NANITES currencies
+- Remove temporary SCRAP mapping for components/nanites
+- Fix HUD/wave screen currency count discrepancies
+- Update serialization to preserve all 4 currencies
+- Add balance caps for new currencies by tier
+
+### Phase 5: Wave Completion Logic (Planned)
+- Track living enemies in WaveManager
+- Detect wave completion when all enemies dead
+- Show WaveCompleteScreen with accurate stats
+- "Next Wave" button increments difficulty
+
+### Phase 6: Camera & Visual Polish (Planned)
+- Camera follow smoothing
+- Screen shake on player hit
+- Projectile visual trails
+- Optional: damage numbers, targeting reticle
+
+**See**: [docs/migration/week11-implementation-plan.md](week11-implementation-plan.md)
+
+---
+
+## 🤖 Week 12-13: Minions + The Lab (Planned)
 
 ### Minions System
 - Minion types (biological, mechanical, hybrid)
@@ -317,7 +369,7 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🎁 Week 13+: Perks + Monetization (Planned)
+## 🎁 Week 14+: Perks + Monetization (Planned)
 
 ### Perks System
 - `PerksService` - Perk registration, activation
@@ -417,6 +469,6 @@ CharacterService: 43/43 passing
 
 ---
 
-**Timeline Version**: 3.1
-**Last Updated**: 2025-11-10
-**Next Review**: After Week 10 manual QA and before Week 11 planning
+**Timeline Version**: 3.2
+**Last Updated**: 2025-11-10 (updated during Week 11 Phase 3)
+**Next Review**: After Week 11 Phase 4 completion
