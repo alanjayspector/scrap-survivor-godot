@@ -163,7 +163,18 @@ func _on_drops_collected(drops: Dictionary) -> void:
 
 func _on_banking_currency_changed(type: int, new_balance: int) -> void:
 	# Convert BankingService.CurrencyType enum to string
-	var currency_type_str = "scrap" if type == BankingService.CurrencyType.SCRAP else "premium"
+	var currency_type_str: String
+	match type:
+		BankingService.CurrencyType.SCRAP:
+			currency_type_str = "scrap"
+		BankingService.CurrencyType.PREMIUM:
+			currency_type_str = "premium"
+		BankingService.CurrencyType.COMPONENTS:
+			currency_type_str = "components"
+		BankingService.CurrencyType.NANITES:
+			currency_type_str = "nanites"
+		_:
+			currency_type_str = "unknown"
 
 	# Emit with delta of 0 (we don't know the delta from this signal)
 	currency_changed.emit(currency_type_str, 0, new_balance)
@@ -184,10 +195,10 @@ func _get_currency_total(currency: String) -> int:
 			return BankingService.balances.get("scrap", 0)
 		"premium":
 			return BankingService.balances.get("premium", 0)
-		"components", "nanites":
-			# TODO Week 11: Add components and nanites to BankingService
-			# For now, return 0
-			return 0
+		"components":
+			return BankingService.balances.get("components", 0)
+		"nanites":
+			return BankingService.balances.get("nanites", 0)
 		_:
 			return 0
 

@@ -210,11 +210,12 @@ func _on_drop_collected(currency_type: String, amount: int) -> void:
 		"scrap":
 			currency_enum = BankingService.CurrencyType.SCRAP
 			print("[DropSystem] Mapped to SCRAP enum")
-		"components", "nanites":
-			# TODO: BankingService currently only has SCRAP and PREMIUM
-			# For now, all currencies go to SCRAP
-			currency_enum = BankingService.CurrencyType.SCRAP
-			print("[DropSystem] Mapped ", currency_type, " to SCRAP enum (temporary)")
+		"components":
+			currency_enum = BankingService.CurrencyType.COMPONENTS
+			print("[DropSystem] Mapped to COMPONENTS enum")
+		"nanites":
+			currency_enum = BankingService.CurrencyType.NANITES
+			print("[DropSystem] Mapped to NANITES enum")
 		"premium":
 			currency_enum = BankingService.CurrencyType.PREMIUM
 			print("[DropSystem] Mapped to PREMIUM enum")

@@ -217,3 +217,164 @@ func test_currency_changed_signal_emits_on_subtract() -> void:
 
 	var signal_params = get_signal_parameters(BankingService, "currency_changed", 0)
 	assert_eq(signal_params[1], 70, "Signal should report new balance of 70 after subtract")
+
+
+## Week 11 Phase 4: Tests for new currency types (Components, Nanites)
+
+
+func test_initial_state_all_four_currencies_are_zero() -> void:
+	# Arrange (done in before_each)
+
+	# Act
+	var scrap_balance = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+	var premium_balance = BankingService.get_balance(BankingService.CurrencyType.PREMIUM)
+	var components_balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
+	var nanites_balance = BankingService.get_balance(BankingService.CurrencyType.NANITES)
+
+	# Assert
+	assert_eq(scrap_balance, 0, "Initial scrap balance should be 0")
+	assert_eq(premium_balance, 0, "Initial premium balance should be 0")
+	assert_eq(components_balance, 0, "Initial components balance should be 0")
+	assert_eq(nanites_balance, 0, "Initial nanites balance should be 0")
+
+
+func test_add_components_currency() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+
+	# Act
+	var success = BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
+
+	# Assert
+	assert_true(success, "Adding components should succeed")
+	assert_eq(balance, 50, "Components balance should be 50")
+
+
+func test_add_nanites_currency() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+
+	# Act
+	var success = BankingService.add_currency(BankingService.CurrencyType.NANITES, 75)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.NANITES)
+
+	# Assert
+	assert_true(success, "Adding nanites should succeed")
+	assert_eq(balance, 75, "Nanites balance should be 75")
+
+
+func test_components_respects_tier_caps() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	var caps = BankingService.get_balance_caps(BankingService.UserTier.PREMIUM)
+
+	# Act
+	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 9_000)
+	var success_over_cap = BankingService.add_currency(
+		BankingService.CurrencyType.COMPONENTS, 2_000
+	)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
+
+	# Assert
+	assert_eq(caps.per_character, 10_000, "Premium cap should be 10k")
+	assert_false(success_over_cap, "Adding components over cap should fail")
+	assert_eq(balance, 9_000, "Components balance should remain 9000 when exceeding cap")
+
+
+func test_nanites_respects_tier_caps() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	var caps = BankingService.get_balance_caps(BankingService.UserTier.PREMIUM)
+
+	# Act
+	BankingService.add_currency(BankingService.CurrencyType.NANITES, 9_500)
+	var success_over_cap = BankingService.add_currency(BankingService.CurrencyType.NANITES, 1_000)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.NANITES)
+
+	# Assert
+	assert_eq(caps.per_character, 10_000, "Premium cap should be 10k")
+	assert_false(success_over_cap, "Adding nanites over cap should fail")
+	assert_eq(balance, 9_500, "Nanites balance should remain 9500 when exceeding cap")
+
+
+func test_serialize_includes_all_currencies() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
+	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 25)
+	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
+	BankingService.add_currency(BankingService.CurrencyType.NANITES, 75)
+
+	# Act
+	var serialized = BankingService.serialize()
+
+	# Assert
+	assert_has(serialized, "balances", "Serialized data should have balances")
+	assert_eq(serialized.balances.scrap, 100, "Serialized scrap should be 100")
+	assert_eq(serialized.balances.premium, 25, "Serialized premium should be 25")
+	assert_eq(serialized.balances.components, 50, "Serialized components should be 50")
+	assert_eq(serialized.balances.nanites, 75, "Serialized nanites should be 75")
+
+
+func test_deserialize_handles_missing_new_currencies() -> void:
+	# Arrange - Old save data without components/nanites
+	var old_save_data = {
+		"version": 1,
+		"balances": {"scrap": 200, "premium": 10},
+		"tier": BankingService.UserTier.PREMIUM,
+		"transaction_history": []
+	}
+
+	# Act
+	BankingService.deserialize(old_save_data)
+
+	# Assert
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
+		200,
+		"Scrap should be loaded from old save"
+	)
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.PREMIUM),
+		10,
+		"Premium should be loaded from old save"
+	)
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
+		0,
+		"Components should default to 0 for old save"
+	)
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.NANITES),
+		0,
+		"Nanites should default to 0 for old save"
+	)
+
+
+func test_subtract_components_currency() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 100)
+
+	# Act
+	var success = BankingService.subtract_currency(BankingService.CurrencyType.COMPONENTS, 30)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
+
+	# Assert
+	assert_true(success, "Subtracting components should succeed")
+	assert_eq(balance, 70, "Components balance should be 70 after subtract")
+
+
+func test_subtract_nanites_currency() -> void:
+	# Arrange
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+	BankingService.add_currency(BankingService.CurrencyType.NANITES, 150)
+
+	# Act
+	var success = BankingService.subtract_currency(BankingService.CurrencyType.NANITES, 50)
+	var balance = BankingService.get_balance(BankingService.CurrencyType.NANITES)
+
+	# Assert
+	assert_true(success, "Subtracting nanites should succeed")
+	assert_eq(balance, 100, "Nanites balance should be 100 after subtract")

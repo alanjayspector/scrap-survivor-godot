@@ -14,7 +14,7 @@ extends Node
 enum UserTier { FREE, PREMIUM, SUBSCRIPTION }
 
 ## Currency types
-enum CurrencyType { SCRAP, PREMIUM }
+enum CurrencyType { SCRAP, PREMIUM, COMPONENTS, NANITES }
 
 
 ## Balance caps for each tier
@@ -37,7 +37,7 @@ signal transaction_failed(reason: String)
 signal state_loaded
 
 ## Current balances (local-first, will sync to Supabase in Week 6)
-var balances: Dictionary = {"scrap": 0, "premium": 0}
+var balances: Dictionary = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
 
 ## Current user tier (set by TierService, defaults to FREE)
 var current_tier: UserTier = UserTier.FREE
@@ -72,13 +72,14 @@ func add_currency(type: CurrencyType, amount: int) -> bool:
 		transaction_failed.emit("Amount must be positive")
 		return false
 
-	var type_str = "scrap" if type == CurrencyType.SCRAP else "premium"
+	var type_str = _currency_type_to_string(type)
 	var new_balance = balances[type_str] + amount
 
 	# Check balance caps
 	var caps = get_balance_caps(current_tier)
 
-	if type == CurrencyType.SCRAP:
+	# Components, Nanites, and Scrap all use the same per_character cap
+	if type in [CurrencyType.SCRAP, CurrencyType.COMPONENTS, CurrencyType.NANITES]:
 		if new_balance > caps.per_character:
 			transaction_failed.emit(
 				"Balance cap exceeded: %d (max: %d)" % [new_balance, caps.per_character]
@@ -106,7 +107,7 @@ func subtract_currency(type: CurrencyType, amount: int) -> bool:
 		transaction_failed.emit("Amount must be positive")
 		return false
 
-	var type_str = "scrap" if type == CurrencyType.SCRAP else "premium"
+	var type_str = _currency_type_to_string(type)
 	var current_balance = balances[type_str]
 
 	# Check sufficient funds
@@ -131,7 +132,7 @@ func subtract_currency(type: CurrencyType, amount: int) -> bool:
 
 ## Get current balance for currency type
 func get_balance(type: CurrencyType) -> int:
-	var type_str = "scrap" if type == CurrencyType.SCRAP else "premium"
+	var type_str = _currency_type_to_string(type)
 	return balances[type_str]
 
 
@@ -153,11 +154,13 @@ func get_transaction_history() -> Array:
 
 ## Reset all balances (for testing or new game)
 func reset() -> void:
-	balances = {"scrap": 0, "premium": 0}
+	balances = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
 	transaction_history.clear()
 	current_tier = UserTier.FREE
 	currency_changed.emit(CurrencyType.SCRAP, 0)
 	currency_changed.emit(CurrencyType.PREMIUM, 0)
+	currency_changed.emit(CurrencyType.COMPONENTS, 0)
+	currency_changed.emit(CurrencyType.NANITES, 0)
 	GameLogger.info("Banking service reset")
 
 
@@ -178,11 +181,16 @@ func deserialize(data: Dictionary) -> void:
 		GameLogger.warning("BankingService: Unknown save version", data)
 		return
 
-	# Restore balances
+	# Restore balances with fallback for missing new currencies
 	if data.has("balances"):
 		balances = data.balances.duplicate()
+		# Ensure new currencies exist (for backward compatibility)
+		if not balances.has("components"):
+			balances["components"] = 0
+		if not balances.has("nanites"):
+			balances["nanites"] = 0
 	else:
-		balances = {"scrap": 0, "premium": 0}
+		balances = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
 
 	# Restore tier
 	if data.has("tier"):
@@ -197,13 +205,21 @@ func deserialize(data: Dictionary) -> void:
 		transaction_history = []
 
 	# Emit signals to notify UI
-	currency_changed.emit(CurrencyType.SCRAP, balances.scrap)
-	currency_changed.emit(CurrencyType.PREMIUM, balances.premium)
+	currency_changed.emit(CurrencyType.SCRAP, balances.get("scrap", 0))
+	currency_changed.emit(CurrencyType.PREMIUM, balances.get("premium", 0))
+	currency_changed.emit(CurrencyType.COMPONENTS, balances.get("components", 0))
+	currency_changed.emit(CurrencyType.NANITES, balances.get("nanites", 0))
 	state_loaded.emit()
 
 	GameLogger.info(
 		"BankingService state loaded",
-		{"scrap": balances.scrap, "premium": balances.premium, "tier": current_tier}
+		{
+			"scrap": balances.get("scrap", 0),
+			"premium": balances.get("premium", 0),
+			"components": balances.get("components", 0),
+			"nanites": balances.get("nanites", 0),
+			"tier": current_tier
+		}
 	)
 
 
@@ -221,3 +237,19 @@ func _log_transaction(action: String, type: String, amount: int, balance_after: 
 	# Keep only last 100 transactions
 	if transaction_history.size() > 100:
 		transaction_history.pop_front()
+
+
+## Private: Convert CurrencyType enum to string key
+func _currency_type_to_string(type: CurrencyType) -> String:
+	match type:
+		CurrencyType.SCRAP:
+			return "scrap"
+		CurrencyType.PREMIUM:
+			return "premium"
+		CurrencyType.COMPONENTS:
+			return "components"
+		CurrencyType.NANITES:
+			return "nanites"
+		_:
+			push_error("Unknown currency type: %d" % type)
+			return "scrap"  # Fallback
