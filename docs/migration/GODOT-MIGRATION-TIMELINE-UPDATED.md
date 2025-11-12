@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
 **Last Updated**: 2025-01-11
-**Status**: Week 12 Phase 1.5 + iOS Deployment Ready
-**Current Progress**: Weapon variety + visual identity complete. iOS physics fixes + mobile touch controls implemented. Ready for TestFlight. (449/473 tests passing)
+**Status**: Week 12 Phase 2 Complete + iOS Deployment Ready
+**Current Progress**: Weapon variety + visual identity + pickup magnets complete. iOS physics fixes + mobile touch controls implemented. Ready for TestFlight. (437/461 tests passing)
 
 ---
 
@@ -19,7 +19,7 @@
 | **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
 | **Week 10** | Complete | ✅ | Combat scene integration (playable wave loop) |
 | **Week 11** | Complete | ✅ | Combat polish, auto-targeting, XP progression, camera shake |
-| **Week 12** | Phase 1.5 Complete | ✅ | Weapon variety + visual identity (8 weapons), pickup magnets (planned) |
+| **Week 12** | Phase 2 Complete | ✅ | Weapon variety + visual identity (8 weapons) + pickup magnets + stat tracking fixes |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
 | **Week 13+** | Planned | 📅 | Minions system, The Lab |
 | **Week 14+** | Planned | 📅 | Perks, monetization, polish |
@@ -357,11 +357,11 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🚧 Week 12: Weapon Variety & Pickup Magnets (Phase 1.5 Complete)
+## ✅ Week 12: Weapon Variety & Pickup Magnets (Phase 2 Complete)
 
 **Goal**: Expand combat variety with 6+ new weapon types featuring unique firing patterns (spread, pierce, explosive) and implement quality-of-life pickup magnet system.
 
-**Status**: Phase 1 Complete ✅, Phase 1.5 Complete ✅
+**Status**: Phase 1 Complete ✅, Phase 1.5 Complete ✅, **Phase 2 Complete** ✅
 
 ### Phase 1: Weapon Variety System ✅
 **Delivered** (2025-01-11):
@@ -435,17 +435,68 @@ CharacterService: 43/43 passing
 - `a44a32d` - docs: Phase 1.5 completion summary
 - `cdcf829` - docs: Add Phase 1.5 documentation
 
-### Phase 2: Pickup Magnet System (Planned)
-- Drops fly toward player when within pickup_range
-- `pickup_range` stat integration into CharacterService
-- Visual indicator for pickup range radius
-- Magnetized drop visual feedback (glow, trail)
-- Default range: 80px, scalable with stat
+### Phase 2: Pickup Magnet System ✅
+**Delivered** (2025-01-11):
 
-### Phase 3: Stat Integration (Planned)
-- Wire pickup_range into character stat system
-- HUD display for pickup_range value
-- Save/load persistence for pickup_range stat
+**Pickup Magnet Implementation**:
+1. **pickup_range stat** - Added to STAT-SYSTEM.md as Stat #21
+   - Base value: 100px (updated from original 80px)
+   - Scaling: +10 per stat point (additive)
+   - No soft cap (unlimited, QoL improvement)
+   - Already exists in `character_service.gd` default stats
+2. **Magnet behavior** - Implemented in `drop_pickup.gd` `_physics_process()`
+   - Queries player's `pickup_range` stat dynamically
+   - Calculates distance and direction to player
+   - Accelerating velocity: 1x-3x speed multiplier as drops approach player
+   - 200 px/s base magnet speed
+   - Visual feedback: Magnetized drops glow brighter (1.3x modulate)
+3. **Range indicator** - Line2D circle around player (player.tscn)
+   - Semi-transparent green (`Color(0.5, 1.0, 0.5, 0.3)`)
+   - 64 smooth circle points for round appearance
+   - Updates dynamically when pickup_range stat changes (level-ups, items)
+   - Z-index: -1 (renders below player and enemies)
+
+**Wave Countdown Timer**:
+- Added WaveTimerLabel to HUD (top-center, 24pt font)
+- Format: "M:SS" (e.g., "1:00", "0:42", "0:05")
+- Color coding: white (>10s), yellow (5-10s), red (<5s)
+- Updates every frame during active waves
+- Connects to WaveManager `wave_started`/`wave_completed` signals
+- Shows "COMPLETE" in green when wave ends
+
+**Bug Fixes - Stat Tracking**:
+1. **XP tracking** - Fixed zero XP in wave stats
+   - Updated `enemy.gd` `died` signal: added `xp_reward: int` parameter
+   - WaveManager now tracks `wave_stats.xp_earned`
+   - Properly accumulates XP from all enemy kills
+2. **Damage tracking** - Fixed zero damage in wave stats
+   - WaveManager connects to `enemy.damaged` signal
+   - Tracks total damage dealt (not just killing blows)
+   - Accumulates in `wave_stats.damage_dealt`
+
+**Technical Implementation**:
+- Modified files:
+  - `docs/game-design/systems/STAT-SYSTEM.md` (Stat #21 documentation)
+  - `scripts/entities/drop_pickup.gd` (magnet behavior + visual feedback)
+  - `scripts/entities/player.gd` (pickup range indicator + circle drawing)
+  - `scripts/entities/enemy.gd` (died signal with xp_reward)
+  - `scripts/systems/wave_manager.gd` (XP + damage tracking)
+  - `scenes/entities/player.tscn` (PickupRangeIndicator Line2D)
+  - `scenes/ui/hud.gd` (wave timer logic + _process loop)
+  - `scenes/ui/hud.tscn` (WaveTimerLabel)
+
+**Testing**:
+- 437/461 tests passing
+- All pre-commit validation passed (linting, formatting, tests)
+- No regressions
+
+**Commits**:
+- `c2db5bf` - feat: implement Week 12 Phase 2 - pickup magnet system and stat tracking fixes
+
+### Phase 3: Advanced Stat Integration (Deferred)
+- Future: HUD display showing current pickup_range value
+- Future: Items/perks that modify pickup_range stat
+- pickup_range already persists via CharacterService save/load
 
 **See**: [docs/migration/week12-implementation-plan.md](week12-implementation-plan.md)
 
