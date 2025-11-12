@@ -113,9 +113,10 @@ func _on_hp_changed(current: float, max_value: float) -> void:
 	hp_bar.max_value = max_value
 	hp_bar.value = current
 
-	# Update HP label text
+	# Update HP label text with percentage for easier mental math
 	if hp_label:
-		hp_label.text = "HP: %d / %d" % [int(current), int(max_value)]
+		var hp_percent = int((current / max_value) * 100.0)
+		hp_label.text = "HP: %d%%" % hp_percent
 
 	# Flash HP bar red when damaged (if decreasing)
 	if current < hp_bar.value:
@@ -301,24 +302,53 @@ func _pulse_label(label: Label) -> void:
 
 
 func _show_level_up_popup(level: int) -> void:
-	"""Show a level up notification popup"""
-	# Create a temporary label for the popup
-	var popup = Label.new()
-	popup.text = "LEVEL UP! %d" % level
-	popup.modulate = Color.YELLOW
-	popup.z_index = 100  # Ensure it's on top
+	"""Show a level up notification popup with full-screen celebration"""
+	# Full-screen yellow flash
+	var flash = ColorRect.new()
+	flash.color = Color(1.0, 1.0, 0.0, 0.3)  # Yellow with 30% opacity
+	flash.anchor_right = 1.0
+	flash.anchor_bottom = 1.0
+	flash.z_index = 99
+	add_child(flash)
 
-	# Set position (center-top of screen)
-	popup.position = Vector2(size.x / 2 - 100, 100)
+	# Fade out flash
+	var flash_tween = create_tween()
+	flash_tween.tween_property(flash, "modulate:a", 0.0, 0.5)
+	flash_tween.tween_callback(flash.queue_free)
+
+	# Large centered level-up text
+	var popup = Label.new()
+	popup.text = "LEVEL %d!" % level
+	popup.add_theme_font_size_override("font_size", 56)  # Large mobile-friendly font
+	popup.add_theme_color_override("font_color", Color.YELLOW)
+	popup.add_theme_color_override("font_outline_color", Color.BLACK)
+	popup.add_theme_constant_override("outline_size", 4)  # Thicker outline for visibility
+	popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	popup.z_index = 100  # Above flash
+
+	# Center the label
+	popup.anchor_left = 0.5
+	popup.anchor_top = 0.5
+	popup.anchor_right = 0.5
+	popup.anchor_bottom = 0.5
+	popup.offset_left = -150
+	popup.offset_top = -50
+	popup.offset_right = 150
+	popup.offset_bottom = 50
+	popup.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	popup.grow_vertical = Control.GROW_DIRECTION_BOTH
+
 	add_child(popup)
 
-	# Animate popup (float up and fade out)
+	# Animate popup (scale up, float up slightly, fade out)
 	var tween = create_tween()
-	tween.tween_property(popup, "position:y", popup.position.y - 50, 1.0)
-	tween.parallel().tween_property(popup, "modulate:a", 0.0, 0.5).set_delay(0.5)
+	tween.tween_property(popup, "scale", Vector2(1.2, 1.2), 0.2)
+	tween.tween_property(popup, "position:y", popup.position.y - 30, 0.8)
+	tween.parallel().tween_property(popup, "modulate:a", 0.0, 0.4).set_delay(0.4)
 	tween.tween_callback(popup.queue_free)
 
-	GameLogger.info("HUD: Level up popup shown", {"level": level})
+	GameLogger.info("HUD: Level up celebration shown", {"level": level})
 
 
 func _show_low_hp_warning() -> void:

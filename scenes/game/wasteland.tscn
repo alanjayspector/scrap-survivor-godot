@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c4vwm8p3qw1yd"]
+[gd_scene load_steps=9 format=3 uid="uid://c4vwm8p3qw1yd"]
 
 [ext_resource type="Script" path="res://scenes/game/wasteland.gd" id="1_wasteland"]
 [ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="2_wave_manager"]
@@ -6,6 +6,30 @@
 [ext_resource type="Script" path="res://scenes/ui/wave_complete_screen.gd" id="3_wave_complete_screen"]
 [ext_resource type="Script" path="res://scenes/ui/game_over_screen.gd" id="4_game_over_screen"]
 [ext_resource type="PackedScene" uid="uid://ccvk0p2xb8iny" path="res://scenes/ui/virtual_joystick.tscn" id="5_virtual_joystick"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wave_complete_bg"]
+bg_color = Color(0, 0, 0, 0.7)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.3)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_game_over_bg"]
+bg_color = Color(0, 0, 0, 0.7)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.3)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="Wasteland" type="Node2D"]
 script = ExtResource("1_wasteland")
@@ -46,6 +70,7 @@ offset_right = 200.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wave_complete_bg")
 script = ExtResource("3_wave_complete_screen")
 
 [node name="Content" type="VBoxContainer" parent="UI/WaveCompleteScreen"]
@@ -91,6 +116,7 @@ offset_right = 200.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_game_over_bg")
 script = ExtResource("4_game_over_screen")
 
 [node name="Content" type="VBoxContainer" parent="UI/GameOverScreen"]
