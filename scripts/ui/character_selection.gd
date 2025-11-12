@@ -15,8 +15,8 @@ signal tier_upgrade_requested(required_tier: int)
 signal free_trial_requested(character_type: String)
 
 ## UI References (cached from scene tree with @onready for performance)
-@onready var character_cards_container: HBoxContainer = get_node(
-	"MarginContainer/VBoxContainer/CharacterCardsContainer"
+@onready var character_cards_container: VBoxContainer = get_node(
+	"MarginContainer/VBoxContainer/ScrollContainer/CharacterCardsContainer"
 )
 @onready
 var stat_comparison_panel: Panel = get_node("MarginContainer/VBoxContainer/StatComparisonPanel")
@@ -69,9 +69,9 @@ func _create_character_type_cards() -> void:
 func _create_character_card(character_type: String) -> Control:
 	var type_def = CharacterService.CHARACTER_TYPES[character_type]
 
-	# Create card container
+	# Create card container (mobile-optimized size - Round 4)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(200, 300)
+	card.custom_minimum_size = Vector2(280, 400)
 	card.name = "Card_%s" % character_type
 
 	# Create card layout
@@ -141,9 +141,11 @@ func _create_character_card(character_type: String) -> Control:
 			tier_label.add_theme_color_override("font_color", Color(0.6, 0.4, 0.8))
 	vbox.add_child(tier_label)
 
-	# Select button
+	# Select button (iOS HIG compliant - Round 4)
 	var select_btn = Button.new()
 	select_btn.text = "Select"
+	select_btn.custom_minimum_size = Vector2(220, 60)
+	select_btn.add_theme_font_size_override("font_size", 28)
 	select_btn.pressed.connect(_on_character_card_selected.bind(character_type))
 	vbox.add_child(select_btn)
 
@@ -181,15 +183,19 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	buttons_vbox.position = Vector2(50, 150)
 	overlay.add_child(buttons_vbox)
 
-	# "Try for 1 Run" button
+	# "Try for 1 Run" button (iOS HIG compliant - Round 4)
 	var trial_btn = Button.new()
 	trial_btn.text = "Try for 1 Run"
+	trial_btn.custom_minimum_size = Vector2(200, 60)
+	trial_btn.add_theme_font_size_override("font_size", 24)
 	trial_btn.pressed.connect(_on_free_trial_requested.bind(character_type))
 	buttons_vbox.add_child(trial_btn)
 
-	# "Unlock Forever" button
+	# "Unlock Forever" button (iOS HIG compliant - Round 4)
 	var unlock_btn = Button.new()
 	unlock_btn.text = "Unlock Forever"
+	unlock_btn.custom_minimum_size = Vector2(200, 60)
+	unlock_btn.add_theme_font_size_override("font_size", 24)
 	unlock_btn.pressed.connect(_on_unlock_requested.bind(required_tier))
 	buttons_vbox.add_child(unlock_btn)
 
