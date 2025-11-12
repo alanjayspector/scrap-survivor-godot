@@ -6,7 +6,7 @@ class_name Enemy
 ## Handles AI pathfinding, health, and drop spawning
 
 ## Signals
-signal died(enemy_id: String, drops: Dictionary)
+signal died(enemy_id: String, drops: Dictionary, xp_reward: int)
 signal damaged(damage: float)
 
 ## Enemy configuration
@@ -213,8 +213,8 @@ func die() -> void:
 	print("[Enemy] Enemy death complete: ", enemy_type, " drops: ", drops)
 	GameLogger.info("Enemy died - COMPLETE", {"id": enemy_id, "type": enemy_type, "drops": drops})
 
-	# Emit death signal
-	died.emit(enemy_id, drops)
+	# Emit death signal with XP reward
+	died.emit(enemy_id, drops, xp_reward)
 
 	# Death animation (fade out + scale down)
 	var tween = create_tween()

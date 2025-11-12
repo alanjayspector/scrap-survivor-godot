@@ -88,9 +88,10 @@ func _spawn_single_enemy() -> void:
 	enemy.setup(enemy_id, random_type, current_wave)
 	print("[WaveManager] Enemy setup complete")
 
-	# Connect death signal
+	# Connect death and damage signals
 	enemy.died.connect(_on_enemy_died)
-	print("[WaveManager] Death signal connected")
+	enemy.damaged.connect(_on_enemy_damaged)
+	print("[WaveManager] Death and damage signals connected")
 
 	# Random spawn position (off-screen)
 	var spawn_pos = _get_random_spawn_position()
@@ -158,11 +159,12 @@ func _get_random_spawn_position() -> Vector2:
 	return player_pos  # Fallback
 
 
-func _on_enemy_died(enemy_id: String, _drop_data: Dictionary) -> void:
+func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) -> void:
 	print("[WaveManager] _on_enemy_died called for enemy: ", enemy_id)
 
 	# Update wave stats
 	wave_stats.enemies_killed += 1
+	wave_stats.xp_earned += xp_reward
 
 	# Emit enemy died signal for visual feedback (screen shake, etc.)
 	enemy_died.emit(enemy_id)
@@ -190,6 +192,12 @@ func _on_enemy_died(enemy_id: String, _drop_data: Dictionary) -> void:
 			living_enemies.size(),
 			" enemies still living"
 		)
+
+
+## Handler for enemy taking damage
+func _on_enemy_damaged(damage: float) -> void:
+	"""Track total damage dealt to enemies"""
+	wave_stats.damage_dealt += int(damage)
 
 
 ## Handler for drops actually collected by player

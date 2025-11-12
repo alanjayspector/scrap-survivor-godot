@@ -11,7 +11,9 @@ signal collected(currency_type: String, amount: int)
 ## Drop properties
 var currency_type: String = "scrap"  # scrap, components, nanites
 var amount: int = 1
-var magnet_range: float = 80.0  # Pickup detection range
+var magnet_range: float = 100.0  # Default pickup detection range (overridden by player stat)
+var magnet_speed: float = 200.0  # How fast drops fly toward player (px/s)
+var is_magnetized: bool = false  # Tracking state for visual feedback
 
 ## Visual reference
 var visual_node: ColorRect = null
@@ -55,6 +57,48 @@ func _setup_collision() -> void:
 	monitoring = true
 	monitorable = true
 	print("[DropPickup] Collision configured: layer=8, mask=1")
+
+
+func _physics_process(delta: float) -> void:
+	"""Handle drop magnetism - fly toward player when in range"""
+	# Get player reference
+	var player = get_tree().get_first_node_in_group("player")
+	if not player:
+		is_magnetized = false
+		return
+
+	# Get player's pickup_range stat
+	var player_pickup_range = player.get_stat("pickup_range")
+	if player_pickup_range <= 0:
+		player_pickup_range = magnet_range  # Fallback to default
+
+	# Calculate distance to player
+	var distance = global_position.distance_to(player.global_position)
+
+	# Check if within pickup range
+	if distance <= player_pickup_range:
+		# Drop is magnetized - fly toward player
+		is_magnetized = true
+
+		# Calculate direction to player
+		var direction = (player.global_position - global_position).normalized()
+
+		# Calculate speed multiplier (accelerates as drop gets closer)
+		# Speed ranges from 1x (at max range) to 3x (very close to player)
+		var speed_multiplier = 1.0 + (1.0 - distance / player_pickup_range) * 2.0
+
+		# Apply velocity
+		var velocity = direction * magnet_speed * speed_multiplier
+		global_position += velocity * delta
+
+		# Update magnetized visual feedback
+		_update_magnetized_visual()
+	else:
+		# Drop is not magnetized
+		if is_magnetized:
+			# Just left magnet range - reset visual
+			is_magnetized = false
+			_update_magnetized_visual()
 
 
 func setup(type: String, amt: int) -> void:
@@ -129,6 +173,16 @@ func _start_idle_animations() -> void:
 	rotate_tween.set_loops()
 	rotate_tween.tween_property(self, "rotation", deg_to_rad(5), 0.8).set_ease(Tween.EASE_IN_OUT)
 	rotate_tween.tween_property(self, "rotation", deg_to_rad(-5), 0.8).set_ease(Tween.EASE_IN_OUT)
+
+
+func _update_magnetized_visual() -> void:
+	"""Update visual feedback based on magnetized state"""
+	if is_magnetized:
+		# Brighter color when magnetized (1.3x brightness)
+		modulate = Color(1.3, 1.3, 1.3, 1.0)
+	else:
+		# Normal color
+		modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 
 func _to_string() -> String:

@@ -17,6 +17,9 @@ signal died
 
 ## Node references
 @onready var weapon_pivot: Node2D = $WeaponPivot if has_node("WeaponPivot") else null
+@onready var pickup_range_indicator: Line2D = (
+	$PickupRangeIndicator if has_node("PickupRangeIndicator") else null
+)
 
 ## Character stats (loaded from CharacterService)
 var stats: Dictionary = {}
@@ -72,6 +75,9 @@ func _ready() -> void:
 	if joystick:
 		joystick.direction_changed.connect(_on_joystick_direction_changed)
 		print("[Player] Connected to virtual joystick")
+
+	# Draw initial pickup range indicator
+	_update_pickup_range_indicator()
 
 	GameLogger.info("Player initialized", {"character_id": character_id})
 	print("[Player] _ready() complete")
@@ -406,6 +412,9 @@ func _on_character_level_up_post(context: Dictionary) -> void:
 		current_hp = max_hp
 		health_changed.emit(current_hp, max_hp)
 
+		# Update pickup range indicator (in case pickup_range stat changed)
+		_update_pickup_range_indicator()
+
 		# Emit level up signal
 		player_leveled_up.emit(new_level, stats)
 
@@ -440,3 +449,27 @@ func get_stat(stat_name: String) -> float:
 func is_alive() -> bool:
 	"""Check if player is alive"""
 	return current_hp > 0
+
+
+func _update_pickup_range_indicator() -> void:
+	"""Update the pickup range indicator circle based on current pickup_range stat"""
+	if not pickup_range_indicator:
+		return
+
+	# Get pickup_range stat
+	var pickup_range = get_stat("pickup_range")
+	if pickup_range <= 0:
+		pickup_range = 100.0  # Default fallback
+
+	# Generate circle points
+	var num_points = 64  # Circle resolution (higher = smoother)
+	var points: PackedVector2Array = []
+
+	for i in range(num_points + 1):  # +1 to close the circle
+		var angle = (float(i) / num_points) * TAU  # TAU = 2*PI
+		var x = cos(angle) * pickup_range
+		var y = sin(angle) * pickup_range
+		points.append(Vector2(x, y))
+
+	# Update Line2D points
+	pickup_range_indicator.points = points

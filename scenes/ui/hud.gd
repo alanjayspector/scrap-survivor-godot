@@ -2,11 +2,13 @@ extends Control
 ## HUD - Heads-Up Display for combat scene
 ##
 ## Week 10 Phase 3: HUD Implementation with HP, XP, wave, and currency displays
+## Week 12 Phase 2: Wave countdown timer
 ##
 ## Displays:
 ## - HP bar (current/max health)
 ## - XP bar (current/required XP, level)
 ## - Wave counter
+## - Wave countdown timer
 ## - Currency display (scrap, components, nanites)
 ##
 ## Based on: docs/migration/week10-implementation-plan.md (lines 467-562)
@@ -16,6 +18,7 @@ extends Control
 @onready var xp_bar: ProgressBar = $XPBar if has_node("XPBar") else null
 @onready var xp_label: Label = $XPBar/XPLabel if has_node("XPBar/XPLabel") else null
 @onready var wave_label: Label = $WaveLabel if has_node("WaveLabel") else null
+@onready var wave_timer_label: Label = $WaveTimerLabel if has_node("WaveTimerLabel") else null
 @onready
 var currency_display: HBoxContainer = $CurrencyDisplay if has_node("CurrencyDisplay") else null
 @onready var scrap_label: Label = (
@@ -36,6 +39,11 @@ var nanites: int = 0
 ## XP tracking (for detecting actual level-ups)
 var previous_xp: int = -1  # -1 = uninitialized
 
+## Wave timer tracking
+var wave_duration: float = 60.0  # Default 60 seconds per wave
+var wave_time_remaining: float = 0.0
+var wave_active: bool = false
+
 
 func _ready() -> void:
 	# Connect to HudService signals
@@ -44,6 +52,12 @@ func _ready() -> void:
 		HudService.xp_changed.connect(_on_xp_changed)
 		HudService.wave_changed.connect(_on_wave_changed)
 		HudService.currency_changed.connect(_on_currency_changed)
+
+	# Connect to WaveManager signals for wave timer
+	var wave_manager = get_tree().get_first_node_in_group("wave_manager")
+	if wave_manager:
+		wave_manager.wave_started.connect(_on_wave_started)
+		wave_manager.wave_completed.connect(_on_wave_completed)
 
 	# Initialize currency from BankingService
 	if BankingService:
@@ -66,6 +80,14 @@ func _ready() -> void:
 	_on_wave_changed(HudService.get_current_wave())
 
 	GameLogger.info("HUD initialized")
+
+
+func _process(delta: float) -> void:
+	"""Update wave timer every frame"""
+	if wave_active and wave_time_remaining > 0:
+		wave_time_remaining -= delta
+		wave_time_remaining = max(0, wave_time_remaining)
+		_update_wave_timer_display()
 
 
 ## Signal Handlers
@@ -115,6 +137,24 @@ func _on_wave_changed(wave: int) -> void:
 	tween.tween_property(wave_label, "scale", Vector2(1.0, 1.0), 0.2)
 
 
+func _on_wave_started(wave: int) -> void:
+	"""Called when a wave starts - initialize wave timer"""
+	wave_active = true
+	wave_time_remaining = wave_duration
+	_update_wave_timer_display()
+	GameLogger.info("HUD: Wave timer started", {"wave": wave, "duration": wave_duration})
+
+
+func _on_wave_completed(_wave: int, _stats: Dictionary) -> void:
+	"""Called when a wave completes - stop wave timer"""
+	wave_active = false
+	wave_time_remaining = 0.0
+	if wave_timer_label:
+		wave_timer_label.text = "COMPLETE"
+		wave_timer_label.modulate = Color.GREEN
+	GameLogger.info("HUD: Wave timer stopped")
+
+
 func _on_currency_changed(currency_type: String, _amount: int, new_total: int) -> void:
 	# Update local currency tracking
 	match currency_type:
@@ -146,6 +186,28 @@ func _update_currency_display() -> void:
 
 	if nanites_label:
 		nanites_label.text = "Nanites: %d" % nanites
+
+
+func _update_wave_timer_display() -> void:
+	"""Update wave timer label with remaining time and color coding"""
+	if not wave_timer_label:
+		return
+
+	# Format time as MM:SS
+	var minutes = int(wave_time_remaining) / 60
+	var seconds = int(wave_time_remaining) % 60
+	wave_timer_label.text = "%d:%02d" % [minutes, seconds]
+
+	# Color code based on remaining time
+	if wave_time_remaining <= 5.0:
+		# Red when < 5 seconds
+		wave_timer_label.modulate = Color.RED
+	elif wave_time_remaining <= 10.0:
+		# Yellow when < 10 seconds
+		wave_timer_label.modulate = Color.YELLOW
+	else:
+		# White when > 10 seconds
+		wave_timer_label.modulate = Color.WHITE
 
 
 func _get_currency_label(currency_type: String) -> Label:

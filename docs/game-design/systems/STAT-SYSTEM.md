@@ -491,6 +491,43 @@ material_drop = base_material_drop * (1 + harvesting / 100)
 
 ---
 
+#### 21. Pickup Range
+**What it does:** Radius for automatic drop magnetism
+**Base value:** 100
+**Scaling:** Additive (+10 per point)
+**Soft cap:** None (unlimited)
+
+**Brotato comparison:**
+⚠️ Brotato does not have pickup range stat (manual collection)
+🟢 UNIQUE TO SCRAP SURVIVOR - Major QoL improvement!
+
+**Sources:**
+- Advancement Hall: +10 Pickup Range per level
+- Items: Magnet items, scavenger gear
+- Perks: "Scavenger" perk (+50 Pickup Range)
+- Character types: Scavenger (+20 Pickup Range base), Mutant (+20 Pickup Range base)
+
+**Pickup Range mechanics:**
+```gdscript
+# Drops within pickup_range automatically fly toward player
+# Base range: 100 pixels (matches current drop detection)
+# Magnet speed: 200 px/s (accelerates as drop gets closer)
+
+var distance = drop.global_position.distance_to(player.global_position)
+if distance <= player.pickup_range:
+    # Drop magnetizes and flies to player
+    var speed_multiplier = 1.0 + (1.0 - distance / player.pickup_range) * 2.0
+    drop.velocity = direction_to_player * magnet_speed * speed_multiplier
+```
+
+**Balance notes:**
+- Default 100px = comfortable collection radius
+- Higher values reduce combat pressure (less manual positioning)
+- Lower values = higher skill requirement (precise movement)
+- Visual indicator shows pickup range circle around player
+
+---
+
 ### Advanced Stats (4 stats)
 
 #### 17. Knockback
@@ -829,6 +866,7 @@ func calculate_personalization_bonus(luck: int, scrap_tech: int) -> float:
 | Speed | ~200-300% | Character-specific | Balance concern |
 | Luck | None | None | Diminishing returns on effects |
 | Harvesting | None | None | Unlimited |
+| Pickup Range | None | None | Unlimited (QoL improvement) |
 | Knockback | Enemy-dependent | None | Some enemies immune |
 | XP Gain | None | None | Unlimited |
 | Curse | None | None | Unlimited (risk/reward) |
