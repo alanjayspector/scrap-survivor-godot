@@ -2032,3 +2032,77 @@ global_position.y = clamp(
 3. **Continue QA**: Provide comprehensive feedback in next session with full token budget
 
 ---
+
+## Mobile UX QA Round 4 Follow-Up #4 (Complete)
+
+**Goal**: Fix camera boundary scrolling to prevent seeing void beyond canvas
+
+**Status**: Implementation complete ✅
+**Date**: 2025-01-12
+
+### Issue Identified (iOS Device Testing - Critical)
+
+**From User Report:**
+> "can still scroll past the visible canvas in any direction"
+
+**Problem**: Camera could show 540 units beyond world boundaries, displaying empty void
+
+### Root Cause & Solution
+
+**Root Cause:**
+- Camera had NO boundary clamping (plain Camera2D)
+- Player clamped correctly, but camera could drift beyond boundaries
+- Visible area (1280x720) extended 540 units past boundaries
+
+**Solution:** Viewport-aware camera boundaries
+- Attached CameraController script to Camera2D
+- Set boundaries accounting for viewport size:
+  - `Rect2(-1360, -1640, 2720, 3280)` ✅ VIEWPORT-AWARE
+  - Camera X: [-1360, +1360] = world edges ± 640 (half viewport width)
+  - Camera Y: [-1640, +1640] = world edges ± 360 (half viewport height)
+
+**Math Proof:**
+```
+Camera at -1360: visible left = -1360 - 640 = -2000 ✓ (at boundary, no overshoot)
+Camera at +1360: visible right = +1360 + 640 = +2000 ✓ (at boundary, no overshoot)
+```
+
+### Comprehensive Test Coverage Added
+
+**New File:** `scripts/tests/wasteland_camera_boundary_test.gd`
+**Tests:** 15 comprehensive integration tests (all passing ✅)
+
+**Test Categories:**
+- Configuration (3 tests): Script attached, boundaries correct, smooth follow
+- Boundary Clamping (4 tests): All 4 directions clamp correctly
+- Visible Viewport (4 tests): **Core bug fix - no 540-unit overshoot**
+- Integration (2 tests): Camera + player boundaries work together
+- Regression (2 tests): Screen shake + smooth follow preserved
+
+**Why Tests Were Critical:**
+- Initial implementation failed tests (still had overshoot)
+- Tests revealed need for viewport-aware boundaries
+- Corrected implementation: all tests pass ✅
+
+### Files Modified
+
+- `scenes/game/wasteland.tscn` - Camera boundaries viewport-aware
+- `scenes/game/wasteland.gd` - Type hint + camera target wired
+- **NEW:** `scripts/tests/wasteland_camera_boundary_test.gd` - 15 tests
+
+**Test Results**: ✅ 470/494 passing (+15 new tests)
+**Commits:** `a3fd7fa`
+
+### Success Criteria
+
+**Before:** ❌ 540-unit overshoot, off-canvas void visible
+**After:** ✅ Zero overshoot, visible area within bounds, comprehensive test coverage
+
+**Manual QA Required:**
+- [ ] No off-canvas void at any edge ⏳
+- [ ] Camera clamps smoothly ⏳
+- [ ] Joystick smooth (no regressions) ⏳
+
+**Reference:** [docs/CAMERA-BOUNDARY-FIX-PLAN.md](../../docs/CAMERA-BOUNDARY-FIX-PLAN.md)
+
+---
