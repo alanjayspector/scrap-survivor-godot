@@ -45,6 +45,10 @@ var wave_duration: float = 60.0  # Default 60 seconds per wave
 var wave_time_remaining: float = 0.0
 var wave_active: bool = false
 
+## Animation tracking
+var hp_warning_tween: Tween = null
+var timer_warning_tween: Tween = null
+
 
 func _ready() -> void:
 	# Connect to HudService signals
@@ -162,6 +166,11 @@ func _on_wave_started(wave: int) -> void:
 	wave_active = true
 	wave_time_remaining = wave_duration
 	_update_wave_timer_display()
+
+	# Hide currency display during combat (mobile UX optimization)
+	if currency_display:
+		currency_display.hide()
+
 	GameLogger.info("HUD: Wave timer started", {"wave": wave, "duration": wave_duration})
 
 
@@ -169,9 +178,21 @@ func _on_wave_completed(_wave: int, _stats: Dictionary) -> void:
 	"""Called when a wave completes - stop wave timer"""
 	wave_active = false
 	wave_time_remaining = 0.0
+
+	# Stop timer pulsing animation
+	if timer_warning_tween:
+		timer_warning_tween.kill()
+		timer_warning_tween = null
+
 	if wave_timer_label:
 		wave_timer_label.text = "COMPLETE"
 		wave_timer_label.modulate = Color.GREEN
+		wave_timer_label.scale = Vector2(1.0, 1.0)
+
+	# Show currency display during wave complete (mobile UX optimization)
+	if currency_display:
+		currency_display.show()
+
 	GameLogger.info("HUD: Wave timer stopped")
 
 
@@ -218,16 +239,28 @@ func _update_wave_timer_display() -> void:
 	var seconds = int(wave_time_remaining) % 60
 	wave_timer_label.text = "%d:%02d" % [minutes, seconds]
 
-	# Color code based on remaining time
+	# Color code and animate based on remaining time
 	if wave_time_remaining <= 5.0:
 		# Red when < 5 seconds
 		wave_timer_label.modulate = Color.RED
 	elif wave_time_remaining <= 10.0:
 		# Yellow when < 10 seconds
 		wave_timer_label.modulate = Color.YELLOW
+
+		# Start pulsing animation if not already active
+		if not timer_warning_tween or not timer_warning_tween.is_running():
+			timer_warning_tween = create_tween().set_loops()
+			timer_warning_tween.tween_property(wave_timer_label, "scale", Vector2(1.1, 1.1), 0.5)
+			timer_warning_tween.tween_property(wave_timer_label, "scale", Vector2(1.0, 1.0), 0.5)
 	else:
 		# White when > 10 seconds
 		wave_timer_label.modulate = Color.WHITE
+
+		# Stop pulsing animation if active
+		if timer_warning_tween:
+			timer_warning_tween.kill()
+			timer_warning_tween = null
+			wave_timer_label.scale = Vector2(1.0, 1.0)
 
 
 func _get_currency_label(currency_type: String) -> Label:
@@ -293,14 +326,25 @@ func _show_low_hp_warning() -> void:
 	if not hp_bar:
 		return
 
-	# Pulse HP bar with red color
-	hp_bar.modulate = Color.RED
+	# Stop any existing tween
+	if hp_warning_tween:
+		hp_warning_tween.kill()
+
+	# Create pulsing animation between red and lighter red
+	hp_warning_tween = create_tween().set_loops()
+	hp_warning_tween.tween_property(hp_bar, "modulate", Color.RED, 0.5)
+	hp_warning_tween.tween_property(hp_bar, "modulate", Color(1.0, 0.5, 0.5), 0.5)
 
 
 func _hide_low_hp_warning() -> void:
 	"""Hide low HP warning (restore normal HP bar color)"""
 	if not hp_bar:
 		return
+
+	# Stop pulsing animation
+	if hp_warning_tween:
+		hp_warning_tween.kill()
+		hp_warning_tween = null
 
 	# Restore normal color
 	hp_bar.modulate = Color.WHITE

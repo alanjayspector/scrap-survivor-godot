@@ -43,6 +43,8 @@ func _add_stat_label(text: String) -> void:
 	var label = Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", 24)  # Mobile-friendly font size
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 3)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_display.add_child(label)
 
