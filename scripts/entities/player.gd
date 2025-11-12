@@ -29,6 +29,11 @@ var equipped_weapon_id: String = ""
 ## Weapon firing state
 var weapon_cooldown: float = 0.0
 
+## World boundaries (matches CameraController default boundaries)
+## Prevents player from moving off-screen and getting lost
+const WORLD_BOUNDS: Rect2 = Rect2(-2000, -2000, 4000, 4000)
+const BOUNDS_MARGIN: float = 100.0  # Keep player 100px from world edge
+
 ## Spin-up mechanic (Shredder)
 var consecutive_shots: int = 0  # Track consecutive shots for spin-up
 var spinup_timer: float = 0.0  # Reset counter if no shots for a while
@@ -165,6 +170,20 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.lerp(Vector2.ZERO, DECELERATION_RATE)
 
 	move_and_slide()
+
+	# Clamp player to world boundaries (prevent off-screen movement)
+	# Uses world coordinates defined in WORLD_BOUNDS constant
+	# Matches CameraController boundaries to ensure player stays visible
+	global_position.x = clamp(
+		global_position.x,
+		WORLD_BOUNDS.position.x + BOUNDS_MARGIN,
+		WORLD_BOUNDS.position.x + WORLD_BOUNDS.size.x - BOUNDS_MARGIN
+	)
+	global_position.y = clamp(
+		global_position.y,
+		WORLD_BOUNDS.position.y + BOUNDS_MARGIN,
+		WORLD_BOUNDS.position.y + WORLD_BOUNDS.size.y - BOUNDS_MARGIN
+	)
 
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:
