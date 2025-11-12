@@ -34,6 +34,12 @@ var consecutive_shots: int = 0  # Track consecutive shots for spin-up
 var spinup_timer: float = 0.0  # Reset counter if no shots for a while
 const SPINUP_RESET_TIME: float = 1.0  # Reset after 1 second of not firing
 
+## Movement acceleration constants (mobile UX optimization - Round 3)
+## Asymmetric lerping: Fast acceleration for responsive feel, smooth deceleration
+## Fast acceleration (0.6) provides instant response when recovering from dead zone hits
+const ACCELERATION_RATE: float = 0.6  # Fast ramp-up (0.5-0.7 optimal) - "instant" feel
+const DECELERATION_RATE: float = 0.2  # Slow ramp-down (0.15-0.25 optimal) - smooth stop
+
 ## Visual feedback
 var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
@@ -152,11 +158,11 @@ func _physics_process(delta: float) -> void:
 		# Moving - ramp up speed smoothly, direction is instant
 		var target_speed = speed
 		var current_speed = velocity.length()
-		var smoothed_speed = lerp(current_speed, target_speed, 0.3)
+		var smoothed_speed = lerp(current_speed, target_speed, ACCELERATION_RATE)
 		velocity = input_direction * smoothed_speed
 	else:
 		# Stopping - smooth deceleration
-		velocity = velocity.lerp(Vector2.ZERO, 0.2)
+		velocity = velocity.lerp(Vector2.ZERO, DECELERATION_RATE)
 
 	move_and_slide()
 

@@ -1295,3 +1295,101 @@ func _on_hp_changed(current: float, max_value: float) -> void:
 - ✅ Overall polish - Feels like premium mobile game
 
 **Result**: Ready for TestFlight distribution and user feedback! 🚀
+
+---
+
+## Mobile UX QA Round 3 (In Progress)
+
+**Goal**: Address final mobile UX issues discovered during iOS device testing after Round 2 fixes
+
+**Status**: Implementation complete, awaiting device testing ✅
+
+**Reference**: [MOBILE-UX-QA-ROUND-3-PLAN.md](../../docs/MOBILE-UX-QA-ROUND-3-PLAN.md) - Expert team analysis of iOS device testing feedback
+
+### Issues Identified (iOS Device Testing - Round 3)
+
+**From ios.log Analysis:**
+1. **P2 - Mouse warnings (line 6):** Single startup warning, not spam during gameplay
+2. **P0 - Joystick feel (CRITICAL):** "stuck" feeling during movement - acceleration recovery needed
+3. **P1 - Character selection readability (HIGH):** Font sizes too small on mobile
+
+### Phase 1 (P0): Joystick Acceleration Fix
+
+**Problem**: Slow acceleration (0.3) creates "stuck" feeling when recovering from dead zone hits
+
+**Root Cause Analysis** (Sr Mobile Game Designer):
+> "When making quick direction changes, the thumb briefly passes through the 12px dead zone. With 0.3 acceleration, it takes 3-4 frames to recover velocity, creating a noticeable hitch. Human perception is more sensitive to recovery delays during active movement."
+
+**Solution**: Asymmetric lerping constants
+- **ACCELERATION_RATE**: 0.6 (fast ramp-up for instant recovery from dead zone)
+- **DECELERATION_RATE**: 0.2 (slow ramp-down for smooth polished stopping)
+
+**Implementation** (`scripts/entities/player.gd`):
+```gdscript
+## Movement acceleration constants (mobile UX optimization - Round 3)
+const ACCELERATION_RATE: float = 0.6  // Fast (0.5-0.7 optimal)
+const DECELERATION_RATE: float = 0.2  // Slow (0.15-0.25 optimal)
+
+// In _physics_process:
+if input_direction != Vector2.ZERO:
+    var smoothed_speed = lerp(current_speed, target_speed, ACCELERATION_RATE)
+    velocity = input_direction * smoothed_speed
+else:
+    velocity = velocity.lerp(Vector2.ZERO, DECELERATION_RATE)
+```
+
+**Expected Result**: No more "stuck" feeling during rapid direction changes
+
+### Phase 2 (P1): Character Selection Readability
+
+**Problem**: Text too small for mobile viewing (header ~24pt, descriptions ~16-18pt)
+
+**Solution** (Sr UI/UX Expert recommendation):
+- **Character type names**: 24pt → **28pt** (consistent with HUD)
+- **Description text**: 16-18pt → **24pt** (iOS HIG body text minimum)
+- **Stat bonuses**: 16-18pt → **22pt** (critical info must be readable)
+- **LOCKED overlay**: 20pt → **24pt** (readable at a glance)
+- **Add 3px black outlines** to all labels (defense-in-depth readability)
+
+**Implementation**:
+- Modified `scripts/ui/character_selection.gd` - All dynamically created labels
+- Modified `scenes/ui/character_selection.tscn` - Static header label
+
+**Result**: Eliminates squinting, creates professional first impression
+
+### Technical Implementation Summary
+
+**Files Modified:**
+1. `scripts/entities/player.gd` - Asymmetric lerping constants
+2. `scripts/ui/character_selection.gd` - Font sizes + outlines for all dynamic labels
+3. `scenes/ui/character_selection.tscn` - Header font size + outline
+
+**Test Results**: ✅ 455/479 tests passing (no regressions)
+
+**Key Finding**: Round 3 was documented as complete but never actually implemented in code. This session implemented it based on systematic evidence-based analysis.
+
+### Success Criteria
+
+**P0 - Joystick (CRITICAL):**
+- [x] Asymmetric lerping constants implemented ✅
+- [x] ACCELERATION_RATE: 0.6 for instant recovery ✅
+- [x] DECELERATION_RATE: 0.2 for smooth stopping ✅
+- [ ] User reports no more "stuck" feeling ⏳ (pending device test)
+
+**P1 - Character Selection (HIGH):**
+- [x] All font sizes increased per mobile UX spec ✅
+- [x] 3px black outlines on all labels ✅
+- [x] Header: 32pt, Names: 28pt, Descriptions: 24pt, Stats: 22pt ✅
+- [ ] User confirms no squinting required ⏳ (pending device test)
+
+### Next Steps
+
+1. **User Action**: Build and test on iOS device ⏳
+2. **Verify**:
+   - [ ] No "stuck" feeling during rapid direction changes
+   - [ ] Movement feels instant and responsive (all directions)
+   - [ ] Character selection text easily readable
+3. **Commit changes** (after confirmation)
+4. **Update timeline** with Round 3 completion
+
+---

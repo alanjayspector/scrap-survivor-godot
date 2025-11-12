@@ -82,7 +82,9 @@ func _create_character_card(character_type: String) -> Control:
 	var name_label = Label.new()
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 24)
+	name_label.add_theme_font_size_override("font_size", 28)  # Mobile UX: consistent with HUD
+	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	name_label.add_theme_constant_override("outline_size", 3)
 	vbox.add_child(name_label)
 
 	# Color indicator (visual distinction)
@@ -96,13 +98,18 @@ func _create_character_card(character_type: String) -> Control:
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc_label.add_theme_font_size_override("font_size", 24)  # Mobile UX: body text minimum
+	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	desc_label.add_theme_constant_override("outline_size", 3)
 	vbox.add_child(desc_label)
 
 	# Stat modifiers display
 	var stats_label = Label.new()
 	stats_label.text = _format_stat_modifiers(type_def.stat_modifiers)
 	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	stats_label.add_theme_font_size_override("font_size", 12)
+	stats_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: critical info readability
+	stats_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	stats_label.add_theme_constant_override("outline_size", 3)
 	vbox.add_child(stats_label)
 
 	# Aura type display
@@ -112,13 +119,19 @@ func _create_character_card(character_type: String) -> Control:
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	aura_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: readable stat info
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
+	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	aura_label.add_theme_constant_override("outline_size", 3)
 	vbox.add_child(aura_label)
 
 	# Tier requirement badge
 	var tier_label = Label.new()
 	tier_label.text = _get_tier_name(type_def.tier_required)
 	tier_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tier_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: readable tier info
+	tier_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	tier_label.add_theme_constant_override("outline_size", 3)
 	match type_def.tier_required:
 		CharacterService.UserTier.FREE:
 			tier_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))
@@ -154,7 +167,9 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	lock_label.text = "🔒 LOCKED"
 	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lock_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 20)
+	lock_label.add_theme_font_size_override("font_size", 24)  # Mobile UX: readable at a glance
+	lock_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	lock_label.add_theme_constant_override("outline_size", 3)
 	overlay.add_child(lock_label)
 
 	# Center the lock label

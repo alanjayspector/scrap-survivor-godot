@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
 **Last Updated**: 2025-01-11
-**Status**: Week 12 Complete + Mobile UX Optimized + iOS Deployment Ready
-**Current Progress**: Weapon variety + visual identity + pickup magnets complete. Mobile UX optimization (all 3 phases) complete. iOS physics fixes + mobile touch controls implemented. Ready for TestFlight. (437/461 tests passing)
+**Status**: Week 12 Complete + Mobile UX Optimized (Round 3 In Progress) + iOS Deployment Ready
+**Current Progress**: Weapon variety + visual identity + pickup magnets complete. Mobile UX optimization (all 3 phases) complete. iOS physics fixes + mobile touch controls implemented. Mobile UX QA Round 3 fixes implemented (pending device test). (455/479 tests passing)
 
 ---
 
@@ -21,7 +21,7 @@
 | **Week 11** | Complete | ✅ | Combat polish, auto-targeting, XP progression, camera shake |
 | **Week 12** | Complete | ✅ | Weapon variety + visual identity (8 weapons) + pickup magnets + stat tracking fixes |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
-| **Mobile UX Optimization** | Complete | ✅ | Font sizing, text outlines, touch targets, animations, polish (all 3 phases) |
+| **Mobile UX Optimization** | Round 3 Testing | 🚧 | Font sizing, text outlines, touch targets, animations, polish (Round 1-2 complete, Round 3 pending device test) |
 | **Week 13+** | Planned | 📅 | Minions system, The Lab |
 | **Week 14+** | Planned | 📅 | Perks, monetization, polish |
 
@@ -808,6 +808,7 @@ CharacterService: 43/43 passing
 | iOS Deployment: Critical Fixes | 2025-01-11 | 2025-01-11 | ✅ Complete |
 | iOS Deployment: Mobile Controls | 2025-01-11 | 2025-01-11 | ✅ Complete |
 | Mobile UX Optimization (Phase 1-3) | 2025-01-11 | 2025-01-11 | ✅ Complete |
+| Mobile UX QA Round 3 | 2025-01-11 | - | 🚧 Implementation Complete (device test pending) |
 | TestFlight Distribution Ready | 2025-01-12 | - | 🚧 Ready (privacy fix pending) |
 | Week 12: The Lab Functional | 2025-12-01 | - | 📅 Planned |
 | Week 14: Perks System Live | 2025-12-15 | - | 📅 Planned |
