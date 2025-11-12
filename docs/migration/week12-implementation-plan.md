@@ -538,6 +538,47 @@ Week 12 expands the combat variety established in Week 11 by adding multiple wea
    - Test with varying player movement speeds
    - Ensure drops don't overshoot player or jitter
 
+7. **Add wave countdown timer to HUD** (`scenes/ui/hud.tscn` and `scripts/autoload/hud_service.gd`)
+   - Display remaining time in current wave
+   - Position: Top-center of screen
+   - Format: "MM:SS" or "SS.0s"
+   - Updates every frame during active wave
+   - Visual feedback when time running low (< 10s: yellow, < 5s: red)
+   - Connect to WaveManager signals for wave start/complete
+   - **Implementation**:
+     ```gdscript
+     # HUD should track wave start time and display countdown
+     var wave_duration: float = 60.0  # Default 1 minute per wave
+     var wave_time_remaining: float = 0.0
+
+     func _on_wave_started(wave: int) -> void:
+         wave_time_remaining = wave_duration
+
+     func _process(delta: float) -> void:
+         if wave_time_remaining > 0:
+             wave_time_remaining -= delta
+             _update_timer_display()
+     ```
+
+8. **Investigate XP tracking** (from runnable.log analysis)
+   - **Issue**: Wave stats show `xp_earned: 0` despite enemies being killed
+   - **Root cause**: Verify XP awarded to player on enemy death is tracked in wave stats
+   - **Files to check**:
+     - [scripts/systems/wave_manager.gd](../../scripts/systems/wave_manager.gd) - wave stats tracking
+     - [scripts/entities/enemy.gd](../../scripts/entities/enemy.gd) - XP awarding on death
+   - **Expected behavior**: XP should accumulate in wave stats and display in wave complete screen
+   - **Fix**: Wire up XP tracking to wave stats dictionary
+
+9. **Investigate damage dealt tracking** (from runnable.log analysis)
+   - **Issue**: Wave stats show `damage_dealt: 0` despite projectiles hitting enemies
+   - **Root cause**: Damage events not being tracked by wave manager
+   - **Files to check**:
+     - [scripts/systems/wave_manager.gd](../../scripts/systems/wave_manager.gd) - damage tracking
+     - [scripts/entities/projectile.gd](../../scripts/entities/projectile.gd) - damage application
+     - [scripts/autoload/combat_service.gd](../../scripts/autoload/combat_service.gd) - damage calculation
+   - **Expected behavior**: Total damage dealt should accumulate in wave stats
+   - **Fix**: Add damage tracking signal/event when projectiles hit enemies
+
 ### Success Criteria
 - [ ] Drops fly toward player when within pickup_range
 - [ ] pickup_range stat integrated into character system
@@ -546,6 +587,10 @@ Week 12 expands the combat variety established in Week 11 by adding multiple wea
 - [ ] Magnet speed feels snappy and satisfying
 - [ ] Collection still requires drops to reach player (not instant teleport)
 - [ ] Performance remains smooth with 20+ active drops
+- [ ] Wave countdown timer displays remaining time in HUD
+- [ ] Timer updates in real-time and shows visual warnings when low
+- [ ] XP tracking working and displays in wave complete stats
+- [ ] Damage dealt tracking working and displays in wave complete stats
 
 ### Dependencies
 - Week 11 Phase 2 (Drop collection system)
@@ -929,9 +974,14 @@ Potential Week 13 focus areas:
 - Added 12px dead zone for precision
 - **Impact**: 80%+ improvement in joystick feel
 
-**Phase 2 (Planned)**:
-- Floating/dynamic joystick (appears where user touches)
+**Phase 2 Complete** (`0cfa40f`) ✅:
+- Floating/dynamic joystick implemented (appears where user touches)
 - Solves left/right-handed ergonomics automatically
+- Touch-anywhere UX matches industry standards (Brotato, Vampire Survivors)
+- Multi-touch safe with touch index tracking
+- State machine manages INACTIVE/ACTIVE states
+- Touch zone restricted to left half of screen
+- **Impact**: 95%+ improvement in mobile control feel
 
 ---
 

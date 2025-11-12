@@ -81,6 +81,11 @@ func _setup_wave_manager() -> void:
 	wave_manager.wave_completed.connect(_on_wave_completed)
 	print("[Wasteland] wave_manager.wave_completed signal connected")
 
+	# Connect wave started signal to re-enable player
+	print("[Wasteland] Connecting to wave_manager.wave_started...")
+	wave_manager.wave_started.connect(_on_wave_started)
+	print("[Wasteland] wave_manager.wave_started signal connected")
+
 	# Connect wave manager enemy died signal for screen shake
 	print("[Wasteland] Connecting to wave_manager.enemy_died...")
 	wave_manager.enemy_died.connect(_on_enemy_died_screen_shake)
@@ -450,6 +455,19 @@ func _on_main_menu_pressed() -> void:
 	print("[Wasteland] Game unpaused")
 
 	get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+
+
+func _on_wave_started(wave: int) -> void:
+	"""Handle wave start - re-enable player gameplay"""
+	print("[Wasteland] Wave ", wave, " started")
+
+	# Re-enable player input and physics (disabled during wave complete screen)
+	if player_instance:
+		player_instance.set_physics_process(true)
+		player_instance.set_process_input(true)
+		print("[Wasteland] Player movement/input re-enabled")
+
+	GameLogger.info("Wave started", {"wave": wave})
 
 
 func _on_wave_completed(wave: int, stats: Dictionary) -> void:
