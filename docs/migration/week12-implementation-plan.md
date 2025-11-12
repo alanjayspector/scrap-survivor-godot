@@ -1382,14 +1382,154 @@ else:
 - [x] Header: 32pt, Names: 28pt, Descriptions: 24pt, Stats: 22pt ✅
 - [ ] User confirms no squinting required ⏳ (pending device test)
 
+### Next Steps (Round 3 Complete)
+
+1. **User Action**: Build and test on iOS device ✅
+2. **Verify**:
+   - [x] No "stuck" feeling during rapid direction changes ✅
+   - [x] Movement feels instant and responsive (all directions) ✅
+   - [x] Character selection text easily readable ✅
+3. **Commit changes** (after confirmation) ✅
+4. **Update timeline** with Round 3 completion ✅
+
+**Commits:**
+- `8af3e17` - fix: mobile UX QA round 3 - joystick acceleration + character selection readability
+
+---
+
+## Mobile UX QA Round 4 (Complete)
+
+**Goal**: Address additional mobile UX issues discovered during iOS device testing after Round 3 fixes
+
+**Status**: Implementation complete ✅
+**Date**: 2025-01-12
+
+**Reference**: [MOBILE-UX-QA-ROUND-4-PLAN.md](../../docs/MOBILE-UX-QA-ROUND-4-PLAN.md) - Expert team analysis with Sr Mobile Game Designer, Sr Mobile UI/UX Expert, Godot Specialist, Sr Software Engineer, Product Manager
+
+### Issues Identified (iOS Device Testing - Round 4)
+
+**From Manual QA:**
+1. **P0 - Joystick Dead Zone "Stuck" Behavior (CRITICAL):** Player stops moving when finger drifts within 12px dead zone during active drag, even though user is still touching/dragging
+2. **P1 - Character Selection UX (HIGH):** Buttons too small (violate iOS HIG 60pt minimum), cards cramped (200x300pt), horizontal layout won't fit on mobile
+
+### Phase 1 (P0): Joystick Dead Zone Fix
+
+**Problem**: Dead zone acts as continuous "stop zone" throughout entire drag gesture, not just on initial touch
+
+**Root Cause Analysis** (Expert Team):
+> "The dead zone is being applied continuously during InputEventScreenDrag, not just on initial InputEventScreenTouch. This creates a circular 'stop zone' at the center of the joystick. When user's finger drifts within 12px → current_direction = Vector2.ZERO emitted → player stops moving. This is NOT how industry-standard mobile joysticks work (Brotato/Vampire Survivors)."
+
+**Solution**: One-time threshold gate with state tracking
+- Added `has_crossed_dead_zone: bool` flag for gesture state
+- Dead zone only applies on initial touch (prevents accidental tap-movement)
+- Once threshold crossed (>12px), direction tracks continuously
+- User can move finger anywhere within 85px radius without hitting "stop zones"
+- Flag resets on touch release, ready for next gesture
+
+**Implementation** ([virtual_joystick.gd](../../scripts/ui/virtual_joystick.gd)):
+```gdscript
+# Dead zone state tracking (prevents "stuck" feeling during drag - Round 4 fix)
+var has_crossed_dead_zone: bool = false  # One-time threshold gate
+
+func _update_stick_position_from_offset(offset: Vector2) -> void:
+    var offset_length: float = offset.length()
+
+    if not has_crossed_dead_zone:
+        # First-time check: User must drag >12px to start moving
+        if offset_length > DEAD_ZONE_THRESHOLD:
+            has_crossed_dead_zone = true  # Transition to ACTIVE_DRAG state
+            current_direction = offset.normalized()
+            direction_changed.emit(current_direction)
+        else:
+            # Still within initial dead zone
+            current_direction = Vector2.ZERO
+            direction_changed.emit(Vector2.ZERO)
+    else:
+        # Already crossed threshold - always emit direction (dead zone no longer applies)
+        if offset_length > 0.1:
+            current_direction = offset.normalized()
+            direction_changed.emit(current_direction)
+```
+
+**Expected Result**: Smooth continuous movement when finger drifts back toward origin
+
+### Phase 2 (P1): Character Selection Mobile Improvements
+
+**Problem**: Multiple iOS HIG violations and poor mobile layout
+
+**Issues:**
+- Back button: 150x50pt (10pt below iOS HIG minimum)
+- Create Character button: 200x50pt (10pt below iOS HIG minimum)
+- Select buttons: ~40pt default (20pt below iOS HIG minimum)
+- Lock overlay buttons: ~40pt default (20pt below iOS HIG minimum)
+- Cards: 200x300pt (cramped, excessive text wrapping)
+- Layout: HBoxContainer (won't fit on narrow screens like iPhone SE)
+
+**Solution**: iOS HIG compliance + mobile-first layout
+
+**Changes:**
+1. **All buttons increased to 60pt height minimum** (iOS HIG compliant)
+   - Back button: 150x50 → 200x60
+   - Create Character: 200x50 → 250x60
+   - Card Select: default → 220x60
+   - Lock overlay buttons: default → 200x60
+   - All buttons: 28pt or 24pt font sizes
+
+2. **Character cards increased: 200x300 → 280x400**
+   - Less text wrapping, more comfortable reading
+   - Fits on narrow screens (375pt - 80pt margins = 295pt available)
+
+3. **Vertical scroll layout implemented**
+   - Changed HBoxContainer → VBoxContainer in ScrollContainer
+   - Mobile-first: Natural vertical scrolling (thumb gesture)
+   - Future-proof for additional character types
+
+**Implementation**:
+- Modified [character_selection.tscn](../../scenes/ui/character_selection.tscn) - Bottom buttons, scroll layout
+- Modified [character_selection.gd](../../scripts/ui/character_selection.gd) - Card size, card buttons, lock buttons
+
+**iOS HIG Compliance**:
+- Touch targets: 44pt minimum, 60pt recommended ✅
+- Font sizes: 17pt minimum, 20-24pt body ✅ (already fixed in Round 3)
+- Layout: Thumb-zone aware ✅
+
+### Technical Implementation Summary
+
+**Files Modified:**
+1. `scripts/ui/virtual_joystick.gd` - Dead zone state tracking
+2. `scenes/ui/character_selection.tscn` - Bottom button sizes, scroll layout
+3. `scripts/ui/character_selection.gd` - Card size, button sizes
+
+**Test Results**: ✅ 455/479 tests passing (no regressions)
+
+**Commits:**
+- `a086552` - fix: mobile UX QA round 4 - joystick dead zone "stuck" behavior
+- `33b12e5` - feat: mobile UX QA round 4 - character selection mobile improvements
+- `a7b69af` - docs: add mobile UX QA round 4 implementation plan
+
+### Success Criteria
+
+**P0 - Joystick (CRITICAL):**
+- [x] One-time threshold gate implemented ✅
+- [x] has_crossed_dead_zone flag tracking gesture state ✅
+- [x] Direction tracks continuously after threshold crossed ✅
+- [ ] User reports smooth continuous movement ⏳ (pending device test)
+
+**P1 - Character Selection (HIGH):**
+- [x] All buttons 60pt height minimum (iOS HIG compliant) ✅
+- [x] Character cards increased to 280x400pt ✅
+- [x] Vertical scroll layout implemented ✅
+- [ ] User reports comfortable button tapping ⏳ (pending device test)
+- [ ] User reports no cramped feeling ⏳ (pending device test)
+
 ### Next Steps
 
-1. **User Action**: Build and test on iOS device ⏳
+1. **User Action**: Build and test on iOS device
 2. **Verify**:
-   - [ ] No "stuck" feeling during rapid direction changes
-   - [ ] Movement feels instant and responsive (all directions)
-   - [ ] Character selection text easily readable
-3. **Commit changes** (after confirmation)
-4. **Update timeline** with Round 3 completion
+   - [ ] Joystick feels smooth (no more "stuck" when finger drifts near origin)
+   - [ ] All buttons easy to tap (no mis-taps)
+   - [ ] Character cards comfortable to read (no cramped feeling)
+   - [ ] Vertical scrolling smooth and natural
+3. **Provide feedback** for potential Round 5 (if needed)
 
 ---
