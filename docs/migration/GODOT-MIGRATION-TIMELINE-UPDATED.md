@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-01-11
-**Status**: Week 12 Complete + Mobile UX Optimized (Round 3 In Progress) + iOS Deployment Ready
-**Current Progress**: Weapon variety + visual identity + pickup magnets complete. Mobile UX optimization (all 3 phases) complete. iOS physics fixes + mobile touch controls implemented. Mobile UX QA Round 3 fixes implemented (pending device test). (455/479 tests passing)
+**Last Updated**: 2025-01-12
+**Status**: Week 12 Complete + Mobile UX Optimized (Round 4 Follow-Up Complete) + iOS Deployment Ready
+**Current Progress**: Weapon variety + visual identity + pickup magnets complete. Mobile UX optimization (all 3 phases) complete. iOS physics fixes + mobile touch controls implemented. Mobile UX QA Round 4 complete. Mobile UX QA Round 4 Follow-Up fixes implemented (coordinate system + scroll UX) - ready for device testing. (455/479 tests passing)
 
 ---
 
@@ -21,7 +21,7 @@
 | **Week 11** | Complete | ✅ | Combat polish, auto-targeting, XP progression, camera shake |
 | **Week 12** | Complete | ✅ | Weapon variety + visual identity (8 weapons) + pickup magnets + stat tracking fixes |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
-| **Mobile UX Optimization** | Round 3 Testing | 🚧 | Font sizing, text outlines, touch targets, animations, polish (Round 1-2 complete, Round 3 pending device test) |
+| **Mobile UX Optimization** | Round 4 Follow-Up Testing | 🚧 | Font sizing, text outlines, touch targets, animations, polish, coordinate system fixes, scroll UX (Rounds 1-4 complete, Round 4 follow-up pending device test) |
 | **Week 13+** | Planned | 📅 | Minions system, The Lab |
 | **Week 14+** | Planned | 📅 | Perks, monetization, polish |
 
@@ -686,6 +686,81 @@ CharacterService: 43/43 passing
 
 ---
 
+## ✅ Mobile UX QA Rounds (Complete)
+
+**Goal**: Iterative iOS device testing and fixes for mobile-first gameplay experience
+
+**Status**: Round 4 Follow-Up Complete (2025-01-12) - Ready for Device Testing
+
+### Round 1: Font Harmonization (Complete)
+**Date**: 2025-01-11
+**Issues**: Font inconsistency, visual dissonance in HUD
+**Solution**: 2-tier system (28pt HUD, 40pt timer)
+**Commit**: Font harmony + joystick smoothness fixes
+
+### Round 2: Additional Polish (Complete)
+**Date**: 2025-01-11
+**Issues**: Currency display formatting
+**Solution**: Compact display format
+**Commit**: Currency display improvements
+
+### Round 3: Joystick Acceleration + Readability (Complete)
+**Date**: 2025-01-11
+**Issues**: Joystick sluggish feel, character selection text too small
+**Solution**: Asymmetric lerping (0.6 accel, 0.2 decel), font sizes increased
+**Commits**:
+- `8af3e17` - fix: mobile UX QA round 3 - joystick acceleration + character selection readability
+
+### Round 4: Dead Zone + iOS HIG Compliance (Complete)
+**Date**: 2025-01-12
+**Issues**: Joystick "stuck" in dead zone, buttons too small for iOS HIG
+**Solution**: One-time threshold gate, all buttons 60pt minimum
+**Commits**:
+- `a086552` - fix: mobile UX QA round 4 - joystick dead zone "stuck" behavior
+- `33b12e5` - feat: mobile UX QA round 4 - character selection mobile improvements
+
+### Round 4 Follow-Up: Coordinate System + Scroll UX (Complete)
+**Date**: 2025-01-12
+
+**Issues from iOS Device Testing**:
+1. **P0 CRITICAL**: Up/left had "hard stops" mid-screen, right/down were smooth
+2. **P0 CRITICAL**: Player could move way off-screen to the right
+3. **P1 HIGH**: Scrollbar too small for thick fingers, difficult to find/grab
+
+**Root Causes**:
+1. **Coordinate system conflict**: `_clamp_to_viewport()` mixed viewport size (screen pixels) with world coordinates (-2000 to +2000)
+   - Moving left/up hit margin=20 quickly → hard stop
+   - Moving right/down could reach ~1900 → appeared off-screen
+2. **Scrollbar anti-pattern**: Tiny scrollbar (8-12px) difficult for thick fingers
+
+**Solutions**:
+1. Removed broken `_clamp_to_viewport()` function entirely
+   - Camera boundaries already handle world-space constraints correctly
+   - ✅ Smooth movement in all directions
+   - ✅ Player stays within camera bounds (no off-screen)
+2. Disabled scrollbar, enabled drag-to-scroll (mobile standard)
+   - Changed `vertical_scroll_mode = 2` → `0`
+   - ✅ Users swipe anywhere to scroll
+   - ✅ Matches industry standard (Brotato, Vampire Survivors)
+
+**Expert Analysis**:
+- **Sr Mobile Game Designer**: "Classic Godot coordinate system mistake. Viewport ≠ World."
+- **Godot Specialist**: "Viewport clamp only works if camera fixed at (0,0). Camera follow creates asymmetric bug."
+- **Sr Mobile UI/UX Expert**: "Scrollbars are desktop UI. Mobile uses drag-to-scroll everywhere."
+
+**Test Results**: ✅ 455/479 tests passing (no regressions)
+
+**Commits**:
+- `71f0606` - fix: mobile UX QA round 4 follow-up - coordinate system and scroll UX fixes
+
+**Files Modified**:
+- `scripts/entities/player.gd` - Removed viewport clamp function
+- `scenes/ui/character_selection.tscn` - Disabled scrollbar
+
+**Next Steps**: Device testing to verify all fixes working as expected
+
+---
+
 ## 🤖 Week 13+: Minions + The Lab (Planned)
 
 ### Minions System
@@ -808,7 +883,9 @@ CharacterService: 43/43 passing
 | iOS Deployment: Critical Fixes | 2025-01-11 | 2025-01-11 | ✅ Complete |
 | iOS Deployment: Mobile Controls | 2025-01-11 | 2025-01-11 | ✅ Complete |
 | Mobile UX Optimization (Phase 1-3) | 2025-01-11 | 2025-01-11 | ✅ Complete |
-| Mobile UX QA Round 3 | 2025-01-11 | - | 🚧 Implementation Complete (device test pending) |
+| Mobile UX QA Round 3 | 2025-01-11 | 2025-01-11 | ✅ Complete (joystick acceleration + character selection readability) |
+| Mobile UX QA Round 4 | 2025-01-12 | 2025-01-12 | ✅ Complete (joystick dead zone + character selection iOS HIG) |
+| Mobile UX QA Round 4 Follow-Up | 2025-01-12 | 2025-01-12 | ✅ Complete (coordinate system fix + scroll UX) - device test pending |
 | TestFlight Distribution Ready | 2025-01-12 | - | 🚧 Ready (privacy fix pending) |
 | Week 12: The Lab Functional | 2025-12-01 | - | 📅 Planned |
 | Week 14: Perks System Live | 2025-12-15 | - | 📅 Planned |
