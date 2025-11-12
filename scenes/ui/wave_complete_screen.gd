@@ -42,6 +42,8 @@ func show_stats(wave: int, stats: Dictionary) -> void:
 func _add_stat_label(text: String) -> void:
 	var label = Label.new()
 	label.text = text
+	label.add_theme_font_size_override("font_size", 24)  # Mobile-friendly font size
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_display.add_child(label)
 
 

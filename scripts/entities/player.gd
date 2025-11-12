@@ -486,8 +486,17 @@ func _clamp_to_viewport() -> void:
 	var viewport_size = get_viewport_rect().size
 	var margin = 20.0  # Pixels from edge
 
+	# Store original position
+	var original_pos = global_position
+
 	# Clamp X (horizontal)
 	global_position.x = clamp(global_position.x, margin, viewport_size.x - margin)
 
 	# Clamp Y (vertical)
 	global_position.y = clamp(global_position.y, margin, viewport_size.y - margin)
+
+	# If position was clamped, zero out velocity in that direction to avoid fighting with input
+	if global_position.x != original_pos.x:
+		velocity.x = 0
+	if global_position.y != original_pos.y:
+		velocity.y = 0

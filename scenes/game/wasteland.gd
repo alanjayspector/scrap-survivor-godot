@@ -428,8 +428,20 @@ func _on_player_died() -> void:
 	# Calculate survival time
 	var survival_time = (Time.get_ticks_msec() / 1000.0) - start_time
 
+	# Gather currency stats from BankingService
+	var scrap = BankingService.balances.get("scrap", 0) if BankingService else 0
+	var components = BankingService.balances.get("components", 0) if BankingService else 0
+	var nanites = BankingService.balances.get("nanites", 0) if BankingService else 0
+
 	# Show game over screen with stats
-	var stats = {"wave": wave_manager.current_wave, "kills": total_kills, "time": survival_time}
+	var stats = {
+		"wave": wave_manager.current_wave,
+		"kills": total_kills,
+		"time": survival_time,
+		"scrap": scrap,
+		"components": components,
+		"nanites": nanites
+	}
 	game_over_screen.show_game_over(stats)
 
 	GameLogger.info("Player died", stats)

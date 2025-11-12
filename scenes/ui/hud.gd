@@ -54,11 +54,8 @@ func _ready() -> void:
 		HudService.wave_changed.connect(_on_wave_changed)
 		HudService.currency_changed.connect(_on_currency_changed)
 
-	# Connect to WaveManager signals for wave timer
-	var wave_manager = get_tree().get_first_node_in_group("wave_manager")
-	if wave_manager:
-		wave_manager.wave_started.connect(_on_wave_started)
-		wave_manager.wave_completed.connect(_on_wave_completed)
+	# Connect to WaveManager signals for wave timer (deferred to ensure WaveManager is ready)
+	call_deferred("_connect_to_wave_manager")
 
 	# Initialize currency from BankingService
 	if BankingService:
@@ -81,6 +78,17 @@ func _ready() -> void:
 	_on_wave_changed(HudService.get_current_wave())
 
 	GameLogger.info("HUD initialized")
+
+
+func _connect_to_wave_manager() -> void:
+	"""Connect to WaveManager signals (called deferred to ensure it's ready)"""
+	var wave_manager = get_tree().get_first_node_in_group("wave_manager")
+	if wave_manager:
+		wave_manager.wave_started.connect(_on_wave_started)
+		wave_manager.wave_completed.connect(_on_wave_completed)
+		GameLogger.info("HUD: Connected to WaveManager signals")
+	else:
+		GameLogger.error("HUD: WaveManager not found in group")
 
 
 func _process(delta: float) -> void:

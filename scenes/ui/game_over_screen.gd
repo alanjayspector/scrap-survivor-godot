@@ -25,10 +25,16 @@ func show_game_over(stats: Dictionary) -> void:
 	for child in stats_display.get_children():
 		child.queue_free()
 
-	# Add stats
+	# Add stats with larger font for mobile
 	_add_stat_label("Wave Reached: %d" % stats.get("wave", 0))
 	_add_stat_label("Enemies Killed: %d" % stats.get("kills", 0))
 	_add_stat_label("Survival Time: %s" % _format_time(stats.get("time", 0)))
+
+	# Add currency stats (matching HUD display)
+	_add_stat_label("")  # Spacer
+	_add_stat_label("Scrap: %d" % stats.get("scrap", 0))
+	_add_stat_label("Components: %d" % stats.get("components", 0))
+	_add_stat_label("Nanites: %d" % stats.get("nanites", 0))
 
 	show()
 
@@ -36,6 +42,8 @@ func show_game_over(stats: Dictionary) -> void:
 func _add_stat_label(text: String) -> void:
 	var label = Label.new()
 	label.text = text
+	label.add_theme_font_size_override("font_size", 24)  # Mobile-friendly font size
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_display.add_child(label)
 
 
