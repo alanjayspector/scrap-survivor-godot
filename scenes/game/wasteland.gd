@@ -9,7 +9,7 @@ extends Node2D
 ## - Coordinate wave progression
 ## - Handle scene setup and cleanup
 
-@onready var camera: Camera2D = $Camera2D
+@onready var camera: CameraController = $Camera2D
 @onready var player_container: Node2D = $Player
 @onready var enemies_container: Node2D = $Enemies
 @onready var projectiles_container: Node2D = $Projectiles
@@ -369,9 +369,10 @@ func _spawn_player(char_id: String) -> void:
 	player_container.add_child(player_instance)
 	print("[Wasteland] Player added to scene tree")
 
-	# Set camera target
+	# Set camera to follow player
+	camera.target = player_instance
 	camera.enabled = true
-	print("[Wasteland] Camera enabled")
+	print("[Wasteland] Camera enabled and set to follow player")
 
 	# Equip default weapon (plasma pistol is FREE tier)
 	print("[Wasteland] Waiting for player _ready()...")
