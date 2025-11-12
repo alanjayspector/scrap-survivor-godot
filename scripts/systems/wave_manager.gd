@@ -20,6 +20,9 @@ var wave_stats: Dictionary = {}
 
 
 func _ready() -> void:
+	# Add to group so HUD can connect to wave signals
+	add_to_group("wave_manager")
+
 	# Connect to drop collection signal to track collected drops (not generated)
 	if DropSystem:
 		DropSystem.drops_collected.connect(_on_drops_collected)

@@ -120,19 +120,19 @@ func _physics_process(delta: float) -> void:
 		if visual and direction.x != 0:
 			visual.scale.x = -1 if direction.x < 0 else 1
 
-		# Check for collision with player (contact damage)
+		# Check for contact damage (distance-based, more reliable than slide collisions)
 		if contact_damage_cooldown <= 0:
-			for i in range(get_slide_collision_count()):
-				var collision = get_slide_collision(i)
-				var collider = collision.get_collider()
-				if collider == player:
-					# Deal contact damage to player
-					player.take_damage(damage, global_position)
-					contact_damage_cooldown = contact_damage_rate
-					GameLogger.debug(
-						"Enemy dealt contact damage", {"id": enemy_id, "damage": damage}
-					)
-					break  # Only deal damage once per cooldown period
+			var distance_to_player = global_position.distance_to(player.global_position)
+			var contact_threshold = 40.0  # Sum of collision radii (enemy 20px + player ~20px)
+
+			if distance_to_player <= contact_threshold:
+				# Deal contact damage to player
+				player.take_damage(damage, global_position)
+				contact_damage_cooldown = contact_damage_rate
+				GameLogger.debug(
+					"Enemy dealt contact damage",
+					{"id": enemy_id, "damage": damage, "distance": distance_to_player}
+				)
 
 
 func take_damage(dmg: float) -> bool:

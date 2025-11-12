@@ -148,6 +148,9 @@ func _physics_process(delta: float) -> void:
 	velocity = input_direction * speed
 	move_and_slide()
 
+	# Clamp player position to stay on-screen
+	_clamp_to_viewport()
+
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:
 		var mouse_pos = get_global_mouse_position()
@@ -275,7 +278,10 @@ func _fire_weapon(direction: Vector2) -> void:
 		)
 
 	# Get fire position (weapon pivot or player position)
-	var fire_position = weapon_pivot.global_position if weapon_pivot else global_position
+	# Add offset to spawn projectiles outside player collision (fixes close-range hit detection)
+	var base_position = weapon_pivot.global_position if weapon_pivot else global_position
+	var spawn_offset = 25.0  # Spawn projectiles 25px away from player center
+	var fire_position = base_position + (direction * spawn_offset)
 
 	# Fire through WeaponService (4 arguments required)
 	var success = WeaponService.fire_weapon(
@@ -473,3 +479,15 @@ func _update_pickup_range_indicator() -> void:
 
 	# Update Line2D points
 	pickup_range_indicator.points = points
+
+
+func _clamp_to_viewport() -> void:
+	"""Keep player within viewport bounds to prevent moving off-screen"""
+	var viewport_size = get_viewport_rect().size
+	var margin = 20.0  # Pixels from edge
+
+	# Clamp X (horizontal)
+	global_position.x = clamp(global_position.x, margin, viewport_size.x - margin)
+
+	# Clamp Y (vertical)
+	global_position.y = clamp(global_position.y, margin, viewport_size.y - margin)

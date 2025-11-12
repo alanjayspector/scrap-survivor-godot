@@ -15,6 +15,7 @@ extends Control
 
 ## Node references (set when nodes are available)
 @onready var hp_bar: ProgressBar = $HPBar if has_node("HPBar") else null
+@onready var hp_label: Label = $HPBar/HPLabel if has_node("HPBar/HPLabel") else null
 @onready var xp_bar: ProgressBar = $XPBar if has_node("XPBar") else null
 @onready var xp_label: Label = $XPBar/XPLabel if has_node("XPBar/XPLabel") else null
 @onready var wave_label: Label = $WaveLabel if has_node("WaveLabel") else null
@@ -100,9 +101,20 @@ func _on_hp_changed(current: float, max_value: float) -> void:
 	hp_bar.max_value = max_value
 	hp_bar.value = current
 
+	# Update HP label text
+	if hp_label:
+		hp_label.text = "HP: %d / %d" % [int(current), int(max_value)]
+
 	# Flash HP bar red when damaged (if decreasing)
 	if current < hp_bar.value:
 		_flash_bar(hp_bar, Color.RED)
+
+	# Low HP warning (< 30% HP)
+	var hp_percent = (current / max_value) * 100.0
+	if hp_percent < 30.0:
+		_show_low_hp_warning()
+	else:
+		_hide_low_hp_warning()
 
 
 func _on_xp_changed(current: int, required: int, level: int) -> void:
@@ -266,3 +278,21 @@ func _show_level_up_popup(level: int) -> void:
 	tween.tween_callback(popup.queue_free)
 
 	GameLogger.info("HUD: Level up popup shown", {"level": level})
+
+
+func _show_low_hp_warning() -> void:
+	"""Show visual warning when HP is low (pulsing HP bar)"""
+	if not hp_bar:
+		return
+
+	# Pulse HP bar with red color
+	hp_bar.modulate = Color.RED
+
+
+func _hide_low_hp_warning() -> void:
+	"""Hide low HP warning (restore normal HP bar color)"""
+	if not hp_bar:
+		return
+
+	# Restore normal color
+	hp_bar.modulate = Color.WHITE
