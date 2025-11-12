@@ -23,6 +23,9 @@ var touch_origin: Vector2 = Vector2.ZERO  # Where user first touched
 var touch_index: int = -1  # Track specific touch (multi-touch safe)
 var touch_zone_rect: Rect2  # Left half of screen
 
+# Dead zone state tracking (prevents "stuck" feeling during drag - Round 4 fix)
+var has_crossed_dead_zone: bool = false  # One-time threshold gate
+
 
 func _ready() -> void:
 	# Add to group for player to find
@@ -53,6 +56,7 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 			touch_index = event.index
 			is_pressed = true
 			state = JoystickState.ACTIVE
+			has_crossed_dead_zone = false  # Reset for new gesture (Round 4 fix)
 
 			# Position joystick at touch point
 			global_position = touch_origin
@@ -69,6 +73,7 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 			current_direction = Vector2.ZERO
 			direction_changed.emit(Vector2.ZERO)
 			touch_index = -1
+			has_crossed_dead_zone = false  # Reset for next gesture (Round 4 fix)
 
 
 func _handle_drag(event: InputEventScreenDrag) -> void:
@@ -79,7 +84,7 @@ func _handle_drag(event: InputEventScreenDrag) -> void:
 
 
 func _update_stick_position_from_offset(offset: Vector2) -> void:
-	"""Update stick position from touch offset (replaces old _update_stick_position)"""
+	"""Update stick position from touch offset with one-time dead zone gate (Round 4 fix)"""
 	var offset_length: float = offset.length()
 
 	# Clamp to max distance
@@ -90,11 +95,24 @@ func _update_stick_position_from_offset(offset: Vector2) -> void:
 	# Always update stick visual position (shows where thumb is)
 	stick.position = offset
 
-	# Only emit movement direction if outside dead zone (prevents accidental movement)
-	if offset_length > DEAD_ZONE_THRESHOLD:
-		current_direction = offset.normalized()
-		direction_changed.emit(current_direction)
+	# Dead zone logic: One-time threshold gate (industry standard - Brotato/Vampire Survivors)
+	if not has_crossed_dead_zone:
+		# First-time check: User must drag >12px to start moving (prevents accidental tap-movement)
+		if offset_length > DEAD_ZONE_THRESHOLD:
+			has_crossed_dead_zone = true  # Transition to ACTIVE_DRAG state
+			current_direction = offset.normalized()
+			direction_changed.emit(current_direction)
+		else:
+			# Still within initial dead zone - no movement yet
+			current_direction = Vector2.ZERO
+			direction_changed.emit(Vector2.ZERO)
 	else:
-		# Within dead zone - no movement
-		current_direction = Vector2.ZERO
-		direction_changed.emit(Vector2.ZERO)
+		# Already crossed threshold - always emit direction (dead zone no longer applies)
+		# User can move finger anywhere within 85px radius and direction tracks continuously
+		if offset_length > 0.1:  # Avoid division by zero on exact center
+			current_direction = offset.normalized()
+			direction_changed.emit(current_direction)
+		else:
+			# Finger at exact origin (rare) - no direction
+			current_direction = Vector2.ZERO
+			direction_changed.emit(Vector2.ZERO)
