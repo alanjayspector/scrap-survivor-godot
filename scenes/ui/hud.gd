@@ -219,15 +219,15 @@ func _on_currency_changed(currency_type: String, _amount: int, new_total: int) -
 
 
 func _update_currency_display() -> void:
-	"""Update all currency labels"""
+	"""Update all currency labels (compact mobile-friendly format)"""
 	if scrap_label:
-		scrap_label.text = "Scrap: %d" % scrap
+		scrap_label.text = "S: %d" % scrap
 
 	if components_label:
-		components_label.text = "Components: %d" % components
+		components_label.text = "C: %d" % components
 
 	if nanites_label:
-		nanites_label.text = "Nanites: %d" % nanites
+		nanites_label.text = "N: %d" % nanites
 
 
 func _update_wave_timer_display() -> void:

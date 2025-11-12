@@ -143,11 +143,21 @@ func _physics_process(delta: float) -> void:
 		# Fall back to keyboard (desktop)
 		input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 
-	# Apply movement with smoothing (mobile UX optimization)
-	var speed = stats.get("speed", 200)
-	var target_velocity = input_direction * speed
-	# Lerp for smooth joystick feel (0.25 = mobile-optimized smoothing factor)
-	velocity = velocity.lerp(target_velocity, 0.25)
+	# Apply movement with speed-only smoothing (mobile UX optimization)
+	# Direction changes are INSTANT for responsive control
+	# Only speed ramps up/down for smooth feel
+	var speed = float(stats.get("speed", 200))
+
+	if input_direction != Vector2.ZERO:
+		# Moving - ramp up speed smoothly, direction is instant
+		var target_speed = speed
+		var current_speed = velocity.length()
+		var smoothed_speed = lerp(current_speed, target_speed, 0.3)
+		velocity = input_direction * smoothed_speed
+	else:
+		# Stopping - smooth deceleration
+		velocity = velocity.lerp(Vector2.ZERO, 0.2)
+
 	move_and_slide()
 
 	# Clamp player position to stay on-screen
