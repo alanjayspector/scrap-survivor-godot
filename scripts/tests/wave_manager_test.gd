@@ -123,9 +123,9 @@ func test_wave_manager_completes_wave_when_all_killed() -> void:
 	}
 
 	# Simulate 3 enemy deaths
-	wave_manager._on_enemy_died("enemy_1", {"scrap": 5})
-	wave_manager._on_enemy_died("enemy_2", {"scrap": 5})
-	wave_manager._on_enemy_died("enemy_3", {"scrap": 5})
+	wave_manager._on_enemy_died("enemy_1", {"scrap": 5}, 10)
+	wave_manager._on_enemy_died("enemy_2", {"scrap": 5}, 10)
+	wave_manager._on_enemy_died("enemy_3", {"scrap": 5}, 10)
 
 	# Wait for signal processing
 	await get_tree().process_frame
@@ -155,8 +155,8 @@ func test_wave_manager_tracks_wave_stats() -> void:
 	}
 
 	# Simulate enemy deaths (tracks kill count only)
-	wave_manager._on_enemy_died("enemy_1", {})
-	wave_manager._on_enemy_died("enemy_2", {})
+	wave_manager._on_enemy_died("enemy_1", {}, 10)
+	wave_manager._on_enemy_died("enemy_2", {}, 10)
 
 	# Simulate drops being collected by player
 	wave_manager._on_drops_collected({"scrap": 10, "components": 2})
@@ -253,7 +253,7 @@ func test_wave_manager_emits_wave_completed_with_stats() -> void:
 
 	# Simulate final enemy death
 	var drop_data = {"scrap": 10}
-	wave_manager._on_enemy_died("enemy_1", drop_data)
+	wave_manager._on_enemy_died("enemy_1", drop_data, 10)
 
 	# Wait for signal processing
 	await get_tree().process_frame
@@ -296,10 +296,10 @@ func test_wave_manager_tracks_living_enemies() -> void:
 	assert_eq(wave_manager.living_enemies.size(), 3, "Should track 3 living enemies")
 
 	# Simulate enemy deaths
-	wave_manager._on_enemy_died("enemy_1", {})
+	wave_manager._on_enemy_died("enemy_1", {}, 10)
 	assert_eq(wave_manager.living_enemies.size(), 2, "Should have 2 enemies after first death")
 
-	wave_manager._on_enemy_died("enemy_2", {})
+	wave_manager._on_enemy_died("enemy_2", {}, 10)
 	assert_eq(wave_manager.living_enemies.size(), 1, "Should have 1 enemy after second death")
 
 	# Clean up mock enemies (immediate cleanup in tests)
@@ -330,7 +330,7 @@ func test_wave_manager_calculates_wave_time() -> void:
 	}
 
 	# Simulate enemy death (triggers wave completion)
-	wave_manager._on_enemy_died("enemy_1", {})
+	wave_manager._on_enemy_died("enemy_1", {}, 10)
 
 	# Wait for signal processing
 	await get_tree().process_frame
@@ -363,7 +363,7 @@ func test_wave_manager_only_completes_in_combat_state() -> void:
 	}
 
 	# Simulate enemy death
-	wave_manager._on_enemy_died("enemy_1", {})
+	wave_manager._on_enemy_died("enemy_1", {}, 10)
 
 	# Wait for signal processing
 	await get_tree().process_frame

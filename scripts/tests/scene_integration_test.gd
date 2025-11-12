@@ -64,13 +64,19 @@ func test_player_movement_uses_speed_stat() -> void:
 	# Act - Simulate input direction
 	Input.action_press("move_right")
 	await wait_frames(1)
-	player._physics_process(1.0 / 60.0)  # Simulate one frame
+	# Run multiple physics frames to allow velocity to ramp up with lerp smoothing
+	for i in range(20):
+		player._physics_process(1.0 / 60.0)
 	Input.action_release("move_right")
 
 	# Assert
-	# Velocity should match speed when moving
+	# Velocity should approach speed stat with lerp smoothing (allow 5% tolerance)
+	var tolerance = expected_speed * 0.05
 	assert_almost_eq(
-		player.velocity.length(), expected_speed, 1.0, "Player velocity should match speed stat"
+		player.velocity.length(),
+		expected_speed,
+		tolerance,
+		"Player velocity should match speed stat"
 	)
 
 

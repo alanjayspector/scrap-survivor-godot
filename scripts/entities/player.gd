@@ -143,9 +143,11 @@ func _physics_process(delta: float) -> void:
 		# Fall back to keyboard (desktop)
 		input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 
-	# Apply movement
+	# Apply movement with smoothing (mobile UX optimization)
 	var speed = stats.get("speed", 200)
-	velocity = input_direction * speed
+	var target_velocity = input_direction * speed
+	# Lerp for smooth joystick feel (0.25 = mobile-optimized smoothing factor)
+	velocity = velocity.lerp(target_velocity, 0.25)
 	move_and_slide()
 
 	# Clamp player position to stay on-screen

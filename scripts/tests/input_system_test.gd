@@ -88,7 +88,7 @@ func test_camera_shake_on_weapon_fire() -> void:
 	camera.screen_shake_intensity = 10.0
 
 	# Act - simulate weapon fired signal
-	camera._on_weapon_fired("test_weapon")
+	camera._on_weapon_fired("test_weapon", Vector2.ZERO, Vector2.RIGHT)
 
 	# Assert - shake should be triggered
 	assert_gt(camera.shake_amount, 0.0, "Camera should shake after weapon fired")
