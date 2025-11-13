@@ -67,7 +67,7 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Create card container with professional styling (Week 13 Phase 2: Grid layout)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(150, 280)  # 2×2 grid optimized
+	card.custom_minimum_size = Vector2(170, 300)  # 2×2 grid optimized (larger for readability)
 	card.name = "Card_%s" % character_type
 
 	# Apply StyleBoxFlat for professional mobile game look
@@ -97,7 +97,7 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Character type color header (compact for grid)
 	var header_panel = PanelContainer.new()
-	header_panel.custom_minimum_size = Vector2(0, 32)  # Compact header for grid
+	header_panel.custom_minimum_size = Vector2(0, 36)  # Slightly larger header
 	var header_style = StyleBoxFlat.new()
 	header_style.bg_color = type_def.color.lightened(0.2)  # Slightly brighter for visibility
 	header_style.corner_radius_top_left = 6
@@ -110,7 +110,7 @@ func _create_character_card(character_type: String) -> Control:
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 20)  # Compact for grid
+	name_label.add_theme_font_size_override("font_size", 22)  # Larger for readability
 	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	name_label.add_theme_constant_override("outline_size", 2)
@@ -121,7 +121,7 @@ func _create_character_card(character_type: String) -> Control:
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 12)  # Very compact for grid
+	desc_label.add_theme_font_size_override("font_size", 13)  # Larger for readability
 	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	desc_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(desc_label)
@@ -147,7 +147,7 @@ func _create_character_card(character_type: String) -> Control:
 		var stat_label = Label.new()
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
-		stat_label.add_theme_font_size_override("font_size", 11)  # Very small for grid
+		stat_label.add_theme_font_size_override("font_size", 12)  # Larger for readability
 		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
 		stat_label.add_theme_constant_override("outline_size", 1)
 		stat_row.add_child(stat_label)
@@ -161,7 +161,7 @@ func _create_character_card(character_type: String) -> Control:
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	aura_label.add_theme_font_size_override("font_size", 11)  # Compact for grid
+	aura_label.add_theme_font_size_override("font_size", 12)  # Larger for readability
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
 	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	aura_label.add_theme_constant_override("outline_size", 1)
@@ -170,8 +170,8 @@ func _create_character_card(character_type: String) -> Control:
 	# Select button (iOS HIG compliant - compact for grid)
 	var select_btn = Button.new()
 	select_btn.text = "Select"
-	select_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum 44pt height
-	select_btn.add_theme_font_size_override("font_size", 18)  # Compact font
+	select_btn.custom_minimum_size = Vector2(150, 44)  # iOS HIG minimum 44pt height, wider for larger card
+	select_btn.add_theme_font_size_override("font_size", 20)  # Larger font
 	select_btn.pressed.connect(_on_character_card_selected.bind(character_type))
 	vbox.add_child(select_btn)
 
@@ -199,12 +199,12 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	overlay.add_theme_stylebox_override("panel", overlay_style)
 	card.add_child(overlay)
 
-	# Lock content container (centered, compact for grid)
+	# Lock content container (centered vertically in card)
 	var lock_content = VBoxContainer.new()
 	lock_content.set_anchors_preset(Control.PRESET_CENTER)
-	lock_content.position = Vector2(-65, -80)  # Adjusted for smaller card
-	lock_content.custom_minimum_size = Vector2(130, 160)
-	lock_content.add_theme_constant_override("separation", 8)
+	lock_content.position = Vector2(-75, -100)  # Centered for 170×300 card
+	lock_content.custom_minimum_size = Vector2(150, 200)
+	lock_content.add_theme_constant_override("separation", 10)
 	overlay.add_child(lock_content)
 
 	# Lock icon with background
@@ -218,45 +218,38 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	lock_icon_bg.add_theme_stylebox_override("panel", icon_style)
 	lock_content.add_child(lock_icon_bg)
 
-	# Lock icon label (compact)
+	# Lock icon label
 	var lock_label = Label.new()
 	lock_label.text = "🔒"
 	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 32)  # Smaller for grid
+	lock_label.add_theme_font_size_override("font_size", 36)  # Larger for visibility
 	lock_icon_bg.add_child(lock_label)
 
-	# Tier requirement badge (compact)
+	# Tier requirement badge
 	var tier_badge = Label.new()
 	tier_badge.text = _get_tier_name(required_tier)  # Shorter text for grid
 	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tier_badge.add_theme_font_size_override("font_size", 14)  # Smaller for grid
+	tier_badge.add_theme_font_size_override("font_size", 15)  # Readable size
 	tier_badge.add_theme_color_override("font_color", Color(0.9, 0.6, 0.2))  # Orange/gold
 	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
 	tier_badge.add_theme_constant_override("outline_size", 2)
 	lock_content.add_child(tier_badge)
 
-	# Unlock buttons container (compact for grid)
-	var buttons_vbox = VBoxContainer.new()
-	buttons_vbox.set_anchors_preset(Control.PRESET_CENTER)
-	buttons_vbox.position = Vector2(10, 120)  # Adjusted for smaller card
-	buttons_vbox.add_theme_constant_override("separation", 6)
-	overlay.add_child(buttons_vbox)
-
-	# "Try" button (iOS HIG compliant - compact for grid)
+	# "Try" button (iOS HIG compliant)
 	var trial_btn = Button.new()
 	trial_btn.text = "Try"
-	trial_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum
-	trial_btn.add_theme_font_size_override("font_size", 16)  # Compact font
+	trial_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
+	trial_btn.add_theme_font_size_override("font_size", 18)  # Readable font
 	trial_btn.pressed.connect(_on_free_trial_requested.bind(character_type))
-	buttons_vbox.add_child(trial_btn)
+	lock_content.add_child(trial_btn)
 
-	# "Unlock" button (iOS HIG compliant - compact for grid)
+	# "Unlock" button (iOS HIG compliant)
 	var unlock_btn = Button.new()
 	unlock_btn.text = "Unlock"
-	unlock_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum
-	unlock_btn.add_theme_font_size_override("font_size", 16)  # Compact font
+	unlock_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
+	unlock_btn.add_theme_font_size_override("font_size", 18)  # Readable font
 	unlock_btn.pressed.connect(_on_unlock_requested.bind(required_tier))
-	buttons_vbox.add_child(unlock_btn)
+	lock_content.add_child(unlock_btn)
 
 
 func _get_stat_color(stat_name: String) -> Color:
