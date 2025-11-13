@@ -67,7 +67,7 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Create card container with professional styling (Week 13 Phase 2: Grid layout)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(170, 300)  # 2×2 grid optimized (larger for readability)
+	card.custom_minimum_size = Vector2(170, 330)  # 2×2 grid optimized, increased height for breathing room
 	card.name = "Card_%s" % character_type
 
 	# Apply StyleBoxFlat for professional mobile game look
@@ -189,13 +189,22 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 
-	# Semi-transparent dark overlay with rounded corners
+	# Semi-transparent dark overlay with rounded corners (50% opacity - lets stats show through)
+	var tier_color = _get_tier_color(required_tier)
 	var overlay_style = StyleBoxFlat.new()
-	overlay_style.bg_color = Color(0, 0, 0, 0.85)  # Darker for locked state
+	overlay_style.bg_color = Color(0, 0, 0, 0.5)  # 50% opacity - visible but clearly locked
 	overlay_style.corner_radius_top_left = 8
 	overlay_style.corner_radius_top_right = 8
 	overlay_style.corner_radius_bottom_left = 8
 	overlay_style.corner_radius_bottom_right = 8
+
+	# Add tier-colored border to lock overlay for visual distinction
+	overlay_style.border_width_left = 3
+	overlay_style.border_width_top = 3
+	overlay_style.border_width_right = 3
+	overlay_style.border_width_bottom = 3
+	overlay_style.border_color = tier_color  # Tier-colored border makes tier instantly recognizable
+
 	overlay.add_theme_stylebox_override("panel", overlay_style)
 	card.add_child(overlay)
 
@@ -225,29 +234,73 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	lock_label.add_theme_font_size_override("font_size", 36)  # Larger for visibility
 	lock_icon_bg.add_child(lock_label)
 
-	# Tier requirement badge
+	# Tier requirement badge with colored background panel
+	var tier_badge_panel = PanelContainer.new()
+	var tier_color = _get_tier_color(required_tier)
+	var badge_style = StyleBoxFlat.new()
+	badge_style.bg_color = tier_color
+	badge_style.corner_radius_top_left = 6
+	badge_style.corner_radius_top_right = 6
+	badge_style.corner_radius_bottom_left = 6
+	badge_style.corner_radius_bottom_right = 6
+	badge_style.border_width_left = 2
+	badge_style.border_width_top = 2
+	badge_style.border_width_right = 2
+	badge_style.border_width_bottom = 2
+	badge_style.border_color = tier_color.lightened(0.3)  # Brighter border
+	tier_badge_panel.add_theme_stylebox_override("panel", badge_style)
+	lock_content.add_child(tier_badge_panel)
+
 	var tier_badge = Label.new()
-	tier_badge.text = _get_tier_name(required_tier)  # Shorter text for grid
+	tier_badge.text = _get_tier_name(required_tier)
 	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tier_badge.add_theme_font_size_override("font_size", 15)  # Readable size
-	tier_badge.add_theme_color_override("font_color", Color(0.9, 0.6, 0.2))  # Orange/gold
+	tier_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	tier_badge.custom_minimum_size = Vector2(130, 36)  # Larger, more prominent
+	tier_badge.add_theme_font_size_override("font_size", 20)  # Larger for visibility
+	tier_badge.add_theme_color_override("font_color", Color.WHITE)
 	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
 	tier_badge.add_theme_constant_override("outline_size", 2)
-	lock_content.add_child(tier_badge)
+	tier_badge_panel.add_child(tier_badge)
 
-	# "Try" button (iOS HIG compliant)
+	# "Try" button (iOS HIG compliant) - Blue background
 	var trial_btn = Button.new()
 	trial_btn.text = "Try"
 	trial_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
 	trial_btn.add_theme_font_size_override("font_size", 18)  # Readable font
+
+	# Blue background for Try button
+	var trial_style = StyleBoxFlat.new()
+	trial_style.bg_color = Color(0.3, 0.6, 0.9, 0.95)  # Blue, semi-transparent
+	trial_style.corner_radius_top_left = 6
+	trial_style.corner_radius_top_right = 6
+	trial_style.corner_radius_bottom_left = 6
+	trial_style.corner_radius_bottom_right = 6
+	trial_btn.add_theme_stylebox_override("normal", trial_style)
+	trial_btn.add_theme_color_override("font_color", Color.WHITE)
+	trial_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+	trial_btn.add_theme_constant_override("outline_size", 2)
+
 	trial_btn.pressed.connect(_on_free_trial_requested.bind(character_type))
 	lock_content.add_child(trial_btn)
 
-	# "Unlock" button (iOS HIG compliant)
+	# "Unlock" button (iOS HIG compliant) - Gold background (matches tier color)
 	var unlock_btn = Button.new()
 	unlock_btn.text = "Unlock"
 	unlock_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
 	unlock_btn.add_theme_font_size_override("font_size", 18)  # Readable font
+
+	# Gold/tier-colored background for Unlock button
+	var unlock_style = StyleBoxFlat.new()
+	unlock_style.bg_color = tier_color  # Match tier color for consistency
+	unlock_style.corner_radius_top_left = 6
+	unlock_style.corner_radius_top_right = 6
+	unlock_style.corner_radius_bottom_left = 6
+	unlock_style.corner_radius_bottom_right = 6
+	unlock_btn.add_theme_stylebox_override("normal", unlock_style)
+	unlock_btn.add_theme_color_override("font_color", Color.WHITE)
+	unlock_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+	unlock_btn.add_theme_constant_override("outline_size", 2)
+
 	unlock_btn.pressed.connect(_on_unlock_requested.bind(required_tier))
 	lock_content.add_child(unlock_btn)
 
@@ -279,6 +332,18 @@ func _get_tier_name(tier: int) -> String:
 		CharacterService.UserTier.SUBSCRIPTION:
 			return "SUBSCRIPTION"
 	return "UNKNOWN"
+
+
+func _get_tier_color(tier: int) -> Color:
+	"""Return tier-specific color for visual hierarchy (matches UI design system)"""
+	match tier:
+		CharacterService.UserTier.FREE:
+			return Color(0.42, 0.45, 0.50)  # Gray (#6B7280) - Basic tier
+		CharacterService.UserTier.PREMIUM:
+			return Color(0.96, 0.62, 0.04)  # Gold (#F59E0B) - Premium tier
+		CharacterService.UserTier.SUBSCRIPTION:
+			return Color(0.55, 0.36, 0.96)  # Purple (#8B5CF6) - Subscription tier
+	return Color(0.6, 0.6, 0.6)  # Default gray
 
 
 func _connect_signals() -> void:
