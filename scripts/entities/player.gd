@@ -169,21 +169,30 @@ func _physics_process(delta: float) -> void:
 		# Stopping - smooth deceleration
 		velocity = velocity.lerp(Vector2.ZERO, DECELERATION_RATE)
 
-	move_and_slide()
+	# Calculate boundary limits for velocity-based clamping
+	var min_x = WORLD_BOUNDS.position.x + BOUNDS_MARGIN  # -1900
+	var max_x = WORLD_BOUNDS.position.x + WORLD_BOUNDS.size.x - BOUNDS_MARGIN  # +1900
+	var min_y = WORLD_BOUNDS.position.y + BOUNDS_MARGIN  # -1900
+	var max_y = WORLD_BOUNDS.position.y + WORLD_BOUNDS.size.y - BOUNDS_MARGIN  # +1900
 
-	# Clamp player to world boundaries (prevent off-screen movement)
-	# Uses world coordinates defined in WORLD_BOUNDS constant
-	# Matches CameraController boundaries to ensure player stays visible
-	global_position.x = clamp(
-		global_position.x,
-		WORLD_BOUNDS.position.x + BOUNDS_MARGIN,
-		WORLD_BOUNDS.position.x + WORLD_BOUNDS.size.x - BOUNDS_MARGIN
-	)
-	global_position.y = clamp(
-		global_position.y,
-		WORLD_BOUNDS.position.y + BOUNDS_MARGIN,
-		WORLD_BOUNDS.position.y + WORLD_BOUNDS.size.y - BOUNDS_MARGIN
-	)
+	# Predict next position BEFORE move_and_slide()
+	var next_position = global_position + velocity * delta
+
+	# Clamp VELOCITY (not position!) based on predicted position
+	# This prevents physics cache corruption that causes phantom walls
+	if next_position.x < min_x and velocity.x < 0:
+		velocity.x = 0  # Can't move left past boundary
+	elif next_position.x > max_x and velocity.x > 0:
+		velocity.x = 0  # Can't move right past boundary
+
+	if next_position.y < min_y and velocity.y < 0:
+		velocity.y = 0  # Can't move up past boundary
+	elif next_position.y > max_y and velocity.y > 0:
+		velocity.y = 0  # Can't move down past boundary
+
+	# Let move_and_slide() handle ALL position updates
+	# NO manual position modification after this point!
+	move_and_slide()
 
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:
