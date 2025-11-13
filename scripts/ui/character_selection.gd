@@ -69,29 +69,53 @@ func _create_character_type_cards() -> void:
 func _create_character_card(character_type: String) -> Control:
 	var type_def = CharacterService.CHARACTER_TYPES[character_type]
 
-	# Create card container (mobile-optimized size - Round 4)
+	# Create card container with professional styling (Week 13 Phase 2)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(280, 400)
+	card.custom_minimum_size = Vector2(340, 420)  # Increased from 280×400 for more breathing room
 	card.name = "Card_%s" % character_type
+
+	# Apply StyleBoxFlat for professional mobile game look
+	var style_box = StyleBoxFlat.new()
+	style_box.bg_color = Color(0.15, 0.15, 0.15, 0.95)  # Dark semi-transparent background
+	style_box.corner_radius_top_left = 12
+	style_box.corner_radius_top_right = 12
+	style_box.corner_radius_bottom_left = 12
+	style_box.corner_radius_bottom_right = 12
+	style_box.border_width_all = 3
+	style_box.border_color = type_def.color  # Character type color border
+	style_box.shadow_size = 8
+	style_box.shadow_color = Color(0, 0, 0, 0.5)
+	style_box.content_margin_left = 12
+	style_box.content_margin_right = 12
+	style_box.content_margin_top = 12
+	style_box.content_margin_bottom = 12
+	card.add_theme_stylebox_override("panel", style_box)
 
 	# Create card layout
 	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)  # Better spacing between elements
 	card.add_child(vbox)
 
-	# Character type name
+	# Character type color header (full-width, professional look)
+	var header_panel = PanelContainer.new()
+	header_panel.custom_minimum_size = Vector2(0, 60)
+	var header_style = StyleBoxFlat.new()
+	header_style.bg_color = type_def.color.lightened(0.2)  # Slightly brighter for visibility
+	header_style.corner_radius_top_left = 8
+	header_style.corner_radius_top_right = 8
+	header_panel.add_theme_stylebox_override("panel", header_style)
+	vbox.add_child(header_panel)
+
+	# Character type name on colored header
 	var name_label = Label.new()
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 28)  # Mobile UX: consistent with HUD
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_label.add_theme_font_size_override("font_size", 32)  # Larger, bolder
+	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	name_label.add_theme_constant_override("outline_size", 3)
-	vbox.add_child(name_label)
-
-	# Color indicator (visual distinction)
-	var color_rect = ColorRect.new()
-	color_rect.color = type_def.color
-	color_rect.custom_minimum_size = Vector2(180, 20)
-	vbox.add_child(color_rect)
+	header_panel.add_child(name_label)
 
 	# Description
 	var desc_label = Label.new()
@@ -103,14 +127,33 @@ func _create_character_card(character_type: String) -> Control:
 	desc_label.add_theme_constant_override("outline_size", 3)
 	vbox.add_child(desc_label)
 
-	# Stat modifiers display
-	var stats_label = Label.new()
-	stats_label.text = _format_stat_modifiers(type_def.stat_modifiers)
-	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	stats_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: critical info readability
-	stats_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	stats_label.add_theme_constant_override("outline_size", 3)
-	vbox.add_child(stats_label)
+	# Stat modifiers display with visual icons (Week 13 Phase 2)
+	var stats_container = VBoxContainer.new()
+	stats_container.add_theme_constant_override("separation", 6)
+	vbox.add_child(stats_container)
+
+	# Add each stat with a colored icon
+	for stat_name in type_def.stat_modifiers.keys():
+		var value = type_def.stat_modifiers[stat_name]
+		var stat_row = HBoxContainer.new()
+		stat_row.add_theme_constant_override("separation", 8)
+
+		# Stat icon (color-coded by category)
+		var icon = ColorRect.new()
+		icon.custom_minimum_size = Vector2(12, 12)
+		icon.color = _get_stat_color(stat_name)
+		stat_row.add_child(icon)
+
+		# Stat label
+		var stat_label = Label.new()
+		var sign = "+" if value >= 0 else ""
+		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
+		stat_label.add_theme_font_size_override("font_size", 22)
+		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
+		stat_label.add_theme_constant_override("outline_size", 2)
+		stat_row.add_child(stat_label)
+
+		stats_container.add_child(stat_row)
 
 	# Aura type display
 	var aura_label = Label.new()
@@ -158,24 +201,56 @@ func _create_character_card(character_type: String) -> Control:
 
 
 func _add_lock_overlay(card: Control, character_type: String, required_tier: int) -> void:
-	# Semi-transparent overlay
-	var overlay = ColorRect.new()
-	overlay.color = Color(0, 0, 0, 0.7)
+	# Professional lock overlay (Week 13 Phase 2)
+	var overlay = Panel.new()
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	# Semi-transparent dark overlay with rounded corners
+	var overlay_style = StyleBoxFlat.new()
+	overlay_style.bg_color = Color(0, 0, 0, 0.85)  # Darker for locked state
+	overlay_style.corner_radius_top_left = 12
+	overlay_style.corner_radius_top_right = 12
+	overlay_style.corner_radius_bottom_left = 12
+	overlay_style.corner_radius_bottom_right = 12
+	overlay.add_theme_stylebox_override("panel", overlay_style)
 	card.add_child(overlay)
 
-	# Lock icon (use label for now, can be replaced with icon)
-	var lock_label = Label.new()
-	lock_label.text = "🔒 LOCKED"
-	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 24)  # Mobile UX: readable at a glance
-	lock_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	lock_label.add_theme_constant_override("outline_size", 3)
-	overlay.add_child(lock_label)
+	# Lock content container
+	var lock_content = VBoxContainer.new()
+	lock_content.set_anchors_preset(Control.PRESET_CENTER)
+	lock_content.position = Vector2(-100, -80)
+	lock_content.custom_minimum_size = Vector2(200, 160)
+	lock_content.add_theme_constant_override("separation", 16)
+	overlay.add_child(lock_content)
 
-	# Center the lock label
-	lock_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Lock icon with background
+	var lock_icon_bg = PanelContainer.new()
+	var icon_style = StyleBoxFlat.new()
+	icon_style.bg_color = Color(0.2, 0.2, 0.2, 0.9)
+	icon_style.corner_radius_top_left = 8
+	icon_style.corner_radius_top_right = 8
+	icon_style.corner_radius_bottom_left = 8
+	icon_style.corner_radius_bottom_right = 8
+	lock_icon_bg.add_theme_stylebox_override("panel", icon_style)
+	lock_content.add_child(lock_icon_bg)
+
+	# Lock icon label
+	var lock_label = Label.new()
+	lock_label.text = "🔒"
+	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lock_label.add_theme_font_size_override("font_size", 48)
+	lock_icon_bg.add_child(lock_label)
+
+	# Tier requirement badge
+	var tier_badge = Label.new()
+	tier_badge.text = _get_tier_name(required_tier) + " REQUIRED"
+	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tier_badge.add_theme_font_size_override("font_size", 22)
+	tier_badge.add_theme_color_override("font_color", Color(0.9, 0.6, 0.2))  # Orange/gold
+	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
+	tier_badge.add_theme_constant_override("outline_size", 3)
+	lock_content.add_child(tier_badge)
 
 	# Unlock buttons container
 	var buttons_vbox = VBoxContainer.new()
@@ -200,13 +275,22 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	buttons_vbox.add_child(unlock_btn)
 
 
-func _format_stat_modifiers(stat_mods: Dictionary) -> String:
-	var lines: Array[String] = []
-	for stat_name in stat_mods.keys():
-		var value = stat_mods[stat_name]
-		var sign = "+" if value >= 0 else ""
-		lines.append("%s%s %s" % [sign, value, stat_name.capitalize()])
-	return "\n".join(lines)
+func _get_stat_color(stat_name: String) -> Color:
+	"""Return color-coded stat icon based on stat category (Week 13 Phase 2)"""
+	# HP/Armor: Red/Orange
+	if stat_name in ["max_hp", "armor", "hp_regen"]:
+		return Color(0.9, 0.3, 0.2)  # Red
+
+	# Damage/Speed: Yellow/Green
+	if stat_name in ["damage", "attack_speed", "speed"]:
+		return Color(0.9, 0.8, 0.2)  # Yellow
+
+	# Utility (pickup_range, luck, etc.): Blue/Purple
+	if stat_name in ["pickup_range", "luck", "scavenging"]:
+		return Color(0.3, 0.6, 0.9)  # Blue
+
+	# Default: Grey
+	return Color(0.7, 0.7, 0.7)
 
 
 func _get_tier_name(tier: int) -> String:
@@ -241,23 +325,44 @@ func _on_character_card_selected(character_type: String) -> void:
 	selected_character_type = character_type
 	GameLogger.info("Character type selected", {"type": character_type})
 
-	# Update visual indication (could add highlight to selected card)
+	# Tap feedback animation (Week 13 Phase 2 - Professional mobile game feel)
+	if character_type_cards.has(character_type):
+		var card = character_type_cards[character_type]
+		if card:
+			# Scale animation: 1.0 → 1.05 → 1.0 (tactile feedback)
+			var tween = create_tween()
+			tween.set_parallel(false)
+			tween.tween_property(card, "scale", Vector2(1.05, 1.05), 0.1)
+			tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.1)
+
+	# Update visual indication (highlight selected card)
 	_highlight_selected_card(character_type)
 
 
 func _highlight_selected_card(character_type: String) -> void:
-	# Remove highlight from all cards
+	# Remove highlight from all cards (Week 13 Phase 2 - Enhanced visual feedback)
 	for card_type in character_type_cards.keys():
 		var card = character_type_cards[card_type]
 		if card is PanelContainer:
-			# Reset modulate
+			# Reset to normal state
 			card.modulate = Color(1, 1, 1, 1)
 
-	# Highlight selected card
+			# Reset border width
+			var style = card.get_theme_stylebox("panel")
+			if style and style is StyleBoxFlat:
+				style.border_width_all = 3
+
+	# Highlight selected card with glow effect
 	if character_type_cards.has(character_type):
 		var card = character_type_cards[character_type]
 		if card is PanelContainer:
+			# Brighter glow
 			card.modulate = Color(1.2, 1.2, 1.2, 1)
+
+			# Thicker border for selected card
+			var style = card.get_theme_stylebox("panel")
+			if style and style is StyleBoxFlat:
+				style.border_width_all = 5  # Thicker border (3px → 5px)
 
 
 func _on_create_character_pressed() -> void:
