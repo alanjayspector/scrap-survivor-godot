@@ -234,9 +234,8 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	lock_label.add_theme_font_size_override("font_size", 36)  # Larger for visibility
 	lock_icon_bg.add_child(lock_label)
 
-	# Tier requirement badge with colored background panel
+	# Tier requirement badge with colored background panel (reuse tier_color from above)
 	var tier_badge_panel = PanelContainer.new()
-	var tier_color = _get_tier_color(required_tier)
 	var badge_style = StyleBoxFlat.new()
 	badge_style.bg_color = tier_color
 	badge_style.corner_radius_top_left = 6
