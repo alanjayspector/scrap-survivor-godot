@@ -15,11 +15,9 @@ signal tier_upgrade_requested(required_tier: int)
 signal free_trial_requested(character_type: String)
 
 ## UI References (cached from scene tree with @onready for performance)
-@onready var character_cards_container: VBoxContainer = get_node(
-	"MarginContainer/VBoxContainer/ScrollContainer/CharacterCardsContainer"
+@onready var character_cards_container: GridContainer = get_node(
+	"MarginContainer/VBoxContainer/CharacterCardsContainer"
 )
-@onready
-var stat_comparison_panel: Panel = get_node("MarginContainer/VBoxContainer/StatComparisonPanel")
 @onready
 var create_button: Button = get_node("MarginContainer/VBoxContainer/ButtonsContainer/CreateButton")
 @onready
@@ -41,8 +39,6 @@ func _validate_ui_nodes() -> void:
 	# Validate that @onready nodes were found successfully
 	if not character_cards_container:
 		push_error("CharacterSelection: Failed to find CharacterCardsContainer node")
-	if not stat_comparison_panel:
-		push_warning("CharacterSelection: Failed to find StatComparisonPanel node")
 	if not create_button:
 		push_warning("CharacterSelection: Failed to find CreateButton node")
 	if not back_button:
@@ -69,43 +65,43 @@ func _create_character_type_cards() -> void:
 func _create_character_card(character_type: String) -> Control:
 	var type_def = CharacterService.CHARACTER_TYPES[character_type]
 
-	# Create card container with professional styling (Week 13 Phase 2)
+	# Create card container with professional styling (Week 13 Phase 2: Grid layout)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(300, 340)  # Mobile-optimized: compact but readable
+	card.custom_minimum_size = Vector2(150, 280)  # 2×2 grid optimized
 	card.name = "Card_%s" % character_type
 
 	# Apply StyleBoxFlat for professional mobile game look
 	var style_box = StyleBoxFlat.new()
 	style_box.bg_color = Color(0.15, 0.15, 0.15, 0.95)  # Dark semi-transparent background
-	style_box.corner_radius_top_left = 12
-	style_box.corner_radius_top_right = 12
-	style_box.corner_radius_bottom_left = 12
-	style_box.corner_radius_bottom_right = 12
-	style_box.border_width_left = 3
-	style_box.border_width_top = 3
-	style_box.border_width_right = 3
-	style_box.border_width_bottom = 3
+	style_box.corner_radius_top_left = 8
+	style_box.corner_radius_top_right = 8
+	style_box.corner_radius_bottom_left = 8
+	style_box.corner_radius_bottom_right = 8
+	style_box.border_width_left = 2
+	style_box.border_width_top = 2
+	style_box.border_width_right = 2
+	style_box.border_width_bottom = 2
 	style_box.border_color = type_def.color  # Character type color border
-	style_box.shadow_size = 8
+	style_box.shadow_size = 4
 	style_box.shadow_color = Color(0, 0, 0, 0.5)
-	style_box.content_margin_left = 12
-	style_box.content_margin_right = 12
-	style_box.content_margin_top = 12
-	style_box.content_margin_bottom = 12
+	style_box.content_margin_left = 6
+	style_box.content_margin_right = 6
+	style_box.content_margin_top = 6
+	style_box.content_margin_bottom = 6
 	card.add_theme_stylebox_override("panel", style_box)
 
 	# Create card layout
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)  # Tighter spacing for mobile
+	vbox.add_theme_constant_override("separation", 4)  # Very tight for grid
 	card.add_child(vbox)
 
-	# Character type color header (full-width, professional look)
+	# Character type color header (compact for grid)
 	var header_panel = PanelContainer.new()
-	header_panel.custom_minimum_size = Vector2(0, 48)  # More compact header
+	header_panel.custom_minimum_size = Vector2(0, 32)  # Compact header for grid
 	var header_style = StyleBoxFlat.new()
 	header_style.bg_color = type_def.color.lightened(0.2)  # Slightly brighter for visibility
-	header_style.corner_radius_top_left = 8
-	header_style.corner_radius_top_right = 8
+	header_style.corner_radius_top_left = 6
+	header_style.corner_radius_top_right = 6
 	header_panel.add_theme_stylebox_override("panel", header_style)
 	vbox.add_child(header_panel)
 
@@ -114,36 +110,36 @@ func _create_character_card(character_type: String) -> Control:
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 28)  # More compact for mobile
+	name_label.add_theme_font_size_override("font_size", 20)  # Compact for grid
 	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	name_label.add_theme_constant_override("outline_size", 2)  # Thinner outline
+	name_label.add_theme_constant_override("outline_size", 2)
 	header_panel.add_child(name_label)
 
-	# Description
+	# Description (abbreviated for grid layout)
 	var desc_label = Label.new()
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 18)  # More compact for mobile
+	desc_label.add_theme_font_size_override("font_size", 12)  # Very compact for grid
 	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	desc_label.add_theme_constant_override("outline_size", 2)  # Thinner outline
+	desc_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(desc_label)
 
-	# Stat modifiers display with visual icons (Week 13 Phase 2)
+	# Stat modifiers display with visual icons (Week 13 Phase 2: Grid optimized)
 	var stats_container = VBoxContainer.new()
-	stats_container.add_theme_constant_override("separation", 3)  # Tighter spacing
+	stats_container.add_theme_constant_override("separation", 2)  # Very tight spacing
 	vbox.add_child(stats_container)
 
 	# Add each stat with a colored icon
 	for stat_name in type_def.stat_modifiers.keys():
 		var value = type_def.stat_modifiers[stat_name]
 		var stat_row = HBoxContainer.new()
-		stat_row.add_theme_constant_override("separation", 6)  # Tighter spacing
+		stat_row.add_theme_constant_override("separation", 4)  # Tight spacing
 
 		# Stat icon (color-coded by category)
 		var icon = ColorRect.new()
-		icon.custom_minimum_size = Vector2(10, 10)  # Smaller icons
+		icon.custom_minimum_size = Vector2(6, 6)  # Tiny icons for grid
 		icon.color = _get_stat_color(stat_name)
 		stat_row.add_child(icon)
 
@@ -151,47 +147,31 @@ func _create_character_card(character_type: String) -> Control:
 		var stat_label = Label.new()
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
-		stat_label.add_theme_font_size_override("font_size", 16)  # Smaller for compact layout
+		stat_label.add_theme_font_size_override("font_size", 11)  # Very small for grid
 		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
-		stat_label.add_theme_constant_override("outline_size", 1)  # Thinner outline
+		stat_label.add_theme_constant_override("outline_size", 1)
 		stat_row.add_child(stat_label)
 
 		stats_container.add_child(stat_row)
 
-	# Aura type display
+	# Aura type display (compact)
 	var aura_label = Label.new()
 	if type_def.aura_type:
 		aura_label.text = "Aura: %s" % type_def.aura_type.capitalize()
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	aura_label.add_theme_font_size_override("font_size", 16)  # More compact
+	aura_label.add_theme_font_size_override("font_size", 11)  # Compact for grid
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
 	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	aura_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(aura_label)
 
-	# Tier requirement badge
-	var tier_label = Label.new()
-	tier_label.text = _get_tier_name(type_def.tier_required)
-	tier_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tier_label.add_theme_font_size_override("font_size", 14)  # More compact tier badge
-	tier_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	tier_label.add_theme_constant_override("outline_size", 1)
-	match type_def.tier_required:
-		CharacterService.UserTier.FREE:
-			tier_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))
-		CharacterService.UserTier.PREMIUM:
-			tier_label.add_theme_color_override("font_color", Color(0.8, 0.6, 0.2))
-		CharacterService.UserTier.SUBSCRIPTION:
-			tier_label.add_theme_color_override("font_color", Color(0.6, 0.4, 0.8))
-	vbox.add_child(tier_label)
-
-	# Select button (iOS HIG compliant - Round 4)
+	# Select button (iOS HIG compliant - compact for grid)
 	var select_btn = Button.new()
 	select_btn.text = "Select"
-	select_btn.custom_minimum_size = Vector2(180, 50)  # More compact button
-	select_btn.add_theme_font_size_override("font_size", 24)  # Smaller font
+	select_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum 44pt height
+	select_btn.add_theme_font_size_override("font_size", 18)  # Compact font
 	select_btn.pressed.connect(_on_character_card_selected.bind(character_type))
 	vbox.add_child(select_btn)
 
@@ -204,7 +184,7 @@ func _create_character_card(character_type: String) -> Control:
 
 
 func _add_lock_overlay(card: Control, character_type: String, required_tier: int) -> void:
-	# Professional lock overlay (Week 13 Phase 2)
+	# Professional lock overlay (Week 13 Phase 2: Grid optimized)
 	var overlay = Panel.new()
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -212,68 +192,69 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	# Semi-transparent dark overlay with rounded corners
 	var overlay_style = StyleBoxFlat.new()
 	overlay_style.bg_color = Color(0, 0, 0, 0.85)  # Darker for locked state
-	overlay_style.corner_radius_top_left = 12
-	overlay_style.corner_radius_top_right = 12
-	overlay_style.corner_radius_bottom_left = 12
-	overlay_style.corner_radius_bottom_right = 12
+	overlay_style.corner_radius_top_left = 8
+	overlay_style.corner_radius_top_right = 8
+	overlay_style.corner_radius_bottom_left = 8
+	overlay_style.corner_radius_bottom_right = 8
 	overlay.add_theme_stylebox_override("panel", overlay_style)
 	card.add_child(overlay)
 
-	# Lock content container
+	# Lock content container (centered, compact for grid)
 	var lock_content = VBoxContainer.new()
 	lock_content.set_anchors_preset(Control.PRESET_CENTER)
-	lock_content.position = Vector2(-100, -80)
-	lock_content.custom_minimum_size = Vector2(200, 160)
-	lock_content.add_theme_constant_override("separation", 16)
+	lock_content.position = Vector2(-65, -80)  # Adjusted for smaller card
+	lock_content.custom_minimum_size = Vector2(130, 160)
+	lock_content.add_theme_constant_override("separation", 8)
 	overlay.add_child(lock_content)
 
 	# Lock icon with background
 	var lock_icon_bg = PanelContainer.new()
 	var icon_style = StyleBoxFlat.new()
 	icon_style.bg_color = Color(0.2, 0.2, 0.2, 0.9)
-	icon_style.corner_radius_top_left = 8
-	icon_style.corner_radius_top_right = 8
-	icon_style.corner_radius_bottom_left = 8
-	icon_style.corner_radius_bottom_right = 8
+	icon_style.corner_radius_top_left = 6
+	icon_style.corner_radius_top_right = 6
+	icon_style.corner_radius_bottom_left = 6
+	icon_style.corner_radius_bottom_right = 6
 	lock_icon_bg.add_theme_stylebox_override("panel", icon_style)
 	lock_content.add_child(lock_icon_bg)
 
-	# Lock icon label
+	# Lock icon label (compact)
 	var lock_label = Label.new()
 	lock_label.text = "🔒"
 	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 48)
+	lock_label.add_theme_font_size_override("font_size", 32)  # Smaller for grid
 	lock_icon_bg.add_child(lock_label)
 
-	# Tier requirement badge
+	# Tier requirement badge (compact)
 	var tier_badge = Label.new()
-	tier_badge.text = _get_tier_name(required_tier) + " REQUIRED"
+	tier_badge.text = _get_tier_name(required_tier)  # Shorter text for grid
 	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tier_badge.add_theme_font_size_override("font_size", 22)
+	tier_badge.add_theme_font_size_override("font_size", 14)  # Smaller for grid
 	tier_badge.add_theme_color_override("font_color", Color(0.9, 0.6, 0.2))  # Orange/gold
 	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
-	tier_badge.add_theme_constant_override("outline_size", 3)
+	tier_badge.add_theme_constant_override("outline_size", 2)
 	lock_content.add_child(tier_badge)
 
-	# Unlock buttons container
+	# Unlock buttons container (compact for grid)
 	var buttons_vbox = VBoxContainer.new()
 	buttons_vbox.set_anchors_preset(Control.PRESET_CENTER)
-	buttons_vbox.position = Vector2(50, 150)
+	buttons_vbox.position = Vector2(10, 120)  # Adjusted for smaller card
+	buttons_vbox.add_theme_constant_override("separation", 6)
 	overlay.add_child(buttons_vbox)
 
-	# "Try for 1 Run" button (iOS HIG compliant - Round 4)
+	# "Try" button (iOS HIG compliant - compact for grid)
 	var trial_btn = Button.new()
-	trial_btn.text = "Try for 1 Run"
-	trial_btn.custom_minimum_size = Vector2(200, 60)
-	trial_btn.add_theme_font_size_override("font_size", 24)
+	trial_btn.text = "Try"
+	trial_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum
+	trial_btn.add_theme_font_size_override("font_size", 16)  # Compact font
 	trial_btn.pressed.connect(_on_free_trial_requested.bind(character_type))
 	buttons_vbox.add_child(trial_btn)
 
-	# "Unlock Forever" button (iOS HIG compliant - Round 4)
+	# "Unlock" button (iOS HIG compliant - compact for grid)
 	var unlock_btn = Button.new()
-	unlock_btn.text = "Unlock Forever"
-	unlock_btn.custom_minimum_size = Vector2(200, 60)
-	unlock_btn.add_theme_font_size_override("font_size", 24)
+	unlock_btn.text = "Unlock"
+	unlock_btn.custom_minimum_size = Vector2(130, 44)  # iOS HIG minimum
+	unlock_btn.add_theme_font_size_override("font_size", 16)  # Compact font
 	unlock_btn.pressed.connect(_on_unlock_requested.bind(required_tier))
 	buttons_vbox.add_child(unlock_btn)
 
@@ -343,20 +324,20 @@ func _on_character_card_selected(character_type: String) -> void:
 
 
 func _highlight_selected_card(character_type: String) -> void:
-	# Remove highlight from all cards (Week 13 Phase 2 - Enhanced visual feedback)
+	# Remove highlight from all cards (Week 13 Phase 2 - Grid optimized)
 	for card_type in character_type_cards.keys():
 		var card = character_type_cards[card_type]
 		if card is PanelContainer:
 			# Reset to normal state
 			card.modulate = Color(1, 1, 1, 1)
 
-			# Reset border width
+			# Reset border width (2px for grid)
 			var style = card.get_theme_stylebox("panel")
 			if style and style is StyleBoxFlat:
-				style.border_width_left = 3
-				style.border_width_top = 3
-				style.border_width_right = 3
-				style.border_width_bottom = 3
+				style.border_width_left = 2
+				style.border_width_top = 2
+				style.border_width_right = 2
+				style.border_width_bottom = 2
 
 	# Highlight selected card with glow effect
 	if character_type_cards.has(character_type):
@@ -365,13 +346,13 @@ func _highlight_selected_card(character_type: String) -> void:
 			# Brighter glow
 			card.modulate = Color(1.2, 1.2, 1.2, 1)
 
-			# Thicker border for selected card
+			# Thicker border for selected card (2px → 4px for grid)
 			var style = card.get_theme_stylebox("panel")
 			if style and style is StyleBoxFlat:
-				style.border_width_left = 5  # Thicker border (3px → 5px)
-				style.border_width_top = 5
-				style.border_width_right = 5
-				style.border_width_bottom = 5
+				style.border_width_left = 4
+				style.border_width_top = 4
+				style.border_width_right = 4
+				style.border_width_bottom = 4
 
 
 func _on_create_character_pressed() -> void:
