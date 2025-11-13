@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
 **Last Updated**: 2025-01-12
-**Status**: Week 12 Complete + Mobile UX Optimized (Round 4 Follow-Up Complete) + iOS Deployment Ready
-**Current Progress**: Weapon variety + visual identity + pickup magnets complete. Mobile UX optimization (all 3 phases) complete. iOS physics fixes + mobile touch controls implemented. Mobile UX QA Round 4 complete. Mobile UX QA Round 4 Follow-Up fixes implemented (coordinate system + scroll UX) - ready for device testing. (455/479 tests passing)
+**Status**: Week 12 Complete (All Phases) ✅ + Mobile UX Optimized ✅ + iOS Deployment Ready ✅ + Week 13 Planned 📅
+**Current Progress**: Week 12 complete - weapon variety (10 weapons), visual identity, pickup magnets, character stats integration. Mobile UX optimization (all 3 phases + Round 4) complete. iOS physics fixes + mobile touch controls complete. Week 13 planned - arena optimization, character selection polish, enemy variety. (496/520 tests passing)
 
 ---
 
@@ -19,11 +19,11 @@
 | **Week 9** | Complete | ✅ | Combat services (Weapon, Enemy, Combat, Drop) |
 | **Week 10** | Complete | ✅ | Combat scene integration (playable wave loop) |
 | **Week 11** | Complete | ✅ | Combat polish, auto-targeting, XP progression, camera shake |
-| **Week 12** | Complete | ✅ | Weapon variety + visual identity (8 weapons) + pickup magnets + stat tracking fixes |
+| **Week 12** | Complete | ✅ | Weapon variety (10 weapons) + visual identity + pickup magnets + character stats integration |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
-| **Mobile UX Optimization** | Round 4 Follow-Up Testing | 🚧 | Font sizing, text outlines, touch targets, animations, polish, coordinate system fixes, scroll UX (Rounds 1-4 complete, Round 4 follow-up pending device test) |
-| **Week 13+** | Planned | 📅 | Minions system, The Lab |
-| **Week 14+** | Planned | 📅 | Perks, monetization, polish |
+| **Mobile UX Optimization** | Complete | ✅ | Font sizing, text outlines, touch targets, animations, polish (Rounds 1-4 complete) |
+| **Week 13** | Planned | 📅 | Arena optimization (world size + grid floor) + character selection polish + enemy variety |
+| **Week 14+** | Planned | 📅 | Weapon audio, enemy audio, boss enemies, minions system |
 
 ---
 
@@ -358,11 +358,11 @@ CharacterService: 43/43 passing
 
 ---
 
-## ✅ Week 12: Weapon Variety & Pickup Magnets (Phase 2 Complete)
+## ✅ Week 12: Weapon Variety & Pickup Magnets (All Phases Complete)
 
 **Goal**: Expand combat variety with 6+ new weapon types featuring unique firing patterns (spread, pierce, explosive) and implement quality-of-life pickup magnet system.
 
-**Status**: Phase 1 Complete ✅, Phase 1.5 Complete ✅, **Phase 2 Complete** ✅
+**Status**: Phase 1 Complete ✅, Phase 1.5 Complete ✅, Phase 2 Complete ✅, **Phase 3 Complete** ✅ (discovered complete during Phase 2)
 
 ### Phase 1: Weapon Variety System ✅
 **Delivered** (2025-01-11):
@@ -494,10 +494,27 @@ CharacterService: 43/43 passing
 **Commits**:
 - `c2db5bf` - feat: implement Week 12 Phase 2 - pickup magnet system and stat tracking fixes
 
-### Phase 3: Advanced Stat Integration (Deferred)
-- Future: HUD display showing current pickup_range value
-- Future: Items/perks that modify pickup_range stat
-- pickup_range already persists via CharacterService save/load
+### Phase 3: Character Stats Integration ✅
+**Delivered** (2025-01-12) - Discovered complete during Phase 2!
+
+**Evidence of Completion**:
+- ✅ `pickup_range` stat in CharacterService DEFAULT_BASE_STATS (base: 100)
+- ✅ Character type modifiers apply (Scavenger +20, Mutant +20)
+- ✅ Player.get_stat("pickup_range") returns from stats dict
+- ✅ drop_pickup.gd queries stat dynamically every frame
+- ✅ Pickup range indicator updates on level up
+- ✅ Serialization/deserialization includes all stats (auto-persist)
+- ✅ Test coverage: 496/520 tests passing
+- ✅ Documentation: STAT-SYSTEM.md Stat #21 complete
+
+**Key Files**:
+- `scripts/services/character_service.gd` (pickup_range in DEFAULT_BASE_STATS)
+- `scripts/entities/player.gd` (get_stat method, indicator updates)
+- `scripts/entities/drop_pickup.gd` (queries pickup_range each frame)
+- `docs/game-design/systems/STAT-SYSTEM.md` (Stat #21 documentation)
+
+**Commits**:
+- `b775636` - docs: mark Week 12 Phase 3 complete (CharacterService integration)
 
 **See**: [docs/migration/week12-implementation-plan.md](week12-implementation-plan.md)
 
@@ -761,16 +778,69 @@ CharacterService: 43/43 passing
 
 ---
 
-## 🤖 Week 13+: Minions + The Lab (Planned)
+## 📅 Week 13: Arena Optimization & Mobile Polish (Planned)
 
-### Minions System
+**Goal**: Fix combat arena density (world size), polish character selection for professional first impressions, and add enemy variety for strategic depth.
+
+**Status**: Planned 📅
+
+**Estimated Effort**: 9-13 hours (1.5-2 work days)
+
+### Phase 1: World Size Optimization & Visual Landmarks (2-3 hours)
+**Problem**: World is 3800×3800 units (2-3x larger than Vampire Survivors/Brotato), resulting in 16-24x less enemy density than genre standards.
+
+**Solution**:
+- Reduce WORLD_BOUNDS from 3800×3800 to 2000×2000
+- Add grid floor (Line2D, 200×200 unit cells) for spatial awareness
+- Update camera boundaries to match new world size
+- **Impact**: 3.6x density improvement, combat feels closer to genre standards
+
+### Phase 2: Character Selection Mobile Polish (3-4 hours)
+**Problem**: Character selection looks "embarrassing" - like "awkward web app on mobile", not professional mobile game.
+
+**Solution**:
+- StyleBoxFlat card backgrounds (shadows, rounded corners, colored borders)
+- Tap feedback (scale 1.0 → 1.05 → 1.0, highlights)
+- Character type color headers
+- Stat icons for visual interest
+- **Impact**: "Not embarrassing" → "Professional mobile game", unblocks user testing/investor demos
+
+### Phase 3: Enemy Variety (4-6 hours)
+**Problem**: Only 3 enemy types with identical behavior (move toward player). Combat repetitive, weapon variety wasted.
+
+**Solution**:
+- Add 3-4 enemy types: Ranged (stops at 400px, shoots projectiles), Tank (3x HP, slow), Fast (1.8x speed), Swarm (spawn 5 at once)
+- Visual differentiation (colors, sizes)
+- Wave composition balancing
+- **Impact**: Weapon choice matters, strategic depth emerges (shotgun vs swarms, sniper vs tanks)
+
+### Success Criteria
+- [ ] World size reduced to 2000×2000, grid floor visible
+- [ ] Camera boundaries updated and working
+- [ ] Character selection has professional visual polish with tap feedback
+- [ ] 3-4 new enemy types with distinct behaviors
+- [ ] Combat feels more strategic and interesting
+
+**See**: [docs/migration/week13-implementation-plan.md](week13-implementation-plan.md)
+
+---
+
+## 🤖 Week 14+: Audio, Boss Enemies, Minions (Future)
+
+### Week 14 Candidates
+- Weapon audio (2-3 hours) - 50%+ of weapon feel impact
+- Enemy audio (2-3 hours) - Completes combat feel loop
+- Boss enemies (6-8 hours) - Mini-boss every 5 waves
+- TileMap floor texture (2 hours) - Upgrade grid to themed texture
+
+### Future: Minions System
 - Minion types (biological, mechanical, hybrid)
 - Minion AI (follow character, attack enemies)
 - Minion crafting (The Lab)
 - Minion fusion/upgrading
 - Nanites currency integration
 
-### The Lab Services
+### Future: The Lab Services
 - `LabService` - Nanites management, storage limits
 - `MinionCraftingService` - Minion creation, degradation
 - `RadioactivityService` - Radioactivity stat, treatments
