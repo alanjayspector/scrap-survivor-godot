@@ -192,7 +192,7 @@ func _create_character_card(character_type: String) -> Control:
 func _add_lock_overlay(card: Control, required_tier: int) -> void:
 	# Professional lock overlay (Week 13 Phase 2: Grid optimized)
 	var overlay = Panel.new()
-	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.mouse_filter = Control.MOUSE_FILTER_PASS
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 
 	# Semi-transparent dark overlay with rounded corners (50% opacity - lets stats show through)
