@@ -81,7 +81,10 @@ func _create_character_card(character_type: String) -> Control:
 	style_box.corner_radius_top_right = 12
 	style_box.corner_radius_bottom_left = 12
 	style_box.corner_radius_bottom_right = 12
-	style_box.border_width_all = 3
+	style_box.border_width_left = 3
+	style_box.border_width_top = 3
+	style_box.border_width_right = 3
+	style_box.border_width_bottom = 3
 	style_box.border_color = type_def.color  # Character type color border
 	style_box.shadow_size = 8
 	style_box.shadow_color = Color(0, 0, 0, 0.5)
@@ -350,7 +353,10 @@ func _highlight_selected_card(character_type: String) -> void:
 			# Reset border width
 			var style = card.get_theme_stylebox("panel")
 			if style and style is StyleBoxFlat:
-				style.border_width_all = 3
+				style.border_width_left = 3
+				style.border_width_top = 3
+				style.border_width_right = 3
+				style.border_width_bottom = 3
 
 	# Highlight selected card with glow effect
 	if character_type_cards.has(character_type):
@@ -362,7 +368,10 @@ func _highlight_selected_card(character_type: String) -> void:
 			# Thicker border for selected card
 			var style = card.get_theme_stylebox("panel")
 			if style and style is StyleBoxFlat:
-				style.border_width_all = 5  # Thicker border (3px → 5px)
+				style.border_width_left = 5  # Thicker border (3px → 5px)
+				style.border_width_top = 5
+				style.border_width_right = 5
+				style.border_width_bottom = 5
 
 
 func _on_create_character_pressed() -> void:
