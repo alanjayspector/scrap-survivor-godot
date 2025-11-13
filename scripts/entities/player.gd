@@ -29,6 +29,9 @@ var equipped_weapon_id: String = ""
 ## Weapon firing state
 var weapon_cooldown: float = 0.0
 
+## Diagnostic state
+var _logged_boundaries: bool = false
+
 ## World boundaries (matches CameraController default boundaries)
 ## Prevents player from moving off-screen and getting lost
 const WORLD_BOUNDS: Rect2 = Rect2(-2000, -2000, 4000, 4000)
@@ -175,24 +178,89 @@ func _physics_process(delta: float) -> void:
 	var min_y = WORLD_BOUNDS.position.y + BOUNDS_MARGIN  # -1900
 	var max_y = WORLD_BOUNDS.position.y + WORLD_BOUNDS.size.y - BOUNDS_MARGIN  # +1900
 
+	# DIAGNOSTIC: Log boundary configuration (once at start)
+	if not _logged_boundaries:
+		_logged_boundaries = true
+		print("[Player] ═══ BOUNDARY CONFIGURATION ═══")
+		print("[Player] WORLD_BOUNDS: ", WORLD_BOUNDS)
+		print("[Player] BOUNDS_MARGIN: ", BOUNDS_MARGIN)
+		print("[Player] Calculated Min X: ", min_x, " | Max X: ", max_x)
+		print("[Player] Calculated Min Y: ", min_y, " | Max Y: ", max_y)
+		print("[Player] Expected X Range: ", max_x - min_x, " units")
+		print("[Player] Expected Y Range: ", max_y - min_y, " units")
+		print("[Player] ═══════════════════════════════")
+
 	# Predict next position BEFORE move_and_slide()
 	var next_position = global_position + velocity * delta
 
+	# Track position and velocity for diagnostics
+	var position_before = global_position
+	var velocity_before = velocity
+
 	# Clamp VELOCITY (not position!) based on predicted position
 	# This prevents physics cache corruption that causes phantom walls
+	var velocity_clamped = false
+	var clamped_direction = ""
+
 	if next_position.x < min_x and velocity.x < 0:
 		velocity.x = 0  # Can't move left past boundary
+		velocity_clamped = true
+		clamped_direction += "LEFT "
 	elif next_position.x > max_x and velocity.x > 0:
 		velocity.x = 0  # Can't move right past boundary
+		velocity_clamped = true
+		clamped_direction += "RIGHT "
 
 	if next_position.y < min_y and velocity.y < 0:
 		velocity.y = 0  # Can't move up past boundary
+		velocity_clamped = true
+		clamped_direction += "UP "
 	elif next_position.y > max_y and velocity.y > 0:
 		velocity.y = 0  # Can't move down past boundary
+		velocity_clamped = true
+		clamped_direction += "DOWN "
+
+	# DIAGNOSTIC: Log when velocity clamping prevents boundary overshoot
+	if velocity_clamped:
+		print("[Player] ✋ VELOCITY CLAMPED - Direction: ", clamped_direction.strip_edges())
+		print("[Player]   Current position: ", global_position.snapped(Vector2.ONE))
+		print("[Player]   Predicted next: ", next_position.snapped(Vector2.ONE))
+		print("[Player]   Velocity BEFORE: ", velocity_before.snapped(Vector2.ONE))
+		print("[Player]   Velocity AFTER: ", velocity.snapped(Vector2.ONE))
 
 	# Let move_and_slide() handle ALL position updates
 	# NO manual position modification after this point!
 	move_and_slide()
+
+	var position_after = global_position
+
+	# DIAGNOSTIC: Check for unexpected collisions
+	if get_slide_collision_count() > 0:
+		print("[Player] ⚠️ COLLISION DETECTED! Count: ", get_slide_collision_count())
+		print("[Player]   At position: ", global_position.snapped(Vector2.ONE))
+		for i in range(get_slide_collision_count()):
+			var collision = get_slide_collision(i)
+			print(
+				"[Player]   Collision ",
+				i,
+				": collider=",
+				collision.get_collider(),
+				" | normal=",
+				collision.get_normal().snapped(Vector2(0.01, 0.01))
+			)
+
+	# DIAGNOSTIC: Log movement (only significant movement to reduce spam)
+	if position_before.distance_to(position_after) > 1.0:
+		print(
+			"[Player] Moved: from ",
+			position_before.snapped(Vector2.ONE),
+			" to ",
+			position_after.snapped(Vector2.ONE),
+			" | velocity: ",
+			velocity.snapped(Vector2.ONE),
+			" | input: ",
+			input_direction.snapped(Vector2(0.01, 0.01))
+		)
 
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:
