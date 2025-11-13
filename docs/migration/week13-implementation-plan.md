@@ -332,7 +332,9 @@ Week 13 addresses three critical quality-of-life improvements identified during 
 - [x] Mobile-optimized card size (170×300px) ✅
 - [ ] Manual QA: "I'm comfortable showing this to testers/investors" ⏳
 
-**Status**: ✅ **COMPLETE** (2025-11-12) - Pending final iOS QA
+**Status**: ✅ **COMPLETE** (2025-11-12) - Cards polished and functional
+
+**Note**: Additional improvement Phase 2.5 (Detail Panel) planned below for next session
 
 ### Actual Implementation (What Was Built)
 
@@ -417,6 +419,169 @@ Instead of the planned vertical scrolling approach, research revealed ScrollCont
 - Locked characters: Polished overlay, clear tier requirements
 - Show to 2-3 people: "Does this look professional?" (subjective quality gate)
 ```
+
+---
+
+## Phase 2.5: Character Detail Panel (Thumbnail → Detail UX Pattern)
+
+**Goal**: Implement proven mobile game UX pattern where cards are clean thumbnails and tapping shows detailed panel with full info + CTA buttons.
+
+**Status**: 🔄 **IN PROGRESS** - Thumbnails complete, detail panel next session
+
+### Context & Problem
+
+**User Feedback** (2025-11-12):
+> "Cards look much better but should be bigger if possible. Locked cards still hard to see stats - dark on dark isn't a CTA if you can't see what they are."
+
+**Team Analysis** (Unanimous Recommendation):
+
+**Sr Mobile Game Designer:**
+> "This is EXACTLY how Brotato does it! Grid of character portraits → tap → detail panel slides up with full stats, compelling copy, purchase options. It's the gold standard for mobile character selection.
+>
+> **Benefits:**
+> - Thumbnail grid shows 4-6 characters at once (more options visible)
+> - Detail view has room for compelling copy + animated previews
+> - Natural user flow: Browse → Tap → Decide → Buy
+> - Scales to 10+ characters easily"
+
+**Sr Mobile UI/UX:**
+> "Thumbnails = overview, Detail panel = decision point. Follows iOS patterns (Music app, Photos, App Store). Key improvements:
+> - Cleaner thumbnails (no buttons = less clutter)
+> - Larger detail text (better readability)
+> - Try/Unlock buttons prominent (better CTAs)
+> - Dismiss gestures (tap outside, swipe down, X)"
+
+**Sr Product Manager:**
+> "Better conversion funnel: View grid → Tap (curiosity) → See FULL details + benefits → Understand VALUE → Tap Unlock. Detail view is your sales pitch. High ROI UX improvement."
+
+### Phase 2.5a: Thumbnail Simplification (COMPLETE ✅)
+
+**Completed 2025-11-12**
+
+1. **Removed buttons from cards**:
+   - Select button removed from unlocked cards
+   - Try/Unlock buttons removed from locked cards
+   - Cards now pure thumbnails (cleaner, less busy)
+
+2. **Simplified lock overlay**:
+   - Just lock icon (🔒 48pt) + tier badge + hint
+   - Removed button clutter
+   - Added "Tap for details" hint on all cards
+
+3. **Made entire card tappable**:
+   - gui_input handler connected to all cards
+   - Scale animation feedback (1.0 → 0.95 → 1.0)
+   - Console log confirmation (placeholder for detail panel)
+
+**Files Changed**:
+- `scripts/ui/character_selection.gd` - Simplified `_create_character_card()`, removed button creation, added `_on_card_tapped()` handler
+
+**Result**: Cleaner, less busy thumbnails ready for detail panel integration
+
+---
+
+### Phase 2.5b: Detail Panel Implementation (NEXT SESSION ⏳)
+
+**Goal**: Create sliding detail panel with full character information and prominent CTAs.
+
+#### Design Spec
+
+**Detail Panel Structure**:
+```
+┌─────────────────────────────────────┐
+│  ╔═══════════════════════════════╗  │ ← Panel (70% screen height)
+│  ║  COMMANDO            [×]      ║  │   Slides up from bottom
+│  ║  Red header background        ║  │
+│  ║─────────────────────────────  ║  │
+│  ║  High DPS glass cannon        ║  │ ← Description (compelling)
+│  ║  Dominates from distance      ║  │
+│  ║                               ║  │
+│  ║  STATS                        ║  │ ← Stats (large, readable)
+│  ║  +5 Ranged DMG   🎯           ║  │
+│  ║  +15 Attack Speed ⚡          ║  │
+│  ║  -2 Armor        🛡           ║  │
+│  ║                               ║  │
+│  ║  AURA: None                   ║  │
+│  ║  No defensive aura (trade-    ║  │
+│  ║  off for raw DPS)             ║  │
+│  ║                               ║  │
+│  ║  [If locked:]                 ║  │
+│  ║  ┏━━━━━━━━━━━━━┓              ║  │
+│  ║  ┃ SUBSCRIPTION┃              ║  │ ← Tier badge (prominent)
+│  ║  ┗━━━━━━━━━━━━━┛              ║  │
+│  ║  ┌────────┐ ┌─────────┐      ║  │
+│  ║  │  TRY   │ │ UNLOCK  │      ║  │ ← Buttons (colored, iOS HIG)
+│  ║  └────────┘ └─────────┘      ║  │
+│  ║                               ║  │
+│  ║  [If unlocked:]               ║  │
+│  ║  ┌───────────────────┐        ║  │
+│  ║  │      SELECT       │        ║  │ ← Select button (prominent)
+│  ║  └───────────────────┘        ║  │
+│  ╚═══════════════════════════════╝  │
+└─────────────────────────────────────┘
+```
+
+#### Implementation Tasks
+
+**2.5b.1: Panel Component Structure** (1 hour)
+- Create `_show_character_detail_panel(character_type: String)` implementation
+- Panel: Control node with full-screen backdrop + centered content
+- Backdrop: Semi-transparent black (Color(0, 0, 0, 0.7))
+- Content: PanelContainer with StyleBoxFlat styling
+- Position: Bottom 70% of screen (anchored to bottom)
+
+**2.5b.2: Content Layout** (1 hour)
+- Character name + type header (colored background matching character)
+- Description text (compelling copy, 16-18pt)
+- Stats grid (large icons + text, color-coded)
+- Aura description with icon
+- Tier badge (if locked) - large and prominent
+- Try/Unlock buttons (if locked) - colored backgrounds
+- Select button (if unlocked) - prominent green
+
+**2.5b.3: Animations & Interactions** (30 min)
+- Slide up animation (300ms ease-out from bottom)
+- Backdrop fade in (200ms)
+- Dismiss on tap outside (tap backdrop)
+- Dismiss on X button click
+- Try button → existing `_on_free_trial_requested()` handler
+- Unlock button → existing `_on_unlock_requested()` handler
+- Select button → existing `_on_character_card_selected()` handler
+
+**2.5b.4: Mobile Polish** (30 min)
+- Swipe down gesture to dismiss (optional)
+- Ensure content scrollable if needed (long descriptions)
+- Test on iOS device (readability, touch targets)
+- Verify animations perform at 60 FPS
+
+#### Success Criteria
+- [ ] Tapping card shows detail panel with slide-up animation ⏳
+- [ ] Detail panel shows full character stats (readable, large text) ⏳
+- [ ] Locked character: Tier badge + Try/Unlock buttons prominent ⏳
+- [ ] Unlocked character: Select button prominent ⏳
+- [ ] Dismiss gestures work (tap outside, X button, swipe down) ⏳
+- [ ] Try/Unlock buttons trigger existing handlers ⏳
+- [ ] Select button selects character and dismisses panel ⏳
+- [ ] Animations smooth at 60 FPS on iOS ⏳
+- [ ] Text meets WCAG AA contrast requirements ⏳
+- [ ] Manual QA: "Compelling CTA, easy to understand value" ⏳
+
+#### Implementation Notes
+
+**Estimated Effort**: 3-4 hours total
+- Panel structure + layout: 2 hours
+- Animations + interactions: 1 hour
+- Mobile polish + testing: 1 hour
+
+**Design Pattern Reference**:
+- iOS Music app (tap album → detail sheet)
+- Brotato character selection
+- Magic Survival character picker
+- iOS App Store (tap app → detail view)
+
+**Files to Modify**:
+- `scripts/ui/character_selection.gd` - Implement `_show_character_detail_panel()`, add dismiss handlers
+- Consider separate file: `scripts/ui/character_detail_panel.gd` (cleaner architecture, can refactor later)
 
 ---
 
