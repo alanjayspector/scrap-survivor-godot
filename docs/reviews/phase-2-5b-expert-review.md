@@ -9,22 +9,27 @@
 
 ## Executive Summary
 
-**Overall Rating**: ⭐⭐⭐⭐½ (4.5/5)
+**Overall Rating**: ⭐⭐⭐½ (3.5/5) - **CRITICAL BUG FOUND**
 
-The Phase 2.5b implementation successfully delivers a production-ready character detail panel following industry-standard mobile UX patterns (Brotato, iOS App Store). The code demonstrates strong adherence to the UI design system, proper separation of concerns, and GPU-accelerated animations. However, several opportunities exist for performance optimization, testability improvements, and accessibility enhancements.
+**🚨 CRITICAL BUG DISCOVERED POST-REVIEW**: Locked character cards are **not tappable** - lock overlay blocks all input. This defeats the entire purpose of Phase 2.5b (showing detail panel with Try/Unlock CTAs for locked characters). See Critical Issues section for details.
+
+The Phase 2.5b implementation demonstrates strong technical execution with industry-standard mobile UX patterns (Brotato, iOS App Store), clean code architecture, and proper design system adherence. However, a critical input-blocking bug prevents the core feature from working on locked cards.
 
 **Key Strengths**:
-- ✅ Excellent UX pattern implementation (thumbnail → detail)
+- ✅ Excellent UX pattern implementation (thumbnail → detail) - *when it works*
 - ✅ Strong design system compliance
 - ✅ Clean separation of concerns (8 helper functions)
 - ✅ GPU-accelerated animations (transform/opacity only)
 - ✅ Proper input handling for mobile (InputEventScreenTouch)
 
+**Critical Issues**:
+- 🚨 **BLOCKER**: Locked cards not tappable (lock overlay blocks input)
+
 **Key Areas for Improvement**:
 - ⚠️ Memory: Potential node leaks if panel dismissed during animation
 - ⚠️ Performance: Missing object pooling for frequently created nodes
 - ⚠️ Accessibility: No screen reader support (missing ARIA-equivalent labels)
-- ⚠️ Testing: Zero test coverage for new UI component
+- ⚠️ Testing: Zero test coverage for new UI component (would have caught this bug!)
 - ⚠️ Robustness: Missing error handling for invalid character types
 
 ---
@@ -78,9 +83,99 @@ if event is InputEventScreenTouch and event.pressed:
 
 ---
 
-#### ⚠️ Critical Issues
+#### 🚨 CRITICAL ISSUES (BLOCKERS)
 
-**1. Memory Leak Risk: Missing Tween Cleanup** ⚠️
+**1. Locked Cards Not Tappable - Input Blocked by Overlay** 🚨🚨🚨
+Line 194 in `_add_lock_overlay()`
+
+```gdscript
+func _add_lock_overlay(card: Control, required_tier: int) -> void:
+    var overlay = Panel.new()
+    overlay.mouse_filter = Control.MOUSE_FILTER_STOP  # ❌ BLOCKS INPUT!
+    overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+    # ... overlay added to card as child
+```
+
+**Problem**:
+The lock overlay uses `MOUSE_FILTER_STOP`, which **intercepts all touch events** and prevents them from reaching the card's `gui_input` handler underneath (connected at line 186).
+
+**Impact**:
+- **COMPLETE FAILURE** of Phase 2.5b core feature
+- Locked characters (Premium/Subscription tier) **cannot be tapped**
+- Users **cannot see detail panel** with Try/Unlock CTAs
+- **Business impact**: 0% conversion on locked characters (cannot show sales pitch!)
+
+**Evidence**:
+Lines 180-186 show the intended flow:
+```gdscript
+# Line 180-183: Lock overlay added to locked cards
+var user_tier = CharacterService.get_tier()
+if type_def.tier_required > user_tier:
+    _add_lock_overlay(card, type_def.tier_required)  # ❌ Blocks input!
+
+# Line 186: Card tap handler (UNREACHABLE for locked cards!)
+card.gui_input.connect(_on_card_tapped.bind(character_type))
+```
+
+**Root Cause**:
+`MOUSE_FILTER_STOP` means "stop event propagation". Events hit the overlay and **never reach the card below**. This is correct for buttons ON the overlay, but there are no buttons (removed in Phase 2.5a).
+
+**Expected Behavior** (per Week13 plan, line 469):
+> "Added 'Tap for details' hint on all cards" - **All cards** should be tappable, including locked ones.
+
+**User Feedback** (Week13 plan, line 434):
+> "Locked cards still hard to see stats - dark on dark isn't a CTA if you can't see what they are."
+
+The entire point of Phase 2.5b was to **solve this** by showing full details + CTAs in the panel. But the overlay blocks access to the panel!
+
+---
+
+**Fix Options**:
+
+**Option 1: Pass-Through (Recommended)** ✅
+```gdscript
+overlay.mouse_filter = Control.MOUSE_FILTER_PASS  # Pass events to card below
+```
+**Pros**: Simple 1-line fix, events reach card handler
+**Cons**: Overlay completely transparent to input (fine, since no buttons on it)
+
+**Option 2: Overlay Handler** ⚙️
+```gdscript
+overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+overlay.gui_input.connect(_on_lock_overlay_tapped.bind(character_type))
+
+func _on_lock_overlay_tapped(event: InputEvent, character_type: String):
+    if event is InputEventScreenTouch and event.pressed:
+        _show_character_detail_panel(character_type)
+```
+**Pros**: More explicit, overlay handles its own input
+**Cons**: Duplicate handler logic, more code
+
+**Option 3: Ignore (Not Recommended)** ❌
+```gdscript
+overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Pass to parent, not card
+```
+**Pros**: None
+**Cons**: Events skip both overlay AND card, go to parent (wrong)
+
+---
+
+**Recommendation**: **Option 1 (Pass-Through)** - Simplest fix, 1-line change, matches intent.
+
+**Severity**: 🚨 **CRITICAL** - Blocks core feature, 0% conversion on locked characters.
+
+**Estimated Fix Time**: 5 minutes (1 line + test on device)
+
+**Why This Wasn't Caught**:
+- Zero test coverage for UI interaction (manual testing only)
+- Testing focused on unlocked cards (easier to test)
+- No automated "tap locked card" test case
+
+---
+
+#### ⚠️ HIGH-PRIORITY ISSUES
+
+**2. Memory Leak Risk: Missing Tween Cleanup** ⚠️
 Lines 609, 624-625, 630-631, 635-636
 
 ```gdscript
@@ -748,6 +843,8 @@ func test_detail_panel_no_memory_leak():
 
 | Priority | Recommendation | Effort | Impact | Owner |
 |----------|---------------|--------|--------|-------|
+| **🚨 CRITICAL** | **Fix locked card input blocking** | **5min** | **Unblocks core feature** | **Engineer** |
+| **HIGH** | Add test for locked card tap | 30min | Catches regressions | Engineer |
 | **HIGH** | Add Tween cleanup logic | 30min | Prevents crashes | Engineer |
 | **HIGH** | Add analytics integration | 1hr | Enables data collection | PM + Engineer |
 | **MEDIUM** | Add accessibility labels | 2hr | WCAG AA compliance | UX + Engineer |
@@ -758,7 +855,8 @@ func test_detail_panel_no_memory_leak():
 | **LOW** | Suppress validator warnings | 15min | Reduce noise | Engineer |
 | **LOW** | Add ADR documentation | 1hr | Long-term clarity | Engineer |
 
-**Total High-Priority Effort**: 1.5 hours
+**Total CRITICAL Effort**: 5 minutes (1-line fix)
+**Total High-Priority Effort**: 2 hours
 **Total Medium-Priority Effort**: 7 hours
 **Total Low-Priority Effort**: 3.75 hours
 
@@ -766,20 +864,96 @@ func test_detail_panel_no_memory_leak():
 
 ## Conclusion
 
-The Phase 2.5b implementation is **production-ready** with minor caveats. The code demonstrates strong technical skills, excellent UX pattern matching, and solid Godot fundamentals. The primary gaps are in **measurement infrastructure** (analytics, testing) and **edge case handling** (tween cleanup, rapid tapping).
+**🚨 CRITICAL BUG FOUND**: The Phase 2.5b implementation has a **showstopper bug** - locked cards are not tappable due to lock overlay blocking input. This prevents the entire purpose of the feature (showing detail panel with Try/Unlock CTAs).
 
-**Ship Decision**: ✅ **APPROVED for production** with HIGH-priority fixes in follow-up sprint.
+**Ship Decision**: ❌ **BLOCKED - Fix critical bug first** (5-minute fix required)
 
-**Rating Summary**:
-- **Sr Mobile Game Engineer**: ⭐⭐⭐⭐ (4/5) - Solid implementation, memory leak risk
-- **Sr Mobile UI/UX Designer**: ⭐⭐⭐⭐ (4/5) - Excellent pattern, missing accessibility
-- **Sr Product Manager**: ⭐⭐⭐½ (3.5/5) - Great UX, missing analytics
-- **Sr Godot 4.5.1 Specialist**: ⭐⭐⭐⭐ (4/5) - Good Godot practices, edge cases
+The code demonstrates strong technical skills, excellent UX pattern matching (when it works), and solid Godot fundamentals. However, the input-blocking bug makes this **non-functional for locked characters** - the primary monetization driver.
 
-**Overall**: ⭐⭐⭐⭐½ (4.5/5)
+**Why This Is Critical**:
+1. **Business Impact**: 0% conversion on locked characters (cannot show sales pitch)
+2. **User Experience**: Locked cards appear broken (tap does nothing)
+3. **Phase 2.5b Goal**: Show detail panel with CTAs for locked cards - **completely blocked**
+
+**Fix Required Before Ship**:
+```gdscript
+# Line 194: Change from MOUSE_FILTER_STOP to MOUSE_FILTER_PASS
+overlay.mouse_filter = Control.MOUSE_FILTER_PASS  # 1-line fix
+```
+
+**Post-Fix Recommendations**:
+- **CRITICAL** (5min): Fix input blocking ← **DO THIS FIRST**
+- **HIGH** (30min): Add test for locked card tap ← Prevents regression
+- **HIGH** (30min): Add tween cleanup ← Prevents crashes
+- **HIGH** (1hr): Add analytics integration ← Enables measurement
+
+**Rating Summary** (Post-Bug Discovery):
+- **Sr Mobile Game Engineer**: ⭐⭐⭐ (3/5) - Good architecture, critical bug
+- **Sr Mobile UI/UX Designer**: ⭐⭐⭐ (3/5) - Pattern correct, breaks on locked cards
+- **Sr Product Manager**: ⭐⭐½ (2.5/5) - 0% conversion on locked (revenue impact)
+- **Sr Godot 4.5.1 Specialist**: ⭐⭐⭐ (3/5) - Input handling bug, edge cases
+
+**Overall**: ⭐⭐⭐ (3/5) → **⭐⭐⭐⭐ (4/5) after critical fix**
 
 ---
 
 **Review Conducted By**: Independent Expert Team
 **Review Date**: 2025-11-12
-**Next Review**: Post-device-testing (iOS)
+**Updated**: 2025-11-12 (Critical bug found post-review)
+**Next Review**: Post-critical-fix + device-testing (iOS)
+
+---
+
+## Appendix: Additional UX Feedback (Post-Review)
+
+### Button Naming Issue
+**Location**: `character_selection.gd` - "Create Button"
+
+**User Feedback**:
+> "The create character button should be renamed to 'Enter the Wasteland' or something like that.. that's what the button does"
+
+**Analysis** (Sr Mobile UI/UX Designer):
+**Current**: "Create Character" button
+**Problem**: Misleading - button doesn't create a character, it **launches gameplay** with the selected character
+**User Flow**: Select character → Tap button → Enter wasteland (start game)
+
+**Recommended Button Text** (in priority order):
+1. **"START GAME"** ⭐⭐⭐⭐⭐
+   - **Pros**: Clear, universal, matches user intent
+   - **Cons**: None
+   - **Best for**: New players, clarity
+
+2. **"ENTER WASTELAND"** ⭐⭐⭐⭐
+   - **Pros**: Thematic, matches game lore, exciting
+   - **Cons**: Slightly less clear for first-time users
+   - **Best for**: Players familiar with game world
+
+3. **"BEGIN RUN"** ⭐⭐⭐⭐
+   - **Pros**: Genre-appropriate (roguelite), concise
+   - **Cons**: Assumes player knows "run" terminology
+   - **Best for**: Roguelite veterans (Brotato, Vampire Survivors players)
+
+4. **"PLAY"** ⭐⭐⭐
+   - **Pros**: Simple, universal
+   - **Cons**: Too generic, lacks excitement
+   - **Best for**: Casual games
+
+**Recommendation**: **"START GAME"** for clarity, or **"ENTER WASTELAND"** for thematic flavor.
+
+**Implementation**:
+```gdscript
+# Line 22-23: Update button reference
+@onready
+var start_game_button: Button = get_node("MarginContainer/VBoxContainer/ButtonsContainer/StartGameButton")
+
+# Update button text in scene or script
+start_game_button.text = "START GAME"  # or "ENTER WASTELAND"
+```
+
+**Scene File Update**: `scenes/ui/character_selection.tscn`
+- Rename node: `CreateButton` → `StartGameButton`
+- Update text property: "Create Character" → "START GAME"
+
+**Severity**: LOW - Cosmetic issue, but improves UX clarity
+
+**Estimated Effort**: 10 minutes (rename button + update text)
