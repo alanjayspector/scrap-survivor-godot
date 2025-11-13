@@ -71,7 +71,7 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Create card container with professional styling (Week 13 Phase 2)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(340, 420)  # Increased from 280×400 for more breathing room
+	card.custom_minimum_size = Vector2(300, 340)  # Mobile-optimized: compact but readable
 	card.name = "Card_%s" % character_type
 
 	# Apply StyleBoxFlat for professional mobile game look
@@ -96,12 +96,12 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Create card layout
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)  # Better spacing between elements
+	vbox.add_theme_constant_override("separation", 8)  # Tighter spacing for mobile
 	card.add_child(vbox)
 
 	# Character type color header (full-width, professional look)
 	var header_panel = PanelContainer.new()
-	header_panel.custom_minimum_size = Vector2(0, 60)
+	header_panel.custom_minimum_size = Vector2(0, 48)  # More compact header
 	var header_style = StyleBoxFlat.new()
 	header_style.bg_color = type_def.color.lightened(0.2)  # Slightly brighter for visibility
 	header_style.corner_radius_top_left = 8
@@ -114,10 +114,10 @@ func _create_character_card(character_type: String) -> Control:
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 32)  # Larger, bolder
+	name_label.add_theme_font_size_override("font_size", 28)  # More compact for mobile
 	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	name_label.add_theme_constant_override("outline_size", 3)
+	name_label.add_theme_constant_override("outline_size", 2)  # Thinner outline
 	header_panel.add_child(name_label)
 
 	# Description
@@ -125,25 +125,25 @@ func _create_character_card(character_type: String) -> Control:
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 24)  # Mobile UX: body text minimum
+	desc_label.add_theme_font_size_override("font_size", 18)  # More compact for mobile
 	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	desc_label.add_theme_constant_override("outline_size", 3)
+	desc_label.add_theme_constant_override("outline_size", 2)  # Thinner outline
 	vbox.add_child(desc_label)
 
 	# Stat modifiers display with visual icons (Week 13 Phase 2)
 	var stats_container = VBoxContainer.new()
-	stats_container.add_theme_constant_override("separation", 6)
+	stats_container.add_theme_constant_override("separation", 3)  # Tighter spacing
 	vbox.add_child(stats_container)
 
 	# Add each stat with a colored icon
 	for stat_name in type_def.stat_modifiers.keys():
 		var value = type_def.stat_modifiers[stat_name]
 		var stat_row = HBoxContainer.new()
-		stat_row.add_theme_constant_override("separation", 8)
+		stat_row.add_theme_constant_override("separation", 6)  # Tighter spacing
 
 		# Stat icon (color-coded by category)
 		var icon = ColorRect.new()
-		icon.custom_minimum_size = Vector2(12, 12)
+		icon.custom_minimum_size = Vector2(10, 10)  # Smaller icons
 		icon.color = _get_stat_color(stat_name)
 		stat_row.add_child(icon)
 
@@ -151,9 +151,9 @@ func _create_character_card(character_type: String) -> Control:
 		var stat_label = Label.new()
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
-		stat_label.add_theme_font_size_override("font_size", 22)
+		stat_label.add_theme_font_size_override("font_size", 16)  # Smaller for compact layout
 		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
-		stat_label.add_theme_constant_override("outline_size", 2)
+		stat_label.add_theme_constant_override("outline_size", 1)  # Thinner outline
 		stat_row.add_child(stat_label)
 
 		stats_container.add_child(stat_row)
@@ -165,19 +165,19 @@ func _create_character_card(character_type: String) -> Control:
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	aura_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: readable stat info
+	aura_label.add_theme_font_size_override("font_size", 16)  # More compact
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
 	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	aura_label.add_theme_constant_override("outline_size", 3)
+	aura_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(aura_label)
 
 	# Tier requirement badge
 	var tier_label = Label.new()
 	tier_label.text = _get_tier_name(type_def.tier_required)
 	tier_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tier_label.add_theme_font_size_override("font_size", 22)  # Mobile UX: readable tier info
+	tier_label.add_theme_font_size_override("font_size", 14)  # More compact tier badge
 	tier_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	tier_label.add_theme_constant_override("outline_size", 3)
+	tier_label.add_theme_constant_override("outline_size", 1)
 	match type_def.tier_required:
 		CharacterService.UserTier.FREE:
 			tier_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))
@@ -190,8 +190,8 @@ func _create_character_card(character_type: String) -> Control:
 	# Select button (iOS HIG compliant - Round 4)
 	var select_btn = Button.new()
 	select_btn.text = "Select"
-	select_btn.custom_minimum_size = Vector2(220, 60)
-	select_btn.add_theme_font_size_override("font_size", 28)
+	select_btn.custom_minimum_size = Vector2(180, 50)  # More compact button
+	select_btn.add_theme_font_size_override("font_size", 24)  # Smaller font
 	select_btn.pressed.connect(_on_character_card_selected.bind(character_type))
 	vbox.add_child(select_btn)
 
