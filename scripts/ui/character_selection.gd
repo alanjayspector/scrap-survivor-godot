@@ -167,23 +167,28 @@ func _create_character_card(character_type: String) -> Control:
 	aura_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(aura_label)
 
-	# Select button (iOS HIG compliant - compact for grid)
-	var select_btn = Button.new()
-	select_btn.text = "Select"
-	select_btn.custom_minimum_size = Vector2(150, 44)  # iOS HIG minimum 44pt height, wider for larger card
-	select_btn.add_theme_font_size_override("font_size", 20)  # Larger font
-	select_btn.pressed.connect(_on_character_card_selected.bind(character_type))
-	vbox.add_child(select_btn)
+	# Add "Tap for details" hint (for unlocked cards too)
+	var hint_label = Label.new()
+	hint_label.text = "Tap for details"
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint_label.add_theme_font_size_override("font_size", 14)
+	hint_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 0.8))
+	hint_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	hint_label.add_theme_constant_override("outline_size", 1)
+	vbox.add_child(hint_label)
 
 	# Lock overlay (if user can't access this character)
 	var user_tier = CharacterService.get_tier()
 	if type_def.tier_required > user_tier:
-		_add_lock_overlay(card, character_type, type_def.tier_required)
+		_add_lock_overlay(card, type_def.tier_required)
+
+	# Make entire card tappable (tap → show detail panel)
+	card.gui_input.connect(_on_card_tapped.bind(character_type))
 
 	return card
 
 
-func _add_lock_overlay(card: Control, character_type: String, required_tier: int) -> void:
+func _add_lock_overlay(card: Control, required_tier: int) -> void:
 	# Professional lock overlay (Week 13 Phase 2: Grid optimized)
 	var overlay = Panel.new()
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -208,31 +213,21 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	overlay.add_theme_stylebox_override("panel", overlay_style)
 	card.add_child(overlay)
 
-	# Lock content container (centered vertically in card)
+	# Thumbnail lock indicator (simplified - no buttons, just icon + tier badge)
+	# Buttons moved to detail panel for better UX
 	var lock_content = VBoxContainer.new()
 	lock_content.set_anchors_preset(Control.PRESET_CENTER)
-	lock_content.position = Vector2(-75, -100)  # Centered for 170×300 card
-	lock_content.custom_minimum_size = Vector2(150, 200)
-	lock_content.add_theme_constant_override("separation", 10)
+	lock_content.position = Vector2(-65, -80)  # Centered for thumbnail
+	lock_content.custom_minimum_size = Vector2(130, 160)
+	lock_content.add_theme_constant_override("separation", 12)
 	overlay.add_child(lock_content)
 
-	# Lock icon with background
-	var lock_icon_bg = PanelContainer.new()
-	var icon_style = StyleBoxFlat.new()
-	icon_style.bg_color = Color(0.2, 0.2, 0.2, 0.9)
-	icon_style.corner_radius_top_left = 6
-	icon_style.corner_radius_top_right = 6
-	icon_style.corner_radius_bottom_left = 6
-	icon_style.corner_radius_bottom_right = 6
-	lock_icon_bg.add_theme_stylebox_override("panel", icon_style)
-	lock_content.add_child(lock_icon_bg)
-
-	# Lock icon label
+	# Lock icon (larger, more prominent)
 	var lock_label = Label.new()
 	lock_label.text = "🔒"
 	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 36)  # Larger for visibility
-	lock_icon_bg.add_child(lock_label)
+	lock_label.add_theme_font_size_override("font_size", 48)  # Larger for thumbnail visibility
+	lock_content.add_child(lock_label)
 
 	# Tier requirement badge with colored background panel (reuse tier_color from above)
 	var tier_badge_panel = PanelContainer.new()
@@ -254,54 +249,42 @@ func _add_lock_overlay(card: Control, character_type: String, required_tier: int
 	tier_badge.text = _get_tier_name(required_tier)
 	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tier_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	tier_badge.custom_minimum_size = Vector2(130, 36)  # Larger, more prominent
-	tier_badge.add_theme_font_size_override("font_size", 20)  # Larger for visibility
+	tier_badge.custom_minimum_size = Vector2(120, 40)  # Prominent badge
+	tier_badge.add_theme_font_size_override("font_size", 18)  # Readable
 	tier_badge.add_theme_color_override("font_color", Color.WHITE)
 	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
 	tier_badge.add_theme_constant_override("outline_size", 2)
 	tier_badge_panel.add_child(tier_badge)
 
-	# "Try" button (iOS HIG compliant) - Blue background
-	var trial_btn = Button.new()
-	trial_btn.text = "Try"
-	trial_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
-	trial_btn.add_theme_font_size_override("font_size", 18)  # Readable font
+	# Add "Tap for details" hint
+	var hint_label = Label.new()
+	hint_label.text = "Tap for details"
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint_label.add_theme_font_size_override("font_size", 14)
+	hint_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
+	hint_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	hint_label.add_theme_constant_override("outline_size", 1)
+	lock_content.add_child(hint_label)
 
-	# Blue background for Try button
-	var trial_style = StyleBoxFlat.new()
-	trial_style.bg_color = Color(0.3, 0.6, 0.9, 0.95)  # Blue, semi-transparent
-	trial_style.corner_radius_top_left = 6
-	trial_style.corner_radius_top_right = 6
-	trial_style.corner_radius_bottom_left = 6
-	trial_style.corner_radius_bottom_right = 6
-	trial_btn.add_theme_stylebox_override("normal", trial_style)
-	trial_btn.add_theme_color_override("font_color", Color.WHITE)
-	trial_btn.add_theme_color_override("font_outline_color", Color.BLACK)
-	trial_btn.add_theme_constant_override("outline_size", 2)
 
-	trial_btn.pressed.connect(_on_free_trial_requested.bind(character_type))
-	lock_content.add_child(trial_btn)
+func _on_card_tapped(event: InputEvent, character_type: String) -> void:
+	"""Handle card tap - show detail panel with full character info"""
+	if event is InputEventScreenTouch and event.pressed:
+		print("[CharacterSelection] Card tapped: ", character_type)
+		_show_character_detail_panel(character_type)
 
-	# "Unlock" button (iOS HIG compliant) - Gold background (matches tier color)
-	var unlock_btn = Button.new()
-	unlock_btn.text = "Unlock"
-	unlock_btn.custom_minimum_size = Vector2(140, 44)  # iOS HIG minimum
-	unlock_btn.add_theme_font_size_override("font_size", 18)  # Readable font
+		# Visual feedback - brief scale animation
+		if character_type_cards.has(character_type):
+			var card = character_type_cards[character_type]
+			var tween = create_tween()
+			tween.tween_property(card, "scale", Vector2(0.95, 0.95), 0.1)
+			tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.1)
 
-	# Gold/tier-colored background for Unlock button
-	var unlock_style = StyleBoxFlat.new()
-	unlock_style.bg_color = tier_color  # Match tier color for consistency
-	unlock_style.corner_radius_top_left = 6
-	unlock_style.corner_radius_top_right = 6
-	unlock_style.corner_radius_bottom_left = 6
-	unlock_style.corner_radius_bottom_right = 6
-	unlock_btn.add_theme_stylebox_override("normal", unlock_style)
-	unlock_btn.add_theme_color_override("font_color", Color.WHITE)
-	unlock_btn.add_theme_color_override("font_outline_color", Color.BLACK)
-	unlock_btn.add_theme_constant_override("outline_size", 2)
 
-	unlock_btn.pressed.connect(_on_unlock_requested.bind(required_tier))
-	lock_content.add_child(unlock_btn)
+func _show_character_detail_panel(character_type: String) -> void:
+	"""Show detail panel with full character information and Try/Unlock buttons"""
+	print("[CharacterSelection] Showing detail panel for: ", character_type)
+	# TODO: Implement detail panel (next step)
 
 
 func _get_stat_color(stat_name: String) -> Color:
