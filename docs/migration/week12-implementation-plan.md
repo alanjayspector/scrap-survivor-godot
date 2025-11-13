@@ -644,6 +644,82 @@ Week 12 expands the combat variety established in Week 11 by adding multiple wea
 - Test with increased pickup_range stat (simulate stat boost)
 ```
 
+### Game Design Questions for Future Phases
+
+**Context**: Following completion of mobile UX P0 fixes (camera boundaries, player world boundaries), playtesting revealed world size vs enemy density concerns that need design decisions before further development.
+
+#### Issue: World Size vs Enemy Density
+
+**User Feedback (2025-01-12 QA)**:
+- "world is larger than the number of enemies that spawn on wave 1"
+- Movement felt "infinite" with no visual landmarks on grey canvas
+- Player wanders extended distances with few enemies visible at any time
+- Eventually hits boundaries after 10+ seconds of continuous movement
+
+**Current Configuration**:
+- **World size**: 3800×3800 units (Rect2(-2000, -2000, 4000, 4000) with 100px margin)
+- **Camera viewport**: ~1152×648 pixels visible area
+- **Player boundaries**: -1900 to +1900 (correctly configured and working)
+- **Wave 1 enemy spawning**: (needs analysis - exact spawn count/density unknown)
+
+**Comparative Analysis** (Sr Mobile Game Designer):
+
+| Game | Typical Arena Size | Enemy Density Wave 1 | Notes |
+|---|---|---|---|
+| Vampire Survivors | ~1500×1500 units | 20-30 enemies visible | Tight, claustrophobic feel |
+| Brotato | ~1200×1200 units | 15-25 enemies/wave | Small arena, intense combat |
+| **Scrap Survivor** | **3800×3800 units** | *Unknown* | **2-3x larger than references** |
+
+**Design Options** (for Phase 2 future work):
+
+**Option 1: Reduce World Size (Tight Arena Approach)**
+- **Change**: Reduce WORLD_BOUNDS to 1500×1500 or 2000×2000
+- **Pro**: Matches genre conventions (Vampire Survivors, Brotato)
+- **Pro**: Increases perceived enemy density without spawning changes
+- **Pro**: Creates tighter, more intense combat feel
+- **Con**: Requires rebalancing camera boundaries
+- **Effort**: Medium (update constants, retest camera system)
+
+**Option 2: Increase Enemy Density (Keep Large World)**
+- **Change**: Increase wave 1 spawn count or spawn frequency
+- **Pro**: Leverages large world size for exploration-based gameplay
+- **Pro**: No camera/boundary changes needed
+- **Pro**: Creates unique "survivor in vast wasteland" feel
+- **Con**: Different genre feel than references
+- **Con**: May require enemy spawning system redesign
+- **Effort**: High (wave system overhaul)
+
+**Option 3: Progressive World Scaling (Hybrid Approach)**
+- **Change**: Start small (1500×1500 wave 1), expand boundaries as waves progress
+- **Pro**: Early waves feel tight and intense
+- **Pro**: Late waves reward exploration and movement
+- **Pro**: Natural difficulty progression
+- **Con**: Complex boundary system (dynamic WORLD_BOUNDS)
+- **Con**: May confuse players ("why can I move further now?")
+- **Effort**: Very High (new boundary scaling system)
+
+**Recommendation** (Team Consensus):
+
+**Sr Mobile Game Designer**: Option 1 (tight arena) - Genre conventions exist for a reason; players expect dense, intense combat in survivor-like games.
+
+**Sr Mobile UI/UX**: Add visual landmarks REGARDLESS of option chosen - grey canvas makes distance perception impossible. Add grid lines, floor texture, or environmental markers.
+
+**Sr Godot Engineer**: Option 1 simplest to implement - single constant change in `player.gd`. Options 2-3 require significant wave system work.
+
+**Sr Software Architect**: Defer decision until wave spawning analysis complete. Need exact spawn counts, spawn rate, and enemy distribution data before choosing direction.
+
+**Action Items for Phase 2 (Future Sprint)**:
+1. **Analysis**: Measure wave 1 enemy spawn count, density, and distribution
+2. **Design Decision**: Choose Option 1, 2, or 3 based on spawn data
+3. **Visual Feedback**: Add grid lines, floor texture, or minimap REGARDLESS of option
+4. **Playtesting**: Test chosen approach on iOS with 3+ QA sessions
+5. **Documentation**: Update game design doc with final world size rationale
+
+**Dependencies**:
+- Completion of Phase 2 pickup magnet system
+- Wave spawning analysis (spawn count, rate, distribution)
+- Game design direction from product owner
+
 ---
 
 ## Phase 3: Character Stats Integration
@@ -2104,5 +2180,83 @@ Camera at +1360: visible right = +1360 + 640 = +2000 ✓ (at boundary, no oversh
 - [ ] Joystick smooth (no regressions) ⏳
 
 **Reference:** [docs/CAMERA-BOUNDARY-FIX-PLAN.md](../../docs/CAMERA-BOUNDARY-FIX-PLAN.md)
+
+---
+
+## Mobile UX QA Round 4 Follow-Up #5 (Complete)
+
+**Goal**: Fix critical VirtualJoystick touch input failure
+
+**Status**: Implementation complete ✅
+**Date**: 2025-01-12
+
+### Issue Identified (iOS Device Testing - P0 BLOCKER)
+
+**From User Report:**
+> "Joystick completely broken with your last set of changes... now the joystick works on a limited radius in the middle of the screen"
+
+**Problem**: Touch input only worked in tiny 150x150px area (top-left corner)
+
+### Root Cause & Solution
+
+**Root Cause:**
+- VirtualJoystick Control was only 150x150 pixels
+- Control nodes in Godot ONLY receive input within their rect
+- Touches outside 150x150px area were COMPLETELY IGNORED
+- User could only activate joystick in small corner area
+
+**Evidence from ios.log:**
+```
+[VirtualJoystick] Control rect: [P: (0.0, 0.0), S: (150.0, 150.0)]  # Before fix
+# Only touches in tiny corner worked!
+```
+
+**Solution:** Full-screen anchors + MOUSE_FILTER_IGNORE
+```gdscript
+[node name="VirtualJoystick" type="Control"]
+anchors_preset = 15        # Full screen
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2           # Don't block other UI
+```
+
+**Files Modified:**
+- `scenes/ui/virtual_joystick.tscn` - Full-screen anchors + mouse_filter
+- `scripts/ui/virtual_joystick.gd` - Diagnostic logging (15+ points)
+- **NEW:** `scripts/tests/virtual_joystick_test.gd` - 25 comprehensive tests
+
+**Test Results**: ✅ 496/520 passing (+25 new tests)
+
+---
+
+## Mobile UX QA Round 4 Follow-Up #6 (Complete)
+
+**Goal**: Fix player movement restriction (camera clamping wrong entity)
+
+**Status**: Implementation complete ✅
+**Date**: 2025-01-12
+
+### Issue Identified (iOS Device Testing - P0 BLOCKER)
+
+**From User Report:**
+> "I can move in a smaller circle from the center but not past that radius... can't go all the way to the edge of the screen"
+
+**Problem**: Player artificially restricted to ~2720x3280 unit circle
+
+### Root Cause & Solution
+
+**Root Cause:**
+- Camera was clamping TARGET (player) position before following
+- Player restricted to camera boundaries instead of world boundaries
+
+**Solution:** Clamp camera position AFTER lerp, not target position
+
+**Files Modified:**
+- `scripts/components/camera_controller.gd` - Clamp camera position (not target)
+- `scripts/entities/player.gd` - Player movement diagnostic logging
+
+**Test Results**: ✅ 496/520 passing (existing tests validated correct behavior)
+
+**Manual QA:** ⏳ **IN PROGRESS** (User testing on iOS device)
 
 ---

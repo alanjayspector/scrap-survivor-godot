@@ -39,18 +39,35 @@ func _ready() -> void:
 	var viewport_size = get_viewport_rect().size
 	touch_zone_rect = Rect2(0, 0, viewport_size.x / 2, viewport_size.y)
 
+	# Diagnostic logging
+	print("[VirtualJoystick] _ready() called")
+	print("[VirtualJoystick] Control rect: ", get_rect())
+	print("[VirtualJoystick] Control global position: ", global_position)
+	print("[VirtualJoystick] Viewport size: ", viewport_size)
+	print("[VirtualJoystick] Touch zone rect: ", touch_zone_rect)
+	print("[VirtualJoystick] Mouse filter: ", mouse_filter)
+	print("[VirtualJoystick] Anchors: ", anchor_left, ",", anchor_top, " to ", anchor_right, ",", anchor_bottom)
+
 
 func _input(event: InputEvent) -> void:
+	# Log ALL touch events for diagnostic purposes
 	if event is InputEventScreenTouch:
+		print("[VirtualJoystick] Touch event: pressed=", event.pressed, " position=", event.position, " index=", event.index)
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
+		if event.index == touch_index:  # Only log drags for our tracked touch
+			print("[VirtualJoystick] Drag event: position=", event.position, " index=", event.index, " offset from origin=", (event.position - touch_origin).length())
 		_handle_drag(event)
 
 
 func _handle_touch(event: InputEventScreenTouch) -> void:
 	if event.pressed:
+		# Check if touch is in zone
+		var in_zone = touch_zone_rect.has_point(event.position)
+		print("[VirtualJoystick] Touch pressed: in_zone=", in_zone, " state=", state, " position=", event.position)
+
 		# Only capture touches in left half of screen
-		if touch_zone_rect.has_point(event.position) and state == JoystickState.INACTIVE:
+		if in_zone and state == JoystickState.INACTIVE:
 			# Start floating joystick
 			touch_origin = event.position
 			touch_index = event.index
@@ -63,9 +80,16 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 			base.visible = true
 			stick.visible = true
 			stick.position = Vector2.ZERO
+
+			print("[VirtualJoystick] Joystick ACTIVATED at ", touch_origin, " index=", touch_index)
+		elif not in_zone:
+			print("[VirtualJoystick] Touch REJECTED: outside touch zone (right half or off-screen)")
+		elif state != JoystickState.INACTIVE:
+			print("[VirtualJoystick] Touch REJECTED: joystick already active")
 	else:
 		# Touch released
 		if event.index == touch_index:
+			print("[VirtualJoystick] Touch RELEASED at ", event.position, " (joystick deactivated)")
 			is_pressed = false
 			state = JoystickState.INACTIVE
 			base.visible = false
@@ -81,6 +105,8 @@ func _handle_drag(event: InputEventScreenDrag) -> void:
 		# Calculate offset from touch origin (not fixed center)
 		var offset = event.position - touch_origin
 		_update_stick_position_from_offset(offset)
+	elif event.index == touch_index:
+		print("[VirtualJoystick] Drag ignored: is_pressed=", is_pressed, " state=", state)
 
 
 func _update_stick_position_from_offset(offset: Vector2) -> void:
@@ -102,6 +128,7 @@ func _update_stick_position_from_offset(offset: Vector2) -> void:
 			has_crossed_dead_zone = true  # Transition to ACTIVE_DRAG state
 			current_direction = offset.normalized()
 			direction_changed.emit(current_direction)
+			print("[VirtualJoystick] Dead zone CROSSED at offset=", offset_length, " direction=", current_direction)
 		else:
 			# Still within initial dead zone - no movement yet
 			current_direction = Vector2.ZERO

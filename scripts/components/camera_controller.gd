@@ -24,16 +24,35 @@ func _process(delta: float) -> void:
 	if not target:
 		return
 
-	# Smooth follow
+	# Smooth follow - lerp toward player's actual position
 	var target_pos = target.global_position
-	target_pos.x = clamp(
-		target_pos.x, boundaries.position.x, boundaries.position.x + boundaries.size.x
+	var new_camera_pos = global_position.lerp(target_pos, follow_smoothness * delta)
+
+	# Clamp CAMERA position to boundaries (not target position!)
+	# This allows player to reach world edges while preventing camera from showing off-canvas void
+	new_camera_pos.x = clamp(
+		new_camera_pos.x,
+		boundaries.position.x,
+		boundaries.position.x + boundaries.size.x
 	)
-	target_pos.y = clamp(
-		target_pos.y, boundaries.position.y, boundaries.position.y + boundaries.size.y
+	new_camera_pos.y = clamp(
+		new_camera_pos.y,
+		boundaries.position.y,
+		boundaries.position.y + boundaries.size.y
 	)
 
-	global_position = global_position.lerp(target_pos, follow_smoothness * delta)
+	# Diagnostic logging
+	if (new_camera_pos - global_position).length() > 1.0:
+		print(
+			"[Camera] Position: ",
+			new_camera_pos.snapped(Vector2.ONE),
+			" | Target: ",
+			target_pos.snapped(Vector2.ONE),
+			" | Boundaries: ",
+			boundaries
+		)
+
+	global_position = new_camera_pos
 
 	# Screen shake
 	if shake_amount > 0:
