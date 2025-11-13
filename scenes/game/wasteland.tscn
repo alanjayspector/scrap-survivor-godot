@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://c4vwm8p3qw1yd"]
+[gd_scene load_steps=10 format=3 uid="uid://c4vwm8p3qw1yd"]
 
 [ext_resource type="Script" path="res://scenes/game/wasteland.gd" id="1_wasteland"]
 [ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="2_wave_manager"]
 [ext_resource type="Script" path="res://scripts/components/camera_controller.gd" id="2_camera_controller"]
+[ext_resource type="Script" path="res://scripts/components/grid_floor.gd" id="2_grid_floor"]
 [ext_resource type="PackedScene" uid="uid://cqy8j7xvx3kh5" path="res://scenes/ui/hud.tscn" id="3_hud"]
 [ext_resource type="Script" path="res://scenes/ui/wave_complete_screen.gd" id="3_wave_complete_screen"]
 [ext_resource type="Script" path="res://scenes/ui/game_over_screen.gd" id="4_game_over_screen"]
@@ -38,13 +39,17 @@ script = ExtResource("1_wasteland")
 [node name="WorldEnvironment" type="CanvasModulate" parent="."]
 color = Color(0.7, 0.7, 0.8, 1)
 
+[node name="GridFloor" type="Node2D" parent="."]
+script = ExtResource("2_grid_floor")
+world_bounds = Rect2(-1000, -1000, 2000, 2000)
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 position_smoothing_speed = 5.0
 script = ExtResource("2_camera_controller")
 follow_smoothness = 5.0
-boundaries = Rect2(-1360, -1640, 2720, 3280)
+boundaries = Rect2(-360, -640, 720, 1280)
 
 [node name="Player" type="Node2D" parent="."]
 

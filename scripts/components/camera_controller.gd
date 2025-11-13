@@ -5,7 +5,7 @@ class_name CameraController
 
 @export var follow_smoothness: float = 5.0
 @export var screen_shake_intensity: float = 10.0
-@export var boundaries: Rect2 = Rect2(-2000, -2000, 4000, 4000)
+@export var boundaries: Rect2 = Rect2(-1000, -1000, 2000, 2000)
 
 var target: Node2D = null
 var shake_amount: float = 0.0

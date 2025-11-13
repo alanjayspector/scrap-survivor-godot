@@ -34,7 +34,7 @@ var _logged_boundaries: bool = false
 
 ## World boundaries (matches CameraController default boundaries)
 ## Prevents player from moving off-screen and getting lost
-const WORLD_BOUNDS: Rect2 = Rect2(-2000, -2000, 4000, 4000)
+const WORLD_BOUNDS: Rect2 = Rect2(-1000, -1000, 2000, 2000)
 const BOUNDS_MARGIN: float = 100.0  # Keep player 100px from world edge
 
 ## Spin-up mechanic (Shredder)

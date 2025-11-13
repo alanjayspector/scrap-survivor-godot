@@ -14,7 +14,8 @@ var player: Player
 var test_character_id: String = ""
 
 ## World boundaries from wasteland.tscn and camera_controller.gd
-const WORLD_BOUNDS: Rect2 = Rect2(-2000, -2000, 4000, 4000)
+## Week 13 Phase 1: Reduced from 4000x4000 to 2000x2000 for better combat density
+const WORLD_BOUNDS: Rect2 = Rect2(-1000, -1000, 2000, 2000)
 const PLAYER_BOUNDS_MARGIN: float = 100.0  # Player stops 100px from world edge
 
 ## Viewport calculations (from project.godot and wasteland.tscn)
@@ -26,9 +27,9 @@ const VISIBLE_WORLD_AREA: Vector2 = VIEWPORT_SIZE / CAMERA_ZOOM  # 1280x720
 
 ## Camera boundaries (adjusted for viewport to prevent off-canvas visibility)
 ## Camera must stay within bounds such that visible area never exceeds world bounds
-## Camera X: -2000 + 640 to +2000 - 640 = [-1360, +1360]
-## Camera Y: -2000 + 360 to +2000 - 360 = [-1640, +1640]
-const CAMERA_BOUNDS: Rect2 = Rect2(-1360, -1640, 2720, 3280)
+## Camera X: -1000 + 640 to +1000 - 640 = [-360, +360]
+## Camera Y: -1000 + 360 to +1000 - 360 = [-640, +640]
+const CAMERA_BOUNDS: Rect2 = Rect2(-360, -640, 720, 1280)
 
 
 func before_each() -> void:
@@ -75,7 +76,7 @@ func test_wasteland_camera_has_correct_boundaries() -> void:
 	assert_eq(
 		camera.boundaries,
 		CAMERA_BOUNDS,
-		"Camera boundaries should be Rect2(-1360, -1640, 2720, 3280) (accounts for viewport)"
+		"Camera boundaries should be Rect2(-360, -640, 720, 1280) (accounts for viewport)"
 	)
 
 
@@ -91,11 +92,11 @@ func test_wasteland_camera_has_follow_smoothness() -> void:
 
 
 func test_camera_clamps_to_left_boundary() -> void:
-	"""Verify camera cannot show beyond left world boundary (-2000)"""
+	"""Verify camera cannot show beyond left world boundary (-1000)"""
 	# Arrange - create mock player at far left edge
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(-1900, 0)  # Player at left edge
+	mock_player.global_position = Vector2(-900, 0)  # Player at left edge
 
 	camera.target = mock_player
 
@@ -107,16 +108,16 @@ func test_camera_clamps_to_left_boundary() -> void:
 	assert_gte(
 		camera.global_position.x,
 		CAMERA_BOUNDS.position.x,
-		"Camera X should not go below left camera boundary (-1360)"
+		"Camera X should not go below left camera boundary (-360)"
 	)
 
 
 func test_camera_clamps_to_right_boundary() -> void:
-	"""Verify camera cannot show beyond right world boundary (+2000)"""
+	"""Verify camera cannot show beyond right world boundary (+1000)"""
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(1900, 0)  # Player at right edge
+	mock_player.global_position = Vector2(900, 0)  # Player at right edge
 
 	camera.target = mock_player
 
@@ -128,16 +129,16 @@ func test_camera_clamps_to_right_boundary() -> void:
 	assert_lte(
 		camera.global_position.x,
 		CAMERA_BOUNDS.position.x + CAMERA_BOUNDS.size.x,
-		"Camera X should not exceed right camera boundary (+1360)"
+		"Camera X should not exceed right camera boundary (+360)"
 	)
 
 
 func test_camera_clamps_to_top_boundary() -> void:
-	"""Verify camera cannot show beyond top world boundary (-2000)"""
+	"""Verify camera cannot show beyond top world boundary (-1000)"""
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(0, -1900)  # Player at top edge
+	mock_player.global_position = Vector2(0, -900)  # Player at top edge
 
 	camera.target = mock_player
 
@@ -149,16 +150,16 @@ func test_camera_clamps_to_top_boundary() -> void:
 	assert_gte(
 		camera.global_position.y,
 		CAMERA_BOUNDS.position.y,
-		"Camera Y should not go below top camera boundary (-1640)"
+		"Camera Y should not go below top camera boundary (-640)"
 	)
 
 
 func test_camera_clamps_to_bottom_boundary() -> void:
-	"""Verify camera cannot show beyond bottom world boundary (+2000)"""
+	"""Verify camera cannot show beyond bottom world boundary (+1000)"""
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(0, 1900)  # Player at bottom edge
+	mock_player.global_position = Vector2(0, 900)  # Player at bottom edge
 
 	camera.target = mock_player
 
@@ -170,7 +171,7 @@ func test_camera_clamps_to_bottom_boundary() -> void:
 	assert_lte(
 		camera.global_position.y,
 		CAMERA_BOUNDS.position.y + CAMERA_BOUNDS.size.y,
-		"Camera Y should not exceed bottom camera boundary (+1640)"
+		"Camera Y should not exceed bottom camera boundary (+640)"
 	)
 
 
@@ -183,17 +184,17 @@ func test_camera_visible_area_stays_within_boundaries_left_edge() -> void:
 	"""
 	Verify camera doesn't show void beyond left boundary
 
-	Root Cause (Bug): When player at -1900, camera centered there shows down to
-	-2540 (540 units beyond -2000 boundary). This is the actual bug we fixed.
+	Root Cause (Bug): When player at -900, camera centered there shows down to
+	-1540 (540 units beyond -1000 boundary). This is the actual bug we fixed.
 
 	Math: Visible area width = 1280 units, half = 640 units
-	Camera at -1900: left edge visible = -1900 - 640 = -2540 ❌
-	Camera should clamp so: left edge visible >= -2000 ✅
+	Camera at -900: left edge visible = -900 - 640 = -1540 ❌
+	Camera should clamp so: left edge visible >= -1000 ✅
 	"""
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(-1900, 0)
+	mock_player.global_position = Vector2(-900, 0)
 
 	camera.target = mock_player
 
@@ -208,7 +209,7 @@ func test_camera_visible_area_stays_within_boundaries_left_edge() -> void:
 	assert_gte(
 		left_edge_visible,
 		WORLD_BOUNDS.position.x,
-		"Left edge of visible area should not extend beyond boundary (-2000)"
+		"Left edge of visible area should not extend beyond boundary (-1000)"
 	)
 
 	# Verify the fix prevents the 540-unit overshoot
@@ -223,7 +224,7 @@ func test_camera_visible_area_stays_within_boundaries_right_edge() -> void:
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(1900, 0)
+	mock_player.global_position = Vector2(900, 0)
 
 	camera.target = mock_player
 
@@ -238,7 +239,7 @@ func test_camera_visible_area_stays_within_boundaries_right_edge() -> void:
 	assert_lte(
 		right_edge_visible,
 		WORLD_BOUNDS.position.x + WORLD_BOUNDS.size.x,
-		"Right edge of visible area should not extend beyond boundary (+2000)"
+		"Right edge of visible area should not extend beyond boundary (+1000)"
 	)
 
 
@@ -247,7 +248,7 @@ func test_camera_visible_area_stays_within_boundaries_top_edge() -> void:
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(0, -1900)
+	mock_player.global_position = Vector2(0, -900)
 
 	camera.target = mock_player
 
@@ -262,7 +263,7 @@ func test_camera_visible_area_stays_within_boundaries_top_edge() -> void:
 	assert_gte(
 		top_edge_visible,
 		WORLD_BOUNDS.position.y,
-		"Top edge of visible area should not extend beyond boundary (-2000)"
+		"Top edge of visible area should not extend beyond boundary (-1000)"
 	)
 
 
@@ -271,7 +272,7 @@ func test_camera_visible_area_stays_within_boundaries_bottom_edge() -> void:
 	# Arrange
 	var mock_player = Node2D.new()
 	add_child_autofree(mock_player)
-	mock_player.global_position = Vector2(0, 1900)
+	mock_player.global_position = Vector2(0, 900)
 
 	camera.target = mock_player
 
@@ -286,7 +287,7 @@ func test_camera_visible_area_stays_within_boundaries_bottom_edge() -> void:
 	assert_lte(
 		bottom_edge_visible,
 		WORLD_BOUNDS.position.y + WORLD_BOUNDS.size.y,
-		"Bottom edge of visible area should not extend beyond boundary (+2000)"
+		"Bottom edge of visible area should not extend beyond boundary (+1000)"
 	)
 
 
@@ -321,8 +322,8 @@ func test_camera_and_player_boundaries_work_together() -> void:
 	"""
 	Verify camera boundaries and player boundaries work together correctly
 
-	Player stops at ±1900 (100px margin from world edge)
-	Camera clamps to ±2000 (world boundary)
+	Player stops at ±900 (100px margin from world edge)
+	Camera clamps to ±1000 (world boundary)
 	Result: Player always visible, no off-canvas movement
 	"""
 	# Arrange
@@ -331,7 +332,7 @@ func test_camera_and_player_boundaries_work_together() -> void:
 
 	# Position player at maximum allowed position (accounting for margin)
 	var max_player_x = (WORLD_BOUNDS.position.x + WORLD_BOUNDS.size.x) - PLAYER_BOUNDS_MARGIN
-	mock_player.global_position = Vector2(max_player_x, 0)  # 1900
+	mock_player.global_position = Vector2(max_player_x, 0)  # 900
 
 	camera.target = mock_player
 
