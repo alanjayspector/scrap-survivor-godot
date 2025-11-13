@@ -31,14 +31,10 @@ func _process(delta: float) -> void:
 	# Clamp CAMERA position to boundaries (not target position!)
 	# This allows player to reach world edges while preventing camera from showing off-canvas void
 	new_camera_pos.x = clamp(
-		new_camera_pos.x,
-		boundaries.position.x,
-		boundaries.position.x + boundaries.size.x
+		new_camera_pos.x, boundaries.position.x, boundaries.position.x + boundaries.size.x
 	)
 	new_camera_pos.y = clamp(
-		new_camera_pos.y,
-		boundaries.position.y,
-		boundaries.position.y + boundaries.size.y
+		new_camera_pos.y, boundaries.position.y, boundaries.position.y + boundaries.size.y
 	)
 
 	# Diagnostic logging

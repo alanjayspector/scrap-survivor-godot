@@ -46,17 +46,40 @@ func _ready() -> void:
 	print("[VirtualJoystick] Viewport size: ", viewport_size)
 	print("[VirtualJoystick] Touch zone rect: ", touch_zone_rect)
 	print("[VirtualJoystick] Mouse filter: ", mouse_filter)
-	print("[VirtualJoystick] Anchors: ", anchor_left, ",", anchor_top, " to ", anchor_right, ",", anchor_bottom)
+	print(
+		"[VirtualJoystick] Anchors: ",
+		anchor_left,
+		",",
+		anchor_top,
+		" to ",
+		anchor_right,
+		",",
+		anchor_bottom
+	)
 
 
 func _input(event: InputEvent) -> void:
 	# Log ALL touch events for diagnostic purposes
 	if event is InputEventScreenTouch:
-		print("[VirtualJoystick] Touch event: pressed=", event.pressed, " position=", event.position, " index=", event.index)
+		print(
+			"[VirtualJoystick] Touch event: pressed=",
+			event.pressed,
+			" position=",
+			event.position,
+			" index=",
+			event.index
+		)
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
 		if event.index == touch_index:  # Only log drags for our tracked touch
-			print("[VirtualJoystick] Drag event: position=", event.position, " index=", event.index, " offset from origin=", (event.position - touch_origin).length())
+			print(
+				"[VirtualJoystick] Drag event: position=",
+				event.position,
+				" index=",
+				event.index,
+				" offset from origin=",
+				(event.position - touch_origin).length()
+			)
 		_handle_drag(event)
 
 
@@ -64,7 +87,14 @@ func _handle_touch(event: InputEventScreenTouch) -> void:
 	if event.pressed:
 		# Check if touch is in zone
 		var in_zone = touch_zone_rect.has_point(event.position)
-		print("[VirtualJoystick] Touch pressed: in_zone=", in_zone, " state=", state, " position=", event.position)
+		print(
+			"[VirtualJoystick] Touch pressed: in_zone=",
+			in_zone,
+			" state=",
+			state,
+			" position=",
+			event.position
+		)
 
 		# Only capture touches in left half of screen
 		if in_zone and state == JoystickState.INACTIVE:
@@ -128,7 +158,12 @@ func _update_stick_position_from_offset(offset: Vector2) -> void:
 			has_crossed_dead_zone = true  # Transition to ACTIVE_DRAG state
 			current_direction = offset.normalized()
 			direction_changed.emit(current_direction)
-			print("[VirtualJoystick] Dead zone CROSSED at offset=", offset_length, " direction=", current_direction)
+			print(
+				"[VirtualJoystick] Dead zone CROSSED at offset=",
+				offset_length,
+				" direction=",
+				current_direction
+			)
 		else:
 			# Still within initial dead zone - no movement yet
 			current_direction = Vector2.ZERO

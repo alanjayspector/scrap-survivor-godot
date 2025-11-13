@@ -68,9 +68,7 @@ func test_virtual_joystick_control_rect_covers_viewport() -> void:
 		control_rect.size.x, viewport_size.x, "Control width must cover viewport for touch input"
 	)
 	assert_gte(
-		control_rect.size.y,
-		viewport_size.y,
-		"Control height must cover viewport for touch input"
+		control_rect.size.y, viewport_size.y, "Control height must cover viewport for touch input"
 	)
 
 
@@ -217,11 +215,12 @@ func test_dead_zone_does_not_reapply_during_drag() -> void:
 	joystick._update_stick_position_from_offset(Vector2(5, 0))  # 5px - within dead zone
 
 	# Should STILL emit direction (dead zone doesn't reapply)
-	assert_ne(
-		joystick.current_direction, Vector2.ZERO, "Should continue moving (no stuck feeling)"
-	)
+	assert_ne(joystick.current_direction, Vector2.ZERO, "Should continue moving (no stuck feeling)")
 	assert_almost_eq(
-		joystick.current_direction, Vector2(1, 0), Vector2(0.01, 0.01), "Direction should still be right"
+		joystick.current_direction,
+		Vector2(1, 0),
+		Vector2(0.01, 0.01),
+		"Direction should still be right"
 	)
 
 
@@ -260,9 +259,7 @@ func test_joystick_appears_at_touch_point() -> void:
 
 	joystick._handle_touch(touch)
 
-	assert_eq(
-		joystick.global_position, touch_pos, "Joystick should appear exactly at touch point"
-	)
+	assert_eq(joystick.global_position, touch_pos, "Joystick should appear exactly at touch point")
 	assert_eq(joystick.touch_origin, touch_pos, "Touch origin should be recorded")
 
 
@@ -303,10 +300,15 @@ func test_stick_clamped_to_max_distance() -> void:
 
 	# Stick should be clamped
 	assert_lte(
-		joystick.stick.position.length(), joystick.max_distance, "Stick should be clamped to max distance"
+		joystick.stick.position.length(),
+		joystick.max_distance,
+		"Stick should be clamped to max distance"
 	)
 	assert_almost_eq(
-		joystick.stick.position.length(), joystick.max_distance, 0.1, "Stick should be at max distance"
+		joystick.stick.position.length(),
+		joystick.max_distance,
+		0.1,
+		"Stick should be at max distance"
 	)
 
 
