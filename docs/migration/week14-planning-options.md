@@ -9,9 +9,14 @@
 
 ## Executive Summary
 
-Week 13 delivered significant combat depth improvements with 4 enemy types and strategic variety. Week 14 has three high-ROI paths forward, each addressing different quality/content gaps:
+Week 13 delivered significant combat depth improvements with 4 enemy types and strategic variety. Week 13 Phase 3.5 fixed enemy density (2.5x increase) based on iOS testing feedback. Week 14 has four high-ROI paths forward, each addressing different quality/content gaps:
 
-**Option A: Audio System** (High-ROI Polish, 6-8 hours)
+**Option A+D: Polish & Pacing Package** (RECOMMENDED, 9-12 hours)
+- **Audio System** (6-8h): Weapon + enemy sounds complete the "game feel" loop
+- **Continuous Spawning** (3-4h): Constant pressure throughout wave (genre standard)
+- Combined package delivers professional feel + proper pacing for manual QA
+
+**Option A: Audio System Only** (High-ROI Polish, 6-8 hours)
 - Weapon + enemy audio completes the "game feel" feedback loop
 - 50%+ perceived quality improvement for minimal effort
 - Audio is 50% of combat satisfaction (industry research)
@@ -26,7 +31,12 @@ Week 13 delivered significant combat depth improvements with 4 enemy types and s
 - Critical for retention (players stop after 5-10 runs without meta)
 - Foundation for monetization
 
-**Recommendation**: **Option A (Audio System)** for highest ROI, followed by Option B in Week 15.
+**Option D: Continuous Spawning** (Pacing Fix, 3-4 hours)
+- Replace burst spawning with continuous trickle (Brotato/VS standard)
+- Maintains constant pressure throughout wave
+- Critical for extended manual QA sessions
+
+**Recommendation**: **Option A+D (Polish & Pacing Package)** for complete "feel" overhaul, enabling proper multi-tester QA sessions.
 
 ---
 
@@ -600,11 +610,239 @@ func show_meta_progression_tutorial() -> void:
 
 ---
 
+## Option D: Continuous Spawning System
+
+### Overview
+Replace burst spawning with continuous trickle spawning to maintain constant pressure throughout waves, matching genre standards (Vampire Survivors, Brotato).
+
+**Effort**: 3-4 hours
+**ROI**: High (genre parity, enables proper QA)
+**Risk**: Low (isolated system, existing spawn logic)
+
+### Rationale (Sr Mobile Game Designer)
+> "Week 13 Phase 3.5 fixed enemy density (8 → 20 enemies), but spawning is still burst-based (all 20 spawn in first 40 seconds, then nothing). Vampire Survivors and Brotato use **continuous spawning** throughout the wave to maintain constant pressure. This is foundational to the genre feel and critical for extended QA sessions with multiple testers."
+
+### Current Implementation Problem
+
+**Current Spawn Pattern (Wave 1)**:
+```
+0-40s:  Enemy spawns every 2s (20 enemies)
+40-60s: NO spawns (all enemies already spawned)
+60s:    Wave complete
+```
+
+**Issue**: 40-second spawn burst, then 20 seconds of "cleanup mode" with no new threats.
+
+**Genre Standard (Brotato/VS)**:
+```
+0-60s: Continuous spawning (enemies trickle in throughout wave)
+       - Spawn rate: 1-3 enemies every 3-5 seconds
+       - Maintains 15-30 living enemies at all times
+60s:   Wave complete (kill remaining enemies)
+```
+
+### Implementation Plan
+
+#### Phase D1: Continuous Spawn Loop (2 hours)
+
+**Goal**: Replace burst spawning with continuous trickle spawning throughout wave.
+
+**Before**:
+```gdscript
+# scripts/systems/wave_manager.gd
+func start_wave() -> void:
+    current_state = WaveState.SPAWNING
+    var enemy_count = EnemyService.get_enemy_count_for_wave(current_wave)
+    _spawn_wave_enemies(enemy_count)  # Spawns all at once
+    current_state = WaveState.COMBAT
+
+func _spawn_wave_enemies(count: int) -> void:
+    enemies_remaining = count
+    var spawn_rate = EnemyService.get_spawn_rate(current_wave)
+
+    for i in range(count):
+        await get_tree().create_timer(spawn_rate).timeout
+        _spawn_single_enemy()
+```
+
+**After**:
+```gdscript
+# scripts/systems/wave_manager.gd
+var wave_duration: float = 60.0  # 60 seconds per wave
+var spawn_timer: float = 0.0
+var enemies_spawned_this_wave: int = 0
+var total_enemies_for_wave: int = 0
+
+func start_wave() -> void:
+    current_state = WaveState.COMBAT
+    wave_start_time = Time.get_ticks_msec() / 1000.0
+    enemies_spawned_this_wave = 0
+    total_enemies_for_wave = EnemyService.get_enemy_count_for_wave(current_wave)
+    spawn_timer = 0.0
+
+func _process(delta: float) -> void:
+    if current_state != WaveState.COMBAT:
+        return
+
+    # Check for wave timeout (60 seconds)
+    var elapsed = Time.get_ticks_msec() / 1000.0 - wave_start_time
+    if elapsed >= wave_duration:
+        _end_wave()
+        return
+
+    # Continuous spawning logic
+    spawn_timer -= delta
+    if spawn_timer <= 0 and enemies_spawned_this_wave < total_enemies_for_wave:
+        # Spawn 1-3 enemies per tick
+        var spawn_count = min(randi_range(1, 3), total_enemies_for_wave - enemies_spawned_this_wave)
+        for i in range(spawn_count):
+            _spawn_single_enemy()
+            enemies_spawned_this_wave += 1
+
+        # Reset spawn timer (3-5 seconds between spawns)
+        spawn_timer = randf_range(3.0, 5.0)
+
+func _end_wave() -> void:
+    # Wave ends at 60s - all remaining enemies must be killed
+    current_state = WaveState.CLEANUP
+    # Wait for all living enemies to be killed before wave complete
+```
+
+**Success Criteria**:
+- [x] Enemies spawn throughout 60-second wave
+- [x] 1-3 enemies per spawn tick (every 3-5 seconds)
+- [x] Maintains 15-30 living enemies at all times
+- [x] Wave ends at 60s (cleanup mode: kill remaining)
+
+---
+
+#### Phase D2: Enemy Count Throttling (1 hour)
+
+**Goal**: Prevent enemy count from exceeding max capacity (performance + overwhelming).
+
+**Implementation**:
+```gdscript
+# scripts/systems/wave_manager.gd
+const MAX_LIVING_ENEMIES: int = 35  # Cap at 35 to prevent overwhelming
+
+func _process(delta: float) -> void:
+    if current_state != WaveState.COMBAT:
+        return
+
+    var elapsed = Time.get_ticks_msec() / 1000.0 - wave_start_time
+    if elapsed >= wave_duration:
+        _end_wave()
+        return
+
+    # Only spawn if below max capacity
+    if living_enemies.size() >= MAX_LIVING_ENEMIES:
+        return
+
+    spawn_timer -= delta
+    if spawn_timer <= 0 and enemies_spawned_this_wave < total_enemies_for_wave:
+        var spawn_count = min(randi_range(1, 3), total_enemies_for_wave - enemies_spawned_this_wave)
+
+        # Additional check: don't exceed max capacity
+        spawn_count = min(spawn_count, MAX_LIVING_ENEMIES - living_enemies.size())
+
+        for i in range(spawn_count):
+            _spawn_single_enemy()
+            enemies_spawned_this_wave += 1
+
+        spawn_timer = randf_range(3.0, 5.0)
+```
+
+**Success Criteria**:
+- [x] Living enemies never exceed 35
+- [x] Spawn rate slows when approaching capacity
+- [x] Spawn rate increases when enemies are killed (maintains pressure)
+
+---
+
+#### Phase D3: Wave Completion Logic (1 hour)
+
+**Goal**: Wave completes when time expires AND all enemies killed (Brotato-style).
+
+**Implementation**:
+```gdscript
+# scripts/systems/wave_manager.gd
+enum WaveState { IDLE, COMBAT, CLEANUP, VICTORY, GAME_OVER }
+
+func _end_wave() -> void:
+    """Called when wave timer expires (60 seconds)"""
+    current_state = WaveState.CLEANUP
+    GameLogger.info("Wave cleanup phase", {"living_enemies": living_enemies.size()})
+
+    # Check if all enemies already dead
+    if living_enemies.is_empty():
+        _complete_wave()
+
+func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) -> void:
+    # ... existing death handling ...
+
+    # During cleanup phase, check if all enemies dead
+    if current_state == WaveState.CLEANUP and living_enemies.is_empty():
+        _complete_wave()
+
+func _complete_wave() -> void:
+    """Wave complete - all enemies killed"""
+    current_state = WaveState.VICTORY
+    var wave_end_time = Time.get_ticks_msec() / 1000.0
+    var wave_time = wave_end_time - wave_start_time
+    wave_stats["wave_time"] = wave_time
+
+    wave_completed.emit(current_wave, wave_stats)
+    all_enemies_killed.emit()
+
+    _show_wave_complete_screen()
+```
+
+**Success Criteria**:
+- [x] Wave timer displayed in HUD (60 seconds countdown)
+- [x] Cleanup phase starts at 60s (no more spawns)
+- [x] Wave completes when all enemies killed
+- [x] Players understand they must clear remaining enemies
+
+---
+
+### Week 14 Option D - Success Metrics
+
+| Metric | Target | Priority |
+|--------|--------|----------|
+| Continuous spawning implemented | Throughout 60s wave | Must Have |
+| Enemy count throttling | Max 35 living | Must Have |
+| Wave completion logic | Time + all killed | Must Have |
+| Manual QA: "Constant pressure" | Unanimous feedback | Must Have |
+| Performance: 60 FPS maintained | All devices | Must Have |
+
+**Estimated Effort**: 3-4 hours
+**Risk**: Low (isolated system, existing spawn logic)
+**Dependencies**: Wave Manager, Enemy Service
+
+### Why Combine with Audio (Option A+D)?
+
+**Synergy**:
+1. **Audio provides feedback for continuous spawning**: Enemy spawn sounds signal new threats
+2. **Continuous spawning justifies weapon audio polish**: More frequent combat = more audio events
+3. **Combined package = complete "feel" overhaul**: Professional audio + proper pacing
+
+**QA Benefits**:
+- Continuous spawning enables extended playtesting (5-10 minute sessions feel right)
+- Audio makes QA sessions more engaging for testers
+- Combined package delivers "shippable quality" feel
+
+**Total Effort**: 9-12 hours (6-8h audio + 3-4h spawning)
+**Total ROI**: Very High (complete genre parity on feel + pacing)
+
+---
+
 ## Recommendation Matrix
 
 | Option | Effort | ROI | Risk | Priority |
 |--------|--------|-----|------|----------|
-| **A: Audio System** | 6-8h | Very High | Low | ⭐⭐⭐ Recommended |
+| **A+D: Polish & Pacing Package** | 9-12h | Very High | Low | ⭐⭐⭐⭐ **RECOMMENDED** |
+| **A: Audio System** | 6-8h | Very High | Low | ⭐⭐⭐ Good standalone |
+| **D: Continuous Spawning** | 3-4h | High | Low | ⭐⭐⭐ Good standalone |
 | **B: Boss Enemies** | 8-12h | High | Medium | ⭐⭐ Week 15 candidate |
 | **C: Meta Progression** | 10-15h | Very High | Medium | ⭐⭐ Week 15-16 |
 
@@ -613,52 +851,71 @@ func show_meta_progression_tutorial() -> void:
 ## Team Consensus (Sr Roles)
 
 **Sr Mobile Game Designer:**
-> "**Option A (Audio)** is the obvious choice. We have great visuals (particles, trails, shake) but zero audio. Combat feels hollow. Audio is 50% of game feel - this is the highest ROI polish work we can do. 6-8 hours for 50% perceived quality improvement."
+> "**Option A+D (Polish & Pacing Package)** is the clear winner. Week 13 Phase 3.5 fixed density (2.5x increase), but iOS testing revealed we need continuous spawning for proper genre feel. Combining audio + continuous spawning delivers complete professional feel AND enables extended QA sessions with multiple testers. This is foundational work that unblocks proper playtesting."
 
 **Sr Product Manager:**
-> "Audio first, meta progression second. Audio makes the game **shareable** (players will record clips). Meta progression makes it **sticky** (players return). Boss enemies are cool but don't drive retention like meta progression does. **Option A → Option C → Option B**."
+> "Option A+D combines two high-ROI systems for one cohesive deliverable. Audio makes the game **shareable** (players record clips). Continuous spawning makes QA **viable** (5-10 minute sessions feel right). Total effort is 9-12h - still very manageable for Week 14. **This unblocks multi-tester QA**, which is critical before adding meta progression or bosses."
 
 **Sr Software Engineer:**
-> "Option A is low-risk, high-reward. Audio system is isolated (no complex dependencies). Option C (meta progression) requires careful SaveSystem integration and economy balancing - more complex but necessary for retention. Option B (bosses) is fun but can wait."
+> "Option A+D is still low-risk (both systems are isolated). Audio = AudioStreamPlayer2D. Continuous spawning = replace burst loop with _process() timer. No complex dependencies. Option C (meta progression) and Option B (bosses) both require extensive balancing - better to do after we have proper QA infrastructure in place."
 
 **Sr Mobile UI/UX:**
-> "Audio is **table stakes** for mobile games. Players expect weapon sounds, enemy feedback, UI clicks. Without audio, the game feels unfinished. Even with perfect visuals, zero audio makes it feel like a prototype."
+> "Audio is **table stakes** for mobile games. Continuous spawning is **table stakes** for the genre. Both need to be in place before we can do meaningful QA sessions with external testers. Without these, testers will immediately notice the game feels 'incomplete' - which wastes their time and ours."
 
 **Sr Godot 4.5.1 Specialist:**
-> "AudioStreamPlayer2D is straightforward in Godot 4. Asset sourcing (Kenney, freesound) is easy. Low technical risk. Boss enemies require more AI work (phase transitions, minion spawning). Meta progression requires careful SaveSystem integration. Audio is fastest win."
+> "Option A+D is straightforward. AudioStreamPlayer2D + asset sourcing (6-8h). WaveManager _process() loop + spawn timer (3-4h). Both leverage existing Godot systems. Boss enemies and meta progression are larger scope - better to tackle after we have polished pacing foundation."
 
 ---
 
-## Recommendation: Week 14 = Option A (Audio System)
+## Recommendation: Week 14 = Option A+D (Polish & Pacing Package)
 
-### Why Option A?
-1. **Highest ROI for effort** (6-8 hours for 50% quality boost)
-2. **Low risk** (audio system is isolated, no complex dependencies)
-3. **Completes combat feel loop** (visuals + audio = professional)
-4. **Mobile expectations** (players expect audio in mobile games)
-5. **Shareable content** (players record/share combat clips with audio)
+### Why Option A+D?
+1. **Highest combined ROI** (9-12 hours for complete "feel" overhaul)
+2. **Low risk** (both systems isolated, no complex dependencies)
+3. **Completes genre parity** (audio + continuous spawning = industry standard)
+4. **Enables multi-tester QA** (5-10 minute sessions feel complete, not hollow)
+5. **Synergistic systems** (audio provides feedback for spawn events)
+6. **Unblocks future work** (can't properly QA bosses/meta without proper pacing)
 
-### Week 15 Plan (Post-Audio)
-- **Option C: Meta Progression** (retention driver, monetization foundation)
-- OR **Option B: Boss Enemies** (content expansion, milestone moments)
+### What Gets Delivered?
+**Audio System (6-8h)**:
+- Weapon firing sounds (10 weapons)
+- Enemy audio (spawn, damage, death)
+- Ambient audio (wave start/complete, low HP warning)
+- UI audio (button clicks, character selection)
+
+**Continuous Spawning (3-4h)**:
+- 60-second wave timer with trickle spawning
+- Enemy count throttling (max 35 living)
+- Cleanup phase (kill remaining enemies to complete wave)
+- Constant pressure throughout wave (genre standard)
+
+### Week 15 Plan (Post-Polish Package)
+- **Option C: Meta Progression** (10-15h) - retention driver, monetization foundation
+- OR **Option B: Boss Enemies** (8-12h) - content expansion, milestone moments
+- Proper QA infrastructure now in place for testing either system
 
 ### Week 16 Plan
 - Implement whichever wasn't chosen in Week 15
-- Polish pass (tutorials, onboarding, balance)
+- Polish pass (tutorials, onboarding, balance tuning)
+- External playtesting with polished build
 
 ---
 
 ## Next Steps
 
-1. **User Decision Required**: Choose Option A, B, or C for Week 14
-2. **If Option A (Audio)**: Asset sourcing (Kenney Audio Pack, 1 hour)
+1. **User Decision Required**: Finalize Week 14 scope (Option A+D recommended)
+2. **If Option A+D**:
+   - Asset sourcing (Kenney Audio Pack, 1 hour)
+   - WaveManager refactor planning (identify test coverage gaps)
+   - HUD updates (wave timer display)
 3. **If Option B (Bosses)**: Design boss mechanics (2-3 boss types)
 4. **If Option C (Meta)**: Economy design (upgrade costs, salvage conversion rates)
 
 **Estimated Timeline**:
-- Week 14: Audio System (6-8 hours) ✅ Recommended
-- Week 15: Meta Progression (10-15 hours) or Boss Enemies (8-12 hours)
-- Week 16: Remaining system + polish + playtesting
+- Week 14: Polish & Pacing Package (9-12 hours) ⭐⭐⭐⭐ **RECOMMENDED**
+- Week 15: Meta Progression (10-15 hours) OR Boss Enemies (8-12 hours)
+- Week 16: Remaining system + polish + extended playtesting
 
 ---
 

@@ -88,7 +88,7 @@ func _ready() -> void:
 	var joystick = get_tree().get_first_node_in_group("virtual_joystick")
 	if joystick:
 		joystick.direction_changed.connect(_on_joystick_direction_changed)
-		print("[Player] Connected to virtual joystick")
+		# print("[Player] Connected to virtual joystick")  # DISABLED: Reduce log size
 
 	# Draw initial pickup range indicator
 	_update_pickup_range_indicator()
@@ -221,12 +221,13 @@ func _physics_process(delta: float) -> void:
 		clamped_direction += "DOWN "
 
 	# DIAGNOSTIC: Log when velocity clamping prevents boundary overshoot
-	if velocity_clamped:
-		print("[Player] ✋ VELOCITY CLAMPED - Direction: ", clamped_direction.strip_edges())
-		print("[Player]   Current position: ", global_position.snapped(Vector2.ONE))
-		print("[Player]   Predicted next: ", next_position.snapped(Vector2.ONE))
-		print("[Player]   Velocity BEFORE: ", velocity_before.snapped(Vector2.ONE))
-		print("[Player]   Velocity AFTER: ", velocity.snapped(Vector2.ONE))
+	# DISABLED: Reduce log size
+	# if velocity_clamped:
+	# 	print("[Player] ✋ VELOCITY CLAMPED - Direction: ", clamped_direction.strip_edges())
+	# 	print("[Player]   Current position: ", global_position.snapped(Vector2.ONE))
+	# 	print("[Player]   Predicted next: ", next_position.snapped(Vector2.ONE))
+	# 	print("[Player]   Velocity BEFORE: ", velocity_before.snapped(Vector2.ONE))
+	# 	print("[Player]   Velocity AFTER: ", velocity.snapped(Vector2.ONE))
 
 	# Let move_and_slide() handle ALL position updates
 	# NO manual position modification after this point!
@@ -235,32 +236,34 @@ func _physics_process(delta: float) -> void:
 	var position_after = global_position
 
 	# DIAGNOSTIC: Check for unexpected collisions
-	if get_slide_collision_count() > 0:
-		print("[Player] ⚠️ COLLISION DETECTED! Count: ", get_slide_collision_count())
-		print("[Player]   At position: ", global_position.snapped(Vector2.ONE))
-		for i in range(get_slide_collision_count()):
-			var collision = get_slide_collision(i)
-			print(
-				"[Player]   Collision ",
-				i,
-				": collider=",
-				collision.get_collider(),
-				" | normal=",
-				collision.get_normal().snapped(Vector2(0.01, 0.01))
-			)
+	# DISABLED: Reduce log size
+	# if get_slide_collision_count() > 0:
+	# 	print("[Player] ⚠️ COLLISION DETECTED! Count: ", get_slide_collision_count())
+	# 	print("[Player]   At position: ", global_position.snapped(Vector2.ONE))
+	# 	for i in range(get_slide_collision_count()):
+	# 		var collision = get_slide_collision(i)
+	# 		print(
+	# 			"[Player]   Collision ",
+	# 			i,
+	# 			": collider=",
+	# 			collision.get_collider(),
+	# 			" | normal=",
+	# 			collision.get_normal().snapped(Vector2(0.01, 0.01))
+	# 		)
 
 	# DIAGNOSTIC: Log movement (only significant movement to reduce spam)
-	if position_before.distance_to(position_after) > 1.0:
-		print(
-			"[Player] Moved: from ",
-			position_before.snapped(Vector2.ONE),
-			" to ",
-			position_after.snapped(Vector2.ONE),
-			" | velocity: ",
-			velocity.snapped(Vector2.ONE),
-			" | input: ",
-			input_direction.snapped(Vector2(0.01, 0.01))
-		)
+	# DISABLED: Reduce log size
+	# if position_before.distance_to(position_after) > 1.0:
+	# 	print(
+	# 		"[Player] Moved: from ",
+	# 		position_before.snapped(Vector2.ONE),
+	# 		" to ",
+	# 		position_after.snapped(Vector2.ONE),
+	# 		" | velocity: ",
+	# 		velocity.snapped(Vector2.ONE),
+	# 		" | input: ",
+	# 		input_direction.snapped(Vector2(0.01, 0.01))
+	# 	)
 
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:

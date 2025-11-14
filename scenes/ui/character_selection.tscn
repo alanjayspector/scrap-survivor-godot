@@ -76,7 +76,7 @@ custom_minimum_size = Vector2(250, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.3, 0.8, 0.3, 1)
-text = "Create Character"
+text = "Wasteland"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/BackButton" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/CreateButton" to="." method="_on_create_character_pressed"]

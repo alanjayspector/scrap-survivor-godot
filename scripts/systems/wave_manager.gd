@@ -18,6 +18,10 @@ var living_enemies: Dictionary = {}  # enemy_id -> Enemy reference for accurate 
 var wave_start_time: float = 0.0
 var wave_stats: Dictionary = {}
 
+## Spawn tracking (hotfix for premature wave completion - 2025-11-14)
+var enemies_spawned_this_wave: int = 0
+var total_enemies_for_wave: int = 0
+
 
 func _ready() -> void:
 	# Add to group so HUD can connect to wave signals
@@ -34,6 +38,12 @@ func start_wave() -> void:
 	living_enemies.clear()
 	wave_start_time = Time.get_ticks_msec() / 1000.0
 	wave_stats = {"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}}
+
+	# Initialize spawn tracking (hotfix for premature wave completion - 2025-11-14)
+	enemies_spawned_this_wave = 0
+	total_enemies_for_wave = EnemyService.get_enemy_count_for_wave(current_wave)
+	print("[WaveManager] Total enemies planned for wave: ", total_enemies_for_wave)
+
 	print("[WaveManager] State set to SPAWNING, wave start time: ", wave_start_time)
 
 	# Update HUD
@@ -157,6 +167,15 @@ func _spawn_single_enemy() -> void:
 			"[WaveManager] Enemy tracked in living_enemies. Total living: ", living_enemies.size()
 		)
 
+	# Increment spawn counter (hotfix for premature wave completion - 2025-11-14)
+	enemies_spawned_this_wave += spawn_count
+	print(
+		"[WaveManager] Enemies spawned this wave: ",
+		enemies_spawned_this_wave,
+		"/",
+		total_enemies_for_wave
+	)
+
 
 func _get_random_spawn_position() -> Vector2:
 	# Week 13 Phase 3.5: Spawn in ring around player (600-800px) for tighter density
@@ -199,10 +218,29 @@ func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) ->
 	# Decrement remaining count (kept for backward compatibility)
 	enemies_remaining -= 1
 
-	# Check if wave is complete (all enemies dead)
-	if living_enemies.is_empty() and current_state == WaveState.COMBAT:
-		print("[WaveManager] All enemies dead, completing wave")
+	# Check if wave is complete (hotfix: ALL enemies must spawn before wave can complete - 2025-11-14)
+	if (
+		living_enemies.is_empty()
+		and current_state == WaveState.COMBAT
+		and enemies_spawned_this_wave >= total_enemies_for_wave
+	):
+		print(
+			"[WaveManager] All enemies dead AND all enemies spawned (",
+			enemies_spawned_this_wave,
+			"/",
+			total_enemies_for_wave,
+			"), completing wave"
+		)
 		_complete_wave()
+	elif living_enemies.is_empty() and enemies_spawned_this_wave < total_enemies_for_wave:
+		# Hotfix: Prevent premature wave completion while enemies still spawning
+		print(
+			"[WaveManager] All current enemies dead, but still spawning (",
+			enemies_spawned_this_wave,
+			"/",
+			total_enemies_for_wave,
+			") - wave continues"
+		)
 	elif enemies_remaining <= 0 and living_enemies.size() > 0:
 		# Safety check: counter vs actual living enemies mismatch
 		print(

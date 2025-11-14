@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-01-14
-**Status**: Week 13 Complete (All Phases) ✅ + Combat Depth Added ✅ + Week 14 Planning 📅
-**Current Progress**: Week 13 complete - arena optimization (2000×2000 world + grid floor), character selection polish (2×2 grid + detail panel), enemy variety (4 new types: ranged, tank, fast, swarm). All 496/520 tests passing. Week 14 planning - weapon/enemy audio, boss enemies, meta progression.
+**Last Updated**: 2025-11-14
+**Status**: Week 13 Complete (All Phases Including 3.5) ✅ + Week 14 Planning (Option A+D Recommended) 📅
+**Current Progress**: Week 13 complete - arena optimization (2000×2000 world + grid floor), character selection polish (2×2 grid + detail panel), enemy variety (4 new types: ranged, tank, fast, swarm), enemy density fix (2.5× increase to 20-30 enemies for genre parity). All 496/520 tests passing. Week 14 planning: **Option A+D (Polish & Pacing Package)** recommended - audio system (6-8h) + continuous spawning (3-4h) for professional feel and proper QA enablement.
 
 ---
 
@@ -22,8 +22,8 @@
 | **Week 12** | Complete | ✅ | Weapon variety (10 weapons) + visual identity + pickup magnets + character stats integration |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
 | **Mobile UX Optimization** | Complete | ✅ | Font sizing, text outlines, touch targets, animations, polish (Rounds 1-4 complete) |
-| **Week 13** | Complete | ✅ | Arena optimization + character selection polish + enemy variety (4 types) |
-| **Week 14** | Planning | 📅 | Audio system (weapon/enemy sounds), boss enemies, or meta progression |
+| **Week 13** | Complete | ✅ | Arena optimization + character selection polish + enemy variety (4 types) + density fix (2.5× enemies) |
+| **Week 14** | Planning | 📅 | **Option A+D**: Audio system (weapon/enemy sounds) + continuous spawning (9-12h total) |
 
 ---
 
@@ -838,30 +838,87 @@ CharacterService: 43/43 passing
 
 **Commit**: `1e35442` - Phase 3 completed 2025-11-14
 
+### Phase 3.5: Enemy Density Fix (Urgent, 1 hour) ✅
+**Problem**: iOS testing revealed sparse combat - players "wandering around to find enemies" in 2000×2000 world with only 8-14 enemies per wave (only 3-7 visible at once).
+
+**Implementation**:
+- ✅ Increased enemy count formula: `15 + (wave * 5)` (previously `5 + (wave * 3)`)
+  - Wave 1: 8 → 20 enemies (2.5× increase)
+  - Wave 2: 11 → 25 enemies (2.3× increase)
+  - Wave 3: 14 → 30 enemies (2.1× increase)
+- ✅ Tighter spawn radius: 600-800px ring around player (previously viewport edge)
+- ✅ **Impact**: Brought game into genre parity (Brotato: 30-50 enemies, VS: 60-80)
+
+**Rationale**: P0 retention risk - 85% of mobile players quit within 60s if "nothing happens"
+
+**Commit**: `001843a` - Phase 3.5 completed 2025-11-14
+
 ### Success Criteria
 - [x] World size reduced to 2000×2000, grid floor visible ✅
 - [x] Camera boundaries updated and working ✅
 - [x] Character selection has professional visual polish with tap feedback ✅
 - [x] 4 new enemy types with distinct behaviors ✅
+- [x] Enemy density matches genre standards (20-30 enemies Wave 1-3) ✅
 - [ ] Combat feels more strategic and interesting ⏳ (Pending iOS testing)
 
 **Files Modified**:
-- `scripts/services/enemy_service.gd` - 4 enemy type definitions
+- `scripts/services/enemy_service.gd` - 4 enemy type definitions + density formula
 - `scripts/entities/enemy.gd` - Behavior-based AI, ranged attacks
-- `scripts/systems/wave_manager.gd` - Wave composition, swarm spawn logic
+- `scripts/systems/wave_manager.gd` - Wave composition, swarm spawn logic, ring-based spawning
 - `scripts/entities/projectile.gd` - Enemy projectile support
 
-**See**: [docs/migration/week13-implementation-plan.md](week13-implementation-plan.md)
+**See**: [docs/migration/week13-implementation-plan.md](week13-implementation-plan.md) and [docs/migration/week13-phase3.5-handoff.md](week13-phase3.5-handoff.md)
 
 ---
 
-## 🤖 Week 14+: Audio, Boss Enemies, Minions (Future)
+## 📅 Week 14: Polish & Pacing Package (Planning)
 
-### Week 14 Candidates
-- Weapon audio (2-3 hours) - 50%+ of weapon feel impact
-- Enemy audio (2-3 hours) - Completes combat feel loop
-- Boss enemies (6-8 hours) - Mini-boss every 5 waves
-- TileMap floor texture (2 hours) - Upgrade grid to themed texture
+**Status**: Planning (Options finalized 2025-11-14)
+
+**Recommended Option**: **A+D - Polish & Pacing Package** (9-12 hours)
+
+### Option A+D: Audio System + Continuous Spawning ⭐⭐⭐⭐ (RECOMMENDED)
+
+**Audio System (6-8 hours)**:
+- Weapon firing sounds (10 weapons) - 50%+ of weapon feel impact
+- Enemy audio (spawn, damage, death) - Completes combat feel loop
+- Ambient sounds (wave start/complete, low HP warning)
+- UI feedback (button clicks, character selection)
+- AudioStreamPlayer2D integration with weapon/enemy entities
+
+**Continuous Spawning (3-4 hours)**:
+- Replace burst spawning (0-40s) with trickle spawning (0-60s)
+- Genre-standard pacing: 1-3 enemies every 3-5 seconds
+- Enemy count throttling (max 35 living enemies)
+- Wave completion: 60s timer → cleanup phase → victory
+- Maintains constant combat pressure (matches Brotato/VS)
+
+**Rationale**:
+- Synergistic systems: Audio provides feedback for continuous spawn events
+- Enables extended QA: 5-10 minute sessions feel complete with proper pacing + audio
+- Genre parity: Both systems are industry standards for the genre
+- Low risk: Isolated systems, no complex dependencies
+- Unblocks future work: Can't properly QA bosses/meta without proper pacing
+
+### Alternative Week 14 Options
+
+**Option A: Audio System Only** (6-8 hours) ⭐⭐⭐
+- Good standalone option if time-constrained
+- Delivers professional feel without pacing changes
+
+**Option D: Continuous Spawning Only** (3-4 hours) ⭐⭐⭐
+- Good standalone option if audio deferred
+- Fixes pacing issues identified in iOS testing
+
+**Option B: Boss Enemies** (8-12 hours) ⭐⭐
+- Week 15 candidate after pacing/audio polish
+- Requires: Boss AI, special abilities, loot tables
+
+**Option C: Meta Progression** (10-15 hours) ⭐⭐
+- Week 15-16 candidate for retention
+- Requires: Meta-currency system, permanent upgrades
+
+**See**: [docs/migration/week14-planning-options.md](week14-planning-options.md) for detailed option analysis
 
 ### Future: Minions System
 - Minion types (biological, mechanical, hybrid)
