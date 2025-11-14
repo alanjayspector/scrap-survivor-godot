@@ -38,15 +38,16 @@ func _process(delta: float) -> void:
 	)
 
 	# Diagnostic logging
-	if (new_camera_pos - global_position).length() > 1.0:
-		print(
-			"[Camera] Position: ",
-			new_camera_pos.snapped(Vector2.ONE),
-			" | Target: ",
-			target_pos.snapped(Vector2.ONE),
-			" | Boundaries: ",
-			boundaries
-		)
+	# DISABLED: Reduce log size (Bug #1 fix - 2025-11-14)
+	# if (new_camera_pos - global_position).length() > 1.0:
+	# 	print(
+	# 		"[Camera] Position: ",
+	# 		new_camera_pos.snapped(Vector2.ONE),
+	# 		" | Target: ",
+	# 		target_pos.snapped(Vector2.ONE),
+	# 		" | Boundaries: ",
+	# 		boundaries
+	# 	)
 
 	global_position = new_camera_pos
 

@@ -71,15 +71,16 @@ func _input(event: InputEvent) -> void:
 		)
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
-		if event.index == touch_index:  # Only log drags for our tracked touch
-			print(
-				"[VirtualJoystick] Drag event: position=",
-				event.position,
-				" index=",
-				event.index,
-				" offset from origin=",
-				(event.position - touch_origin).length()
-			)
+		# DISABLED: Reduce log size (Bug #1 fix - 2025-11-14)
+		# if event.index == touch_index:  # Only log drags for our tracked touch
+		# 	print(
+		# 		"[VirtualJoystick] Drag event: position=",
+		# 		event.position,
+		# 		" index=",
+		# 		event.index,
+		# 		" offset from origin=",
+		# 		(event.position - touch_origin).length()
+		# 	)
 		_handle_drag(event)
 
 
@@ -136,7 +137,8 @@ func _handle_drag(event: InputEventScreenDrag) -> void:
 		var offset = event.position - touch_origin
 		_update_stick_position_from_offset(offset)
 	elif event.index == touch_index:
-		print("[VirtualJoystick] Drag ignored: is_pressed=", is_pressed, " state=", state)
+		pass  # DISABLED: Reduce log size (Bug #1 fix - 2025-11-14)
+		# print("[VirtualJoystick] Drag ignored: is_pressed=", is_pressed, " state=", state)
 
 
 func _update_stick_position_from_offset(offset: Vector2) -> void:

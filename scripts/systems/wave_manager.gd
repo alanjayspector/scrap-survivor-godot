@@ -71,12 +71,41 @@ func _spawn_wave_enemies(count: int) -> void:
 	print("[WaveManager] Spawn rate: ", spawn_rate, " seconds")
 
 	# Spawn enemies over time (not all at once)
+	# Note: We track "selections" (i) vs "actual enemies spawned" (counter)
+	# Swarm enemies spawn multiple units per selection
 	print("[WaveManager] Starting enemy spawn loop...")
-	for i in range(count):
-		print("[WaveManager] Spawning enemy ", i + 1, "/", count)
+	var i = 0
+	while enemies_spawned_this_wave < total_enemies_for_wave:
+		i += 1
+		print(
+			"[WaveManager] Spawn selection ",
+			i,
+			" (",
+			enemies_spawned_this_wave,
+			"/",
+			total_enemies_for_wave,
+			" spawned)"
+		)
 		await get_tree().create_timer(spawn_rate).timeout
+
+		# Bug #4 fix: Stop spawning if player died (2025-11-14)
+		var player = get_tree().get_first_node_in_group("player") as Player
+		if not player or not player.is_alive():
+			print("[WaveManager] Player dead, stopping spawn loop")
+			break
+
 		_spawn_single_enemy()
-	print("[WaveManager] All enemies spawned")
+
+		# Safety check: prevent infinite loop
+		if i > count * 2:
+			print("[WaveManager] WARNING: Spawn loop safety limit reached!")
+			break
+	print(
+		"[WaveManager] All enemies spawned: ",
+		enemies_spawned_this_wave,
+		"/",
+		total_enemies_for_wave
+	)
 
 
 func _spawn_single_enemy() -> void:
@@ -126,6 +155,11 @@ func _spawn_single_enemy() -> void:
 	# Check if this enemy type spawns multiple units (swarm behavior) - Week 13 Phase 3
 	var type_def = EnemyService.get_enemy_type(random_type)
 	var spawn_count = type_def.get("spawn_count", 1)
+
+	# Cap spawn count to not exceed wave total (Bug #2 fix - 2025-11-14)
+	var remaining = total_enemies_for_wave - enemies_spawned_this_wave
+	spawn_count = mini(spawn_count, remaining)
+	print("[WaveManager] Spawn count (capped): ", spawn_count, " (remaining: ", remaining, ")")
 
 	# Spawn multiple enemies for swarm types
 	for i in range(spawn_count):
@@ -302,5 +336,20 @@ func next_wave() -> void:
 
 func game_over() -> void:
 	current_state = WaveState.GAME_OVER
+
+	# Bug #5 fix: Clean up living enemies to prevent memory leak (2025-11-14)
+	_cleanup_enemies()
+
 	# Navigate to game over screen
 	get_tree().change_scene_to_file("res://scenes/ui/game_over.tscn")
+
+
+func _cleanup_enemies() -> void:
+	"""Free all living enemies to prevent memory leaks"""
+	print("[WaveManager] Cleaning up ", living_enemies.size(), " living enemies")
+	for enemy_id in living_enemies.keys():
+		var enemy = living_enemies[enemy_id]
+		if enemy and is_instance_valid(enemy):
+			enemy.queue_free()
+	living_enemies.clear()
+	print("[WaveManager] Cleanup complete")

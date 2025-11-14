@@ -259,11 +259,15 @@ func _on_area_entered(area: Area2D) -> void:
 
 	# Week 13 Phase 3: Handle enemy projectiles hitting player
 	if is_enemy_projectile:
-		var player = area.owner as Player
-		print("[Projectile] Enemy projectile - Area owner as Player: ", player)
-		if player and player.is_alive():
-			print("[Projectile] Enemy projectile hitting player")
-			hit_player(player)
+		# Check if area owner is in player group (more reliable than type casting)
+		if area.owner and area.owner.is_in_group("player"):
+			var player = area.owner as Player
+			print("[Projectile] Enemy projectile hit player (area): ", player)
+			if player and player.is_alive():
+				print("[Projectile] Enemy projectile hitting player")
+				hit_player(player)
+			return
+		print("[Projectile] Enemy projectile hit non-player area: ", area)
 		return
 
 	# Check if the area's owner is an enemy (player projectile)
@@ -283,11 +287,15 @@ func _on_body_entered(body: Node2D) -> void:
 
 	# Week 13 Phase 3: Handle enemy projectiles hitting player
 	if is_enemy_projectile:
-		var player = body as Player
-		print("[Projectile] Enemy projectile - Body as Player: ", player)
-		if player and player.is_alive():
-			print("[Projectile] Enemy projectile hitting player")
-			hit_player(player)
+		# Check if body is in player group (more reliable than type casting)
+		if body.is_in_group("player"):
+			var player = body as Player
+			print("[Projectile] Enemy projectile hit player in group: ", player)
+			if player and player.is_alive():
+				print("[Projectile] Enemy projectile hitting player")
+				hit_player(player)
+			return
+		print("[Projectile] Enemy projectile hit non-player body: ", body)
 		return
 
 	# Check if it's an enemy (player projectile)
