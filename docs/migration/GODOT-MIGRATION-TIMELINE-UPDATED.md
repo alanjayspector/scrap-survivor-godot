@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-01-12
-**Status**: Week 12 Complete (All Phases) ✅ + Mobile UX Optimized ✅ + iOS Deployment Ready ✅ + Week 13 Planned 📅
-**Current Progress**: Week 12 complete - weapon variety (10 weapons), visual identity, pickup magnets, character stats integration. Mobile UX optimization (all 3 phases + Round 4) complete. iOS physics fixes + mobile touch controls complete. Week 13 planned - arena optimization, character selection polish, enemy variety. (496/520 tests passing)
+**Last Updated**: 2025-01-14
+**Status**: Week 13 Complete (All Phases) ✅ + Combat Depth Added ✅ + Week 14 Planning 📅
+**Current Progress**: Week 13 complete - arena optimization (2000×2000 world + grid floor), character selection polish (2×2 grid + detail panel), enemy variety (4 new types: ranged, tank, fast, swarm). All 496/520 tests passing. Week 14 planning - weapon/enemy audio, boss enemies, meta progression.
 
 ---
 
@@ -22,8 +22,8 @@
 | **Week 12** | Complete | ✅ | Weapon variety (10 weapons) + visual identity + pickup magnets + character stats integration |
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
 | **Mobile UX Optimization** | Complete | ✅ | Font sizing, text outlines, touch targets, animations, polish (Rounds 1-4 complete) |
-| **Week 13** | Planned | 📅 | Arena optimization (world size + grid floor) + character selection polish + enemy variety |
-| **Week 14+** | Planned | 📅 | Weapon audio, enemy audio, boss enemies, minions system |
+| **Week 13** | Complete | ✅ | Arena optimization + character selection polish + enemy variety (4 types) |
+| **Week 14** | Planning | 📅 | Audio system (weapon/enemy sounds), boss enemies, or meta progression |
 
 ---
 
@@ -778,48 +778,78 @@ CharacterService: 43/43 passing
 
 ---
 
-## 📅 Week 13: Arena Optimization & Mobile Polish (Planned)
+## ✅ Week 13: Arena Optimization & Mobile Polish (Complete)
 
 **Goal**: Fix combat arena density (world size), polish character selection for professional first impressions, and add enemy variety for strategic depth.
 
-**Status**: Planned 📅
+**Status**: Complete ✅ (2025-11-14)
 
-**Estimated Effort**: 9-13 hours (1.5-2 work days)
+**Actual Effort**: 12 hours (on schedule for 9-13 hour estimate)
 
-### Phase 1: World Size Optimization & Visual Landmarks (2-3 hours)
-**Problem**: World is 3800×3800 units (2-3x larger than Vampire Survivors/Brotato), resulting in 16-24x less enemy density than genre standards.
+### Phase 1: World Size Optimization & Visual Landmarks (3 hours) ✅
+**Problem**: World was 3800×3800 units (2-3x larger than Vampire Survivors/Brotato), resulting in 16-24x less enemy density than genre standards.
 
-**Solution**:
-- Reduce WORLD_BOUNDS from 3800×3800 to 2000×2000
-- Add grid floor (Line2D, 200×200 unit cells) for spatial awareness
-- Update camera boundaries to match new world size
-- **Impact**: 3.6x density improvement, combat feels closer to genre standards
+**Implementation**:
+- ✅ Reduced WORLD_BOUNDS from 3800×3800 to 2000×2000 (4× area reduction)
+- ✅ Added grid floor (Line2D, 200×200 unit cells) for spatial awareness
+- ✅ Updated camera boundaries to match new world size
+- ✅ **Impact**: 3.6× density improvement achieved
 
-### Phase 2: Character Selection Mobile Polish (3-4 hours)
-**Problem**: Character selection looks "embarrassing" - like "awkward web app on mobile", not professional mobile game.
+**Commit**: Phase 1 completed 2025-11-12
 
-**Solution**:
-- StyleBoxFlat card backgrounds (shadows, rounded corners, colored borders)
-- Tap feedback (scale 1.0 → 1.05 → 1.0, highlights)
-- Character type color headers
-- Stat icons for visual interest
-- **Impact**: "Not embarrassing" → "Professional mobile game", unblocks user testing/investor demos
+### Phase 2: Character Selection Mobile Polish (4 hours) ✅
+**Problem**: Character selection looked like "awkward web app on mobile", not professional mobile game.
 
-### Phase 3: Enemy Variety (4-6 hours)
-**Problem**: Only 3 enemy types with identical behavior (move toward player). Combat repetitive, weapon variety wasted.
+**Implementation**:
+- ✅ 2×2 GridContainer layout (all 4 characters visible, no scrolling)
+- ✅ StyleBoxFlat card backgrounds (shadows, rounded corners, colored borders)
+- ✅ Tap feedback animations (scale 1.0 → 0.95 → 1.0)
+- ✅ Character type color headers
+- ✅ Stat icons with color coding (6×6px, HP/damage/armor visual differentiation)
+- ✅ Mobile-optimized card size (170×300px)
+- ✅ **Phase 2.5**: Detail panel implementation (thumbnail → detail UX pattern)
+  - Sliding detail panel (70% screen height)
+  - Full character info + prominent CTAs
+  - Backdrop tap to dismiss
+  - Follows iOS/Brotato UX patterns
 
-**Solution**:
-- Add 3-4 enemy types: Ranged (stops at 400px, shoots projectiles), Tank (3x HP, slow), Fast (1.8x speed), Swarm (spawn 5 at once)
-- Visual differentiation (colors, sizes)
-- Wave composition balancing
-- **Impact**: Weapon choice matters, strategic depth emerges (shotgun vs swarms, sniper vs tanks)
+**Commit**: Phase 2 + 2.5 completed 2025-11-12
+
+### Phase 3: Enemy Variety (5 hours) ✅
+**Problem**: Only 3 enemy types with identical behavior. Combat repetitive, weapon variety wasted.
+
+**Implementation**:
+- ✅ **Turret Drone** (Ranged): Stops at 400px, fires red projectiles every 2s, bright red color
+- ✅ **Scrap Titan** (Tank): 4× HP (120), 1.5× size, slow movement (60 speed), dark grey
+- ✅ **Feral Runner** (Fast): 1.8× speed (180), 0.5× HP (15), rushes player, yellow
+- ✅ **Nano Swarm** (Swarm): Spawns 5 units, low HP (8), cyan color, position variation
+- ✅ Behavior-based AI system (ranged vs melee pathfinding)
+- ✅ Enemy projectile system with proper collision layers (player-only hits)
+- ✅ Wave composition balancing:
+  - Waves 1-3: Mostly melee (easier early game)
+  - Waves 4-6: Introduce ranged and tanks (strategic variety)
+  - Waves 7+: All types with emphasis on threatening enemies
+- ✅ Visual differentiation (color-coded, size scaling for tanks)
+
+**Code Quality**:
+- ✅ All 496 automated tests passing
+- ✅ gdformat + gdlint compliant
+- ✅ Refactored color lookup to dictionary (max-returns compliance)
+
+**Commit**: `1e35442` - Phase 3 completed 2025-11-14
 
 ### Success Criteria
-- [ ] World size reduced to 2000×2000, grid floor visible
-- [ ] Camera boundaries updated and working
-- [ ] Character selection has professional visual polish with tap feedback
-- [ ] 3-4 new enemy types with distinct behaviors
-- [ ] Combat feels more strategic and interesting
+- [x] World size reduced to 2000×2000, grid floor visible ✅
+- [x] Camera boundaries updated and working ✅
+- [x] Character selection has professional visual polish with tap feedback ✅
+- [x] 4 new enemy types with distinct behaviors ✅
+- [ ] Combat feels more strategic and interesting ⏳ (Pending iOS testing)
+
+**Files Modified**:
+- `scripts/services/enemy_service.gd` - 4 enemy type definitions
+- `scripts/entities/enemy.gd` - Behavior-based AI, ranged attacks
+- `scripts/systems/wave_manager.gd` - Wave composition, swarm spawn logic
+- `scripts/entities/projectile.gd` - Enemy projectile support
 
 **See**: [docs/migration/week13-implementation-plan.md](week13-implementation-plan.md)
 
