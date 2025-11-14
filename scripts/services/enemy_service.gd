@@ -53,6 +53,68 @@ const ENEMY_TYPES = {
 			"scrap": {"min": 2, "max": 4, "chance": 0.7},
 			"components": {"min": 1, "max": 2, "chance": 0.3}
 		}
+	},
+	# Week 13 Phase 3: Enemy Variety
+	"turret_drone":
+	{
+		"display_name": "Turret Drone",
+		"base_hp": 20,  # Lower HP than melee (ranged enemy)
+		"base_damage": 8,  # Higher damage (ranged threat)
+		"speed": 50,  # Slow movement (stationary shooter)
+		"xp_reward": 15,  # Higher XP reward
+		"behavior": "ranged",  # Stops at distance and shoots
+		"ranged_attack_distance": 400,  # Stop at 400px from player
+		"attack_cooldown": 2.0,  # Shoot every 2 seconds
+		"projectile_speed": 300,  # Projectile velocity
+		"drop_table":
+		{
+			"scrap": {"min": 2, "max": 3, "chance": 0.6},
+			"components": {"min": 1, "max": 1, "chance": 0.3}
+		}
+	},
+	"scrap_titan":
+	{
+		"display_name": "Scrap Titan",
+		"base_hp": 120,  # 4x HP of baseline (tank)
+		"base_damage": 15,  # High melee damage
+		"speed": 60,  # Slow movement (0.6x baseline)
+		"xp_reward": 30,  # 3x XP reward
+		"behavior": "tank",  # High HP, slow, threatening
+		"size_multiplier": 1.5,  # Larger sprite scale
+		"drop_table":
+		{
+			"scrap": {"min": 3, "max": 5, "chance": 0.8},
+			"components": {"min": 2, "max": 3, "chance": 0.4}
+		}
+	},
+	"feral_runner":
+	{
+		"display_name": "Feral Runner",
+		"base_hp": 15,  # 0.5x HP of baseline (glass cannon)
+		"base_damage": 4,  # Low damage (dies quickly)
+		"speed": 180,  # 1.8x speed (fast threat)
+		"xp_reward": 8,  # Lower XP
+		"behavior": "fast",  # Rushes player quickly
+		"drop_table":
+		{
+			"scrap": {"min": 1, "max": 2, "chance": 0.3},
+			"nanites": {"min": 1, "max": 1, "chance": 0.15}
+		}
+	},
+	"nano_swarm":
+	{
+		"display_name": "Nano Swarm",
+		"base_hp": 8,  # Very low HP
+		"base_damage": 3,  # Low damage per unit
+		"speed": 120,  # Medium speed
+		"xp_reward": 5,  # Low XP per unit
+		"behavior": "swarm",  # Spawns multiple at once
+		"spawn_count": 5,  # Spawn 5 enemies at once
+		"drop_table":
+		{
+			"scrap": {"min": 1, "max": 1, "chance": 0.2},
+			"nanites": {"min": 1, "max": 2, "chance": 0.25}
+		}
 	}
 }
 

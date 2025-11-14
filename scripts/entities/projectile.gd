@@ -38,6 +38,10 @@ var enemies_hit: Array[Enemy] = []
 
 ## Collision layers
 const ENEMY_LAYER = 2  # Assuming enemies are on layer 2
+const PLAYER_LAYER = 1  # Assuming player is on layer 1
+
+## Enemy projectile flag (Week 13 Phase 3)
+var is_enemy_projectile: bool = false
 
 ## Trail
 var trail: Line2D = null
@@ -172,7 +176,8 @@ func activate(
 	trail_color: Color = Color.WHITE,
 	trail_width: float = 2.0,
 	proj_shape: int = 0,
-	proj_shape_size: Vector2 = Vector2(8, 8)
+	proj_shape_size: Vector2 = Vector2(8, 8),
+	enemy_projectile: bool = false
 ) -> void:
 	"""Activate projectile with given parameters"""
 	# Set properties
@@ -184,6 +189,15 @@ func activate(
 	max_range = proj_range
 	splash_damage = proj_splash_damage
 	splash_radius = proj_splash_radius
+	is_enemy_projectile = enemy_projectile
+
+	# Set collision mask based on projectile type (Week 13 Phase 3)
+	if is_enemy_projectile:
+		# Enemy projectiles only hit player
+		collision_mask = 1 << (PLAYER_LAYER - 1)
+	else:
+		# Player projectiles only hit enemies
+		collision_mask = 1 << (ENEMY_LAYER - 1)
 
 	# Apply visual properties (Phase 1.5)
 	modulate = proj_color  # Color the entire projectile
@@ -243,7 +257,16 @@ func _on_area_entered(area: Area2D) -> void:
 		print("[Projectile] Projectile not active, ignoring")
 		return
 
-	# Check if the area's owner is an enemy
+	# Week 13 Phase 3: Handle enemy projectiles hitting player
+	if is_enemy_projectile:
+		var player = area.owner as Player
+		print("[Projectile] Enemy projectile - Area owner as Player: ", player)
+		if player and player.is_alive():
+			print("[Projectile] Enemy projectile hitting player")
+			hit_player(player)
+		return
+
+	# Check if the area's owner is an enemy (player projectile)
 	var enemy = area.owner as Enemy
 	print("[Projectile] Area owner as Enemy: ", enemy)
 	if enemy and enemy.is_alive():
@@ -258,7 +281,16 @@ func _on_body_entered(body: Node2D) -> void:
 		print("[Projectile] Projectile not active, ignoring")
 		return
 
-	# Check if it's an enemy
+	# Week 13 Phase 3: Handle enemy projectiles hitting player
+	if is_enemy_projectile:
+		var player = body as Player
+		print("[Projectile] Enemy projectile - Body as Player: ", player)
+		if player and player.is_alive():
+			print("[Projectile] Enemy projectile hitting player")
+			hit_player(player)
+		return
+
+	# Check if it's an enemy (player projectile)
 	var enemy = body as Enemy
 	print("[Projectile] Body as Enemy: ", enemy)
 	if enemy and enemy.is_alive():
@@ -296,6 +328,22 @@ func hit_enemy(enemy: Enemy) -> void:
 		# Defer deactivation to avoid modifying physics state during callback
 		call_deferred("deactivate")
 	# Otherwise, continue flying (piercing)
+
+
+func hit_player(player: Player) -> void:
+	"""Deal damage to player (Week 13 Phase 3 - enemy projectiles)"""
+	print("[Projectile] hit_player called for: ", player.character_id, " damage: ", damage)
+
+	# Deal damage to player
+	print("[Projectile] Calling player.take_damage(", damage, ")")
+	player.take_damage(damage, global_position)
+
+	# Create impact VFX
+	_create_impact_visual(global_position)
+
+	# Enemy projectiles don't pierce, always deactivate
+	print("[Projectile] Enemy projectile hit player, deactivating")
+	call_deferred("deactivate")
 
 
 func _explode() -> void:

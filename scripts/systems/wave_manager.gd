@@ -74,41 +74,88 @@ func _spawn_single_enemy() -> void:
 
 	# Load enemy scene
 	const ENEMY_SCENE = preload("res://scenes/entities/enemy.tscn")
-	var enemy = ENEMY_SCENE.instantiate()
-	print("[WaveManager] Enemy instance created: ", enemy)
 
-	# Random enemy type
-	var enemy_types = ["scrap_bot", "mutant_rat", "rust_spider"]
-	var random_type = enemy_types[randi() % enemy_types.size()]
-	print("[WaveManager] Random enemy type: ", random_type)
+	# Wave-based enemy composition (Week 13 Phase 3)
+	# Early waves favor melee, mid waves introduce variety, late waves emphasize threats
+	var enemy_pool = []
 
-	# Generate unique enemy ID
-	var enemy_id = "enemy_%d_%d" % [current_wave, randi()]
-	print("[WaveManager] Enemy ID: ", enemy_id)
+	if current_wave <= 3:
+		# Early waves: mostly melee enemies (easier)
+		enemy_pool = [
+			"scrap_bot", "scrap_bot", "mutant_rat", "mutant_rat", "rust_spider", "feral_runner"
+		]
+	elif current_wave <= 6:
+		# Mid waves: introduce ranged and tanks (strategic variety)
+		enemy_pool = [
+			"scrap_bot",
+			"mutant_rat",
+			"rust_spider",
+			"turret_drone",
+			"turret_drone",
+			"scrap_titan",
+			"feral_runner",
+			"nano_swarm"
+		]
+	else:
+		# Late waves: all enemy types with emphasis on threats
+		enemy_pool = [
+			"scrap_bot",
+			"turret_drone",
+			"turret_drone",
+			"turret_drone",
+			"scrap_titan",
+			"scrap_titan",
+			"feral_runner",
+			"nano_swarm",
+			"nano_swarm"
+		]
 
-	# Setup enemy
-	print("[WaveManager] Calling enemy.setup()...")
-	enemy.setup(enemy_id, random_type, current_wave)
-	print("[WaveManager] Enemy setup complete")
+	var random_type = enemy_pool[randi() % enemy_pool.size()]
+	print("[WaveManager] Random enemy type: ", random_type, " (wave ", current_wave, ")")
 
-	# Connect death and damage signals
-	enemy.died.connect(_on_enemy_died)
-	enemy.damaged.connect(_on_enemy_damaged)
-	print("[WaveManager] Death and damage signals connected")
+	# Check if this enemy type spawns multiple units (swarm behavior) - Week 13 Phase 3
+	var type_def = EnemyService.get_enemy_type(random_type)
+	var spawn_count = type_def.get("spawn_count", 1)
 
-	# Random spawn position (off-screen)
-	var spawn_pos = _get_random_spawn_position()
-	enemy.global_position = spawn_pos
-	print("[WaveManager] Enemy positioned at: ", spawn_pos)
+	# Spawn multiple enemies for swarm types
+	for i in range(spawn_count):
+		var enemy = ENEMY_SCENE.instantiate()
+		print("[WaveManager] Enemy instance created: ", enemy, " (", i + 1, "/", spawn_count, ")")
 
-	# Add to scene
-	print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
-	spawn_container.add_child(enemy)
-	print("[WaveManager] Enemy added to scene")
+		# Generate unique enemy ID
+		var enemy_id = "enemy_%d_%d_%d" % [current_wave, randi(), i]
+		print("[WaveManager] Enemy ID: ", enemy_id)
 
-	# Track in living_enemies for wave completion detection
-	living_enemies[enemy_id] = enemy
-	print("[WaveManager] Enemy tracked in living_enemies. Total living: ", living_enemies.size())
+		# Setup enemy
+		print("[WaveManager] Calling enemy.setup()...")
+		enemy.setup(enemy_id, random_type, current_wave)
+		print("[WaveManager] Enemy setup complete")
+
+		# Connect death and damage signals
+		enemy.died.connect(_on_enemy_died)
+		enemy.damaged.connect(_on_enemy_damaged)
+		print("[WaveManager] Death and damage signals connected")
+
+		# Random spawn position (off-screen)
+		var spawn_pos = _get_random_spawn_position()
+
+		# For swarm spawns, add slight position variation
+		if spawn_count > 1:
+			spawn_pos += Vector2(randf_range(-50, 50), randf_range(-50, 50))
+
+		enemy.global_position = spawn_pos
+		print("[WaveManager] Enemy positioned at: ", spawn_pos)
+
+		# Add to scene
+		print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
+		spawn_container.add_child(enemy)
+		print("[WaveManager] Enemy added to scene")
+
+		# Track in living_enemies for wave completion detection
+		living_enemies[enemy_id] = enemy
+		print(
+			"[WaveManager] Enemy tracked in living_enemies. Total living: ", living_enemies.size()
+		)
 
 
 func _get_random_spawn_position() -> Vector2:
