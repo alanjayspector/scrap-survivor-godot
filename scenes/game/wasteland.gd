@@ -528,33 +528,36 @@ func _show_level_up_feedback(new_level: int) -> void:
 	"""Display 'LEVEL UP!' visual feedback"""
 	print("[Wasteland] Showing level up feedback for level ", new_level)
 
+	# Bug #7 fix: Use timer instead of tween to avoid conflict with screen shake (2025-11-14)
+	# Screen shake kills all tweens, which was leaving level-up labels stuck on screen
+
 	# Create temporary label for level up text
 	var level_up_label = Label.new()
-	level_up_label.text = "LEVEL UP!\nLevel %d" % new_level
+	level_up_label.text = "LEVEL %d!" % new_level
 	level_up_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	level_up_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	# Style the label
-	level_up_label.add_theme_font_size_override("font_size", 48)
+	level_up_label.add_theme_font_size_override("font_size", 64)
 	level_up_label.modulate = Color(1, 1, 0, 1)  # Yellow
 
 	# Position at center of screen
-	level_up_label.position = Vector2(
-		get_viewport().get_visible_rect().size.x / 2 - 200,
-		get_viewport().get_visible_rect().size.y / 2 - 50
-	)
-	level_up_label.size = Vector2(400, 100)
+	level_up_label.anchor_left = 0.5
+	level_up_label.anchor_top = 0.5
+	level_up_label.anchor_right = 0.5
+	level_up_label.anchor_bottom = 0.5
+	level_up_label.offset_left = -200
+	level_up_label.offset_top = -50
+	level_up_label.offset_right = 200
+	level_up_label.offset_bottom = 50
 
 	# Add to UI layer
 	$UI.add_child(level_up_label)
 
-	# Animate: fade in, stay, fade out
-	var tween = create_tween()
-	level_up_label.modulate.a = 0.0
-	tween.tween_property(level_up_label, "modulate:a", 1.0, 0.3)
-	tween.tween_interval(1.5)  # Stay visible for 1.5 seconds
-	tween.tween_property(level_up_label, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(level_up_label.queue_free)
+	# Use timer to auto-remove after 2 seconds (avoids tween conflict with screen shake)
+	await get_tree().create_timer(2.0).timeout
+	if is_instance_valid(level_up_label):
+		level_up_label.queue_free()
 
 	print("[Wasteland] Level up feedback displayed")
 

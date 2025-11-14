@@ -288,9 +288,16 @@ func _on_body_entered(body: Node2D) -> void:
 	# Week 13 Phase 3: Handle enemy projectiles hitting player
 	if is_enemy_projectile:
 		# Check if body is in player group (more reliable than type casting)
+		# Bug #6 fix: Check body.owner if body itself isn't in group (2025-11-14)
+		var player_node = null
 		if body.is_in_group("player"):
-			var player = body as Player
-			print("[Projectile] Enemy projectile hit player in group: ", player)
+			player_node = body
+		elif body.owner and body.owner.is_in_group("player"):
+			player_node = body.owner
+
+		if player_node:
+			var player = player_node as Player
+			print("[Projectile] Enemy projectile hit player: ", player)
 			if player and player.is_alive():
 				print("[Projectile] Enemy projectile hitting player")
 				hit_player(player)
