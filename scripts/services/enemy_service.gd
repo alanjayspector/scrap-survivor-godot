@@ -327,7 +327,9 @@ func get_enemies_in_radius(center: Vector2, radius: float) -> Array:
 
 ## Get enemy count for wave
 func get_enemy_count_for_wave(wave: int) -> int:
-	return 5 + (wave * 3)  # Wave 1 = 8, Wave 2 = 11, Wave 3 = 14
+	# Week 13 Phase 3.5: Increased density for genre parity (was 5 + wave*3)
+	# Vampire Survivors: 60-80 enemies, Brotato: 30-50, Previous: 8-14
+	return 15 + (wave * 5)  # Wave 1 = 20, Wave 2 = 25, Wave 3 = 30, Wave 4 = 35
 
 
 ## Get enemy HP multiplier for wave

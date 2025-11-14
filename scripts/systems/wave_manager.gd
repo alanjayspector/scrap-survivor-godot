@@ -159,8 +159,8 @@ func _spawn_single_enemy() -> void:
 
 
 func _get_random_spawn_position() -> Vector2:
-	# Spawn at edge of viewport (off-screen)
-	var viewport_size = get_viewport().get_visible_rect().size
+	# Week 13 Phase 3.5: Spawn in ring around player (600-800px) for tighter density
+	# Previous: Viewport edge spawning (too sparse in 2000×2000 world)
 	var player = get_tree().get_first_node_in_group("player")
 
 	if not player:
@@ -168,45 +168,13 @@ func _get_random_spawn_position() -> Vector2:
 
 	var player_pos = player.global_position
 
-	# Random edge (0=top, 1=right, 2=bottom, 3=left)
-	var edge = randi() % 4
-	var margin = 100  # pixels off-screen
+	# Spawn in ring around player (just off-screen at ~600-800px)
+	# Viewport is ~1152×648 on mobile, so 600-800px is just beyond visible edge
+	var spawn_distance = randf_range(600, 800)
+	var spawn_angle = randf() * TAU  # Random angle (0 to 2π)
+	var offset = Vector2(cos(spawn_angle), sin(spawn_angle)) * spawn_distance
 
-	match edge:
-		0:  # Top
-			return (
-				player_pos
-				+ Vector2(
-					randf_range(-viewport_size.x / 2, viewport_size.x / 2),
-					-viewport_size.y / 2 - margin
-				)
-			)
-		1:  # Right
-			return (
-				player_pos
-				+ Vector2(
-					viewport_size.x / 2 + margin,
-					randf_range(-viewport_size.y / 2, viewport_size.y / 2)
-				)
-			)
-		2:  # Bottom
-			return (
-				player_pos
-				+ Vector2(
-					randf_range(-viewport_size.x / 2, viewport_size.x / 2),
-					viewport_size.y / 2 + margin
-				)
-			)
-		3:  # Left
-			return (
-				player_pos
-				+ Vector2(
-					-viewport_size.x / 2 - margin,
-					randf_range(-viewport_size.y / 2, viewport_size.y / 2)
-				)
-			)
-
-	return player_pos  # Fallback
+	return player_pos + offset
 
 
 func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) -> void:
