@@ -528,8 +528,9 @@ func _show_level_up_feedback(new_level: int) -> void:
 	"""Display 'LEVEL UP!' visual feedback"""
 	print("[Wasteland] Showing level up feedback for level ", new_level)
 
-	# Bug #7 fix: Use timer instead of tween to avoid conflict with screen shake (2025-11-14)
+	# Bug #7 fix: Use Timer node instead of tween to avoid conflict with screen shake (2025-11-14)
 	# Screen shake kills all tweens, which was leaving level-up labels stuck on screen
+	# Note: get_tree().create_timer() might be garbage collected in un-awaited functions on iOS
 
 	# Create temporary label for level up text
 	var level_up_label = Label.new()
@@ -554,12 +555,25 @@ func _show_level_up_feedback(new_level: int) -> void:
 	# Add to UI layer
 	$UI.add_child(level_up_label)
 
-	# Use timer to auto-remove after 2 seconds (avoids tween conflict with screen shake)
-	await get_tree().create_timer(2.0).timeout
-	if is_instance_valid(level_up_label):
-		level_up_label.queue_free()
+	# Use Timer node for reliable cleanup (more robust than get_tree().create_timer())
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = 2.0
+	cleanup_timer.one_shot = true
+	add_child(cleanup_timer)
 
-	print("[Wasteland] Level up feedback displayed")
+	# Connect timeout signal to remove label
+	cleanup_timer.timeout.connect(
+		func():
+			if is_instance_valid(level_up_label):
+				level_up_label.queue_free()
+				print("[Wasteland] Level up label freed")
+			if is_instance_valid(cleanup_timer):
+				cleanup_timer.queue_free()
+				print("[Wasteland] Cleanup timer freed")
+	)
+
+	cleanup_timer.start()
+	print("[Wasteland] Level up feedback displayed, cleanup timer started")
 
 
 func _on_player_damaged(_current_hp: float, _max_hp: float) -> void:

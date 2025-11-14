@@ -53,7 +53,13 @@ func _ready() -> void:
 	trail = get_node_or_null("Trail")
 	# Set up collision
 	collision_layer = 0  # Projectiles don't collide with each other
-	collision_mask = 1 << (ENEMY_LAYER - 1)  # Only collide with enemies
+	# Bug #6 fix: Don't overwrite collision_mask if already set by activate() (2025-11-14)
+	# Enemy projectiles need collision_mask = 1 (player layer)
+	# Player projectiles need collision_mask = 2 (enemy layer)
+	if is_enemy_projectile:
+		collision_mask = 1 << (PLAYER_LAYER - 1)  # Enemy projectiles hit player
+	else:
+		collision_mask = 1 << (ENEMY_LAYER - 1)  # Player projectiles hit enemies
 
 	# Connect area entered signal
 	area_entered.connect(_on_area_entered)
