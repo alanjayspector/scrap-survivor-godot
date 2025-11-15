@@ -51,6 +51,8 @@ const DECELERATION_RATE: float = 0.2  # Slow ramp-down (0.15-0.25 optimal) - smo
 ## Visual feedback
 var damage_flash_timer: float = 0.0
 var damage_flash_duration: float = 0.1
+var original_visual_color: Color = Color(0.2, 0.6, 1, 1)  # Stored on _ready() - Bug #8 fix
+var active_damage_tween: Tween = null  # Track active tween to prevent conflicts on iOS
 
 ## Touch input (mobile controls)
 var touch_movement_direction: Vector2 = Vector2.ZERO
@@ -92,6 +94,13 @@ func _ready() -> void:
 
 	# Draw initial pickup range indicator
 	_update_pickup_range_indicator()
+
+	# Store original visual color for damage flash restoration (Bug #8 fix - 2025-01-14)
+	for child in get_children():
+		if child is ColorRect and child.name == "Visual":
+			original_visual_color = child.color
+			print("[Player] Original visual color stored: ", original_visual_color)
+			break
 
 	GameLogger.info("Player initialized", {"character_id": character_id})
 	print("[Player] _ready() complete")
@@ -428,37 +437,80 @@ func equip_weapon(weapon_id: String) -> bool:
 
 func take_damage(amount: float, source_position: Vector2 = Vector2.ZERO) -> void:
 	"""Take damage with armor reduction"""
+	print("[Player] ═══ take_damage() ENTRY ═══")
+	print("[Player]   Amount: ", amount)
+	print("[Player]   Source position: ", source_position)
+	print("[Player]   character_id: ", character_id)
+	print("[Player]   current_hp: ", current_hp)
+	print("[Player]   Instance valid: ", is_instance_valid(self))
+	print("[Player]   In tree: ", is_inside_tree())
+
 	if current_hp <= 0:
+		print("[Player]   REJECTED: Already dead (current_hp <= 0)")
+		print("[Player] ═══ take_damage() EXIT (early return) ═══")
 		return
+
+	print("[Player]   Guard check PASSED - applying damage")
 
 	# Apply armor reduction
 	var armor = stats.get("armor", 0)
+	print("[Player]   Armor: ", armor)
 	var armor_multiplier = 1.0 / (1.0 + armor * 0.01)  # 1% damage reduction per armor point
 	var actual_damage = amount * armor_multiplier
 	actual_damage = max(actual_damage, amount * 0.2)  # Minimum 20% damage
+	print("[Player]   Damage calculation: ", amount, " -> ", actual_damage, " (after armor)")
 
 	# Apply damage
+	var hp_before = current_hp
 	current_hp -= actual_damage
 	current_hp = max(0, current_hp)
+	print("[Player]   HP change: ", hp_before, " -> ", current_hp)
 
 	# Emit signals
+	print(
+		"[Player]   Emitting player_damaged signal (",
+		current_hp,
+		", ",
+		stats.get("max_hp", 100),
+		")"
+	)
 	player_damaged.emit(current_hp, stats.get("max_hp", 100))
+	print("[Player]   player_damaged signal emitted")
+
+	print(
+		"[Player]   Emitting health_changed signal (",
+		current_hp,
+		", ",
+		stats.get("max_hp", 100),
+		")"
+	)
 	health_changed.emit(current_hp, stats.get("max_hp", 100))
+	print("[Player]   health_changed signal emitted")
 
 	# Visual feedback
 	damage_flash_timer = damage_flash_duration
 	_flash_damage()
+	print("[Player]   Damage flash applied (timer: ", damage_flash_timer, ")")
 
 	# Apply knockback if source provided
 	if source_position != Vector2.ZERO:
 		var knockback_direction = (global_position - source_position).normalized()
 		velocity = knockback_direction * 300.0
+		print(
+			"[Player]   Knockback applied: direction=", knockback_direction, " velocity=", velocity
+		)
+	else:
+		print("[Player]   No knockback (source_position is zero)")
 
 	# Check for death
 	if current_hp <= 0:
+		print("[Player]   HP reached 0 - calling die()")
 		die()
+	else:
+		print("[Player]   Still alive (hp: ", current_hp, ")")
 
 	GameLogger.debug("Player took damage", {"damage": actual_damage, "current_hp": current_hp})
+	print("[Player] ═══ take_damage() EXIT (success) ═══")
 
 
 func heal(amount: float) -> void:
@@ -499,16 +551,60 @@ func die() -> void:
 
 func _flash_damage() -> void:
 	"""Visual feedback for taking damage"""
+	# Bug #8 fix (2025-01-14): Use stored original_visual_color instead of hardcoded blue
+	# Previous bug: Color(0.2, 0.6, 1, 1) hardcoded - player stuck blue after damage
+	# Fix: Restore to original color stored in _ready()
+
+	print("[Player] _flash_damage() - restoring to original color: ", original_visual_color)
+
+	# iOS FIX: Kill any existing damage tween to prevent conflicts
+	if active_damage_tween and is_instance_valid(active_damage_tween):
+		print("[Player]   Killing previous damage tween to prevent conflict")
+		active_damage_tween.kill()
+
 	# Find Visual child and flash red
 	for child in get_children():
 		if child is ColorRect:
-			var tween = create_tween()
-			tween.tween_property(child, "color", Color.RED, 0.1)
-			tween.tween_property(child, "color", Color(0.2, 0.6, 1, 1), 0.1)
+			var current_color = child.color
+			print(
+				"[Player]   ColorRect current color: ",
+				current_color,
+				" (should be: ",
+				original_visual_color,
+				")"
+			)
+			print("[Player]   Creating damage flash tween for ColorRect")
+			active_damage_tween = create_tween()
+			active_damage_tween.tween_property(child, "color", Color.RED, 0.1)
+			active_damage_tween.tween_property(child, "color", original_visual_color, 0.1)  # Use stored color
+			active_damage_tween.tween_callback(func(): _on_damage_flash_complete(child))
+			print("[Player]   Tween created: RED -> ", original_visual_color)
 		elif child is Sprite2D:
-			var tween = create_tween()
-			tween.tween_property(child, "modulate", Color.RED, 0.1)
-			tween.tween_property(child, "modulate", Color.WHITE, 0.1)
+			print("[Player]   Creating damage flash tween for Sprite2D")
+			active_damage_tween = create_tween()
+			active_damage_tween.tween_property(child, "modulate", Color.RED, 0.1)
+			active_damage_tween.tween_property(child, "modulate", Color.WHITE, 0.1)
+			print("[Player]   Tween created: RED -> WHITE")
+
+
+func _on_damage_flash_complete(visual_node: Node) -> void:
+	"""Called when damage flash tween completes - verify color restored (Bug #8 diagnostic)"""
+	if visual_node is ColorRect:
+		var final_color = visual_node.color
+		print(
+			"[Player] Damage flash complete - ColorRect final color: ",
+			final_color,
+			" (expected: ",
+			original_visual_color,
+			")"
+		)
+		if final_color != original_visual_color:
+			print(
+				"[Player]   WARNING: Color mismatch! Expected ",
+				original_visual_color,
+				" but got ",
+				final_color
+			)
 
 
 ## Signal Handlers

@@ -353,17 +353,43 @@ func hit_enemy(enemy: Enemy) -> void:
 
 func hit_player(player: Player) -> void:
 	"""Deal damage to player (Week 13 Phase 3 - enemy projectiles)"""
-	print("[Projectile] hit_player called for: ", player.character_id, " damage: ", damage)
+	print("[Projectile] ═══ hit_player() ENTRY ═══")
+	print("[Projectile]   Damage: ", damage)
+	print("[Projectile]   Projectile position: ", global_position)
+
+	# Validate player instance
+	if not is_instance_valid(player):
+		print("[Projectile]   ERROR: Player instance not valid!")
+		print("[Projectile] ═══ hit_player() EXIT (validation failed) ═══")
+		return
+
+	print("[Projectile]   Player instance VALID")
+	print("[Projectile]   Player character_id: ", player.character_id)
+	print("[Projectile]   Player current_hp: ", player.current_hp)
+	print("[Projectile]   Player is_alive(): ", player.is_alive())
+	print("[Projectile]   Player in tree: ", player.is_inside_tree())
+
+	if not player.has_method("take_damage"):
+		print("[Projectile]   ERROR: Player missing take_damage() method!")
+		print("[Projectile] ═══ hit_player() EXIT (method missing) ═══")
+		return
+
+	print("[Projectile]   Player has take_damage() method")
+	print("[Projectile]   Calling player.take_damage(", damage, ", ", global_position, ")")
 
 	# Deal damage to player
-	print("[Projectile] Calling player.take_damage(", damage, ")")
 	player.take_damage(damage, global_position)
+
+	print("[Projectile]   player.take_damage() call completed")
+	print("[Projectile]   Player HP after call: ", player.current_hp)
 
 	# Create impact VFX
 	_create_impact_visual(global_position)
+	print("[Projectile]   Impact visual created")
 
 	# Enemy projectiles don't pierce, always deactivate
-	print("[Projectile] Enemy projectile hit player, deactivating")
+	print("[Projectile]   Enemy projectile hit player, deactivating")
+	print("[Projectile] ═══ hit_player() EXIT (success) ═══")
 	call_deferred("deactivate")
 
 

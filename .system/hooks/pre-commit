@@ -151,6 +151,19 @@ if [ -f .system/validators/test_patterns_validator.py ]; then
     # Don't fail on warnings - this is informational for GUT migration
 fi
 
+# Test quality validator (BLOCKING - enforces USER STORY headers and test quality)
+if [ -f .system/validators/test_quality_validator.py ]; then
+    if ! python3 .system/validators/test_quality_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Pattern checker (NON-BLOCKING - checks for common code patterns and issues)
+if [ -f .system/validators/check-patterns.sh ]; then
+    bash .system/validators/check-patterns.sh
+    # Don't fail - this is informational warnings
+fi
+
 # Asset import validator (BLOCKING - Week 9)
 if [ -f .system/validators/check-imports.sh ]; then
     if ! bash .system/validators/check-imports.sh; then

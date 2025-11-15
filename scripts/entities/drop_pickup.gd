@@ -14,6 +14,7 @@ var amount: int = 1
 var magnet_range: float = 100.0  # Default pickup detection range (overridden by player stat)
 var magnet_speed: float = 200.0  # How fast drops fly toward player (px/s)
 var is_magnetized: bool = false  # Tracking state for visual feedback
+var is_collected: bool = false  # Guard against multiple collections
 
 ## Visual reference
 var visual_node: ColorRect = null
@@ -121,37 +122,88 @@ func update_visual() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Handle collision with player (CharacterBody2D)"""
-	print("[DropPickup] _on_body_entered: ", body, " is_player: ", body.is_in_group("player"))
+	print("[DropPickup] ═══ _on_body_entered() ENTRY ═══")
+	print("[DropPickup]   Body: ", body)
+	print("[DropPickup]   Body type: ", body.get_class())
+	print("[DropPickup]   Is in player group: ", body.is_in_group("player"))
+	print("[DropPickup]   Instance ID: ", get_instance_id())
+	print("[DropPickup]   Currency: ", currency_type, " x", amount)
+	print("[DropPickup]   Already collected: ", is_collected)
+
 	# Check if it's the player
 	if body.is_in_group("player"):
-		print("[DropPickup] Player body detected, collecting!")
+		print("[DropPickup]   Player body detected, calling collect()")
 		collect()
+	else:
+		print("[DropPickup]   Not a player, ignoring")
+
+	print("[DropPickup] ═══ _on_body_entered() EXIT ═══")
 
 
 func _on_area_entered(area: Area2D) -> void:
 	"""Handle collision with player area (if player uses Area2D)"""
-	print("[DropPickup] _on_area_entered: ", area)
+	print("[DropPickup] ═══ _on_area_entered() ENTRY ═══")
+	print("[DropPickup]   Area: ", area)
+	print("[DropPickup]   Area owner: ", area.owner if area.owner else "none")
+	print("[DropPickup]   Instance ID: ", get_instance_id())
+	print("[DropPickup]   Currency: ", currency_type, " x", amount)
+	print("[DropPickup]   Already collected: ", is_collected)
+
 	# Check if area belongs to player
 	if area.is_in_group("player") or (area.owner and area.owner.is_in_group("player")):
-		print("[DropPickup] Player area detected, collecting!")
+		print("[DropPickup]   Player area detected, calling collect()")
 		collect()
+	else:
+		print("[DropPickup]   Not a player area, ignoring")
+
+	print("[DropPickup] ═══ _on_area_entered() EXIT ═══")
 
 
 func collect() -> void:
 	"""Collect the drop - emit signal and remove"""
-	print("[DropPickup] collect() called for ", currency_type, " x", amount)
+	print("[DropPickup] ═══ collect() ENTRY ═══")
+	print("[DropPickup]   Currency: ", currency_type, " x", amount)
+	print("[DropPickup]   Instance ID: ", get_instance_id())
+	print("[DropPickup]   Position: ", global_position)
+	print("[DropPickup]   Is collected: ", is_collected)
+	print("[DropPickup]   Is inside tree: ", is_inside_tree())
+	print("[DropPickup]   Is queued for deletion: ", is_queued_for_deletion())
+
+	# Guard against multiple collections
+	if is_collected:
+		print("[DropPickup]   REJECTED: Already collected!")
+		print("[DropPickup] ═══ collect() EXIT (early return) ═══")
+		return
+
+	print("[DropPickup]   Marking as collected")
+	is_collected = true
 
 	# Emit signal for DropSystem to handle
-	print("[DropPickup] Emitting collected signal...")
+	print("[DropPickup]   Emitting collected signal (", currency_type, ", ", amount, ")")
 	collected.emit(currency_type, amount)
-	print("[DropPickup] Signal emitted")
+	print("[DropPickup]   Signal emitted successfully")
 
 	# Play collection animation (scale up + fade out)
+	print("[DropPickup]   Creating collection animation tween")
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.2)
 	tween.tween_property(self, "modulate:a", 0.0, 0.2)
-	tween.tween_callback(queue_free)
+	tween.tween_callback(_on_collection_animation_complete)
+	print("[DropPickup]   Animation tween started")
+	print("[DropPickup] ═══ collect() EXIT (animation started) ═══")
+
+
+func _on_collection_animation_complete() -> void:
+	"""Called when collection animation completes - cleanup"""
+	print("[DropPickup] ═══ _on_collection_animation_complete() ENTRY ═══")
+	print("[DropPickup]   Currency: ", currency_type, " x", amount)
+	print("[DropPickup]   Instance ID: ", get_instance_id())
+	print("[DropPickup]   Is inside tree: ", is_inside_tree())
+	print("[DropPickup]   Is queued for deletion: ", is_queued_for_deletion())
+	print("[DropPickup]   Calling queue_free()")
+	queue_free()
+	print("[DropPickup] ═══ _on_collection_animation_complete() EXIT ═══")
 
 
 func _start_idle_animations() -> void:

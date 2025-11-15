@@ -1,9 +1,10 @@
 extends GutTest
 ## Wasteland Camera Boundary Integration Tests
 ##
+## USER STORY: "As a player, I want the camera to stay within the game world
+## boundaries so that I don't see empty void beyond the playable area"
+##
 ## USER_STORY: US-MOBILE-UX-QA-004
-## As a player, I want the camera to stay within the game world boundaries
-## so I don't see empty void beyond the playable area
 ##
 ## Critical functionality - ensures camera never shows off-canvas areas
 ## Regression test for mobile UX QA Round 4 Follow-Up #4

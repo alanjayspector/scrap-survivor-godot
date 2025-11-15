@@ -1,6 +1,9 @@
 extends GutTest
 ## Scene Integration Tests - Week 10 Phase 1
 ##
+## USER STORY: "As a developer, I want Player and Enemy entities to integrate
+## correctly with services so that game mechanics work reliably"
+##
 ## Tests for Player, Enemy, and scene entity integration with services
 
 var player: Player

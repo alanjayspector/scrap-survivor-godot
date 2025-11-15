@@ -23,6 +23,14 @@ var character_id: String = ""
 var start_time: float = 0.0
 var total_kills: int = 0
 
+## iOS-safe label pool (replaces queue_free() pattern) - 2025-01-14
+# Label pool (DISABLED - no longer using text overlays, 2025-11-15)
+# var label_pool: IOSLabelPool = null
+
+## ENHANCED DIAGNOSTIC: Real-time label state monitoring (2025-11-15)
+var label_monitor_timer: float = 0.0
+const LABEL_MONITOR_INTERVAL: float = 1.0  # Check every second
+
 
 func _ready() -> void:
 	print("[Wasteland] _ready() called")
@@ -38,6 +46,11 @@ func _ready() -> void:
 	print("[Wasteland] Enemies container: ", enemies_container)
 	print("[Wasteland] Wave manager: ", wave_manager)
 	print("[Wasteland] Wave complete screen: ", wave_complete_screen)
+
+	# Initialize iOS-safe label pool (replaces queue_free() pattern)
+	# Label pool (DISABLED - no longer using text overlays, 2025-11-15)
+	# label_pool = IOSLabelPool.new($UI)
+	# print("[Wasteland] Label pool initialized")
 
 	# Get active character from CharacterService
 	print("[Wasteland] Getting active character...")
@@ -485,7 +498,30 @@ func _on_wave_started(wave: int) -> void:
 
 func _on_wave_completed(wave: int, stats: Dictionary) -> void:
 	"""Handle wave completion - track kills and freeze gameplay"""
-	print("[Wasteland] Wave ", wave, " completed with stats: ", stats)
+	var completion_time = Time.get_ticks_msec() / 1000.0
+	print(
+		"[Wasteland] Wave ",
+		wave,
+		" completed with stats: ",
+		stats,
+		" (time: ",
+		completion_time,
+		"s)"
+	)
+
+	# Bug #9 fix (2025-01-14): Clear any active level-up labels before showing complete screen
+	# Prevents level-up overlays from appearing over wave complete panel
+	_clear_all_level_up_labels()
+
+	# ENHANCED DIAGNOSTIC: Log Metal rendering stats after clearing labels (2025-11-15)
+	_log_metal_rendering_stats("after_clear_level_up_labels")
+
+	# Bug #11 fix (2025-01-14): Clean up all enemies to prevent zombie persistence
+	# iOS race condition: dying enemies still in scene tree when wave completes
+	_cleanup_all_enemies()
+
+	# ENHANCED DIAGNOSTIC: Log Metal rendering stats after wave complete (2025-11-15)
+	_log_metal_rendering_stats("after_wave_complete_cleanup")
 
 	# Add wave kills to total kills
 	var wave_kills = stats.get("enemies_killed", 0)
@@ -496,20 +532,11 @@ func _on_wave_completed(wave: int, stats: Dictionary) -> void:
 		"Wave completed", {"wave": wave, "wave_kills": wave_kills, "total_kills": total_kills}
 	)
 
-	# Freeze gameplay - disable player and enemies
+	# Freeze gameplay - disable player
 	if player_instance:
 		player_instance.set_physics_process(false)
 		player_instance.set_process_input(false)
 		print("[Wasteland] Player movement/input disabled")
-
-	# Disable all enemies
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	for enemy in enemies:
-		if enemy.has_method("set_physics_process"):
-			enemy.set_physics_process(false)
-		if enemy.has_method("set_process"):
-			enemy.set_process(false)
-	print("[Wasteland] Disabled ", enemies.size(), " enemies")
 
 
 func _on_character_level_up(context: Dictionary) -> void:
@@ -525,55 +552,223 @@ func _on_character_level_up(context: Dictionary) -> void:
 
 
 func _show_level_up_feedback(new_level: int) -> void:
-	"""Display 'LEVEL UP!' visual feedback"""
+	"""Display level-up feedback using screen flash + camera shake (2025-11-15)
+
+	Industry standard approach (Brotato, Vampire Survivors, Halls of Torment):
+	- Screen flash effect (white flash fade-out)
+	- Camera shake for impact
+	- Sound effect (TODO: Add level-up sound)
+	- HUD level number animation (handled by HudService)
+
+	NO text overlays - avoids iOS Metal Tween issues entirely.
+
+	Reference: docs/experiments/ios-tween-failure-analysis-2025-11-15.md
+	"""
 	print("[Wasteland] Showing level up feedback for level ", new_level)
 
-	# Bug #7 fix: Use Timer node instead of tween to avoid conflict with screen shake (2025-11-14)
-	# Screen shake kills all tweens, which was leaving level-up labels stuck on screen
-	# Note: get_tree().create_timer() might be garbage collected in un-awaited functions on iOS
+	# Screen flash effect (white flash fade-out)
+	_trigger_screen_flash()
 
-	# Create temporary label for level up text
-	var level_up_label = Label.new()
-	level_up_label.text = "LEVEL %d!" % new_level
-	level_up_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	level_up_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# Camera shake for impact (reusing existing implementation)
+	screen_shake(8.0, 0.3)
 
-	# Style the label
-	level_up_label.add_theme_font_size_override("font_size", 64)
-	level_up_label.modulate = Color(1, 1, 0, 1)  # Yellow
+	# TODO: Play level-up sound effect here
+	# AudioServer.play_sound("level_up")
 
-	# Position at center of screen
-	level_up_label.anchor_left = 0.5
-	level_up_label.anchor_top = 0.5
-	level_up_label.anchor_right = 0.5
-	level_up_label.anchor_bottom = 0.5
-	level_up_label.offset_left = -200
-	level_up_label.offset_top = -50
-	level_up_label.offset_right = 200
-	level_up_label.offset_bottom = 50
+	print("[Wasteland] Level up feedback complete (screen flash + camera shake)")
 
-	# Add to UI layer
-	$UI.add_child(level_up_label)
 
-	# Use Timer node for reliable cleanup (more robust than get_tree().create_timer())
-	var cleanup_timer = Timer.new()
-	cleanup_timer.wait_time = 2.0
-	cleanup_timer.one_shot = true
-	add_child(cleanup_timer)
+func _trigger_screen_flash() -> void:
+	"""Trigger white screen flash effect for level-up feedback (2025-11-15)
 
-	# Connect timeout signal to remove label
-	cleanup_timer.timeout.connect(
-		func():
-			if is_instance_valid(level_up_label):
-				level_up_label.queue_free()
-				print("[Wasteland] Level up label freed")
-			if is_instance_valid(cleanup_timer):
-				cleanup_timer.queue_free()
-				print("[Wasteland] Cleanup timer freed")
+	Creates a temporary white overlay that fades out quickly using manual animation.
+	Industry standard pattern used by Vampire Survivors, Brotato, etc.
+
+	Note: Can't use Tweens on iOS (they don't execute), so we use manual _process animation.
+	"""
+	# Get or create flash overlay
+	var ui_layer = $UI
+	var flash_overlay = ui_layer.get_node_or_null("FlashOverlay")
+
+	if not flash_overlay:
+		# Create flash overlay (first time only)
+		flash_overlay = ColorRect.new()
+		flash_overlay.name = "FlashOverlay"
+		flash_overlay.color = Color(1, 1, 1, 0)  # White, start transparent
+		flash_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		# Cover entire screen
+		flash_overlay.anchor_left = 0.0
+		flash_overlay.anchor_top = 0.0
+		flash_overlay.anchor_right = 1.0
+		flash_overlay.anchor_bottom = 1.0
+
+		ui_layer.add_child(flash_overlay)
+		print("[Wasteland] Created flash overlay")
+
+	# Start flash animation: 0.0 → 0.5 → 0.0 (white flash fade-out, 0.2s duration)
+	flash_overlay.color.a = 0.5  # Instant flash to 50% opacity
+	flash_overlay.set_meta("flash_time", 0.0)
+	flash_overlay.set_meta("flash_duration", 0.2)  # 0.2 second fade-out
+	flash_overlay.set_meta("flash_active", true)
+
+	print("[Wasteland] Screen flash triggered (50% white → fade to 0% over 0.2s)")
+
+
+# DISABLED: Tween-based cleanup (no longer used - screen flash replaces text overlays, 2025-11-15)
+# func _on_level_up_tween_finished(label: Label, level: int) -> void:
+# 	"""Tween-based cleanup callback - return label to pool (2025-01-15)
+#
+# 	Called when Tween animation completes (fade in → hold → fade out).
+# 	Uses iOS-safe modulate.a pattern, never calls hide() or queue_free().
+#
+# 	Reference: docs/godot-ios-temp-ui.md (Pattern 1: Reusable Label with Tween)
+# 	"""
+# 	print("[Wasteland] _on_level_up_tween_finished CALLED for level ", level)
+#
+# 	if is_instance_valid(label):
+# 		print("[Wasteland]   Label modulate.a BEFORE cleanup: %.3f" % label.modulate.a)
+# 		print("[Wasteland]   Returning label to pool (ID: ", label.get_instance_id(), ")")
+# 		# Return to pool (sets modulate.a = 0.0, never calls hide())
+# 		label_pool.return_label(label)
+# 		print("[Wasteland]   Label modulate.a AFTER cleanup: %.3f" % label.modulate.a)
+# 	else:
+# 		print("[Wasteland]   WARNING: Label already invalid!")
+#
+# 	print("[Wasteland] _on_level_up_tween_finished COMPLETE")
+#
+# 	# Log pool stats
+# 	var stats = label_pool.get_stats()
+# 	print("[Wasteland] Label pool: ", stats.available, " available, ", stats.active, " active")
+#
+# 	# ENHANCED DIAGNOSTIC: Log Metal rendering stats after Tween finished (2025-11-15)
+# 	_log_metal_rendering_stats("after_level_up_tween_finished")
+
+
+func _clear_all_level_up_labels() -> void:
+	"""Clear all active level-up labels (NO-OP, text overlays removed 2025-11-15)
+
+	Text overlays have been removed in favor of screen flash + camera shake.
+	This function is kept for compatibility but does nothing.
+
+	Reference: docs/experiments/ios-tween-failure-analysis-2025-11-15.md
+	"""
+	print("[Wasteland] _clear_all_level_up_labels() called (NO-OP - no text overlays)")
+
+
+func _cleanup_all_enemies() -> void:
+	"""Clean up all enemies from scene tree (Bug #11 fix - 2025-01-14, updated 2025-01-14)
+
+	iOS Metal renderer bug fix: Enemies remain in GPU draw list even after
+	hide() + remove_child() + queue_free(). Updated to use IOSCleanup utility
+	which forces visual invalidation through multiple redundant methods.
+
+	Reference: docs/experiments/ios-rendering-pipeline-bug-analysis.md
+	"""
+	var cleanup_time = Time.get_ticks_msec() / 1000.0
+	print("[Wasteland] _cleanup_all_enemies() called (time: ", cleanup_time, "s)")
+
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	print(
+		"[Wasteland]   Enemies to clean: ", enemies.size(), " (in 'enemies' group at cleanup time)"
 	)
 
-	cleanup_timer.start()
-	print("[Wasteland] Level up feedback displayed, cleanup timer started")
+	# Use IOSCleanup utility for iOS-safe visual invalidation
+	IOSCleanup.force_invisible_and_destroy_batch(enemies)
+
+	# iOS Metal renderer fix: Force viewport to flush cached framebuffer
+	_force_viewport_refresh()
+
+	print("[Wasteland] All enemies cleaned up via IOSCleanup")
+
+
+func _log_metal_rendering_stats(context: String) -> void:
+	"""ENHANCED DIAGNOSTIC: Log Metal rendering stats (2025-11-15)
+
+	Logs Performance monitor statistics and canvas item counts to diagnose
+	iOS Metal ghost rendering issues.
+
+	NOTE: Godot 4.5.1 doesn't have RENDER_2D_* Performance constants.
+	We manually count canvas items instead.
+
+	Args:
+		context: Description of when this is being called (e.g. "after_level_up", "wave_complete")
+	"""
+	print("[MetalDebug] === Rendering Stats (%s) ===" % context)
+
+	# Performance monitors (validated working in Godot 4.5.1)
+	print("[MetalDebug]   Objects in memory: ", Performance.get_monitor(Performance.OBJECT_COUNT))
+	print("[MetalDebug]   Nodes in tree: ", Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
+	print(
+		"[MetalDebug]   Orphan nodes: ",
+		Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	)
+	print("[MetalDebug]   FPS: %.1f" % Performance.get_monitor(Performance.TIME_FPS))
+	print(
+		(
+			"[MetalDebug]   Frame time: %.2f ms"
+			% (Performance.get_monitor(Performance.TIME_PROCESS) * 1000)
+		)
+	)
+	print(
+		(
+			"[MetalDebug]   Memory: %.2f MB"
+			% (Performance.get_monitor(Performance.MEMORY_STATIC) / 1024.0 / 1024.0)
+		)
+	)
+
+	# Manual canvas item counting for iOS Metal diagnostics
+	var canvas_items = _count_canvas_items_recursive(self)
+	print("[MetalDebug]   Canvas items (manual count): ", canvas_items)
+
+	# Label pool diagnostics (DISABLED - no longer using text overlays, 2025-11-15)
+	# if label_pool:
+	# 	print("[MetalDebug]   Label pool - active: ", label_pool.active_labels.size())
+	# 	print("[MetalDebug]   Label pool - available: ", label_pool.available_labels.size())
+
+
+func _count_canvas_items_recursive(node: Node) -> int:
+	"""Manually count visible CanvasItem nodes in scene tree for Metal diagnostics
+
+	Since Godot 4.5.1 doesn't expose RENDER_2D_ITEMS_IN_FRAME, we count manually.
+	This helps us verify if cleanup actually removes items from the render tree.
+	"""
+	var count = 0
+	if node is CanvasItem and node.visible:
+		count = 1
+	for child in node.get_children():
+		count += _count_canvas_items_recursive(child)
+	return count
+
+
+func _force_viewport_refresh() -> void:
+	"""Force iOS Metal renderer to flush cached framebuffer and rebuild canvas
+
+	iOS Metal renderer bug: Ghost images persist even after nodes are cleaned up.
+	This attempts to force the renderer to rebuild by manipulating viewport settings.
+
+	Reference: docs/experiments/ios-rendering-pipeline-bug-analysis.md
+	"""
+	print("[Wasteland] _force_viewport_refresh() - attempting to flush Metal renderer cache")
+
+	var viewport = get_viewport()
+	if viewport:
+		# Method 1: Toggle viewport transparency to force redraw
+		var original_transparent = viewport.transparent_bg
+		viewport.transparent_bg = not original_transparent
+		viewport.transparent_bg = original_transparent
+		print("[Wasteland]   Toggled viewport transparency")
+
+		# Method 2: Force canvas layer redraw by toggling UI layer visibility
+		var ui_layer = get_node_or_null("UI")
+		if ui_layer and ui_layer is CanvasLayer:
+			ui_layer.visible = false
+			ui_layer.visible = true
+			print("[Wasteland]   Toggled UI CanvasLayer visibility")
+
+		print("[Wasteland] ✓ Viewport refresh complete")
+	else:
+		print("[Wasteland]   WARNING: No viewport found!")
 
 
 func _on_player_damaged(_current_hp: float, _max_hp: float) -> void:
@@ -584,6 +779,47 @@ func _on_player_damaged(_current_hp: float, _max_hp: float) -> void:
 func _on_enemy_died_screen_shake(_enemy_id: String) -> void:
 	"""Handle enemy death - trigger small screen shake"""
 	screen_shake(2.0, 0.1)
+
+
+func _process(delta: float) -> void:
+	"""Handle per-frame animations and monitoring (2025-11-15)"""
+
+	# Screen flash animation (manual, since Tweens don't work on iOS)
+	var ui_layer = $UI
+	var flash_overlay = ui_layer.get_node_or_null("FlashOverlay")
+
+	if (
+		flash_overlay
+		and flash_overlay.has_meta("flash_active")
+		and flash_overlay.get_meta("flash_active")
+	):
+		var flash_time = flash_overlay.get_meta("flash_time")
+		var flash_duration = flash_overlay.get_meta("flash_duration")
+
+		flash_time += delta
+		flash_overlay.set_meta("flash_time", flash_time)
+
+		if flash_time >= flash_duration:
+			# Animation complete, hide flash
+			flash_overlay.color.a = 0.0
+			flash_overlay.set_meta("flash_active", false)
+		else:
+			# Fade out: 0.5 → 0.0 over duration
+			var t = flash_time / flash_duration
+			flash_overlay.color.a = lerp(0.5, 0.0, t)
+
+	# Label pool monitoring (DISABLED - no longer using text overlays, 2025-11-15)
+	# label_monitor_timer += delta
+	# if label_monitor_timer >= LABEL_MONITOR_INTERVAL:
+	# 	label_monitor_timer = 0.0
+	# 	if label_pool and label_pool.active_labels.size() > 0:
+	# 		print("[LabelMonitor] Active labels: ", label_pool.active_labels.size())
+	# 		for label in label_pool.active_labels:
+	# 			if is_instance_valid(label):
+	# 				print("[LabelMonitor]   Label ID: %d, text: '%s', modulate.a: %.3f, visible: %s"
+	# 					% [label.get_instance_id(), label.text, label.modulate.a, label.visible])
+	# 			else:
+	# 				print("[LabelMonitor]   WARNING: Invalid label in active pool!")
 
 
 func screen_shake(intensity: float, duration: float) -> void:

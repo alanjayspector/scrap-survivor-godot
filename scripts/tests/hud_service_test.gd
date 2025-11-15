@@ -2,6 +2,9 @@ extends GutTest
 class_name HudServiceTest
 ## Test suite for HudService
 ##
+## USER STORY: "As a player, I want real-time HUD updates so that I can monitor
+## my health, XP, and resources during combat"
+##
 ## Week 10 Phase 3: HUD Implementation tests
 ##
 ## Tests:

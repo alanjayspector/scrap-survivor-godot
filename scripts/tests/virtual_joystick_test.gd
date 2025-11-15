@@ -1,9 +1,10 @@
 extends GutTest
 ## VirtualJoystick Unit Tests
 ##
+## USER STORY: "As a mobile player, I want responsive and accurate touch controls
+## so that I can move my character smoothly during combat"
+##
 ## USER_STORY: US-MOBILE-INPUT-001
-## As a mobile player, I want responsive and accurate touch controls
-## so I can move my character smoothly during combat
 ##
 ## Critical functionality - ensures joystick touch detection, dead zone,
 ## and floating positioning work correctly across all screen areas

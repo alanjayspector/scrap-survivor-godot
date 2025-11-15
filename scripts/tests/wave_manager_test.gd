@@ -2,6 +2,9 @@ extends GutTest
 class_name WaveManagerTest
 ## Test suite for WaveManager
 ##
+## USER STORY: "As a player, I want waves to progress automatically with
+## increasing difficulty so that I have a challenging and engaging combat experience"
+##
 ## Week 10 Phase 4: Wave Management & State Machine tests
 ##
 ## Tests:

@@ -45,6 +45,7 @@ var contact_damage_rate: float = 1.0  # Deal damage once per second
 func _ready() -> void:
 	# Add to enemy group
 	add_to_group("enemies")
+	print("[Enemy] Added to 'enemies' group (instance: ", get_instance_id(), ")")
 
 
 func setup(id: String, type: String, wave: int) -> void:
@@ -266,7 +267,18 @@ func _flash_damage() -> void:
 
 func die() -> void:
 	"""Handle enemy death"""
-	print("[Enemy] die() called for ", enemy_type, " at position ", global_position)
+	var death_time = Time.get_ticks_msec() / 1000.0
+	print(
+		"[Enemy] die() called for ",
+		enemy_type,
+		" at position ",
+		global_position,
+		" (time: ",
+		death_time,
+		"s, instance: ",
+		get_instance_id(),
+		")"
+	)
 	GameLogger.info(
 		"Enemy died - START", {"id": enemy_id, "type": enemy_type, "position": global_position}
 	)
@@ -315,7 +327,24 @@ func die() -> void:
 	tween.set_parallel(true)
 	tween.tween_property(self, "modulate:a", 0.0, 0.3)
 	tween.tween_property(self, "scale", Vector2(0.5, 0.5), 0.3)
-	tween.tween_callback(queue_free)
+	tween.tween_callback(_on_death_animation_complete)
+
+
+func _on_death_animation_complete() -> void:
+	"""Called when death animation completes - log before queue_free (Bug #11 diagnostic)"""
+	var queue_free_time = Time.get_ticks_msec() / 1000.0
+	print(
+		"[Enemy] Death animation complete, calling queue_free() for ",
+		enemy_type,
+		" (time: ",
+		queue_free_time,
+		"s, instance: ",
+		get_instance_id(),
+		", in_group: ",
+		is_in_group("enemies"),
+		")"
+	)
+	queue_free()
 
 
 func get_health_percentage() -> float:
