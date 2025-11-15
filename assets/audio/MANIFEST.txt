@@ -1,0 +1,59 @@
+# Audio Asset Manifest - Week 14 Phase 1.1
+# This file lists all required audio files for Scrap Survivor
+# Status: 24/24 files sourced ✅
+# Target: All files sourced from Kenney Audio Packs (CC0 license)
+
+=== WEAPONS (10 files) ===
+[x] weapons/plasma_pistol.wav (7 KB)
+[x] weapons/rusty_blade.wav (5 KB)
+[x] weapons/shock_rifle.wav (9 KB)
+[x] weapons/steel_sword.wav (7 KB)
+[x] weapons/shotgun.wav (10 KB)
+[x] weapons/sniper_rifle.wav (6 KB)
+[x] weapons/flamethrower.wav (25 KB)
+[x] weapons/laser_rifle.wav (24 KB)
+[x] weapons/minigun.wav (10 KB)
+[x] weapons/rocket_launcher.wav (27 KB)
+
+=== ENEMIES (8 files) ===
+[x] enemies/spawn_1.wav (9 KB)
+[x] enemies/spawn_2.wav (7 KB)
+[x] enemies/spawn_3.wav (6 KB)
+[x] enemies/damage_1.wav (5 KB)
+[x] enemies/damage_2.wav (6 KB)
+[x] enemies/death_1.wav (46 KB)
+[x] enemies/death_2.wav (5 KB)
+[x] enemies/death_3.wav (7 KB)
+
+=== AMBIENT (3 files) ===
+[x] ambient/wave_start.wav (25 KB)
+[x] ambient/wave_complete.wav (6 KB)
+[x] ambient/low_hp_warning.wav (7 KB)
+
+=== UI (3 files) ===
+[x] ui/button_click.wav (4 KB)
+[x] ui/character_select.wav (7 KB)
+[x] ui/error.wav (6 KB)
+
+=== INSTRUCTIONS ===
+1. See AUDIO_SOURCING_GUIDE.md for detailed sourcing instructions
+2. Download audio from Kenney.nl (links in guide)
+3. Copy files to appropriate directories
+4. Rename files to match this manifest
+5. Check off items as completed (replace [ ] with [x])
+6. Run verification script: bash .system/validators/check-audio-assets.sh (TODO: create)
+
+=== SIZE TARGETS ===
+Weapons: < 2 MB total (10 files × ~200 KB each)
+Enemies: < 800 KB total (8 files × ~100 KB each)
+Ambient: < 1.5 MB total (3 files × ~500 KB each)
+UI: < 150 KB total (3 files × ~50 KB each)
+TOTAL: < 5 MB (well under 10 MB mobile limit)
+
+=== QUALITY CHECKLIST ===
+[x] All files are .wav or .ogg format
+[x] No silence at start of files (instant playback)
+[ ] Volume levels roughly consistent (to be tested in Phase 1.5)
+[ ] No clicks/pops at start/end (to be tested in Phase 1.5)
+[x] File sizes within targets (Total: 289 KB / 10 MB limit)
+[ ] Godot import settings verified (Phase 1.2+)

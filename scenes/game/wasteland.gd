@@ -60,6 +60,10 @@ func _ready() -> void:
 		character_id = active_char.id
 		_spawn_player(character_id)
 		_setup_wave_manager()
+
+		# iOS-only: Add debug weapon switcher for testing (Week 14 Phase 1.0)
+		# TEMPORARY: Remove before production release
+		_add_debug_weapon_switcher()
 	else:
 		print("[Wasteland] ERROR: No active character found!")
 		GameLogger.error("No active character found for Wasteland scene")
@@ -850,3 +854,32 @@ func screen_shake(intensity: float, duration: float) -> void:
 
 	# Return to center
 	shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+
+
+func _add_debug_weapon_switcher() -> void:
+	"""Add debug weapon switcher UI for iOS testing (Week 14 Phase 1.0)
+
+	TEMPORARY: This is for testing weapon sounds on iOS.
+	Remove before production release.
+
+	Platform detection:
+	- iOS: Always enabled
+	- Desktop: Enable for testing by setting DEBUG_WEAPON_SWITCHER=true
+	"""
+	var enable_switcher = false
+
+	# Check platform
+	if OS.get_name() == "iOS":
+		enable_switcher = true
+		print("[Wasteland] iOS detected - enabling weapon switcher")
+	elif OS.has_environment("DEBUG_WEAPON_SWITCHER"):
+		# Desktop testing: Set environment variable to enable
+		enable_switcher = true
+		print("[Wasteland] DEBUG_WEAPON_SWITCHER enabled - weapon switcher active")
+
+	if enable_switcher:
+		var weapon_switcher = preload("res://scenes/ui/debug_weapon_switcher.tscn").instantiate()
+		$UI.add_child(weapon_switcher)
+		print("[Wasteland] Debug weapon switcher added to UI")
+	else:
+		print("[Wasteland] Debug weapon switcher NOT enabled (iOS-only or DEBUG_WEAPON_SWITCHER)")

@@ -47,6 +47,7 @@ test_results.xml
 tmp/
 temp/
 *.tmp
+.temp/
 
 # Godot cache
 .godot/editor/
@@ -66,3 +67,9 @@ ios/build/
 # Node (if using any JS tools)
 node_modules/
 package-lock.json
+
+# Audio assets (regenerated via .system/scripts/process-kenney-audio.sh)
+# Commit the scripts/docs, not the binary audio files
+assets/audio/**/*.wav
+assets/audio/**/*.ogg
+assets/audio/**/*.mp3

@@ -1,1095 +1,1095 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites name="GutTests" failures="0" tests="520" >
-  <testsuite name="scripts/tests/aura_foundation_test.gd" tests="19" failures="0" skipped="0" time="0.5965" >
-      <testcase name="test_aura_data_stored_in_character" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.00105" >
+  <testsuite name="scripts/tests/aura_foundation_test.gd" tests="19" failures="0" skipped="0" time="0.573114" >
+      <testcase name="test_aura_data_stored_in_character" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001055" >
       </testcase>
-      <testcase name="test_aura_type_matches_character_type" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001032" >
+      <testcase name="test_aura_type_matches_character_type" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000918" >
       </testcase>
-      <testcase name="test_scavenger_has_collect_aura" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000911" >
+      <testcase name="test_scavenger_has_collect_aura" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000876" >
       </testcase>
-      <testcase name="test_tank_has_shield_aura" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000855" >
+      <testcase name="test_tank_has_shield_aura" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000806" >
       </testcase>
-      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000814" >
+      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000824" >
       </testcase>
-      <testcase name="test_calculate_aura_power_with_resonance" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000654" >
+      <testcase name="test_calculate_aura_power_with_resonance" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.00033" >
       </testcase>
-      <testcase name="test_calculate_aura_power_for_all_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000335" >
+      <testcase name="test_calculate_aura_power_for_all_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000344" >
       </testcase>
-      <testcase name="test_calculate_aura_radius_from_pickup_range" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.00033" >
+      <testcase name="test_calculate_aura_radius_from_pickup_range" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000322" >
       </testcase>
-      <testcase name="test_invalid_aura_type_returns_zero" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000324" >
+      <testcase name="test_invalid_aura_type_returns_zero" assertions="1" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000313" >
       </testcase>
-      <testcase name="test_aura_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001455" >
+      <testcase name="test_aura_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001355" >
       </testcase>
-      <testcase name="test_multiple_characters_with_different_auras_persist" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.002085" >
+      <testcase name="test_multiple_characters_with_different_auras_persist" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.001963" >
       </testcase>
-      <testcase name="test_all_aura_types_have_required_fields" assertions="48" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000388" >
+      <testcase name="test_all_aura_types_have_required_fields" assertions="48" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000383" >
       </testcase>
-      <testcase name="test_aura_visual_can_be_instantiated" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000362" >
+      <testcase name="test_aura_visual_can_be_instantiated" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.000352" >
       </testcase>
-      <testcase name="test_aura_visual_creates_child_nodes" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.00481" >
+      <testcase name="test_aura_visual_creates_child_nodes" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.003441" >
       </testcase>
-      <testcase name="test_aura_visual_update_changes_parameters" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.029179" >
+      <testcase name="test_aura_visual_update_changes_parameters" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.005728" >
       </testcase>
-      <testcase name="test_aura_visual_set_emitting" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.055129" >
+      <testcase name="test_aura_visual_set_emitting" assertions="3" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.043447" >
       </testcase>
-      <testcase name="test_aura_visual_colors_match_aura_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.401308" >
+      <testcase name="test_aura_visual_colors_match_aura_types" assertions="6" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.408729" >
       </testcase>
-      <testcase name="test_aura_visual_ring_has_correct_point_count" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.047199" >
+      <testcase name="test_aura_visual_ring_has_correct_point_count" assertions="2" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.054493" >
       </testcase>
-      <testcase name="test_mutant_has_damage_aura_visual" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.04828" >
-      </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/banking_service_test.gd" tests="22" failures="0" skipped="0" time="0.082967" >
-      <testcase name="test_initial_state_all_balances_are_zero" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.006566" >
-      </testcase>
-      <testcase name="test_add_currency_increases_balance" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.006824" >
-      </testcase>
-      <testcase name="test_subtract_currency_decreases_balance" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.006192" >
-      </testcase>
-      <testcase name="test_subtract_currency_with_insufficient_funds_fails" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.005119" >
-      </testcase>
-      <testcase name="test_tier_gating_free_tier_denies_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.0032" >
-      </testcase>
-      <testcase name="test_tier_gating_premium_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003049" >
-      </testcase>
-      <testcase name="test_tier_gating_subscription_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00303" >
-      </testcase>
-      <testcase name="test_balance_caps_premium_tier_enforces_10k_limit" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003659" >
-      </testcase>
-      <testcase name="test_balance_caps_subscription_tier_enforces_100k_limit" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002772" >
-      </testcase>
-      <testcase name="test_transaction_history_records_all_operations" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004822" >
-      </testcase>
-      <testcase name="test_get_tier_returns_current_tier" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002957" >
-      </testcase>
-      <testcase name="test_currency_changed_signal_emits_on_add" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003306" >
-      </testcase>
-      <testcase name="test_currency_changed_signal_emits_on_subtract" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003891" >
-      </testcase>
-      <testcase name="test_initial_state_all_four_currencies_are_zero" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002005" >
-      </testcase>
-      <testcase name="test_add_components_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002945" >
-      </testcase>
-      <testcase name="test_add_nanites_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002842" >
-      </testcase>
-      <testcase name="test_components_respects_tier_caps" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002809" >
-      </testcase>
-      <testcase name="test_nanites_respects_tier_caps" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002755" >
-      </testcase>
-      <testcase name="test_serialize_includes_all_currencies" assertions="5" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004523" >
-      </testcase>
-      <testcase name="test_deserialize_handles_missing_new_currencies" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003279" >
-      </testcase>
-      <testcase name="test_subtract_components_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003232" >
-      </testcase>
-      <testcase name="test_subtract_nanites_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00319" >
+      <testcase name="test_mutant_has_damage_aura_visual" assertions="4" status="pass" classname="scripts/tests/aura_foundation_test.gd" time="0.047435" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/character_service_test.gd" tests="43" failures="0" skipped="0" time="0.064492" >
-      <testcase name="test_create_character_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00093" >
+  <testsuite name="scripts/tests/banking_service_test.gd" tests="22" failures="0" skipped="0" time="0.078335" >
+      <testcase name="test_initial_state_all_balances_are_zero" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004602" >
       </testcase>
-      <testcase name="test_create_character_stores_correct_data" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000939" >
+      <testcase name="test_add_currency_increases_balance" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.006386" >
       </testcase>
-      <testcase name="test_create_character_with_empty_name_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000913" >
+      <testcase name="test_subtract_currency_decreases_balance" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.005937" >
       </testcase>
-      <testcase name="test_create_character_sets_default_stats" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000921" >
+      <testcase name="test_subtract_currency_with_insufficient_funds_fails" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004262" >
       </testcase>
-      <testcase name="test_first_character_becomes_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000894" >
+      <testcase name="test_tier_gating_free_tier_denies_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003142" >
       </testcase>
-      <testcase name="test_get_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001111" >
+      <testcase name="test_tier_gating_premium_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003149" >
       </testcase>
-      <testcase name="test_get_nonexistent_character_returns_empty_dict" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000928" >
+      <testcase name="test_tier_gating_subscription_tier_grants_access" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002864" >
       </testcase>
-      <testcase name="test_get_all_characters_returns_all_created" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001492" >
+      <testcase name="test_balance_caps_premium_tier_enforces_10k_limit" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003443" >
       </testcase>
-      <testcase name="test_update_character_modifies_data" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001217" >
+      <testcase name="test_balance_caps_subscription_tier_enforces_100k_limit" assertions="1" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002784" >
       </testcase>
-      <testcase name="test_update_nonexistent_character_fails" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000876" >
+      <testcase name="test_transaction_history_records_all_operations" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00478" >
       </testcase>
-      <testcase name="test_delete_character_removes_from_storage" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001472" >
+      <testcase name="test_get_tier_returns_current_tier" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002845" >
       </testcase>
-      <testcase name="test_delete_active_character_clears_active_state" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001719" >
+      <testcase name="test_currency_changed_signal_emits_on_add" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003386" >
       </testcase>
-      <testcase name="test_delete_only_character_clears_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001162" >
+      <testcase name="test_currency_changed_signal_emits_on_subtract" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004008" >
       </testcase>
-      <testcase name="test_set_active_character_changes_active" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001454" >
+      <testcase name="test_initial_state_all_four_currencies_are_zero" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002377" >
       </testcase>
-      <testcase name="test_set_active_nonexistent_character_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000895" >
+      <testcase name="test_add_components_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003038" >
       </testcase>
-      <testcase name="test_get_active_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001299" >
+      <testcase name="test_add_nanites_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002666" >
       </testcase>
-      <testcase name="test_free_tier_allows_3_characters" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001977" >
+      <testcase name="test_components_respects_tier_caps" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002677" >
       </testcase>
-      <testcase name="test_premium_tier_allows_10_characters" assertions="12" status="pass" classname="scripts/tests/character_service_test.gd" time="0.003944" >
+      <testcase name="test_nanites_respects_tier_caps" assertions="3" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00265" >
       </testcase>
-      <testcase name="test_subscription_tier_allows_unlimited_characters" assertions="16" status="pass" classname="scripts/tests/character_service_test.gd" time="0.005355" >
+      <testcase name="test_serialize_includes_all_currencies" assertions="5" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.004262" >
       </testcase>
-      <testcase name="test_can_create_character_respects_tier_limits" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001678" >
+      <testcase name="test_deserialize_handles_missing_new_currencies" assertions="4" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.003113" >
       </testcase>
-      <testcase name="test_get_available_slots_returns_correct_count" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001671" >
+      <testcase name="test_subtract_components_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.00298" >
       </testcase>
-      <testcase name="test_add_experience_increases_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000843" >
-      </testcase>
-      <testcase name="test_level_up_at_100_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001148" >
-      </testcase>
-      <testcase name="test_level_up_increases_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001104" >
-      </testcase>
-      <testcase name="test_multiple_level_ups_from_single_xp_gain" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001367" >
-      </testcase>
-      <testcase name="test_add_zero_or_negative_xp_does_nothing" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000853" >
-      </testcase>
-      <testcase name="test_character_death_increments_death_count" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001207" >
-      </testcase>
-      <testcase name="test_multiple_deaths_increment_count" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001605" >
-      </testcase>
-      <testcase name="test_character_create_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000976" >
-      </testcase>
-      <testcase name="test_character_create_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000976" >
-      </testcase>
-      <testcase name="test_character_level_up_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001187" >
-      </testcase>
-      <testcase name="test_character_level_up_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001199" >
-      </testcase>
-      <testcase name="test_character_death_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001182" >
-      </testcase>
-      <testcase name="test_character_death_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001211" >
-      </testcase>
-      <testcase name="test_serialize_returns_valid_data" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00111" >
-      </testcase>
-      <testcase name="test_deserialize_restores_characters" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001891" >
-      </testcase>
-      <testcase name="test_deserialize_restores_character_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001926" >
-      </testcase>
-      <testcase name="test_full_save_load_cycle_with_save_manager" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.005284" >
-      </testcase>
-      <testcase name="test_character_created_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000954" >
-      </testcase>
-      <testcase name="test_character_deleted_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00144" >
-      </testcase>
-      <testcase name="test_active_character_changed_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001619" >
-      </testcase>
-      <testcase name="test_character_stats_changed_signal_fires_on_update" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001337" >
-      </testcase>
-      <testcase name="test_character_stats_changed_signal_fires_on_level_up" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001226" >
+      <testcase name="test_subtract_nanites_currency" assertions="2" status="pass" classname="scripts/tests/banking_service_test.gd" time="0.002984" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/character_stats_expansion_test.gd" tests="24" failures="0" skipped="0" time="0.022303" >
-      <testcase name="test_hp_regen_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000588" >
+  <testsuite name="scripts/tests/character_service_test.gd" tests="43" failures="0" skipped="0" time="0.062407" >
+      <testcase name="test_create_character_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000887" >
       </testcase>
-      <testcase name="test_life_steal_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000572" >
+      <testcase name="test_create_character_stores_correct_data" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000903" >
       </testcase>
-      <testcase name="test_attack_speed_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000568" >
+      <testcase name="test_create_character_with_empty_name_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000863" >
       </testcase>
-      <testcase name="test_melee_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000558" >
+      <testcase name="test_create_character_sets_default_stats" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000883" >
       </testcase>
-      <testcase name="test_ranged_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000571" >
+      <testcase name="test_first_character_becomes_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000856" >
       </testcase>
-      <testcase name="test_scavenging_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000594" >
+      <testcase name="test_get_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001062" >
       </testcase>
-      <testcase name="test_resonance_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000607" >
+      <testcase name="test_get_nonexistent_character_returns_empty_dict" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00087" >
       </testcase>
-      <testcase name="test_new_character_has_hp_regen" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.0009" >
+      <testcase name="test_get_all_characters_returns_all_created" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001405" >
       </testcase>
-      <testcase name="test_new_character_has_life_steal" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000875" >
+      <testcase name="test_update_character_modifies_data" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001211" >
       </testcase>
-      <testcase name="test_new_character_has_attack_speed" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000874" >
+      <testcase name="test_update_nonexistent_character_fails" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000879" >
       </testcase>
-      <testcase name="test_new_character_has_melee_and_ranged_damage" assertions="4" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000901" >
+      <testcase name="test_delete_character_removes_from_storage" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001584" >
       </testcase>
-      <testcase name="test_new_character_has_scavenging" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00087" >
+      <testcase name="test_delete_active_character_clears_active_state" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001729" >
       </testcase>
-      <testcase name="test_new_character_has_resonance" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000847" >
+      <testcase name="test_delete_only_character_clears_active" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001127" >
       </testcase>
-      <testcase name="test_can_update_hp_regen_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.0011" >
+      <testcase name="test_set_active_character_changes_active" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001409" >
       </testcase>
-      <testcase name="test_can_update_life_steal_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001123" >
+      <testcase name="test_set_active_nonexistent_character_fails" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000851" >
       </testcase>
-      <testcase name="test_can_update_attack_speed_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001063" >
+      <testcase name="test_get_active_character_returns_correct_data" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00127" >
       </testcase>
-      <testcase name="test_can_update_melee_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001069" >
+      <testcase name="test_free_tier_allows_3_characters" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001852" >
       </testcase>
-      <testcase name="test_can_update_ranged_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001074" >
+      <testcase name="test_premium_tier_allows_10_characters" assertions="12" status="pass" classname="scripts/tests/character_service_test.gd" time="0.003684" >
       </testcase>
-      <testcase name="test_can_update_scavenging_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001081" >
+      <testcase name="test_subscription_tier_allows_unlimited_characters" assertions="16" status="pass" classname="scripts/tests/character_service_test.gd" time="0.004872" >
       </testcase>
-      <testcase name="test_can_update_resonance_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001106" >
+      <testcase name="test_can_create_character_respects_tier_limits" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001683" >
       </testcase>
-      <testcase name="test_scavenging_in_level_up_gains" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000562" >
+      <testcase name="test_get_available_slots_returns_correct_count" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001699" >
       </testcase>
-      <testcase name="test_scavenging_increases_on_level_up" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001083" >
+      <testcase name="test_add_experience_increases_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00091" >
       </testcase>
-      <testcase name="test_scavenging_increases_multiple_levels" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.002107" >
+      <testcase name="test_level_up_at_100_xp" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001135" >
       </testcase>
-      <testcase name="test_new_stats_persist_through_save_load" assertions="7" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00161" >
+      <testcase name="test_level_up_increases_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001109" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/character_types_test.gd" tests="24" failures="0" skipped="0" time="0.02434" >
-      <testcase name="test_scavenger_has_correct_stat_modifiers" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000839" >
+      <testcase name="test_multiple_level_ups_from_single_xp_gain" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00132" >
       </testcase>
-      <testcase name="test_tank_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000916" >
+      <testcase name="test_add_zero_or_negative_xp_does_nothing" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000847" >
       </testcase>
-      <testcase name="test_commando_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000879" >
+      <testcase name="test_character_death_increments_death_count" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00104" >
       </testcase>
-      <testcase name="test_mutant_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000877" >
+      <testcase name="test_multiple_deaths_increment_count" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001571" >
       </testcase>
-      <testcase name="test_character_type_stored_correctly" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000829" >
+      <testcase name="test_character_create_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001152" >
       </testcase>
-      <testcase name="test_free_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000826" >
+      <testcase name="test_character_create_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00102" >
       </testcase>
-      <testcase name="test_free_tier_cannot_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00086" >
+      <testcase name="test_character_level_up_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001311" >
       </testcase>
-      <testcase name="test_free_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000868" >
+      <testcase name="test_character_level_up_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001214" >
       </testcase>
-      <testcase name="test_free_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000885" >
+      <testcase name="test_character_death_pre_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001128" >
       </testcase>
-      <testcase name="test_premium_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000821" >
+      <testcase name="test_character_death_post_hook_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.00118" >
       </testcase>
-      <testcase name="test_premium_tier_can_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000885" >
+      <testcase name="test_serialize_returns_valid_data" assertions="4" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001048" >
       </testcase>
-      <testcase name="test_premium_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000805" >
+      <testcase name="test_deserialize_restores_characters" assertions="2" status="pass" classname="scripts/tests/character_service_test.gd" time="0.0019" >
       </testcase>
-      <testcase name="test_premium_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000819" >
+      <testcase name="test_deserialize_restores_character_stats" assertions="3" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001929" >
       </testcase>
-      <testcase name="test_subscription_tier_can_create_all_types" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001625" >
+      <testcase name="test_full_save_load_cycle_with_save_manager" assertions="5" status="pass" classname="scripts/tests/character_service_test.gd" time="0.005231" >
       </testcase>
-      <testcase name="test_scavenger_has_collect_aura" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00085" >
+      <testcase name="test_character_created_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.000939" >
       </testcase>
-      <testcase name="test_tank_has_shield_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00089" >
+      <testcase name="test_character_deleted_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001157" >
       </testcase>
-      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000893" >
+      <testcase name="test_active_character_changed_signal_fires" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001459" >
       </testcase>
-      <testcase name="test_mutant_has_damage_aura" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000985" >
+      <testcase name="test_character_stats_changed_signal_fires_on_update" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001119" >
       </testcase>
-      <testcase name="test_character_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001764" >
-      </testcase>
-      <testcase name="test_aura_type_persists_after_save_load" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001438" >
-      </testcase>
-      <testcase name="test_invalid_character_type_fails" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000839" >
-      </testcase>
-      <testcase name="test_multiple_characters_with_different_types" assertions="5" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001702" >
-      </testcase>
-      <testcase name="test_character_type_defaults_to_scavenger" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000858" >
-      </testcase>
-      <testcase name="test_mutant_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001387" >
+      <testcase name="test_character_stats_changed_signal_fires_on_level_up" assertions="1" status="pass" classname="scripts/tests/character_service_test.gd" time="0.001109" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/combat_service_test.gd" tests="15" failures="0" skipped="0" time="0.025123" >
-      <testcase name="test_calculate_damage_includes_character_stats" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001327" >
+  <testsuite name="scripts/tests/character_stats_expansion_test.gd" tests="24" failures="0" skipped="0" time="0.02177" >
+      <testcase name="test_hp_regen_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000539" >
       </testcase>
-      <testcase name="test_calculate_damage_adds_melee_bonus" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.00134" >
+      <testcase name="test_life_steal_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000529" >
       </testcase>
-      <testcase name="test_calculate_damage_adds_ranged_bonus" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.00132" >
+      <testcase name="test_attack_speed_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000523" >
       </testcase>
-      <testcase name="test_apply_damage_to_enemy_reduces_hp" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001588" >
+      <testcase name="test_melee_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000517" >
       </testcase>
-      <testcase name="test_apply_damage_to_enemy_returns_drops_when_killed" assertions="4" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001873" >
+      <testcase name="test_ranged_damage_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000514" >
       </testcase>
-      <testcase name="test_apply_damage_to_invalid_enemy_returns_safe_result" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001818" >
+      <testcase name="test_scavenging_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000516" >
       </testcase>
-      <testcase name="test_calculate_aura_damage_scales_with_resonance" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001394" >
+      <testcase name="test_resonance_exists_in_default_stats" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000522" >
       </testcase>
-      <testcase name="test_calculate_aura_damage_with_no_resonance_stat" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001339" >
+      <testcase name="test_new_character_has_hp_regen" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000772" >
       </testcase>
-      <testcase name="test_apply_aura_damage_to_nearby_enemies" assertions="3" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002385" >
+      <testcase name="test_new_character_has_life_steal" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000877" >
       </testcase>
-      <testcase name="test_apply_aura_damage_can_kill_enemies" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002095" >
+      <testcase name="test_new_character_has_attack_speed" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000858" >
       </testcase>
-      <testcase name="test_apply_aura_damage_to_empty_area" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001329" >
+      <testcase name="test_new_character_has_melee_and_ranged_damage" assertions="4" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000867" >
       </testcase>
-      <testcase name="test_get_weapon_attack_damage" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001565" >
+      <testcase name="test_new_character_has_scavenging" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.00086" >
       </testcase>
-      <testcase name="test_get_weapon_attack_damage_with_invalid_character" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001864" >
+      <testcase name="test_new_character_has_resonance" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000819" >
       </testcase>
-      <testcase name="test_apply_weapon_attack" assertions="3" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001799" >
+      <testcase name="test_can_update_hp_regen_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001042" >
       </testcase>
-      <testcase name="test_apply_weapon_attack_can_kill" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002087" >
+      <testcase name="test_can_update_life_steal_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001044" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/drop_system_test.gd" tests="14" failures="0" skipped="0" time="0.162808" >
-      <testcase name="test_generate_drops_returns_valid_currency" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001192" >
+      <testcase name="test_can_update_attack_speed_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001038" >
       </testcase>
-      <testcase name="test_generate_drops_with_invalid_enemy_type" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001379" >
+      <testcase name="test_can_update_melee_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001139" >
       </testcase>
-      <testcase name="test_scavenging_multiplies_drop_amounts" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.133862" >
+      <testcase name="test_can_update_ranged_damage_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001134" >
       </testcase>
-      <testcase name="test_scavenging_caps_at_50_percent" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.000866" >
+      <testcase name="test_can_update_scavenging_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001115" >
       </testcase>
-      <testcase name="test_scavenging_zero_gives_base_drops" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001167" >
+      <testcase name="test_can_update_resonance_stat" assertions="1" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001132" >
       </testcase>
-      <testcase name="test_award_xp_for_kill_grants_xp" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001415" >
+      <testcase name="test_scavenging_in_level_up_gains" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.000564" >
       </testcase>
-      <testcase name="test_award_xp_for_kill_triggers_level_up" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001675" >
+      <testcase name="test_scavenging_increases_on_level_up" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001064" >
       </testcase>
-      <testcase name="test_award_xp_for_kill_returns_false_when_no_level_up" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.00144" >
+      <testcase name="test_scavenging_increases_multiple_levels" assertions="2" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.002047" >
       </testcase>
-      <testcase name="test_award_xp_with_invalid_enemy_type" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001697" >
-      </testcase>
-      <testcase name="test_process_enemy_kill_returns_complete_data" assertions="5" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001672" >
-      </testcase>
-      <testcase name="test_process_enemy_kill_with_level_up" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001961" >
-      </testcase>
-      <testcase name="test_process_enemy_kill_applies_scavenging_to_drops" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001805" >
-      </testcase>
-      <testcase name="test_mutant_rat_drops_different_currencies" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.010827" >
-      </testcase>
-      <testcase name="test_rust_spider_awards_different_xp" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.00185" >
+      <testcase name="test_new_stats_persist_through_save_load" assertions="7" status="pass" classname="scripts/tests/character_stats_expansion_test.gd" time="0.001738" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/enemy_service_test.gd" tests="25" failures="0" skipped="0" time="0.017268" >
-      <testcase name="test_enemy_type_exists_returns_true_for_valid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000318" >
+  <testsuite name="scripts/tests/character_types_test.gd" tests="24" failures="0" skipped="0" time="0.023787" >
+      <testcase name="test_scavenger_has_correct_stat_modifiers" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000884" >
       </testcase>
-      <testcase name="test_enemy_type_exists_returns_false_for_invalid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000324" >
+      <testcase name="test_tank_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000881" >
       </testcase>
-      <testcase name="test_get_enemy_type_returns_valid_data" assertions="5" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.00036" >
+      <testcase name="test_commando_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000889" >
       </testcase>
-      <testcase name="test_get_enemy_type_returns_empty_for_invalid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000577" >
+      <testcase name="test_mutant_has_correct_stat_modifiers" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000885" >
       </testcase>
-      <testcase name="test_spawn_enemy_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000581" >
+      <testcase name="test_character_type_stored_correctly" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000862" >
       </testcase>
-      <testcase name="test_spawn_enemy_creates_valid_enemy" assertions="7" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000644" >
+      <testcase name="test_free_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000868" >
       </testcase>
-      <testcase name="test_spawn_enemy_with_invalid_type_fails" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000628" >
+      <testcase name="test_free_tier_cannot_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000853" >
       </testcase>
-      <testcase name="test_spawn_enemy_increments_id" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000816" >
+      <testcase name="test_free_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000846" >
       </testcase>
-      <testcase name="test_damage_enemy_reduces_hp" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000576" >
+      <testcase name="test_free_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00086" >
       </testcase>
-      <testcase name="test_damage_enemy_returns_true_when_killed" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000823" >
+      <testcase name="test_premium_tier_can_create_scavenger" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.00086" >
       </testcase>
-      <testcase name="test_damage_enemy_caps_hp_at_zero" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000818" >
+      <testcase name="test_premium_tier_can_create_tank" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000858" >
       </testcase>
-      <testcase name="test_damage_enemy_with_invalid_id_returns_false" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.00057" >
+      <testcase name="test_premium_tier_cannot_create_commando" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000849" >
       </testcase>
-      <testcase name="test_damage_dead_enemy_fails" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001065" >
+      <testcase name="test_premium_tier_cannot_create_mutant" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000843" >
       </testcase>
-      <testcase name="test_kill_enemy_returns_drop_data" assertions="5" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000597" >
+      <testcase name="test_subscription_tier_can_create_all_types" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001572" >
       </testcase>
-      <testcase name="test_get_living_enemies_returns_all_alive" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000838" >
+      <testcase name="test_scavenger_has_collect_aura" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000845" >
       </testcase>
-      <testcase name="test_get_living_enemies_excludes_dead" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001099" >
+      <testcase name="test_tank_has_shield_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000819" >
       </testcase>
-      <testcase name="test_get_enemy_count" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001143" >
+      <testcase name="test_commando_has_no_aura" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000866" >
       </testcase>
-      <testcase name="test_remove_enemy" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001059" >
+      <testcase name="test_mutant_has_damage_aura" assertions="3" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000894" >
       </testcase>
-      <testcase name="test_wave_scaling_increases_enemy_count" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000346" >
+      <testcase name="test_character_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001624" >
       </testcase>
-      <testcase name="test_wave_scaling_increases_enemy_hp" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000321" >
+      <testcase name="test_aura_type_persists_after_save_load" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001306" >
       </testcase>
-      <testcase name="test_spawn_enemy_applies_wave_scaling" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000572" >
+      <testcase name="test_invalid_character_type_fails" assertions="1" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000805" >
       </testcase>
-      <testcase name="test_get_spawn_rate_decreases_with_wave" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000317" >
+      <testcase name="test_multiple_characters_with_different_types" assertions="5" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001608" >
       </testcase>
-      <testcase name="test_update_enemy_ai_moves_toward_player" assertions="2" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000643" >
+      <testcase name="test_character_type_defaults_to_scavenger" assertions="2" status="pass" classname="scripts/tests/character_types_test.gd" time="0.000831" >
       </testcase>
-      <testcase name="test_get_enemies_in_radius" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001104" >
-      </testcase>
-      <testcase name="test_get_enemies_in_radius_excludes_dead" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001129" >
+      <testcase name="test_mutant_type_persists_after_save_load" assertions="4" status="pass" classname="scripts/tests/character_types_test.gd" time="0.001379" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/entity_classes_test.gd" tests="30" failures="0" skipped="24" time="0.235577" >
-      <testcase name="test_player_initial_max_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.003367" >
+  <testsuite name="scripts/tests/combat_service_test.gd" tests="15" failures="0" skipped="0" time="0.025536" >
+      <testcase name="test_calculate_damage_includes_character_stats" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001415" >
       </testcase>
-      <testcase name="test_player_initial_current_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.042891" >
+      <testcase name="test_calculate_damage_adds_melee_bonus" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001274" >
       </testcase>
-      <testcase name="test_player_base_speed_is_200" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.048472" >
+      <testcase name="test_calculate_damage_adds_ranged_bonus" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001393" >
       </testcase>
-      <testcase name="test_player_takes_damage_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.055786" >
+      <testcase name="test_apply_damage_to_enemy_reduces_hp" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001572" >
       </testcase>
-      <testcase name="test_player_heals_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.049147" >
+      <testcase name="test_apply_damage_to_enemy_returns_drops_when_killed" assertions="4" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001804" >
       </testcase>
-      <testcase name="test_player_applies_health_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001635" >
+      <testcase name="test_apply_damage_to_invalid_enemy_returns_safe_result" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001947" >
+      </testcase>
+      <testcase name="test_calculate_aura_damage_scales_with_resonance" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001383" >
+      </testcase>
+      <testcase name="test_calculate_aura_damage_with_no_resonance_stat" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001381" >
+      </testcase>
+      <testcase name="test_apply_aura_damage_to_nearby_enemies" assertions="3" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002483" >
+      </testcase>
+      <testcase name="test_apply_aura_damage_can_kill_enemies" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002186" >
+      </testcase>
+      <testcase name="test_apply_aura_damage_to_empty_area" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001378" >
+      </testcase>
+      <testcase name="test_get_weapon_attack_damage" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001584" >
+      </testcase>
+      <testcase name="test_get_weapon_attack_damage_with_invalid_character" assertions="1" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.00186" >
+      </testcase>
+      <testcase name="test_apply_weapon_attack" assertions="3" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.001859" >
+      </testcase>
+      <testcase name="test_apply_weapon_attack_can_kill" assertions="2" status="pass" classname="scripts/tests/combat_service_test.gd" time="0.002017" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/drop_system_test.gd" tests="14" failures="0" skipped="0" time="0.150243" >
+      <testcase name="test_generate_drops_returns_valid_currency" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001152" >
+      </testcase>
+      <testcase name="test_generate_drops_with_invalid_enemy_type" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001362" >
+      </testcase>
+      <testcase name="test_scavenging_multiplies_drop_amounts" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.12253" >
+      </testcase>
+      <testcase name="test_scavenging_caps_at_50_percent" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.00088" >
+      </testcase>
+      <testcase name="test_scavenging_zero_gives_base_drops" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.0011" >
+      </testcase>
+      <testcase name="test_award_xp_for_kill_grants_xp" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001411" >
+      </testcase>
+      <testcase name="test_award_xp_for_kill_triggers_level_up" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001686" >
+      </testcase>
+      <testcase name="test_award_xp_for_kill_returns_false_when_no_level_up" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001412" >
+      </testcase>
+      <testcase name="test_award_xp_with_invalid_enemy_type" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001632" >
+      </testcase>
+      <testcase name="test_process_enemy_kill_returns_complete_data" assertions="5" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001712" >
+      </testcase>
+      <testcase name="test_process_enemy_kill_with_level_up" assertions="2" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001895" >
+      </testcase>
+      <testcase name="test_process_enemy_kill_applies_scavenging_to_drops" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001671" >
+      </testcase>
+      <testcase name="test_mutant_rat_drops_different_currencies" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.010086" >
+      </testcase>
+      <testcase name="test_rust_spider_awards_different_xp" assertions="1" status="pass" classname="scripts/tests/drop_system_test.gd" time="0.001714" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/enemy_service_test.gd" tests="25" failures="0" skipped="0" time="0.017394" >
+      <testcase name="test_enemy_type_exists_returns_true_for_valid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000321" >
+      </testcase>
+      <testcase name="test_enemy_type_exists_returns_false_for_invalid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000311" >
+      </testcase>
+      <testcase name="test_get_enemy_type_returns_valid_data" assertions="5" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000366" >
+      </testcase>
+      <testcase name="test_get_enemy_type_returns_empty_for_invalid_type" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000587" >
+      </testcase>
+      <testcase name="test_spawn_enemy_returns_valid_id" assertions="2" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000621" >
+      </testcase>
+      <testcase name="test_spawn_enemy_creates_valid_enemy" assertions="7" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000584" >
+      </testcase>
+      <testcase name="test_spawn_enemy_with_invalid_type_fails" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.00061" >
+      </testcase>
+      <testcase name="test_spawn_enemy_increments_id" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.00087" >
+      </testcase>
+      <testcase name="test_damage_enemy_reduces_hp" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000635" >
+      </testcase>
+      <testcase name="test_damage_enemy_returns_true_when_killed" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000864" >
+      </testcase>
+      <testcase name="test_damage_enemy_caps_hp_at_zero" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000844" >
+      </testcase>
+      <testcase name="test_damage_enemy_with_invalid_id_returns_false" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000568" >
+      </testcase>
+      <testcase name="test_damage_dead_enemy_fails" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001102" >
+      </testcase>
+      <testcase name="test_kill_enemy_returns_drop_data" assertions="5" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000624" >
+      </testcase>
+      <testcase name="test_get_living_enemies_returns_all_alive" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000871" >
+      </testcase>
+      <testcase name="test_get_living_enemies_excludes_dead" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001104" >
+      </testcase>
+      <testcase name="test_get_enemy_count" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001053" >
+      </testcase>
+      <testcase name="test_remove_enemy" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001111" >
+      </testcase>
+      <testcase name="test_wave_scaling_increases_enemy_count" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.00034" >
+      </testcase>
+      <testcase name="test_wave_scaling_increases_enemy_hp" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000323" >
+      </testcase>
+      <testcase name="test_spawn_enemy_applies_wave_scaling" assertions="1" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000579" >
+      </testcase>
+      <testcase name="test_get_spawn_rate_decreases_with_wave" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000315" >
+      </testcase>
+      <testcase name="test_update_enemy_ai_moves_toward_player" assertions="2" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.000596" >
+      </testcase>
+      <testcase name="test_get_enemies_in_radius" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001122" >
+      </testcase>
+      <testcase name="test_get_enemies_in_radius_excludes_dead" assertions="3" status="pass" classname="scripts/tests/enemy_service_test.gd" time="0.001073" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/entity_classes_test.gd" tests="30" failures="0" skipped="24" time="0.243676" >
+      <testcase name="test_player_initial_max_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.00264" >
+      </testcase>
+      <testcase name="test_player_initial_current_health_is_100" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.049945" >
+      </testcase>
+      <testcase name="test_player_base_speed_is_200" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.055353" >
+      </testcase>
+      <testcase name="test_player_takes_damage_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.048874" >
+      </testcase>
+      <testcase name="test_player_heals_correctly" assertions="1" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.048827" >
+      </testcase>
+      <testcase name="test_player_applies_health_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.002308" >
       <skipped message="pending"><![CDATA[Disabled - CharacterService handles stat modifiers, not Player directly]]></skipped></testcase>
-      <testcase name="test_player_applies_speed_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001556" >
+      <testcase name="test_player_applies_speed_item_modifiers" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001815" >
       <skipped message="pending"><![CDATA[Disabled - CharacterService handles stat modifiers, not Player directly]]></skipped></testcase>
-      <testcase name="test_player_equips_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001476" >
+      <testcase name="test_player_equips_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001772" >
       <skipped message="pending"><![CDATA[Disabled - WeaponService integration tested in scene_integration_test.gd]]></skipped></testcase>
-      <testcase name="test_player_invulnerability_blocks_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001391" >
+      <testcase name="test_player_invulnerability_blocks_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001673" >
       <skipped message="pending"><![CDATA[Disabled - Week 10 Player doesn't have invulnerability (simplified)]]></skipped></testcase>
-      <testcase name="test_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001579" >
+      <testcase name="test_enemy_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001517" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_initializes_with_wave_1" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001421" >
+      <testcase name="test_enemy_initializes_with_wave_1" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001462" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_scales_health_with_wave" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001406" >
+      <testcase name="test_enemy_scales_health_with_wave" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001469" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_takes_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001639" >
+      <testcase name="test_enemy_takes_damage" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001543" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_health_percentage_calculation" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001345" >
+      <testcase name="test_enemy_health_percentage_calculation" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001403" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_is_alive_when_health_positive" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00127" >
+      <testcase name="test_enemy_is_alive_when_health_positive" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00134" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_is_dead_when_health_zero" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001312" >
+      <testcase name="test_enemy_is_dead_when_health_zero" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001323" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_projectile_activates_with_parameters" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001297" >
+      <testcase name="test_projectile_activates_with_parameters" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001316" >
       <skipped message="pending"><![CDATA[Disabled - Projectile implementation pending Week 10 Phase 2]]></skipped></testcase>
-      <testcase name="test_projectile_velocity_is_set" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001271" >
+      <testcase name="test_projectile_velocity_is_set" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001452" >
       <skipped message="pending"><![CDATA[Disabled - Projectile implementation pending Week 10 Phase 2]]></skipped></testcase>
-      <testcase name="test_projectile_pierce_is_set" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001273" >
+      <testcase name="test_projectile_pierce_is_set" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00129" >
       <skipped message="pending"><![CDATA[Disabled - Projectile implementation pending Week 10 Phase 2]]></skipped></testcase>
-      <testcase name="test_projectile_remaining_range_is_full" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001204" >
+      <testcase name="test_projectile_remaining_range_is_full" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001236" >
       <skipped message="pending"><![CDATA[Disabled - Projectile implementation pending Week 10 Phase 2]]></skipped></testcase>
-      <testcase name="test_projectile_deactivates" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001159" >
+      <testcase name="test_projectile_deactivates" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001206" >
       <skipped message="pending"><![CDATA[Disabled - Projectile implementation pending Week 10 Phase 2]]></skipped></testcase>
-      <testcase name="test_enemy_targets_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001243" >
+      <testcase name="test_enemy_targets_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001195" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_player_fires_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00118" >
+      <testcase name="test_player_fires_weapon" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001187" >
       <skipped message="pending"><![CDATA[Disabled - Weapon firing tested in scene_integration_test.gd]]></skipped></testcase>
-      <testcase name="test_enemy_calculates_distance_to_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001266" >
+      <testcase name="test_enemy_calculates_distance_to_player" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001185" >
       <skipped message="pending"><![CDATA[Disabled - AI tested in scene_integration_test.gd]]></skipped></testcase>
-      <testcase name="test_player_armor_reduces_damage" assertions="2" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.004504" >
+      <testcase name="test_player_armor_reduces_damage" assertions="2" status="pass" classname="scripts/tests/entity_classes_test.gd" time="0.004677" >
       </testcase>
-      <testcase name="test_player_life_steal_modifier" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001149" >
+      <testcase name="test_player_life_steal_modifier" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001171" >
       <skipped message="pending"><![CDATA[Disabled - Life steal not yet implemented in Week 10]]></skipped></testcase>
-      <testcase name="test_weapon_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00113" >
+      <testcase name="test_weapon_resource_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00115" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_enemy_resource_basic_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001117" >
+      <testcase name="test_enemy_resource_basic_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.00113" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_health_boost_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001056" >
+      <testcase name="test_health_boost_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001112" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
-      <testcase name="test_vampiric_fangs_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001035" >
+      <testcase name="test_vampiric_fangs_item_loads" assertions="0" status="pending" classname="scripts/tests/entity_classes_test.gd" time="0.001105" >
       <skipped message="pending"><![CDATA[Disabled for headless CI - set ENABLE_RESOURCE_TESTS=true to run in Godot Editor]]></skipped></testcase>
   </testsuite>
-  <testsuite name="scripts/tests/error_service_test.gd" tests="3" failures="0" skipped="0" time="0.000687" >
-      <testcase name="test_error_occurred_signal_emits_on_error" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000277" >
+  <testsuite name="scripts/tests/error_service_test.gd" tests="3" failures="0" skipped="0" time="0.000709" >
+      <testcase name="test_error_occurred_signal_emits_on_error" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.00029" >
       </testcase>
       <testcase name="test_critical_error_occurred_signal_emits_on_critical" assertions="3" status="pass" classname="scripts/tests/error_service_test.gd" time="0.00022" >
       </testcase>
-      <testcase name="test_godot_error_capture_includes_stack_trace_in_metadata" assertions="2" status="pass" classname="scripts/tests/error_service_test.gd" time="0.00019" >
+      <testcase name="test_godot_error_capture_includes_stack_trace_in_metadata" assertions="2" status="pass" classname="scripts/tests/error_service_test.gd" time="0.000199" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/game_state_test.gd" tests="28" failures="0" skipped="0" time="0.002501" >
-      <testcase name="test_initial_wave_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000064" >
+  <testsuite name="scripts/tests/game_state_test.gd" tests="28" failures="0" skipped="0" time="0.002618" >
+      <testcase name="test_initial_wave_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000067" >
       </testcase>
-      <testcase name="test_set_current_wave_updates_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000056" >
+      <testcase name="test_set_current_wave_updates_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000063" >
       </testcase>
-      <testcase name="test_set_current_wave_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000221" >
+      <testcase name="test_set_current_wave_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000229" >
       </testcase>
-      <testcase name="test_set_current_wave_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000151" >
+      <testcase name="test_set_current_wave_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000164" >
       </testcase>
-      <testcase name="test_initial_score_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000056" >
+      <testcase name="test_initial_score_is_zero" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00006" >
       </testcase>
-      <testcase name="test_set_score_updates_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
+      <testcase name="test_set_score_updates_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_set_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000055" >
+      <testcase name="test_set_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_set_score_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000208" >
+      <testcase name="test_set_score_emits_signal" assertions="3" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000218" >
       </testcase>
-      <testcase name="test_add_score_increases_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000062" >
+      <testcase name="test_add_score_increases_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00006" >
       </testcase>
-      <testcase name="test_add_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000058" >
+      <testcase name="test_add_score_updates_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000061" >
       </testcase>
-      <testcase name="test_add_score_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000172" >
+      <testcase name="test_add_score_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00018" >
       </testcase>
-      <testcase name="test_high_score_does_not_decrease" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000056" >
+      <testcase name="test_high_score_does_not_decrease" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000059" >
       </testcase>
-      <testcase name="test_initial_gameplay_state_is_inactive" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000042" >
+      <testcase name="test_initial_gameplay_state_is_inactive" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000045" >
       </testcase>
-      <testcase name="test_set_gameplay_active_true_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000041" >
+      <testcase name="test_set_gameplay_active_true_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000043" >
       </testcase>
-      <testcase name="test_set_gameplay_active_true_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000158" >
+      <testcase name="test_set_gameplay_active_true_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000168" >
       </testcase>
-      <testcase name="test_set_gameplay_active_false_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000044" >
+      <testcase name="test_set_gameplay_active_false_updates_state" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000046" >
       </testcase>
-      <testcase name="test_set_gameplay_active_false_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000153" >
+      <testcase name="test_set_gameplay_active_false_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000161" >
       </testcase>
-      <testcase name="test_initial_character_is_empty" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000059" >
+      <testcase name="test_initial_character_is_empty" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000064" >
       </testcase>
-      <testcase name="test_set_current_character_updates_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
+      <testcase name="test_set_current_character_updates_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000066" >
       </testcase>
-      <testcase name="test_set_current_character_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000171" >
+      <testcase name="test_set_current_character_emits_signal" assertions="2" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000178" >
       </testcase>
-      <testcase name="test_set_current_character_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000148" >
+      <testcase name="test_set_current_character_no_signal_for_same_value" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000154" >
       </testcase>
-      <testcase name="test_reset_clears_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000059" >
+      <testcase name="test_reset_clears_wave" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000061" >
       </testcase>
-      <testcase name="test_reset_clears_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000063" >
+      <testcase name="test_reset_clears_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.00006" >
       </testcase>
-      <testcase name="test_reset_preserves_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000056" >
+      <testcase name="test_reset_preserves_high_score" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_reset_deactivates_gameplay" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000042" >
+      <testcase name="test_reset_deactivates_gameplay" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000043" >
       </testcase>
-      <testcase name="test_reset_clears_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000054" >
+      <testcase name="test_reset_clears_character" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000057" >
       </testcase>
-      <testcase name="test_reset_unpauses_game" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000043" >
+      <testcase name="test_reset_unpauses_game" assertions="1" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000044" >
       </testcase>
-      <testcase name="test_reset_full_state" assertions="6" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000097" >
-      </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/hud_service_test.gd" tests="11" failures="0" skipped="0" time="0.043787" >
-      <testcase name="test_hud_service_updates_hp_on_damage" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.002727" >
-      </testcase>
-      <testcase name="test_hud_service_updates_hp_on_heal" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001682" >
-      </testcase>
-      <testcase name="test_hud_service_updates_xp_on_gain" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.002505" >
-      </testcase>
-      <testcase name="test_hud_service_updates_xp_on_level_up" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.005191" >
-      </testcase>
-      <testcase name="test_hud_service_updates_currency_on_collection" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.006581" >
-      </testcase>
-      <testcase name="test_hud_service_updates_wave_on_change" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.007441" >
-      </testcase>
-      <testcase name="test_hud_service_can_set_player" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.00108" >
-      </testcase>
-      <testcase name="test_hud_service_disconnects_previous_player" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.013429" >
-      </testcase>
-      <testcase name="test_hud_service_returns_current_hp_state" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001247" >
-      </testcase>
-      <testcase name="test_hud_service_returns_current_xp_state" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001502" >
-      </testcase>
-      <testcase name="test_hud_service_returns_current_wave" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.000402" >
+      <testcase name="test_reset_full_state" assertions="6" status="pass" classname="scripts/tests/game_state_test.gd" time="0.000096" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/input_system_test.gd" tests="6" failures="0" skipped="0" time="0.00174" >
-      <testcase name="test_camera_follows_player_smoothly" assertions="2" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000753" >
+  <testsuite name="scripts/tests/hud_service_test.gd" tests="11" failures="0" skipped="0" time="0.043336" >
+      <testcase name="test_hud_service_updates_hp_on_damage" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.002647" >
       </testcase>
-      <testcase name="test_camera_respects_boundaries" assertions="4" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000094" >
+      <testcase name="test_hud_service_updates_hp_on_heal" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001597" >
       </testcase>
-      <testcase name="test_camera_shake_on_weapon_fire" assertions="2" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000424" >
+      <testcase name="test_hud_service_updates_xp_on_gain" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.002437" >
       </testcase>
-      <testcase name="test_camera_shake_decays_over_time" assertions="1" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000111" >
+      <testcase name="test_hud_service_updates_xp_on_level_up" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.005292" >
+      </testcase>
+      <testcase name="test_hud_service_updates_currency_on_collection" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.006889" >
+      </testcase>
+      <testcase name="test_hud_service_updates_wave_on_change" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.007026" >
+      </testcase>
+      <testcase name="test_hud_service_can_set_player" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001171" >
+      </testcase>
+      <testcase name="test_hud_service_disconnects_previous_player" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.013286" >
+      </testcase>
+      <testcase name="test_hud_service_returns_current_hp_state" assertions="2" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.001149" >
+      </testcase>
+      <testcase name="test_hud_service_returns_current_xp_state" assertions="3" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.00146" >
+      </testcase>
+      <testcase name="test_hud_service_returns_current_wave" assertions="1" status="pass" classname="scripts/tests/hud_service_test.gd" time="0.000382" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/input_system_test.gd" tests="6" failures="0" skipped="0" time="0.001131" >
+      <testcase name="test_camera_follows_player_smoothly" assertions="2" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000139" >
+      </testcase>
+      <testcase name="test_camera_respects_boundaries" assertions="4" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000098" >
+      </testcase>
+      <testcase name="test_camera_shake_on_weapon_fire" assertions="2" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000437" >
+      </testcase>
+      <testcase name="test_camera_shake_decays_over_time" assertions="1" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000093" >
       </testcase>
       <testcase name="test_input_handler_emits_movement_signal" assertions="1" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000194" >
       </testcase>
-      <testcase name="test_input_handler_emits_aim_signal" assertions="1" status="pass" classname="scripts/tests/input_system_test.gd" time="0.000164" >
+      <testcase name="test_input_handler_emits_aim_signal" assertions="1" status="pass" classname="scripts/tests/input_system_test.gd" time="0.00017" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/logger_test.gd" tests="11" failures="0" skipped="0" time="1.39137" >
-      <testcase name="test_log_file_is_created" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.001618" >
+  <testsuite name="scripts/tests/logger_test.gd" tests="11" failures="0" skipped="0" time="1.37906" >
+      <testcase name="test_log_file_is_created" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.00093" >
       </testcase>
-      <testcase name="test_log_file_is_not_empty" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000711" >
+      <testcase name="test_log_file_is_not_empty" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.000758" >
       </testcase>
-      <testcase name="test_log_path_returns_valid_path" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000344" >
+      <testcase name="test_log_path_returns_valid_path" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000359" >
       </testcase>
-      <testcase name="test_debug_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000629" >
+      <testcase name="test_debug_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000778" >
       </testcase>
-      <testcase name="test_info_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000738" >
+      <testcase name="test_info_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000765" >
       </testcase>
-      <testcase name="test_warning_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000732" >
+      <testcase name="test_warning_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000727" >
       </testcase>
-      <testcase name="test_error_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000671" >
+      <testcase name="test_error_level_is_recorded" assertions="2" status="pass" classname="scripts/tests/logger_test.gd" time="0.000704" >
       </testcase>
-      <testcase name="test_multiple_log_levels_are_recorded" assertions="6" status="pass" classname="scripts/tests/logger_test.gd" time="0.001554" >
+      <testcase name="test_multiple_log_levels_are_recorded" assertions="6" status="pass" classname="scripts/tests/logger_test.gd" time="0.001645" >
       </testcase>
-      <testcase name="test_log_rotation_respects_max_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.632557" >
+      <testcase name="test_log_rotation_respects_max_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.632836" >
       </testcase>
-      <testcase name="test_log_rotation_keeps_most_recent_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.749488" >
+      <testcase name="test_log_rotation_keeps_most_recent_files" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.73807" >
       </testcase>
-      <testcase name="test_error_service_integration_placeholder" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.002328" >
-      </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/recycler_service_test.gd" tests="26" failures="0" skipped="0" time="0.023194" >
-      <testcase name="test_rarity_enum_values_are_correct" assertions="5" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.002105" >
-      </testcase>
-      <testcase name="test_scrap_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001149" >
-      </testcase>
-      <testcase name="test_component_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000952" >
-      </testcase>
-      <testcase name="test_dismantle_common_non_weapon_gives_base_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001399" >
-      </testcase>
-      <testcase name="test_dismantle_common_weapon_applies_multiplier" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001141" >
-      </testcase>
-      <testcase name="test_dismantle_rare_non_weapon_gives_higher_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001164" >
-      </testcase>
-      <testcase name="test_dismantle_rare_weapon_applies_multiplier_and_rounds" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00137" >
-      </testcase>
-      <testcase name="test_common_items_never_drop_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00131" >
-      </testcase>
-      <testcase name="test_uncommon_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000661" >
-      </testcase>
-      <testcase name="test_rare_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00064" >
-      </testcase>
-      <testcase name="test_epic_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000656" >
-      </testcase>
-      <testcase name="test_legendary_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000634" >
-      </testcase>
-      <testcase name="test_luck_40_adds_10_percent_component_chance" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000617" >
-      </testcase>
-      <testcase name="test_luck_chance_bonus_caps_at_25_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000604" >
-      </testcase>
-      <testcase name="test_luck_120_adds_one_component" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00062" >
-      </testcase>
-      <testcase name="test_luck_240_adds_two_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000622" >
-      </testcase>
-      <testcase name="test_component_chance_caps_at_95_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000601" >
-      </testcase>
-      <testcase name="test_preview_shows_potential_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000581" >
-      </testcase>
-      <testcase name="test_dismantle_uses_randomness_for_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000957" >
-      </testcase>
-      <testcase name="test_broken_item_gives_zero_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000975" >
-      </testcase>
-      <testcase name="test_negative_luck_normalized_to_zero" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000523" >
-      </testcase>
-      <testcase name="test_empty_template_id_returns_zero_outcome" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000977" >
-      </testcase>
-      <testcase name="test_base_scrap_override_works" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000976" >
-      </testcase>
-      <testcase name="test_rarity_from_string_converts_correctly" assertions="3" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000563" >
-      </testcase>
-      <testcase name="test_rarity_to_string_converts_correctly" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00054" >
-      </testcase>
-      <testcase name="test_unknown_rarity_string_defaults_to_common" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000857" >
+      <testcase name="test_error_service_integration_placeholder" assertions="1" status="pass" classname="scripts/tests/logger_test.gd" time="0.001488" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/save_integration_test.gd" tests="22" failures="0" skipped="0" time="0.182558" >
-      <testcase name="test_save_all_services_succeeds" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.011229" >
+  <testsuite name="scripts/tests/recycler_service_test.gd" tests="26" failures="0" skipped="0" time="0.022781" >
+      <testcase name="test_rarity_enum_values_are_correct" assertions="5" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001335" >
       </testcase>
-      <testcase name="test_load_all_services_restores_state" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.014836" >
+      <testcase name="test_scrap_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000867" >
       </testcase>
-      <testcase name="test_multiple_services_save_and_load" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.013201" >
+      <testcase name="test_component_base_values_by_rarity" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001017" >
       </testcase>
-      <testcase name="test_transaction_history_persists" assertions="7" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.012712" >
+      <testcase name="test_dismantle_common_non_weapon_gives_base_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001583" >
       </testcase>
-      <testcase name="test_save_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00696" >
+      <testcase name="test_dismantle_common_weapon_applies_multiplier" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001381" >
       </testcase>
-      <testcase name="test_save_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006809" >
+      <testcase name="test_dismantle_rare_non_weapon_gives_higher_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001321" >
       </testcase>
-      <testcase name="test_load_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.009264" >
+      <testcase name="test_dismantle_rare_weapon_applies_multiplier_and_rounds" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001214" >
       </testcase>
-      <testcase name="test_load_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.009594" >
+      <testcase name="test_common_items_never_drop_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001334" >
       </testcase>
-      <testcase name="test_unsaved_changes_tracked_after_modification" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004963" >
+      <testcase name="test_uncommon_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000991" >
       </testcase>
-      <testcase name="test_unsaved_changes_cleared_after_save" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006557" >
+      <testcase name="test_rare_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000785" >
       </testcase>
-      <testcase name="test_load_nonexistent_save_fails_gracefully" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005337" >
+      <testcase name="test_epic_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000687" >
       </testcase>
-      <testcase name="test_metadata_shows_no_save_initially" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004517" >
+      <testcase name="test_legendary_has_correct_component_chance_and_potential" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000637" >
       </testcase>
-      <testcase name="test_metadata_populated_after_save" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007042" >
+      <testcase name="test_luck_40_adds_10_percent_component_chance" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000556" >
       </testcase>
-      <testcase name="test_save_deleted_successfully" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006389" >
+      <testcase name="test_luck_chance_bonus_caps_at_25_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00055" >
       </testcase>
-      <testcase name="test_cross_service_state_consistency" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.010935" >
+      <testcase name="test_luck_120_adds_one_component" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000549" >
       </testcase>
-      <testcase name="test_stateless_service_save_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00655" >
+      <testcase name="test_luck_240_adds_two_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00055" >
       </testcase>
-      <testcase name="test_stateless_service_load_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.010781" >
+      <testcase name="test_component_chance_caps_at_95_percent" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000526" >
       </testcase>
-      <testcase name="test_recycler_service_functional_after_load" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.010623" >
+      <testcase name="test_preview_shows_potential_components" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000615" >
       </testcase>
-      <testcase name="test_auto_save_enabled" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005318" >
+      <testcase name="test_dismantle_uses_randomness_for_components" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001006" >
       </testcase>
-      <testcase name="test_auto_save_trigger_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006972" >
+      <testcase name="test_broken_item_gives_zero_scrap" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.001002" >
       </testcase>
-      <testcase name="test_auto_save_creates_save_in_slot_0" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.00662" >
+      <testcase name="test_negative_luck_normalized_to_zero" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000568" >
       </testcase>
-      <testcase name="test_auto_save_skips_when_no_changes" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005349" >
+      <testcase name="test_empty_template_id_returns_zero_outcome" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.00091" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/save_system_test.gd" tests="20" failures="0" skipped="0" time="0.139431" >
-      <testcase name="test_save_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007066" >
+      <testcase name="test_base_scrap_override_works" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.0009" >
       </testcase>
-      <testcase name="test_load_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006635" >
+      <testcase name="test_rarity_from_string_converts_correctly" assertions="3" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000513" >
       </testcase>
-      <testcase name="test_loaded_data_matches_saved_data" assertions="4" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006531" >
+      <testcase name="test_rarity_to_string_converts_correctly" assertions="2" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000507" >
       </testcase>
-      <testcase name="test_save_to_multiple_slots" assertions="3" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007362" >
-      </testcase>
-      <testcase name="test_load_from_multiple_slots" assertions="9" status="pass" classname="scripts/tests/save_system_test.gd" time="0.012121" >
-      </testcase>
-      <testcase name="test_non_existent_save_metadata" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006487" >
-      </testcase>
-      <testcase name="test_existing_save_metadata" assertions="5" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007118" >
-      </testcase>
-      <testcase name="test_second_save_creates_backup" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007567" >
-      </testcase>
-      <testcase name="test_save_exists_after_creation" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006954" >
-      </testcase>
-      <testcase name="test_save_deleted_successfully" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006924" >
-      </testcase>
-      <testcase name="test_has_save_detects_empty_slots" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.005962" >
-      </testcase>
-      <testcase name="test_has_save_detects_existing_save" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006324" >
-      </testcase>
-      <testcase name="test_negative_slot_save_fails" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006153" >
-      </testcase>
-      <testcase name="test_too_large_slot_save_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006284" >
-      </testcase>
-      <testcase name="test_invalid_slot_load_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006267" >
-      </testcase>
-      <testcase name="test_invalid_slot_has_save_returns_false" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006109" >
-      </testcase>
-      <testcase name="test_corruption_recovers_from_backup" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007665" >
-      </testcase>
-      <testcase name="test_save_with_current_version" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.00656" >
-      </testcase>
-      <testcase name="test_load_verifies_version" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006943" >
-      </testcase>
-      <testcase name="test_future_version_rejected" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006399" >
+      <testcase name="test_unknown_rarity_string_defaults_to_common" assertions="1" status="pass" classname="scripts/tests/recycler_service_test.gd" time="0.000877" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/scene_integration_test.gd" tests="15" failures="0" skipped="0" time="1.059997" >
-      <testcase name="test_player_entity_loads_character_stats" assertions="6" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.064941" >
+  <testsuite name="scripts/tests/save_integration_test.gd" tests="22" failures="0" skipped="0" time="0.185183" >
+      <testcase name="test_save_all_services_succeeds" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.010915" >
       </testcase>
-      <testcase name="test_player_movement_uses_speed_stat" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.131322" >
+      <testcase name="test_load_all_services_restores_state" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.015115" >
       </testcase>
-      <testcase name="test_player_take_damage_applies_armor" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.101729" >
+      <testcase name="test_multiple_services_save_and_load" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.01356" >
       </testcase>
-      <testcase name="test_player_death_triggers_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.096187" >
+      <testcase name="test_transaction_history_persists" assertions="7" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.012977" >
       </testcase>
-      <testcase name="test_player_heal_respects_max_hp" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.09585" >
+      <testcase name="test_save_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007183" >
       </testcase>
-      <testcase name="test_player_equips_weapon" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.098818" >
+      <testcase name="test_save_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006969" >
       </testcase>
-      <testcase name="test_enemy_entity_scales_with_wave" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.002651" >
+      <testcase name="test_load_started_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.009608" >
       </testcase>
-      <testcase name="test_enemy_moves_toward_player" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.163174" >
+      <testcase name="test_load_completed_signal_emits" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.008936" >
       </testcase>
-      <testcase name="test_enemy_death_emits_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.011617" >
+      <testcase name="test_unsaved_changes_tracked_after_modification" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005336" >
       </testcase>
-      <testcase name="test_enemy_updates_health_bar_on_damage" assertions="5" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.003608" >
+      <testcase name="test_unsaved_changes_cleared_after_save" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006883" >
       </testcase>
-      <testcase name="test_enemy_has_correct_speed_from_type" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.002432" >
+      <testcase name="test_load_nonexistent_save_fails_gracefully" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005381" >
       </testcase>
-      <testcase name="test_player_damage_triggers_health_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.075895" >
+      <testcase name="test_metadata_shows_no_save_initially" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.004495" >
       </testcase>
-      <testcase name="test_enemy_type_colors_differ" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.004431" >
+      <testcase name="test_metadata_populated_after_save" assertions="4" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006826" >
       </testcase>
-      <testcase name="test_player_level_up_reloads_stats" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.20291" >
+      <testcase name="test_save_deleted_successfully" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006614" >
       </testcase>
-      <testcase name="test_enemy_get_health_percentage" assertions="5" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.004432" >
+      <testcase name="test_cross_service_state_consistency" assertions="3" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.011179" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/service_integration_test.gd" tests="15" failures="0" skipped="0" time="0.164246" >
-      <testcase name="test_dismantle_rare_weapon_grants_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.004023" >
+      <testcase name="test_stateless_service_save_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006688" >
       </testcase>
-      <testcase name="test_add_recycled_scrap_to_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.005412" >
+      <testcase name="test_stateless_service_load_succeeds" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.01049" >
       </testcase>
-      <testcase name="test_player_can_afford_first_reroll" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.00452" >
+      <testcase name="test_recycler_service_functional_after_load" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.010653" >
       </testcase>
-      <testcase name="test_reroll_deducts_cost_from_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.005462" >
+      <testcase name="test_auto_save_enabled" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005808" >
       </testcase>
-      <testcase name="test_second_reroll_costs_more" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002946" >
+      <testcase name="test_auto_save_trigger_signal_emits" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.006999" >
       </testcase>
-      <testcase name="test_free_tier_rejects_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002489" >
+      <testcase name="test_auto_save_creates_save_in_slot_0" assertions="2" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.007113" >
       </testcase>
-      <testcase name="test_premium_tier_accepts_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.003409" >
-      </testcase>
-      <testcase name="test_premium_tier_enforces_cap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.111082" >
-      </testcase>
-      <testcase name="test_banking_currency_changed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002529" >
-      </testcase>
-      <testcase name="test_recycler_item_dismantled_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001841" >
-      </testcase>
-      <testcase name="test_shop_reroll_executed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001833" >
-      </testcase>
-      <testcase name="test_player_dismantles_multiple_items" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.005383" >
-      </testcase>
-      <testcase name="test_player_runs_out_of_scrap_rerolling" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002968" >
-      </testcase>
-      <testcase name="test_legendary_weapon_grants_high_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.00242" >
-      </testcase>
-      <testcase name="test_complete_gameplay_scenario" assertions="5" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.007929" >
+      <testcase name="test_auto_save_skips_when_no_changes" assertions="1" status="pass" classname="scripts/tests/save_integration_test.gd" time="0.005455" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/shop_reroll_service_test.gd" tests="35" failures="0" skipped="0" time="0.012759" >
-      <testcase name="test_base_cost_constant_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000062" >
+  <testsuite name="scripts/tests/save_system_test.gd" tests="20" failures="0" skipped="0" time="0.138292" >
+      <testcase name="test_save_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006826" >
       </testcase>
-      <testcase name="test_cost_multiplier_constant_is_2" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000052" >
+      <testcase name="test_load_game_succeeds" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006617" >
       </testcase>
-      <testcase name="test_max_reroll_count_constant_is_99" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000051" >
+      <testcase name="test_loaded_data_matches_saved_data" assertions="4" status="pass" classname="scripts/tests/save_system_test.gd" time="0.00682" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_0_equals_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000047" >
+      <testcase name="test_save_to_multiple_slots" assertions="3" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007953" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_1_equals_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000047" >
+      <testcase name="test_load_from_multiple_slots" assertions="9" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007588" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_2_equals_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000048" >
+      <testcase name="test_non_existent_save_metadata" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006309" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_3_equals_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000046" >
+      <testcase name="test_existing_save_metadata" assertions="5" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006841" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_5_equals_1600" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000048" >
+      <testcase name="test_second_save_creates_backup" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.00742" >
       </testcase>
-      <testcase name="test_calculate_cost_for_reroll_10_equals_51200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000045" >
+      <testcase name="test_save_exists_after_creation" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007027" >
+      </testcase>
+      <testcase name="test_save_deleted_successfully" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007259" >
+      </testcase>
+      <testcase name="test_has_save_detects_empty_slots" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.00632" >
+      </testcase>
+      <testcase name="test_has_save_detects_existing_save" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007136" >
+      </testcase>
+      <testcase name="test_negative_slot_save_fails" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006305" >
+      </testcase>
+      <testcase name="test_too_large_slot_save_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006567" >
+      </testcase>
+      <testcase name="test_invalid_slot_load_fails" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006451" >
+      </testcase>
+      <testcase name="test_invalid_slot_has_save_returns_false" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006321" >
+      </testcase>
+      <testcase name="test_corruption_recovers_from_backup" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007678" >
+      </testcase>
+      <testcase name="test_save_with_current_version" assertions="1" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006908" >
+      </testcase>
+      <testcase name="test_load_verifies_version" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.006771" >
+      </testcase>
+      <testcase name="test_future_version_rejected" assertions="2" status="pass" classname="scripts/tests/save_system_test.gd" time="0.007175" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/scene_integration_test.gd" tests="15" failures="0" skipped="0" time="1.062076" >
+      <testcase name="test_player_entity_loads_character_stats" assertions="6" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.073022" >
+      </testcase>
+      <testcase name="test_player_movement_uses_speed_stat" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.140601" >
+      </testcase>
+      <testcase name="test_player_take_damage_applies_armor" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.107099" >
+      </testcase>
+      <testcase name="test_player_death_triggers_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.076814" >
+      </testcase>
+      <testcase name="test_player_heal_respects_max_hp" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.101378" >
+      </testcase>
+      <testcase name="test_player_equips_weapon" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.107145" >
+      </testcase>
+      <testcase name="test_enemy_entity_scales_with_wave" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.003898" >
+      </testcase>
+      <testcase name="test_enemy_moves_toward_player" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.160617" >
+      </testcase>
+      <testcase name="test_enemy_death_emits_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.011242" >
+      </testcase>
+      <testcase name="test_enemy_updates_health_bar_on_damage" assertions="5" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.004217" >
+      </testcase>
+      <testcase name="test_enemy_has_correct_speed_from_type" assertions="3" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.002556" >
+      </testcase>
+      <testcase name="test_player_damage_triggers_health_signal" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.071015" >
+      </testcase>
+      <testcase name="test_enemy_type_colors_differ" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.004403" >
+      </testcase>
+      <testcase name="test_player_level_up_reloads_stats" assertions="4" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.194675" >
+      </testcase>
+      <testcase name="test_enemy_get_health_percentage" assertions="5" status="pass" classname="scripts/tests/scene_integration_test.gd" time="0.003394" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/service_integration_test.gd" tests="15" failures="0" skipped="0" time="0.166445" >
+      <testcase name="test_dismantle_rare_weapon_grants_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.004576" >
+      </testcase>
+      <testcase name="test_add_recycled_scrap_to_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.005455" >
+      </testcase>
+      <testcase name="test_player_can_afford_first_reroll" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.004688" >
+      </testcase>
+      <testcase name="test_reroll_deducts_cost_from_bank" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.00531" >
+      </testcase>
+      <testcase name="test_second_reroll_costs_more" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002985" >
+      </testcase>
+      <testcase name="test_free_tier_rejects_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002372" >
+      </testcase>
+      <testcase name="test_premium_tier_accepts_scrap" assertions="2" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.003691" >
+      </testcase>
+      <testcase name="test_premium_tier_enforces_cap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.111986" >
+      </testcase>
+      <testcase name="test_banking_currency_changed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002736" >
+      </testcase>
+      <testcase name="test_recycler_item_dismantled_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002028" >
+      </testcase>
+      <testcase name="test_shop_reroll_executed_signal" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.001999" >
+      </testcase>
+      <testcase name="test_player_dismantles_multiple_items" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.005675" >
+      </testcase>
+      <testcase name="test_player_runs_out_of_scrap_rerolling" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.003042" >
+      </testcase>
+      <testcase name="test_legendary_weapon_grants_high_scrap" assertions="1" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.002428" >
+      </testcase>
+      <testcase name="test_complete_gameplay_scenario" assertions="5" status="pass" classname="scripts/tests/service_integration_test.gd" time="0.007474" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/shop_reroll_service_test.gd" tests="35" failures="0" skipped="0" time="0.013047" >
+      <testcase name="test_base_cost_constant_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000052" >
+      </testcase>
+      <testcase name="test_cost_multiplier_constant_is_2" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000044" >
+      </testcase>
+      <testcase name="test_max_reroll_count_constant_is_99" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000042" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_0_equals_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000044" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_1_equals_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_2_equals_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000042" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_3_equals_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_5_equals_1600" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
+      </testcase>
+      <testcase name="test_calculate_cost_for_reroll_10_equals_51200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000041" >
       </testcase>
       <testcase name="test_initial_reroll_count_is_zero" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000048" >
       </testcase>
-      <testcase name="test_initial_preview_shows_zero_rerolls" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000049" >
+      <testcase name="test_initial_preview_shows_zero_rerolls" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
       </testcase>
-      <testcase name="test_initial_preview_cost_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000049" >
+      <testcase name="test_initial_preview_cost_is_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000043" >
       </testcase>
-      <testcase name="test_initial_preview_next_cost_is_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000048" >
+      <testcase name="test_initial_preview_next_cost_is_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000044" >
       </testcase>
-      <testcase name="test_preview_does_not_mutate_state" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000074" >
+      <testcase name="test_preview_does_not_mutate_state" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000068" >
       </testcase>
-      <testcase name="test_preview_shows_accurate_costs" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000062" >
+      <testcase name="test_preview_shows_accurate_costs" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000052" >
       </testcase>
-      <testcase name="test_execute_first_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000333" >
+      <testcase name="test_execute_first_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000388" >
       </testcase>
-      <testcase name="test_execute_first_reroll_charges_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000339" >
+      <testcase name="test_execute_first_reroll_charges_50" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000366" >
       </testcase>
-      <testcase name="test_execute_first_reroll_next_cost_is_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000336" >
+      <testcase name="test_execute_first_reroll_next_cost_is_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000338" >
       </testcase>
-      <testcase name="test_execute_second_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000581" >
+      <testcase name="test_execute_second_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000604" >
       </testcase>
-      <testcase name="test_execute_second_reroll_charges_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000572" >
+      <testcase name="test_execute_second_reroll_charges_100" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000594" >
       </testcase>
-      <testcase name="test_execute_second_reroll_next_cost_is_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000602" >
+      <testcase name="test_execute_second_reroll_next_cost_is_400" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000581" >
       </testcase>
-      <testcase name="test_execute_third_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.0008" >
+      <testcase name="test_execute_third_reroll_increments_count" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000878" >
       </testcase>
-      <testcase name="test_execute_third_reroll_charges_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00082" >
+      <testcase name="test_execute_third_reroll_charges_200" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000817" >
       </testcase>
       <testcase name="test_execute_third_reroll_next_cost_is_800" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000819" >
       </testcase>
-      <testcase name="test_get_reroll_count_tracks_executions" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000812" >
+      <testcase name="test_get_reroll_count_tracks_executions" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000824" >
       </testcase>
-      <testcase name="test_exponential_cost_progression" assertions="6" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.001605" >
+      <testcase name="test_exponential_cost_progression" assertions="6" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.001635" >
       </testcase>
-      <testcase name="test_reroll_count_reaches_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000325" >
+      <testcase name="test_reroll_count_reaches_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000328" >
       </testcase>
-      <testcase name="test_reroll_count_does_not_exceed_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000594" >
+      <testcase name="test_reroll_count_does_not_exceed_max" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000665" >
       </testcase>
-      <testcase name="test_max_cost_still_calculated_correctly" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000044" >
+      <testcase name="test_max_cost_still_calculated_correctly" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000056" >
       </testcase>
-      <testcase name="test_reset_clears_reroll_count" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000868" >
+      <testcase name="test_reset_clears_reroll_count" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000883" >
       </testcase>
-      <testcase name="test_reset_restores_initial_costs" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000856" >
+      <testcase name="test_reset_restores_initial_costs" assertions="1" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000834" >
       </testcase>
-      <testcase name="test_reroll_executed_signal_emits_on_execution" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000454" >
+      <testcase name="test_reroll_executed_signal_emits_on_execution" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00048" >
       </testcase>
-      <testcase name="test_reroll_executed_signal_contains_correct_data" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000394" >
+      <testcase name="test_reroll_executed_signal_contains_correct_data" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.00041" >
       </testcase>
-      <testcase name="test_reroll_executed_signal_emits_multiple_times" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000661" >
+      <testcase name="test_reroll_executed_signal_emits_multiple_times" assertions="3" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000698" >
       </testcase>
-      <testcase name="test_reroll_count_reset_signal_emits_on_reset" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000168" >
+      <testcase name="test_reroll_count_reset_signal_emits_on_reset" assertions="2" status="pass" classname="scripts/tests/shop_reroll_service_test.gd" time="0.000161" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/stat_service_test.gd" tests="17" failures="0" skipped="0" time="0.000838" >
-      <testcase name="test_calculate_damage_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000056" >
+  <testsuite name="scripts/tests/stat_service_test.gd" tests="17" failures="0" skipped="0" time="0.000848" >
+      <testcase name="test_calculate_damage_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000059" >
       </testcase>
-      <testcase name="test_calculate_damage_with_strength_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000051" >
+      <testcase name="test_calculate_damage_with_strength_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000055" >
       </testcase>
-      <testcase name="test_calculate_damage_with_weapon_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000052" >
+      <testcase name="test_calculate_damage_with_weapon_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
       </testcase>
       <testcase name="test_calculate_health_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
       </testcase>
-      <testcase name="test_calculate_health_with_vitality_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
+      <testcase name="test_calculate_health_with_vitality_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
       </testcase>
-      <testcase name="test_calculate_speed_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
+      <testcase name="test_calculate_speed_with_base_only" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
       </testcase>
       <testcase name="test_calculate_speed_with_agility_bonus" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
       </testcase>
-      <testcase name="test_apply_stat_modifiers_increases_and_decreases_stats" assertions="4" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000079" >
+      <testcase name="test_apply_stat_modifiers_increases_and_decreases_stats" assertions="4" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000075" >
       </testcase>
-      <testcase name="test_apply_stat_modifiers_clamps_negative_values_to_zero" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
+      <testcase name="test_apply_stat_modifiers_clamps_negative_values_to_zero" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_with_zero_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
+      <testcase name="test_calculate_armor_reduction_with_zero_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.00005" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_with_normal_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000048" >
+      <testcase name="test_calculate_armor_reduction_with_normal_armor" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
       </testcase>
-      <testcase name="test_calculate_armor_reduction_caps_at_80_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000045" >
+      <testcase name="test_calculate_armor_reduction_caps_at_80_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
       </testcase>
-      <testcase name="test_calculate_dodge_chance_scales_with_agility" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000045" >
+      <testcase name="test_calculate_dodge_chance_scales_with_agility" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
       </testcase>
-      <testcase name="test_calculate_dodge_chance_caps_at_50_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000045" >
+      <testcase name="test_calculate_dodge_chance_caps_at_50_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000047" >
       </testcase>
       <testcase name="test_calculate_crit_chance_scales_with_luck" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000045" >
       </testcase>
       <testcase name="test_calculate_crit_chance_caps_at_30_percent" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000045" >
       </testcase>
-      <testcase name="test_calculate_life_steal_percentage_of_damage" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000044" >
+      <testcase name="test_calculate_life_steal_percentage_of_damage" assertions="1" status="pass" classname="scripts/tests/stat_service_test.gd" time="0.000046" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/targeting_service_test.gd" tests="15" failures="0" skipped="0" time="0.182254" >
-      <testcase name="test_get_nearest_enemy_returns_closest" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.01076" >
+  <testsuite name="scripts/tests/targeting_service_test.gd" tests="15" failures="0" skipped="0" time="0.181887" >
+      <testcase name="test_get_nearest_enemy_returns_closest" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.010401" >
       </testcase>
-      <testcase name="test_get_nearest_enemy_excludes_dead_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.01329" >
+      <testcase name="test_get_nearest_enemy_excludes_dead_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013535" >
       </testcase>
-      <testcase name="test_get_nearest_enemy_filters_by_range" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013238" >
+      <testcase name="test_get_nearest_enemy_filters_by_range" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.012873" >
       </testcase>
-      <testcase name="test_get_nearest_enemy_returns_null_when_none_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.007219" >
+      <testcase name="test_get_nearest_enemy_returns_null_when_none_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.007859" >
       </testcase>
-      <testcase name="test_get_nearest_enemy_returns_null_when_no_enemies_exist" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.000055" >
+      <testcase name="test_get_nearest_enemy_returns_null_when_no_enemies_exist" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.000063" >
       </testcase>
-      <testcase name="test_get_enemies_in_radius_returns_all_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.020775" >
+      <testcase name="test_get_enemies_in_radius_returns_all_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.02057" >
       </testcase>
-      <testcase name="test_get_enemies_in_radius_excludes_dead_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013967" >
+      <testcase name="test_get_enemies_in_radius_excludes_dead_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.014078" >
       </testcase>
-      <testcase name="test_get_enemies_in_radius_returns_empty_when_none_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.006493" >
+      <testcase name="test_get_enemies_in_radius_returns_empty_when_none_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.006407" >
       </testcase>
-      <testcase name="test_get_all_enemies_returns_all_living_enemies" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.019699" >
+      <testcase name="test_get_all_enemies_returns_all_living_enemies" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.021014" >
       </testcase>
-      <testcase name="test_get_enemy_count_returns_correct_count" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.02213" >
+      <testcase name="test_get_enemy_count_returns_correct_count" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.020667" >
       </testcase>
-      <testcase name="test_has_enemies_in_range_returns_true_when_enemy_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.006433" >
+      <testcase name="test_has_enemies_in_range_returns_true_when_enemy_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.006565" >
       </testcase>
-      <testcase name="test_has_enemies_in_range_returns_false_when_no_enemy_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.007041" >
+      <testcase name="test_has_enemies_in_range_returns_false_when_no_enemy_in_range" assertions="1" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.007016" >
       </testcase>
-      <testcase name="test_plasma_pistol_range_targets_enemies_within_500px" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013986" >
+      <testcase name="test_plasma_pistol_range_targets_enemies_within_500px" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013975" >
       </testcase>
-      <testcase name="test_melee_weapon_range_only_targets_very_close_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013793" >
+      <testcase name="test_melee_weapon_range_only_targets_very_close_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.01399" >
       </testcase>
-      <testcase name="test_long_range_weapon_targets_distant_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.013375" >
-      </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/virtual_joystick_test.gd" tests="26" failures="0" skipped="0" time="1.280553" >
-      <testcase name="test_virtual_joystick_has_full_screen_anchors" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.041813" >
-      </testcase>
-      <testcase name="test_virtual_joystick_has_correct_mouse_filter" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.049189" >
-      </testcase>
-      <testcase name="test_virtual_joystick_control_rect_covers_viewport" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047046" >
-      </testcase>
-      <testcase name="test_virtual_joystick_initially_hidden" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.049116" >
-      </testcase>
-      <testcase name="test_touch_zone_is_left_half_of_screen" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.055102" >
-      </testcase>
-      <testcase name="test_left_half_touch_activates_joystick" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048388" >
-      </testcase>
-      <testcase name="test_right_half_touch_is_rejected" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048101" >
-      </testcase>
-      <testcase name="test_touch_at_exact_boundary_left_side" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048384" >
-      </testcase>
-      <testcase name="test_touch_at_exact_boundary_right_side" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047056" >
-      </testcase>
-      <testcase name="test_dead_zone_prevents_small_movements" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.056282" >
-      </testcase>
-      <testcase name="test_dead_zone_crossed_at_threshold" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048133" >
-      </testcase>
-      <testcase name="test_dead_zone_exactly_at_threshold" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047887" >
-      </testcase>
-      <testcase name="test_dead_zone_does_not_reapply_during_drag" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048749" >
-      </testcase>
-      <testcase name="test_dead_zone_resets_on_touch_release" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.046343" >
-      </testcase>
-      <testcase name="test_joystick_appears_at_touch_point" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.056581" >
-      </testcase>
-      <testcase name="test_joystick_hides_on_release" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047863" >
-      </testcase>
-      <testcase name="test_stick_position_updates_during_drag" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047467" >
-      </testcase>
-      <testcase name="test_stick_clamped_to_max_distance" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.049758" >
-      </testcase>
-      <testcase name="test_direction_calculation_right" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047137" >
-      </testcase>
-      <testcase name="test_direction_calculation_down" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.054369" >
-      </testcase>
-      <testcase name="test_direction_calculation_diagonal" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048842" >
-      </testcase>
-      <testcase name="test_direction_zero_at_origin" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.0501" >
-      </testcase>
-      <testcase name="test_ignores_second_touch_while_active" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047301" >
-      </testcase>
-      <testcase name="test_tracks_correct_touch_index" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047364" >
-      </testcase>
-      <testcase name="test_direction_changed_signal_emitted" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.053583" >
-      </testcase>
-      <testcase name="test_direction_changed_signal_on_release" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048599" >
+      <testcase name="test_long_range_weapon_targets_distant_enemies" assertions="2" status="pass" classname="scripts/tests/targeting_service_test.gd" time="0.012874" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/wasteland_camera_boundary_test.gd" tests="15" failures="0" skipped="0" time="0.751689" >
-      <testcase name="test_wasteland_camera_has_camera_controller_script" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055105" >
+  <testsuite name="scripts/tests/virtual_joystick_test.gd" tests="26" failures="0" skipped="0" time="1.290588" >
+      <testcase name="test_virtual_joystick_has_full_screen_anchors" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048162" >
       </testcase>
-      <testcase name="test_wasteland_camera_has_correct_boundaries" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048453" >
+      <testcase name="test_virtual_joystick_has_correct_mouse_filter" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.050227" >
       </testcase>
-      <testcase name="test_wasteland_camera_has_follow_smoothness" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048219" >
+      <testcase name="test_virtual_joystick_control_rect_covers_viewport" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.046784" >
       </testcase>
-      <testcase name="test_camera_clamps_to_left_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055254" >
+      <testcase name="test_virtual_joystick_initially_hidden" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.056324" >
       </testcase>
-      <testcase name="test_camera_clamps_to_right_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048454" >
+      <testcase name="test_touch_zone_is_left_half_of_screen" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047429" >
       </testcase>
-      <testcase name="test_camera_clamps_to_top_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048095" >
+      <testcase name="test_left_half_touch_activates_joystick" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048357" >
       </testcase>
-      <testcase name="test_camera_clamps_to_bottom_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048347" >
+      <testcase name="test_right_half_touch_is_rejected" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048305" >
       </testcase>
-      <testcase name="test_camera_visible_area_stays_within_boundaries_left_edge" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048289" >
+      <testcase name="test_touch_at_exact_boundary_left_side" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048118" >
       </testcase>
-      <testcase name="test_camera_visible_area_stays_within_boundaries_right_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.05517" >
+      <testcase name="test_touch_at_exact_boundary_right_side" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.055391" >
       </testcase>
-      <testcase name="test_camera_visible_area_stays_within_boundaries_top_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048094" >
+      <testcase name="test_dead_zone_prevents_small_movements" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048147" >
       </testcase>
-      <testcase name="test_camera_visible_area_stays_within_boundaries_bottom_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048353" >
+      <testcase name="test_dead_zone_crossed_at_threshold" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048217" >
       </testcase>
-      <testcase name="test_camera_follows_player_smoothly" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.047864" >
+      <testcase name="test_dead_zone_exactly_at_threshold" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048163" >
       </testcase>
-      <testcase name="test_camera_and_player_boundaries_work_together" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048615" >
+      <testcase name="test_dead_zone_does_not_reapply_during_drag" assertions="4" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.04854" >
       </testcase>
-      <testcase name="test_camera_screen_shake_still_works" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055084" >
+      <testcase name="test_dead_zone_resets_on_touch_release" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.054982" >
       </testcase>
-      <testcase name="test_camera_smooth_follow_preserved" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048293" >
+      <testcase name="test_joystick_appears_at_touch_point" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048711" >
       </testcase>
-  </testsuite>
-  <testsuite name="scripts/tests/wave_manager_test.gd" tests="12" failures="0" skipped="0" time="1.530575" >
-      <testcase name="test_wave_manager_initializes_correctly" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000233" >
+      <testcase name="test_joystick_hides_on_release" assertions="3" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048315" >
       </testcase>
-      <testcase name="test_wave_manager_starts_wave" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.001343" >
+      <testcase name="test_stick_position_updates_during_drag" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048232" >
       </testcase>
-      <testcase name="test_wave_manager_spawns_correct_enemy_count" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000876" >
+      <testcase name="test_stick_clamped_to_max_distance" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.049166" >
       </testcase>
-      <testcase name="test_wave_manager_completes_wave_when_all_killed" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.002371" >
+      <testcase name="test_direction_calculation_right" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.053619" >
       </testcase>
-      <testcase name="test_wave_manager_tracks_wave_stats" assertions="4" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.001645" >
+      <testcase name="test_direction_calculation_down" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048373" >
       </testcase>
-      <testcase name="test_wave_manager_increments_wave_number" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="1.505782" >
+      <testcase name="test_direction_calculation_diagonal" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048577" >
       </testcase>
-      <testcase name="test_wave_manager_game_over_state" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000729" >
+      <testcase name="test_direction_zero_at_origin" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.048343" >
       </testcase>
-      <testcase name="test_wave_manager_emits_wave_completed_with_stats" assertions="4" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.004758" >
+      <testcase name="test_ignores_second_touch_while_active" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.047483" >
       </testcase>
-      <testcase name="test_wave_manager_tracks_living_enemies" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000993" >
+      <testcase name="test_tracks_correct_touch_index" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.054957" >
       </testcase>
-      <testcase name="test_wave_manager_calculates_wave_time" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.003572" >
+      <testcase name="test_direction_changed_signal_emitted" assertions="1" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.050997" >
       </testcase>
-      <testcase name="test_wave_manager_only_completes_in_combat_state" assertions="2" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.008063" >
-      </testcase>
-      <testcase name="test_next_wave_increases_enemy_count" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.00021" >
+      <testcase name="test_direction_changed_signal_on_release" assertions="2" status="pass" classname="scripts/tests/virtual_joystick_test.gd" time="0.046669" >
       </testcase>
   </testsuite>
-  <testsuite name="scripts/tests/weapon_service_test.gd" tests="27" failures="0" skipped="0" time="0.033733" >
-      <testcase name="test_weapon_exists_returns_true_for_valid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.002059" >
+  <testsuite name="scripts/tests/wasteland_camera_boundary_test.gd" tests="15" failures="0" skipped="0" time="0.745566" >
+      <testcase name="test_wasteland_camera_has_camera_controller_script" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048906" >
       </testcase>
-      <testcase name="test_weapon_exists_returns_false_for_invalid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001303" >
+      <testcase name="test_wasteland_camera_has_correct_boundaries" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.04215" >
       </testcase>
-      <testcase name="test_get_weapon_returns_valid_data" assertions="5" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001447" >
+      <testcase name="test_wasteland_camera_has_follow_smoothness" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048557" >
       </testcase>
-      <testcase name="test_get_weapon_returns_empty_for_invalid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001349" >
+      <testcase name="test_camera_clamps_to_left_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048926" >
       </testcase>
-      <testcase name="test_equip_weapon_success" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001222" >
+      <testcase name="test_camera_clamps_to_right_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.054899" >
       </testcase>
-      <testcase name="test_equip_weapon_with_empty_character_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001575" >
+      <testcase name="test_camera_clamps_to_top_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048089" >
       </testcase>
-      <testcase name="test_equip_weapon_with_invalid_weapon_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001585" >
+      <testcase name="test_camera_clamps_to_bottom_boundary" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.0482" >
       </testcase>
-      <testcase name="test_equip_weapon_with_tier_restriction" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.00216" >
+      <testcase name="test_camera_visible_area_stays_within_boundaries_left_edge" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.047845" >
       </testcase>
-      <testcase name="test_equip_weapon_replaces_previous_weapon" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.002126" >
+      <testcase name="test_camera_visible_area_stays_within_boundaries_right_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048735" >
       </testcase>
-      <testcase name="test_unequip_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001853" >
+      <testcase name="test_camera_visible_area_stays_within_boundaries_top_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055142" >
       </testcase>
-      <testcase name="test_get_weapon_damage_with_base_stats_only" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000977" >
+      <testcase name="test_camera_visible_area_stays_within_boundaries_bottom_edge" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.047711" >
       </testcase>
-      <testcase name="test_get_weapon_damage_with_character_damage_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000946" >
+      <testcase name="test_camera_follows_player_smoothly" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055757" >
       </testcase>
-      <testcase name="test_get_weapon_damage_with_melee_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000964" >
+      <testcase name="test_camera_and_player_boundaries_work_together" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.048239" >
       </testcase>
-      <testcase name="test_get_weapon_damage_with_ranged_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000962" >
+      <testcase name="test_camera_screen_shake_still_works" assertions="4" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.055565" >
       </testcase>
-      <testcase name="test_get_weapon_damage_ignores_wrong_type_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000891" >
+      <testcase name="test_camera_smooth_follow_preserved" assertions="3" status="pass" classname="scripts/tests/wasteland_camera_boundary_test.gd" time="0.046845" >
       </testcase>
-      <testcase name="test_get_weapon_cooldown_with_zero_attack_speed" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000866" >
+  </testsuite>
+  <testsuite name="scripts/tests/wave_manager_test.gd" tests="12" failures="0" skipped="0" time="1.538001" >
+      <testcase name="test_wave_manager_initializes_correctly" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000262" >
       </testcase>
-      <testcase name="test_attack_speed_reduces_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000874" >
+      <testcase name="test_wave_manager_starts_wave" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.001341" >
       </testcase>
-      <testcase name="test_attack_speed_caps_at_75_percent" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000847" >
+      <testcase name="test_wave_manager_spawns_correct_enemy_count" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000801" >
       </testcase>
-      <testcase name="test_attack_speed_50_percent_reduction" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.00085" >
+      <testcase name="test_wave_manager_completes_wave_when_all_killed" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.002417" >
+      </testcase>
+      <testcase name="test_wave_manager_tracks_wave_stats" assertions="4" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.008029" >
+      </testcase>
+      <testcase name="test_wave_manager_increments_wave_number" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="1.50616" >
+      </testcase>
+      <testcase name="test_wave_manager_game_over_state" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.000883" >
+      </testcase>
+      <testcase name="test_wave_manager_emits_wave_completed_with_stats" assertions="4" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.004451" >
+      </testcase>
+      <testcase name="test_wave_manager_tracks_living_enemies" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.001073" >
+      </testcase>
+      <testcase name="test_wave_manager_calculates_wave_time" assertions="3" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.004872" >
+      </testcase>
+      <testcase name="test_wave_manager_only_completes_in_combat_state" assertions="2" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.007522" >
+      </testcase>
+      <testcase name="test_next_wave_increases_enemy_count" assertions="1" status="pass" classname="scripts/tests/wave_manager_test.gd" time="0.00019" >
+      </testcase>
+  </testsuite>
+  <testsuite name="scripts/tests/weapon_service_test.gd" tests="27" failures="0" skipped="0" time="0.033129" >
+      <testcase name="test_weapon_exists_returns_true_for_valid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001973" >
+      </testcase>
+      <testcase name="test_weapon_exists_returns_false_for_invalid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001189" >
+      </testcase>
+      <testcase name="test_get_weapon_returns_valid_data" assertions="5" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001253" >
+      </testcase>
+      <testcase name="test_get_weapon_returns_empty_for_invalid_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001656" >
+      </testcase>
+      <testcase name="test_equip_weapon_success" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001575" >
+      </testcase>
+      <testcase name="test_equip_weapon_with_empty_character_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001433" >
+      </testcase>
+      <testcase name="test_equip_weapon_with_invalid_weapon_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001566" >
+      </testcase>
+      <testcase name="test_equip_weapon_with_tier_restriction" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.002216" >
+      </testcase>
+      <testcase name="test_equip_weapon_replaces_previous_weapon" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001795" >
+      </testcase>
+      <testcase name="test_unequip_weapon" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001846" >
+      </testcase>
+      <testcase name="test_get_weapon_damage_with_base_stats_only" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.00099" >
+      </testcase>
+      <testcase name="test_get_weapon_damage_with_character_damage_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000923" >
+      </testcase>
+      <testcase name="test_get_weapon_damage_with_melee_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000926" >
+      </testcase>
+      <testcase name="test_get_weapon_damage_with_ranged_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000908" >
+      </testcase>
+      <testcase name="test_get_weapon_damage_ignores_wrong_type_bonus" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000865" >
+      </testcase>
+      <testcase name="test_get_weapon_cooldown_with_zero_attack_speed" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000825" >
+      </testcase>
+      <testcase name="test_attack_speed_reduces_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000821" >
+      </testcase>
+      <testcase name="test_attack_speed_caps_at_75_percent" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000825" >
+      </testcase>
+      <testcase name="test_attack_speed_50_percent_reduction" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000828" >
       </testcase>
       <testcase name="test_can_fire_weapon_when_ready" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.000836" >
       </testcase>
-      <testcase name="test_can_fire_weapon_returns_false_during_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001218" >
+      <testcase name="test_can_fire_weapon_returns_false_during_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001196" >
       </testcase>
-      <testcase name="test_fire_weapon_success" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001157" >
+      <testcase name="test_fire_weapon_success" assertions="2" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001203" >
       </testcase>
-      <testcase name="test_fire_weapon_with_invalid_weapon_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001138" >
+      <testcase name="test_fire_weapon_with_invalid_weapon_id_fails" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001175" >
       </testcase>
-      <testcase name="test_fire_weapon_respects_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001124" >
+      <testcase name="test_fire_weapon_respects_cooldown" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001084" >
       </testcase>
-      <testcase name="test_get_cooldown_remaining" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.00113" >
+      <testcase name="test_get_cooldown_remaining" assertions="1" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001079" >
       </testcase>
-      <testcase name="test_get_available_weapons_for_free_tier" assertions="3" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.00113" >
+      <testcase name="test_get_available_weapons_for_free_tier" assertions="3" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001072" >
       </testcase>
-      <testcase name="test_get_available_weapons_for_premium_tier" assertions="4" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001144" >
+      <testcase name="test_get_available_weapons_for_premium_tier" assertions="4" status="pass" classname="scripts/tests/weapon_service_test.gd" time="0.001071" >
       </testcase>
   </testsuite>
 </testsuites>

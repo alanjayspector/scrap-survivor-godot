@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvwx8yhqmjr8t"]
+
+[ext_resource type="Script" path="res://scenes/ui/debug_weapon_switcher.gd" id="1_debug_weapon_switcher"]
+
+[node name="DebugWeaponSwitcher" type="Panel"]
+z_index = 100
+script = ExtResource("1_debug_weapon_switcher")

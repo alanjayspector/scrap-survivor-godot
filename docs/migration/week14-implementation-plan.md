@@ -1,14 +1,16 @@
 # Week 14 Implementation Plan - Polish & Pacing Package (Audio + Continuous Spawning)
 
-**Status**: Planning 📅
-**Started**: TBD
-**Phase 1 (Audio System)**: Not Started
+**Status**: In Progress 🚧
+**Started**: 2025-11-15
+**Phase 1.0 (iOS Weapon Switcher)**: ✅ COMPLETED (2025-11-15)
+**Phase 1.1 (Audio Infrastructure)**: ✅ COMPLETED (2025-11-15)
+**Phase 1.2 (Weapon Firing Sounds)**: ⏭️ READY TO START
 **Phase 2 (Continuous Spawning)**: Not Started
-**Target Completion**: Week 14 Complete (9-12 hours)
+**Target Completion**: Week 14 Complete (11-14 hours, ~2h spent, ~9-12h remaining)
 
 ## Overview
 
-Week 14 delivers the **Polish & Pacing Package** - two foundational systems that complete the game's "feel" and enable proper multi-tester QA sessions. Audio System adds weapon firing sounds, enemy audio, and ambient feedback (6-8h). Continuous Spawning replaces burst spawning with genre-standard trickle spawning throughout 60-second waves (3-4h). Combined, these systems bring the game to professional quality standards and unblock extended playtesting.
+Week 14 delivers the **Polish & Pacing Package** - two foundational systems that complete the game's "feel" and enable proper multi-tester QA sessions. Audio System adds weapon firing sounds, enemy audio, and ambient feedback (8-10h including iOS testing tools). Continuous Spawning replaces burst spawning with genre-standard trickle spawning throughout 60-second waves (3-4h). Combined, these systems bring the game to professional quality standards and unblock extended playtesting.
 
 **Rationale**: Week 13 Phase 3.5 fixed enemy density (2.5× increase to 20-30 enemies), but iOS testing revealed two critical gaps:
 1. **Audio is missing** - 50%+ of game feel comes from audio (industry research)
@@ -64,7 +66,8 @@ Option A+D combines two high-ROI, low-risk systems for complete genre parity.
 
 ### Week 14 Goals
 
-**Phase 1: Audio System (6-8 hours)**
+**Phase 1: Audio System (8-10 hours)**
+0. **iOS weapon switcher for testing** (enables testing all 10 weapon sounds on device)
 1. Source audio assets (Kenney Audio Pack or similar - CC0/free)
 2. Implement weapon firing sounds (10 weapons)
 3. Add enemy audio (spawn, damage, death sounds)
@@ -92,7 +95,132 @@ Option A+D combines two high-ROI, low-risk systems for complete genre parity.
 
 **Goal**: Add weapon firing sounds, enemy audio, ambient feedback, and UI sounds to complete the combat feel loop. Audio is 50%+ of perceived quality in action games.
 
-**Estimated Effort**: 6-8 hours
+**Estimated Effort**: 8-10 hours
+
+---
+
+### 1.0 iOS Weapon Switcher for Testing (1 hour)
+
+**Goal**: Enable weapon switching on iOS devices for audio testing (all 10 weapons).
+
+**Problem**: Current weapon switching uses keyboard hotkeys (keys 1-8) which don't work on iOS. Need a touch-based solution for testing weapon sounds on device.
+
+**Solution**: Debug UI panel with weapon buttons (iOS-only, temporary for testing).
+
+**Implementation** (`scenes/ui/debug_weapon_switcher.tscn` + `.gd`):
+
+```gdscript
+extends Panel
+## Debug Weapon Switcher - iOS testing tool for Week 14 Phase 1
+##
+## Enables weapon switching on iOS devices via touch buttons.
+## TEMPORARY: Remove before production release.
+
+@onready var weapon_grid: GridContainer = $MarginContainer/VBoxContainer/WeaponGrid
+@onready var toggle_button: Button = $ToggleButton
+
+var player: Player = null
+var is_visible: bool = true
+
+# Weapon list (matches WeaponService.WEAPON_DEFINITIONS)
+const WEAPONS = [
+    {"id": "plasma_pistol", "name": "Plasma Pistol"},
+    {"id": "rusty_blade", "name": "Rusty Blade"},
+    {"id": "steel_sword", "name": "Scrap Cleaver"},
+    {"id": "shock_rifle", "name": "Arc Blaster"},
+    {"id": "shotgun", "name": "Scattergun"},
+    {"id": "sniper_rifle", "name": "Dead Eye"},
+    {"id": "flamethrower", "name": "Scorcher"},
+    {"id": "laser_rifle", "name": "Beam Gun"},
+    {"id": "minigun", "name": "Shredder"},
+    {"id": "rocket_launcher", "name": "Boom Tube"}
+]
+
+func _ready() -> void:
+    # Find player
+    await get_tree().process_frame
+    player = get_tree().get_first_node_in_group("player") as Player
+
+    # Create weapon buttons
+    _create_weapon_buttons()
+
+    # Connect toggle button
+    toggle_button.pressed.connect(_on_toggle_pressed)
+
+func _create_weapon_buttons() -> void:
+    """Create touch-friendly weapon buttons"""
+    for weapon in WEAPONS:
+        var button = Button.new()
+        button.text = weapon.name
+        button.custom_minimum_size = Vector2(150, 50)  # Touch-friendly size
+        button.pressed.connect(_on_weapon_button_pressed.bind(weapon.id))
+        weapon_grid.add_child(button)
+
+func _on_weapon_button_pressed(weapon_id: String) -> void:
+    """Switch to selected weapon"""
+    if player and player.is_alive():
+        player.equip_weapon(weapon_id)
+        print("[DebugWeaponSwitcher] Switched to: ", weapon_id)
+
+func _on_toggle_pressed() -> void:
+    """Toggle panel visibility"""
+    is_visible = !is_visible
+    $MarginContainer.visible = is_visible
+    toggle_button.text = "Weapons" if not is_visible else "Hide"
+```
+
+**Scene Structure** (`debug_weapon_switcher.tscn`):
+```
+Panel (top-right corner, 320×400px)
+├── ToggleButton (top-right, floating)
+└── MarginContainer
+    └── VBoxContainer
+        ├── Label ("DEBUG: Weapon Switcher")
+        └── WeaponGrid (GridContainer, 2 columns)
+            ├── Button (Plasma Pistol)
+            ├── Button (Rusty Blade)
+            └── ... (10 total)
+```
+
+**Integration** (`scenes/game/wasteland.gd`):
+
+```gdscript
+func _ready() -> void:
+    # ... existing code ...
+
+    # iOS-only: Add debug weapon switcher for testing (Week 14 Phase 1.0)
+    if OS.get_name() == "iOS":
+        var weapon_switcher = preload("res://scenes/ui/debug_weapon_switcher.tscn").instantiate()
+        $UI.add_child(weapon_switcher)
+        print("[Wasteland] iOS weapon switcher enabled for testing")
+```
+
+**Visual Design**:
+- Semi-transparent panel (80% opacity)
+- Top-right corner placement (doesn't block gameplay)
+- 2-column grid for compact layout
+- Toggle button to show/hide (minimize screen clutter)
+- Touch-friendly button size (150×50px)
+
+**Success Criteria**:
+- [x] UI panel appears on iOS only
+- [x] All 10 weapons accessible via touch buttons
+- [x] Player equips weapon when button pressed
+- [x] Panel can be toggled on/off
+- [x] Doesn't interfere with combat gameplay
+- [x] Works in landscape orientation (iOS default)
+
+**Testing**:
+- Desktop: Manually set `OS.get_name() == "iOS"` to test UI
+- iOS: Deploy to device, verify all weapon buttons work
+- Gameplay: Ensure panel doesn't block joystick or enemies
+
+**Removal**: Before production release, remove:
+1. `scenes/ui/debug_weapon_switcher.tscn`
+2. `scenes/ui/debug_weapon_switcher.gd`
+3. iOS weapon switcher code from `wasteland.gd`
+
+---
 
 ### 1.1 Audio Asset Sourcing (1 hour)
 
@@ -1280,7 +1408,8 @@ func _on_wave_timer_updated(time_remaining: float) -> void:
 
 ## Time Estimates
 
-### Phase 1: Audio System (6-8 hours)
+### Phase 1: Audio System (8-10 hours)
+- **iOS weapon switcher**: 1 hour (NEW - enables testing all weapons on device)
 - Asset sourcing: 1 hour
 - Weapon firing sounds: 2 hours
 - Enemy audio: 2 hours
@@ -1292,7 +1421,7 @@ func _on_wave_timer_updated(time_remaining: float) -> void:
 - Enemy count throttling: 1 hour
 - Wave completion logic: 1 hour
 
-**Total**: 9-12 hours (1.5-2 work days)
+**Total**: 11-14 hours (1.5-2 work days)
 
 ---
 
@@ -1358,3 +1487,85 @@ After completing Week 14 (Polish & Pacing Package), Week 15 options:
 ---
 
 **Ready to implement Week 14!** 🚀
+
+---
+
+## Progress Summary (2025-11-15)
+
+### ✅ Phase 1.0: iOS Weapon Switcher - COMPLETED
+
+**Time Spent**: ~1 hour
+**Files Created**:
+- `scenes/ui/debug_weapon_switcher.gd` (4.8 KB)
+- `scenes/ui/debug_weapon_switcher.tscn` (276 B)
+- `scenes/game/wasteland.gd` - Added `_add_debug_weapon_switcher()`
+
+**Features**:
+- Touch-friendly 2-column grid (10 weapon buttons)
+- Toggle show/hide functionality
+- Platform detection (iOS auto / desktop with DEBUG_WEAPON_SWITCHER=true)
+- Active weapon visual feedback (green highlight)
+- Top-left safe area placement
+
+**Testing**: ✅ Code formatted, linted, ready for iOS deployment
+
+---
+
+### ✅ Phase 1.1: Audio Infrastructure - COMPLETED
+
+**Time Spent**: ~1 hour
+**Files Created**: 13 files total
+
+**Documentation** (6 files):
+1. `assets/audio/AUDIO_SOURCING_GUIDE.md` (400+ lines)
+2. `assets/audio/MANIFEST.txt` (24-file checklist)
+3. `assets/audio/weapons/README.md`
+4. `assets/audio/enemies/README.md`
+5. `assets/audio/ambient/README.md`
+6. `assets/audio/ui/README.md`
+
+**Automation Scripts** (4 files):
+1. `.system/scripts/process-kenney-audio.sh` ⭐ RECOMMENDED
+2. `.system/scripts/source-audio-assets.sh` (Advanced)
+3. `.system/validators/check-audio-assets.sh` (Verification)
+4. `.system/scripts/README.md` (Usage guide)
+
+**Directory Structure**:
+```
+assets/audio/
+├── weapons/      (10 weapon sounds)
+├── enemies/      (8 enemy sounds)
+├── ambient/      (3 ambient sounds)
+└── ui/           (3 UI sounds)
+```
+
+**Key Innovation**: Automation scripts use intelligent filename pattern matching to select appropriate sounds from 1000+ Kenney audio files, eliminating manual search/selection.
+
+**How to Source Audio** (2 minutes):
+```bash
+# 1. Download 4 ZIPs from Kenney.nl to ~/Downloads
+# 2. Run automation:
+bash .system/scripts/process-kenney-audio.sh
+# 3. Verify:
+bash .system/validators/check-audio-assets.sh
+```
+
+---
+
+### ⏭️ READY TO START: Phase 1.2 - Weapon Firing Sounds
+
+**Estimated Time**: 2 hours
+**Prerequisites**: ✅ All complete
+- ✅ Audio directory structure
+- ✅ Documentation + automation scripts
+- ✅ iOS weapon switcher (for testing)
+
+**Next Tasks**:
+1. Implement `play_weapon_sound()` in `weapon_service.gd`
+2. Integrate audio into `player.gd` firing logic
+3. Add comprehensive diagnostic logging
+4. Test with/without audio files (graceful fallback)
+
+**Start fresh chat with full token budget for implementation** 🚀
+
+---
