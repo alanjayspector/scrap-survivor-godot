@@ -37,12 +37,26 @@ else
         echo -e "${YELLOW}⚠️  gdlint not found, skipping${NC}"
     fi
 
-    # Run gdformat check
+    # Run gdformat (auto-fix and stage changes)
     if command -v gdformat &> /dev/null; then
-        FILES_TO_FORMAT=$(gdformat --check $STAGED_GD_FILES 2>&1 | grep -E "^reformatted|^would reformat" || true)
-        if [ "$FILES_TO_FORMAT" != "" ]; then
-            echo -e "${RED}❌ Formatting failed${NC}"
-            echo "Run: gdformat $STAGED_GD_FILES"
+        # Format files (modifies them in place)
+        gdformat $STAGED_GD_FILES > /dev/null 2>&1
+
+        # Check if any files were modified by gdformat
+        MODIFIED_FILES=$(git diff --name-only $STAGED_GD_FILES || true)
+
+        if [ -n "$MODIFIED_FILES" ]; then
+            echo -e "${YELLOW}⚠️  gdformat auto-fixed files:${NC}"
+            echo "$MODIFIED_FILES" | sed 's/^/  - /'
+
+            # Stage the formatted files
+            git add $MODIFIED_FILES
+            echo -e "${BLUE}📝 Auto-staged formatting fixes${NC}"
+        fi
+
+        # Verify formatting is now correct
+        if ! gdformat --check $STAGED_GD_FILES > /dev/null 2>&1; then
+            echo -e "${RED}❌ Formatting failed after auto-fix${NC}"
             VALIDATION_FAILED=1
         else
             echo -e "${GREEN}✅ Formatting passed${NC}"
