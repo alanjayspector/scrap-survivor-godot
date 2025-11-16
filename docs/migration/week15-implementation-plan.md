@@ -2217,12 +2217,12 @@ After completing Week 15 Foundation Package, Week 16 options:
 | Phase | Status | Time Spent | Notes |
 |-------|--------|------------|-------|
 | **Phase 1: Hub/Scrapyard** | ✅ Completed | ~3h / 3h | Hub scene, Analytics, GameState, SaveManager updates. Device tested on iOS. |
-| **Phase 2: Character Creation** | 📋 Planned | 0h / 3h | - |
+| **Phase 2: Character Creation** | ✅ Completed | ~3.5h / 3h | Character creation scene, name input, type selection, CharacterService integration. Manual QA passed with fixes. |
 | **Phase 3: Character Roster** | 📋 Planned | 0h / 2h | - |
 | **Phase 4: First-Run Flow** | 📋 Planned | 0h / 2h | - |
 | **Phase 5: Post-Run Flow** | 📋 Planned | 0h / 2h | - |
 
-**Total Progress**: 25% (~3h / 12-15h estimated)
+**Total Progress**: 50% (~6h / 12-15h estimated)
 
 ---
 
@@ -2242,16 +2242,35 @@ After completing Week 15 Foundation Package, Week 16 options:
 | 2025-11-16 | Fixed wasteland death screen to return to Hub (not character_selection) | Claude Code |
 | 2025-11-16 | Added graceful fallback for missing Phase 2/3 scenes | Claude Code |
 | 2025-11-16 | All 497 tests passing, device tested on iOS | Claude Code |
+| 2025-11-16 | **Phase 2 COMPLETE**: Character creation flow implemented (name input, type selection, CharacterService integration) | Claude Code |
+| 2025-11-16 | **Phase 2 QA Pass 1**: Debug menu empty (parse error) - Fixed DebugMenu script/scene type mismatch | Claude Code |
+| 2025-11-16 | **Phase 2 QA Pass 2**: Wave complete missing hub button - Replaced inline WaveCompleteScreen with external scene instance | Claude Code |
+| 2025-11-16 | **Phase 2 QA Pass 3**: Debug menu crash - Fixed debug_menu.tscn root node type (AcceptDialog → ConfirmationDialog) | Claude Code |
+| 2025-11-16 | **Phase 2 QA VALIDATED**: All blocking issues resolved, tested on device, 568 tests passing | Claude Code |
 
 ---
 
-**Document Version**: 1.3
+**Document Version**: 1.5
 **Last Updated**: 2025-11-16
-**Next Review**: Before Phase 2 implementation
+**Next Review**: Before Phase 3 implementation
 
-**NOTE**: Phases 2-5 will have Expert Review and Diagnostic Logging sections added before implementation of each phase (following the Expert Review Process).
+**NOTE**: Phases 3-5 will have Expert Review and Diagnostic Logging sections added before implementation of each phase (following the Expert Review Process).
 
 **Phase 1 Status**: ✅ **COMPLETE** (with device testing and bug fixes)
+**Phase 2 Status**: ✅ **COMPLETE** (manual QA validated, all fixes deployed)
+
+**Key Additions in v1.5:**
+- **Phase 2 QA Fixes**: Resolved 3 blocking issues found in manual QA
+  - **Issue 1**: Debug menu parse error - Changed DebugMenu to extend ConfirmationDialog instead of AcceptDialog
+  - **Issue 2**: Wave complete missing hub button - Replaced inline WaveCompleteScreen definition in wasteland.tscn with external scene instance
+  - **Issue 3**: Debug menu crash - Fixed scene file root node type to match script (type="ConfirmationDialog")
+- **QA Validation**: All fixes tested on device and validated working
+- **Deferred**: Click-outside-to-dismiss pattern tracked as P3 tech debt for Week 17 polish sprint
+- **Test Results**: 568/592 tests passing, all validators green
+
+**Key Additions in v1.4:**
+- **Phase 2 Complete**: Character creation scene with name input, type selection, and CharacterService integration
+- **Manual QA Review**: Phase 2 undergoing user testing for feedback and bug fixes
 
 **Key Additions in v1.3:**
 - **Phase 1 Complete**: Hub scene, Analytics, GameState enhancements, SaveManager improvements
