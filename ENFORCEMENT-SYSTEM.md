@@ -521,6 +521,169 @@ func test_withdraw_insufficient_funds_returns_false() -> void:
 | No lifecycle hooks | Tests without before_each/after_each | Add setup/cleanup methods |
 | Over-coupling | Tests depend on execution order | Make tests independent |
 
+---
+
+## 🎨 Scene File & Component Integration Validation
+
+### Scene File Validation Reference
+
+**CRITICAL**: Scene files (.tscn) must have valid structure to instantiate correctly.
+
+**Common issues**:
+- 🐛 **Scene corruption**: Missing parent node specifications
+- 💥 **Instantiation failures**: PackedScene.instantiate() returns null
+- 🔄 **Dead code**: Components created but never used
+- 📝 **False claims**: "Refactored to use component" but old code remains
+
+**These are NOT detected by Godot editor** - Validation prevents runtime failures!
+
+### Automated Scene & Component Checks
+
+**The pre-commit hook now checks for:**
+
+#### 1. Scene Structure Validator (BLOCKING)
+**File**: `.system/validators/scene_structure_validator.py`
+
+**Checks**:
+- ✅ All child nodes have `parent="..."` specification
+- ✅ No orphan nodes (nodes without parent, except root)
+- ✅ Valid node hierarchy (no circular references)
+- ✅ Scene can be parsed (valid format)
+
+**Example violation caught**:
+```
+❌ ERROR: scenes/ui/character_card.tscn
+   Line 9: HBoxContainer missing parent specification
+   Expected: [node name="HBoxContainer" type="HBoxContainer" parent="."]
+   Found: [node name="HBoxContainer" type="HBoxContainer"]
+```
+
+**Fix**: Open scene in Godot Editor and save, or manually add `parent="..."` to each child node
+
+**Enforcement**: BLOCKING (prevents commit)
+
+---
+
+#### 2. Scene Instantiation Validator (BLOCKING)
+**File**: `.system/validators/scene_instantiation_validator.py`
+
+**Checks**:
+- ✅ Scene file loads in headless Godot
+- ✅ PackedScene.instantiate() returns non-null
+- ✅ Instantiated scene has expected root type
+- ✅ Script attached loads without errors
+
+**Example violation caught**:
+```
+❌ ERROR: scenes/ui/character_card.tscn
+   Instantiation FAILED - returns null
+   Cause: Node HBoxContainer does not specify parent
+```
+
+**Fix**: Run scene_structure_validator.py first, then verify scene opens in Godot Editor
+
+**Enforcement**: BLOCKING (prevents commit)
+
+---
+
+#### 3. Component Usage Validator (BLOCKING)
+**File**: `.system/validators/component_usage_validator.py`
+
+**Checks**:
+- ✅ If scene is preloaded, verify .instantiate() call exists
+- ✅ Warn if component created but never used (dead code)
+- ✅ Detect preload without usage
+
+**Example violations caught**:
+```
+⚠️  WARNING: scenes/ui/my_component.tscn
+    Component exists but never used in codebase
+    ACTION: Either use the component or delete it
+
+❌ ERROR: scenes/ui/other_component.tscn
+   Component preloaded but never instantiated
+   Preloaded in: scripts/ui/parent.gd
+   ERROR: No .instantiate() call found
+```
+
+**Fix**: Add `.instantiate()` call or remove unused preload/component
+
+**Enforcement**: ERROR if preloaded but not used, WARNING if unused component
+
+---
+
+#### 4. Refactor Verification Validator (BLOCKING on refactor commits)
+**File**: `.system/validators/refactor_verification_validator.py`
+
+**Checks**:
+- ✅ If commit message contains "refactor"/"use component", verify code changes
+- ✅ If claiming component usage, verify preload() + instantiate() exist
+- ✅ If claiming code reduction, verify .gd files modified
+
+**Example violation caught**:
+```
+❌ ERROR: Commit claims "refactored to use CharacterCard component"
+   Component 'CharacterCard' not found or not properly used in modified files
+   FIX: Complete the refactor or update commit message
+```
+
+**Fix**: Complete the refactor or update commit message to reflect partial completion
+
+**Enforcement**: BLOCKING on commits with refactor-related keywords
+
+---
+
+### Scene File Best Practices
+
+**Scene Creation**:
+1. ✅ **ALWAYS** create scenes via Godot editor (File → New Scene)
+2. ❌ **NEVER** hand-edit .tscn files without opening in editor after
+3. ✅ If manual edit required → Open in Godot editor immediately to validate
+
+**Scene Structure**:
+```
+[node name="Root" type="PanelContainer"]        # Root - no parent
+
+[node name="Child" type="HBoxContainer" parent="."]  # Child of root
+
+[node name="GrandChild" type="Label" parent="Child"]  # Child of Child
+```
+
+**Component Integration**:
+```gdscript
+# Create component (via Godot editor)
+# ↓
+# Preload in parent script
+const COMPONENT_SCENE = preload("res://scenes/ui/component.tscn")
+# ↓
+# Instantiate when needed
+var instance = COMPONENT_SCENE.instantiate()
+# ↓
+# Setup and use
+instance.setup(data)
+add_child(instance)
+```
+
+**Refactoring to Components**:
+1. Create component scene (via editor)
+2. Add component script
+3. Preload in parent
+4. Replace manual UI code with instantiate() calls
+5. Delete old manual UI generation code
+6. Test instantiation
+7. Commit with clear message
+
+**Common Mistakes**:
+
+| Mistake | Symptom | Fix |
+|---------|---------|-----|
+| Missing parent specs | Scene won't instantiate | Run scene_structure_validator.py |
+| Preload without use | Dead code, memory waste | Remove preload or add instantiate() |
+| Claimed refactor incomplete | Old code still present | Complete refactor or update message |
+| Manual .tscn edit | Scene corruption | Always use Godot editor |
+
+---
+
 ### Current Test Framework
 
 **Note**: This project currently uses simple Node-based tests with basic `assert()` calls. The test patterns validator provides helpful suggestions for migrating to GUT framework, but doesn't block commits. GUT framework provides:

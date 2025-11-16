@@ -13,6 +13,12 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 const CHARACTER_SELECT_SOUND: AudioStream = preload("res://assets/audio/ui/character_select.ogg")
 const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/error.ogg")
 
+## Components (QA Fix #2: Use CharacterCard component instead of manual UI generation)
+const CHARACTER_CARD_SCENE: PackedScene = preload("res://scenes/ui/character_card.tscn")
+const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
+	"res://scenes/ui/character_details_panel.tscn"
+)
+
 @onready var character_list: VBoxContainer = $CharacterListContainer/ScrollContainer/CharacterList
 @onready var slot_label: Label = $HeaderContainer/SlotLabel
 @onready var create_new_button: Button = $ButtonsContainer/CreateNewButton
@@ -21,6 +27,7 @@ const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/error.ogg")
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
 var character_to_delete: String = ""  # Track character ID pending deletion
+var character_details_panel: Control = null  # Details panel instance (created on demand)
 
 
 func _ready() -> void:
@@ -70,86 +77,19 @@ func _populate_character_list() -> void:
 
 
 func _create_character_list_item(character: Dictionary) -> PanelContainer:
-	"""Create a character list item UI element"""
-	var character_id = character.get("id", "")
-	var character_name = character.get("name", "Unknown")
-	var character_type = character.get("character_type", "scavenger")
-	var character_level = character.get("level", 1)
-	var highest_wave = character.get("highest_wave", 0)
+	"""Create a character list item using CharacterCard component (QA Fix #2)"""
+	# Instantiate CharacterCard component
+	var card = CHARACTER_CARD_SCENE.instantiate()
 
-	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
-	var type_display_name = type_def.get("display_name", character_type.capitalize())
-	var type_color = type_def.get("color", Color.GRAY)
+	# Setup with character data
+	card.setup(character)
 
-	# Container
-	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(0, 80)
+	# Connect signals
+	card.play_pressed.connect(_on_character_play_pressed)
+	card.delete_pressed.connect(_on_character_delete_pressed)
+	card.details_pressed.connect(_on_character_details_pressed)
 
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.15, 0.15)
-	style.border_color = type_color
-	style.border_width_left = 3
-	style.corner_radius_top_left = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_right = 8
-	panel.add_theme_stylebox_override("panel", style)
-
-	# Layout
-	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 12)
-	panel.add_child(hbox)
-
-	# Character icon (colored square)
-	var icon = ColorRect.new()
-	icon.custom_minimum_size = Vector2(60, 60)
-	icon.color = type_color
-	hbox.add_child(icon)
-
-	# Info container
-	var info_vbox = VBoxContainer.new()
-	info_vbox.add_theme_constant_override("separation", 2)
-	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(info_vbox)
-
-	# Name
-	var name_label = Label.new()
-	name_label.text = character_name
-	name_label.add_theme_font_size_override("font_size", 24)
-	name_label.add_theme_color_override("font_color", Color.WHITE)
-	info_vbox.add_child(name_label)
-
-	# Type
-	var type_label = Label.new()
-	type_label.text = type_display_name
-	type_label.add_theme_font_size_override("font_size", 18)
-	type_label.add_theme_color_override("font_color", type_color)
-	info_vbox.add_child(type_label)
-
-	# Stats
-	var stats_label = Label.new()
-	stats_label.text = "Level %d • Best Wave %d" % [character_level, highest_wave]
-	stats_label.add_theme_font_size_override("font_size", 14)
-	stats_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-	info_vbox.add_child(stats_label)
-
-	# Play button
-	var play_button = Button.new()
-	play_button.text = "Play"
-	play_button.custom_minimum_size = Vector2(100, 60)
-	play_button.add_theme_font_size_override("font_size", 20)
-	play_button.pressed.connect(_on_character_play_pressed.bind(character_id))
-	hbox.add_child(play_button)
-
-	# Delete button
-	var delete_button = Button.new()
-	delete_button.text = "✕"
-	delete_button.custom_minimum_size = Vector2(50, 60)
-	delete_button.add_theme_font_size_override("font_size", 24)
-	delete_button.pressed.connect(_on_character_delete_pressed.bind(character_id, character_name))
-	hbox.add_child(delete_button)
-
-	return panel
+	return card
 
 
 func _show_empty_state() -> void:
@@ -190,7 +130,7 @@ func _connect_signals() -> void:
 	create_new_button.pressed.connect(_on_create_new_pressed)
 	back_button.pressed.connect(_on_back_pressed)
 	delete_confirmation.confirmed.connect(_on_delete_confirmed)
-	delete_confirmation.cancelled.connect(_on_delete_cancelled)
+	delete_confirmation.canceled.connect(_on_delete_cancelled)  # Fixed: American spelling
 
 
 func _on_character_play_pressed(character_id: String) -> void:
@@ -236,6 +176,37 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 		"Delete survivor '%s'?\nThis cannot be undone." % character_name
 	)
 	delete_confirmation.popup_centered()
+
+
+func _on_character_details_pressed(character_id: String) -> void:
+	"""Handle Details button - show character details panel (QA Fix #2b)"""
+	_play_sound(BUTTON_CLICK_SOUND)
+
+	GameLogger.info("[CharacterRoster] Details button pressed", {"character_id": character_id})
+
+	# Get character data
+	var character = CharacterService.get_character(character_id)
+	if character.is_empty():
+		GameLogger.error(
+			"[CharacterRoster] Character not found for details", {"character_id": character_id}
+		)
+		return
+
+	# Create details panel if it doesn't exist
+	if character_details_panel == null:
+		character_details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
+		add_child(character_details_panel)
+		character_details_panel.close_requested.connect(_on_details_panel_closed)
+
+	# Show character details
+	character_details_panel.show_character(character)
+	character_details_panel.visible = true
+
+
+func _on_details_panel_closed() -> void:
+	"""Handle details panel close"""
+	if character_details_panel:
+		character_details_panel.visible = false
 
 
 func _on_delete_confirmed() -> void:

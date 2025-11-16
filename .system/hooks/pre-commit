@@ -125,6 +125,34 @@ if [ -f .system/validators/scene_node_path_validator.py ]; then
     fi
 fi
 
+# Scene structure validator (BLOCKING - Week 15 Phase 3 QA Fix)
+if [ -f .system/validators/scene_structure_validator.py ]; then
+    if ! python3 .system/validators/scene_structure_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Scene instantiation validator (BLOCKING - Week 15 Phase 3 QA Fix)
+if [ -f .system/validators/scene_instantiation_validator.py ]; then
+    if ! python3 .system/validators/scene_instantiation_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Component usage validator (BLOCKING - Week 15 Phase 3 QA Fix)
+if [ -f .system/validators/component_usage_validator.py ]; then
+    if ! python3 .system/validators/component_usage_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
+# Refactor verification validator (BLOCKING on refactor commits - Week 15 Phase 3 QA Fix)
+if [ -f .system/validators/refactor_verification_validator.py ]; then
+    if ! python3 .system/validators/refactor_verification_validator.py; then
+        VALIDATION_FAILED=1
+    fi
+fi
+
 # Documentation validator
 if [ -f .system/validators/documentation_validator.py ]; then
     if ! python3 .system/validators/documentation_validator.py; then

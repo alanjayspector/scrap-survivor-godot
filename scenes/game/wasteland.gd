@@ -412,6 +412,7 @@ func _spawn_player(char_id: String) -> void:
 
 	# Set camera to follow player
 	camera.target = player_instance
+	camera.global_position = player_instance.global_position  # QA Fix: Prevent visual jump
 	camera.enabled = true
 	print("[Wasteland] Camera enabled and set to follow player")
 

@@ -138,6 +138,88 @@ com.scrapsurvival.slots_25         - $3.99 (consumable)
 
 ---
 
+## Priority 5: Projectile Unit Test Coverage (Technical Debt)
+
+**Context:** Projectile class fully implemented in Week 12 (551 lines of production code) but unit tests were never enabled. Tests exist in `entity_classes_test.gd` but are marked as `pending()` with "Week 10 Phase 2" placeholders.
+
+**Current Coverage:**
+- ✅ **Production code**: Fully implemented with pierce, splash damage, enemy projectiles, VFX
+- ✅ **Integration tests**: Tested indirectly through combat/weapon integration tests
+- ❌ **Unit tests**: 5 pending tests never activated after implementation
+
+**Missing Unit Tests:**
+1. `test_projectile_activates_with_parameters()` - Verify activate() sets all properties
+2. `test_projectile_velocity_is_set()` - Verify velocity calculation
+3. `test_projectile_pierce_is_set()` - Verify pierce_count property
+4. `test_projectile_remaining_range_is_full()` - Verify get_remaining_range()
+5. `test_projectile_deactivates()` - Verify deactivate() cleanup
+
+**Why It Matters:**
+- Better isolation for debugging projectile-specific issues
+- Easier to test new features (homing, bouncing, chain lightning, etc.)
+- Catches edge cases before integration testing
+- Faster iteration on projectile mechanics
+
+**Implementation Plan (30 minutes):**
+
+1. **Remove `pending()` calls** from entity_classes_test.gd (lines 205-222)
+2. **Implement 5 unit tests** using object pooling pattern:
+   ```gdscript
+   func test_projectile_activates_with_parameters() -> void:
+       var projectile = autofree(Projectile.new())
+       add_child(projectile)
+
+       projectile.activate(
+           Vector2(100, 100),  # spawn_position
+           Vector2.RIGHT,      # direction
+           50.0,               # damage
+           400.0,              # speed
+           500.0               # range
+       )
+
+       assert_eq(projectile.damage, 50.0, "Damage should be set")
+       assert_eq(projectile.projectile_speed, 400.0, "Speed should be set")
+       assert_eq(projectile.max_range, 500.0, "Range should be set")
+       assert_true(projectile.is_active, "Projectile should be active")
+   ```
+
+3. **Add pierce test**:
+   ```gdscript
+   func test_projectile_pierce_is_set() -> void:
+       var projectile = autofree(Projectile.new())
+       projectile.set_pierce(2)
+       assert_eq(projectile.pierce_count, 2, "Pierce count should be 2")
+   ```
+
+4. **Add deactivate test**:
+   ```gdscript
+   func test_projectile_deactivates() -> void:
+       var projectile = autofree(Projectile.new())
+       add_child(projectile)
+       projectile.activate(Vector2.ZERO, Vector2.RIGHT, 10, 100, 100)
+
+       projectile.deactivate()
+
+       assert_false(projectile.is_active, "Should be inactive")
+       assert_false(projectile.visible, "Should be invisible")
+   ```
+
+5. **Run tests** - Should increase passing tests from 568/592 to 573/592 (5 new tests enabled)
+
+**Benefits:**
+- Test count: 568/592 → 573/592 (+5 tests, -5 pending)
+- Better documentation of projectile API through tests
+- Confidence for future projectile features (Week 17+ weapon variety)
+
+**When to implement:**
+- **GOOD TIME**: During Week 16 IAP integration (need breaks from API work)
+- **GOOD TIME**: After debug tooling (reward yourself with a quick win)
+- **DEFER**: If Week 16 schedule is packed, push to Week 17 polish sprint
+
+**Priority:** MEDIUM-LOW (improves quality but not blocking)
+
+---
+
 ## Testing Requirements
 
 **Manual QA with Debug Menu:**
@@ -166,10 +248,11 @@ com.scrapsurvival.slots_25         - $3.99 (consumable)
 - ⏸️ Phase 5: Post-Run Flow (deferred to Week 17)
 
 **Week 16 Focus:**
-1. Debug tooling (enable QA testing) - Priority 1
-2. IAP integration (monetization live) - Priority 2
-3. Meta Progression (decide: Week 16 or defer to Week 17) - Priority 3
-4. Virtual Scrolling (if subscription tier launches) - Priority 4 (technical debt)
+1. Debug tooling (enable QA testing) - Priority 1 (MUST HAVE)
+2. IAP integration (monetization live) - Priority 2 (MUST HAVE)
+3. Meta Progression (decide: Week 16 or defer to Week 17) - Priority 3 (TBD)
+4. Virtual Scrolling (if subscription tier launches) - Priority 4 (technical debt, conditional)
+5. Projectile Unit Tests (close test coverage gap) - Priority 5 (technical debt, 30min quick win)
 
 ---
 

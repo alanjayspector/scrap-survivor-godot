@@ -98,6 +98,130 @@ Before modifying validators or bypassing any gate:
 
 4. If still unclear → **ASK USER**
 
+## Component Integration & Scene Validation Protocol
+
+**CRITICAL**: Scene files and component integration require special validation.
+
+### Scene File Creation Rules
+
+**NEVER manually edit .tscn files without validation.**
+
+1. ✅ **ALWAYS create scenes via Godot editor** (File → New Scene)
+2. ❌ **NEVER hand-edit .tscn files** without opening in editor after
+3. ✅ **IF manual edit required** → Open in Godot editor immediately to validate
+
+### Scene File Validation Checklist
+
+Before committing any .tscn file:
+```
+□ Scene opens in Godot editor without errors
+□ All child nodes have parent="..." specification (check .tscn file)
+□ Scene instantiates successfully (automated validator checks this)
+□ Scene hierarchy displays correctly in editor
+□ No orphan nodes (all children specify parent)
+```
+
+**If scene won't load**: Check that all child nodes specify `parent="..."` attribute
+
+**Example - Correct scene structure**:
+```
+[node name="Root" type="PanelContainer"]
+
+[node name="Child" type="HBoxContainer" parent="."]
+
+[node name="GrandChild" type="Label" parent="Child"]
+```
+
+**Example - WRONG (missing parent)**:
+```
+[node name="Root" type="PanelContainer"]
+
+[node name="Child" type="HBoxContainer"]  # ❌ Missing parent="."
+```
+
+### Component Integration Protocol
+
+**Creating a component ≠ Using a component**
+
+When refactoring to use reusable components:
+
+**Integration Checklist**:
+```
+□ Component scene created via Godot editor
+□ Component script implemented
+□ Component preloaded in parent script (const SCENE = preload(...))
+□ Parent code instantiates component (SCENE.instantiate())
+□ Parent code calls component.setup() or initialization
+□ Parent code connects component signals
+□ Integration tested (instantiation succeeds, no null errors)
+□ Manual QA validation on device
+□ Old manual UI code REMOVED (if refactor)
+```
+
+### Before Marking Work "COMPLETE"
+
+- ❌ **NOT ENOUGH**: Component files exist
+- ❌ **NOT ENOUGH**: Tests pass
+- ✅ **REQUIRED**: Component actually used in parent code
+- ✅ **REQUIRED**: Integration manually validated on device
+- ✅ **REQUIRED**: Old code removed (if claiming refactor)
+
+### Red Flags
+
+- 🚩 Component scene exists but no `preload()` references in codebase
+- 🚩 Parent still has old manual UI generation code
+- 🚩 "80 lines → 14 lines" refactor claim but file still has 80 lines
+- 🚩 Plan says "refactored to use Component" but Grep shows no references
+
+### Verification Commands
+
+**Before claiming "refactored to use component":**
+
+```bash
+# Check component is actually used
+grep "COMPONENT_SCENE" scripts/path/to/parent.gd
+# Should show: preload() and instantiate() calls
+
+# Check old code is removed
+wc -l scripts/path/to/parent.gd
+# Line count should match "after" claim, not "before"
+
+# Check function was actually refactored
+grep -A 20 "func _create_item" scripts/path/to/parent.gd
+# Function should be ≤20 lines if using component
+```
+
+**If old manual UI code still present** → Refactor NOT complete
+
+### Scene Instantiation Testing
+
+**When creating PackedScene components**, verify instantiation:
+
+```gdscript
+# Test that scene loads
+const SCENE = preload("res://path/to/component.tscn")
+
+func test_instantiation():
+    var instance = SCENE.instantiate()
+    assert(instance != null, "Scene instantiation failed - check parent nodes")
+    assert(instance.has_method("setup"), "Component missing setup method")
+```
+
+**If instantiate() returns null** → Scene file corrupted, check parent specifications
+
+### Automated Validators
+
+The following validators enforce these rules:
+
+- **scene_structure_validator.py** - Validates .tscn parent specifications (BLOCKING)
+- **scene_instantiation_validator.py** - Tests scenes can instantiate (BLOCKING)
+- **component_usage_validator.py** - Verifies components are used (BLOCKING if preloaded but unused)
+- **refactor_verification_validator.py** - Validates refactor claims (BLOCKING on refactor commits)
+
+**These run automatically in pre-commit hooks.**
+
+---
+
 ## Files to Read Before Certain Actions
 
 | Action | Required Reading |
@@ -106,6 +230,8 @@ Before modifying validators or bypassing any gate:
 | Modifying validator | The validator file + docs it references |
 | Fixing test failure | The test file + implementation file |
 | Changing quality gate | Configuration files + ask user |
+| Creating .tscn scene | ALWAYS use Godot editor (not manual) |
+| Refactoring to components | Component Integration Protocol above |
 
 ## Running Tests and Validators
 
