@@ -57,6 +57,8 @@ func _ready() -> void:
 		HudService.xp_changed.connect(_on_xp_changed)
 		HudService.wave_changed.connect(_on_wave_changed)
 		HudService.currency_changed.connect(_on_currency_changed)
+	else:
+		GameLogger.error("HUD: HudService not found")
 
 	# Connect to WaveManager signals for wave timer (deferred to ensure WaveManager is ready)
 	call_deferred("_connect_to_wave_manager")
@@ -140,11 +142,6 @@ func _on_xp_changed(current: int, required: int, level: int) -> void:
 	# Update XP label text
 	if xp_label:
 		xp_label.text = "XP: %d / %d (Level %d)" % [current, required, level]
-
-	# Show level up effect when XP resets to 0 (leveled up)
-	# Only show if previous XP was > 0 (actual level-up, not initial state)
-	if current == 0 and previous_xp > 0:
-		_show_level_up_popup(level)
 
 	# Track previous XP for next update
 	previous_xp = current
@@ -299,56 +296,6 @@ func _pulse_label(label: Label) -> void:
 	var tween = create_tween()
 	tween.tween_property(label, "scale", Vector2(1.2, 1.2), 0.1)
 	tween.tween_property(label, "scale", Vector2(1.0, 1.0), 0.1)
-
-
-func _show_level_up_popup(level: int) -> void:
-	"""Show a level up notification popup with full-screen celebration"""
-	# Full-screen yellow flash
-	var flash = ColorRect.new()
-	flash.color = Color(1.0, 1.0, 0.0, 0.3)  # Yellow with 30% opacity
-	flash.anchor_right = 1.0
-	flash.anchor_bottom = 1.0
-	flash.z_index = 99
-	add_child(flash)
-
-	# Fade out flash
-	var flash_tween = create_tween()
-	flash_tween.tween_property(flash, "modulate:a", 0.0, 0.5)
-	flash_tween.tween_callback(flash.queue_free)
-
-	# Large centered level-up text
-	var popup = Label.new()
-	popup.text = "LEVEL %d!" % level
-	popup.add_theme_font_size_override("font_size", 56)  # Large mobile-friendly font
-	popup.add_theme_color_override("font_color", Color.YELLOW)
-	popup.add_theme_color_override("font_outline_color", Color.BLACK)
-	popup.add_theme_constant_override("outline_size", 4)  # Thicker outline for visibility
-	popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	popup.z_index = 100  # Above flash
-
-	# Center the label
-	popup.anchor_left = 0.5
-	popup.anchor_top = 0.5
-	popup.anchor_right = 0.5
-	popup.anchor_bottom = 0.5
-	popup.offset_left = -150
-	popup.offset_top = -50
-	popup.offset_right = 150
-	popup.offset_bottom = 50
-	popup.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	popup.grow_vertical = Control.GROW_DIRECTION_BOTH
-
-	add_child(popup)
-
-	# Animate popup (scale up, float up slightly, fade out)
-	var tween = create_tween()
-	tween.tween_property(popup, "scale", Vector2(1.2, 1.2), 0.2)
-	tween.tween_property(popup, "position:y", popup.position.y - 30, 0.8)
-	tween.parallel().tween_property(popup, "modulate:a", 0.0, 0.4).set_delay(0.4)
-	tween.tween_callback(popup.queue_free)
-
-	GameLogger.info("HUD: Level up celebration shown", {"level": level})
 
 
 func _show_low_hp_warning() -> void:

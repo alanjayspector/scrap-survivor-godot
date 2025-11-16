@@ -122,6 +122,10 @@ func _on_character_level_up_post(context: Dictionary) -> void:
 				"HudService: Character leveled up",
 				{"character_id": character_id, "level": new_level}
 			)
+		else:
+			GameLogger.error(
+				"HudService: Could not get character data", {"character_id": character_id}
+			)
 
 
 func _on_xp_awarded(character_id: String, xp_amount: int, leveled_up: bool) -> void:
