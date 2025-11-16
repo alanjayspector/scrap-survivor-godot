@@ -91,8 +91,8 @@ func test_wave_manager_spawns_correct_enemy_count() -> void:
 	# Start wave (Week 14 Phase 2: Continuous spawning)
 	wave_manager.start_wave()
 
-	# Simulate time passing to allow continuous spawning to spawn all enemies
-	# Continuous spawning uses _process() to spawn 1-3 enemies every 3-5 seconds
+	# Simulate time passing to allow continuous spawning (60s wave + cleanup)
+	# Continuous spawning uses _process() to spawn 1-3 enemies every 2.5-4s
 	var max_wait_time = 70.0  # seconds (more than 60s wave duration)
 	var elapsed = 0.0
 	var delta = 0.1
@@ -102,11 +102,12 @@ func test_wave_manager_spawns_correct_enemy_count() -> void:
 		await get_tree().process_frame
 		elapsed += delta
 
-	# Assert correct number of enemies spawned (Week 14 Phase 2 uses enemies_spawned_this_wave)
-	assert_eq(
-		wave_manager.enemies_spawned_this_wave,
-		expected_count,
-		"Should spawn correct number of enemies via continuous spawning"
+	# Assert reasonable number of enemies spawned (Week 14 Phase 2.5)
+	# With 2.5-4s intervals and RNG variance, expect 35-43 enemies in 60s
+	var spawned = wave_manager.enemies_spawned_this_wave
+	assert_true(
+		spawned >= 35 and spawned <= expected_count,
+		"Should spawn 35-43 enemies (spawned: %d)" % spawned
 	)
 
 

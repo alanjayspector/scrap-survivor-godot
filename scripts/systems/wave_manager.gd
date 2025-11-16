@@ -31,8 +31,8 @@ var total_enemies_for_wave: int = 0
 ## Continuous spawning (Week 14 Phase 2)
 const WAVE_DURATION: float = 60.0  # 60 seconds per wave
 const MAX_LIVING_ENEMIES: int = 35  # Cap to prevent overwhelming/performance issues
-const SPAWN_INTERVAL_MIN: float = 3.0  # Minimum time between spawns
-const SPAWN_INTERVAL_MAX: float = 5.0  # Maximum time between spawns
+const SPAWN_INTERVAL_MIN: float = 2.5  # Minimum time between spawns (was 3.0)
+const SPAWN_INTERVAL_MAX: float = 4.0  # Maximum time between spawns (was 5.0)
 const SPAWN_COUNT_MIN: int = 1  # Minimum enemies per spawn tick
 const SPAWN_COUNT_MAX: int = 3  # Maximum enemies per spawn tick
 
