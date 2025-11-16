@@ -256,13 +256,12 @@ func take_damage(dmg: float) -> bool:
 
 
 func _flash_damage() -> void:
-	"""Visual feedback for taking damage"""
+	"""Visual feedback for taking damage (iOS-compatible - no Tweens)"""
 	damage_flash_timer = damage_flash_duration
 
+	# Immediate color change (timer-based reset in _physics_process)
 	if visual:
-		var tween = create_tween()
-		tween.tween_property(visual, "color", Color.WHITE, 0.1)
-		tween.tween_property(visual, "color", base_color, 0.1)
+		visual.color = Color.WHITE
 
 
 func die() -> void:
@@ -322,28 +321,7 @@ func die() -> void:
 	# Emit death signal with XP reward
 	died.emit(enemy_id, drops, xp_reward)
 
-	# Death animation (fade out + scale down)
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(self, "modulate:a", 0.0, 0.3)
-	tween.tween_property(self, "scale", Vector2(0.5, 0.5), 0.3)
-	tween.tween_callback(_on_death_animation_complete)
-
-
-func _on_death_animation_complete() -> void:
-	"""Called when death animation completes - log before queue_free (Bug #11 diagnostic)"""
-	var queue_free_time = Time.get_ticks_msec() / 1000.0
-	print(
-		"[Enemy] Death animation complete, calling queue_free() for ",
-		enemy_type,
-		" (time: ",
-		queue_free_time,
-		"s, instance: ",
-		get_instance_id(),
-		", in_group: ",
-		is_in_group("enemies"),
-		")"
-	)
+	# Immediate cleanup (iOS-compatible - Tweens don't work on iOS Metal renderer)
 	queue_free()
 
 
