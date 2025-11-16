@@ -327,11 +327,11 @@ func get_enemies_in_radius(center: Vector2, radius: float) -> Array:
 
 ## Get enemy count for wave
 func get_enemy_count_for_wave(wave: int) -> int:
-	# Week 14 Phase 2.5: Balanced for 60s continuous spawning (was 15 + wave*5)
-	# Spawn rate: 2.5-4s intervals = ~18 spawns/60s × 2 avg enemies = 36-43 spawnable
+	# Week 14 Phase 2.5b: Strengthened fix - closer to genre baseline (was 35 + wave*8)
+	# Spawn rate: 2.0-3.5s intervals = ~22 spawns/60s × 2 avg enemies = 44-51 spawnable
 	# Player kill rate: 0.4/sec = 24 kills/60s, maintains 25-35 living enemies
-	# Vampire Survivors: 60-80 enemies, Brotato: 30-50
-	return 35 + (wave * 8)  # Wave 1 = 43, Wave 2 = 51, Wave 3 = 59, Wave 4 = 67
+	# Vampire Survivors: 60-80 enemies, Brotato: 40-50, Our Wave 1: 51 (genre parity)
+	return 45 + (wave * 6)  # Wave 1 = 51, Wave 2 = 57, Wave 3 = 63, Wave 4 = 69
 
 
 ## Get enemy HP multiplier for wave

@@ -276,10 +276,10 @@ func test_wave_scaling_increases_enemy_count() -> void:
 	var wave2_count = EnemyService.get_enemy_count_for_wave(2)
 	var wave5_count = EnemyService.get_enemy_count_for_wave(5)
 
-	# Assert (Week 14 Phase 2.5: Balanced for 60s continuous spawning)
-	assert_eq(wave1_count, 43, "Wave 1 should have 43 enemies (35 + 8)")
-	assert_eq(wave2_count, 51, "Wave 2 should have 51 enemies (35 + 16)")
-	assert_eq(wave5_count, 75, "Wave 5 should have 75 enemies (35 + 40)")
+	# Assert (Week 14 Phase 2.5b: Strengthened fix - closer to genre baseline)
+	assert_eq(wave1_count, 51, "Wave 1 should have 51 enemies (45 + 6)")
+	assert_eq(wave2_count, 57, "Wave 2 should have 57 enemies (45 + 12)")
+	assert_eq(wave5_count, 75, "Wave 5 should have 75 enemies (45 + 30)")
 
 
 func test_wave_scaling_increases_enemy_hp() -> void:

@@ -28,19 +28,30 @@ var wave_stats: Dictionary = {}
 var enemies_spawned_this_wave: int = 0
 var total_enemies_for_wave: int = 0
 
-## Continuous spawning (Week 14 Phase 2)
+## Continuous spawning (Week 14 Phase 2.5b - strengthened fix)
 const WAVE_DURATION: float = 60.0  # 60 seconds per wave
 const MAX_LIVING_ENEMIES: int = 35  # Cap to prevent overwhelming/performance issues
-const SPAWN_INTERVAL_MIN: float = 2.5  # Minimum time between spawns (was 3.0)
-const SPAWN_INTERVAL_MAX: float = 4.0  # Maximum time between spawns (was 5.0)
+const SPAWN_INTERVAL_MIN: float = 2.0  # Minimum time between spawns (was 2.5, guarantees target count)
+const SPAWN_INTERVAL_MAX: float = 3.5  # Maximum time between spawns (was 4.0, avg 2.75s)
 const SPAWN_COUNT_MIN: int = 1  # Minimum enemies per spawn tick
 const SPAWN_COUNT_MAX: int = 3  # Maximum enemies per spawn tick
+const MIN_SPAWN_GUARANTEE_INTERVAL: float = 4.0  # Force spawn if no spawn in this many seconds
 
 var spawn_timer: float = 0.0  # Countdown to next spawn
 var wave_elapsed_time: float = 0.0  # Time elapsed in current wave
+var time_since_last_spawn: float = 0.0  # Track time since last spawn for minimum guarantee (Phase 2.5b)
+
+## RNG instance for deterministic testing (Phase 2.5b - flaky test fix)
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	# Initialize RNG (Phase 2.5b - deterministic testing support)
+	# In test environment, seed will be set by test; in production, use random seed
+	if not OS.has_feature("testing"):
+		rng.randomize()
+	# Note: If OS.has_feature("testing") is true, tests will set rng.seed directly
+
 	# Add to group so HUD can connect to wave signals
 	add_to_group("wave_manager")
 
@@ -71,14 +82,28 @@ func start_wave() -> void:
 	total_enemies_for_wave = EnemyService.get_enemy_count_for_wave(current_wave)
 
 	# Initialize spawn timer (first spawn 1-2s into wave for immediate action)
-	spawn_timer = randf_range(1.0, 2.0)
+	spawn_timer = rng.randf_range(1.0, 2.0)
+	time_since_last_spawn = 0.0  # Reset minimum spawn guarantee timer (Phase 2.5b)
 
-	print("[WaveManager] Wave Configuration:")
+	print("[WaveManager] Wave Configuration (Phase 2.5b - Strengthened Fix):")
 	print("[WaveManager]   Duration: ", WAVE_DURATION, "s")
-	print("[WaveManager]   Total enemies planned: ", total_enemies_for_wave)
+	print(
+		"[WaveManager]   Total enemies planned: ", total_enemies_for_wave, " (45 + wave*6 formula)"
+	)
 	print("[WaveManager]   Max living enemies: ", MAX_LIVING_ENEMIES)
-	print("[WaveManager]   Spawn interval: ", SPAWN_INTERVAL_MIN, "-", SPAWN_INTERVAL_MAX, "s")
+	print(
+		"[WaveManager]   Spawn interval: ",
+		SPAWN_INTERVAL_MIN,
+		"-",
+		SPAWN_INTERVAL_MAX,
+		"s (avg 2.75s)"
+	)
 	print("[WaveManager]   Enemies per spawn: ", SPAWN_COUNT_MIN, "-", SPAWN_COUNT_MAX)
+	print(
+		"[WaveManager]   Min spawn guarantee: ",
+		MIN_SPAWN_GUARANTEE_INTERVAL,
+		"s (force spawn if exceeded)"
+	)
 	print("[WaveManager]   First spawn in: ", spawn_timer, "s")
 	print("[WaveManager]   State: COMBAT")
 
@@ -88,6 +113,7 @@ func start_wave() -> void:
 	print("[WaveManager] HUD updated: wave number and timer initialized")
 
 	# Emit wave started signal
+	@warning_ignore("return_value_discarded")
 	wave_started.emit(current_wave)
 	print("[WaveManager] wave_started signal emitted")
 
@@ -99,13 +125,14 @@ func start_wave() -> void:
 
 
 func _process(delta: float) -> void:
-	"""Continuous spawning and wave timer logic (Week 14 Phase 2)
+	"""Continuous spawning and wave timer logic (Week 14 Phase 2.5b)
 
 	Runs every frame during COMBAT state:
 	1. Updates wave timer and HUD
 	2. Checks for wave timeout (60s)
-	3. Spawns enemies continuously (1-3 every 3-5s)
+	3. Spawns enemies continuously (1-3 every 2-3.5s)
 	4. Throttles spawning when approaching max capacity (35 enemies)
+	5. Forces spawn if no spawn in 4+ seconds (minimum guarantee - Phase 2.5b)
 	"""
 	# Only process during COMBAT state
 	if current_state != WaveState.COMBAT:
@@ -114,6 +141,9 @@ func _process(delta: float) -> void:
 	# Update wave elapsed time
 	wave_elapsed_time += delta
 	var time_remaining = WAVE_DURATION - wave_elapsed_time
+
+	# Track time since last spawn for minimum guarantee (Phase 2.5b)
+	time_since_last_spawn += delta
 
 	# Update HUD every frame with current time remaining
 	HudService.update_wave_timer(time_remaining)
@@ -138,23 +168,46 @@ func _process(delta: float) -> void:
 	if living_enemies.size() >= MAX_LIVING_ENEMIES:
 		# Reset spawn timer when throttled to prevent burst spawning when enemies die
 		if spawn_timer <= 0:
-			spawn_timer = randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
+			spawn_timer = rng.randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
 			print(
 				"[WaveManager:Throttle] Max capacity reached (",
 				living_enemies.size(),
 				"/",
 				MAX_LIVING_ENEMIES,
-				") - spawn delayed"
+				") - spawn delayed | Spawned: ",
+				enemies_spawned_this_wave,
+				"/",
+				total_enemies_for_wave,
+				" | Time: ",
+				snappedf(wave_elapsed_time, 0.1),
+				"s"
 			)
 		return
+
+	# Minimum spawn guarantee (Phase 2.5b - industry standard from VS/Brotato)
+	# Force spawn if no spawn has occurred in 4+ seconds to prevent RNG downtime
+	var force_spawn = (
+		time_since_last_spawn >= MIN_SPAWN_GUARANTEE_INTERVAL
+		and enemies_spawned_this_wave < total_enemies_for_wave
+		and living_enemies.size() < MAX_LIVING_ENEMIES
+	)
 
 	# Countdown spawn timer
 	spawn_timer -= delta
 
-	# Check if it's time to spawn enemies
-	if spawn_timer <= 0 and enemies_spawned_this_wave < total_enemies_for_wave:
+	# Check if it's time to spawn enemies (regular timer OR force spawn guarantee)
+	if (spawn_timer <= 0 or force_spawn) and enemies_spawned_this_wave < total_enemies_for_wave:
 		# Calculate how many enemies to spawn (1-3)
-		var spawn_count = randi_range(SPAWN_COUNT_MIN, SPAWN_COUNT_MAX)
+		var spawn_count = rng.randi_range(SPAWN_COUNT_MIN, SPAWN_COUNT_MAX)
+
+		# Force spawn uses minimum of 2 enemies to maintain pressure
+		if force_spawn:
+			spawn_count = 2
+			print(
+				"[WaveManager:MinSpawnGuarantee] No spawn in ",
+				snappedf(time_since_last_spawn, 0.1),
+				"s - forcing spawn of 2 enemies"
+			)
 
 		# Don't exceed total planned enemies for wave
 		spawn_count = mini(spawn_count, total_enemies_for_wave - enemies_spawned_this_wave)
@@ -197,9 +250,10 @@ func _process(delta: float) -> void:
 				" total spawned"
 			)
 
-		# Reset spawn timer for next spawn (3-5 seconds)
-		var next_spawn_delay = randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
+		# Reset spawn timer for next spawn (2-3.5 seconds)
+		var next_spawn_delay = rng.randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
 		spawn_timer = next_spawn_delay
+		time_since_last_spawn = 0.0  # Reset minimum spawn guarantee timer (Phase 2.5b)
 		print("[WaveManager:Spawn] Next spawn in ", snappedf(next_spawn_delay, 0.1), "s")
 
 
@@ -288,7 +342,7 @@ func _spawn_single_enemy() -> void:
 
 		# For swarm spawns, add slight position variation
 		if spawn_count > 1:
-			spawn_pos += Vector2(randf_range(-50, 50), randf_range(-50, 50))
+			spawn_pos += Vector2(rng.randf_range(-50, 50), rng.randf_range(-50, 50))
 
 		enemy.global_position = spawn_pos
 		print("[WaveManager] Enemy positioned at: ", spawn_pos)
@@ -321,8 +375,8 @@ func _get_random_spawn_position() -> Vector2:
 
 	# Spawn in ring around player (just off-screen at ~600-800px)
 	# Viewport is ~1152×648 on mobile, so 600-800px is just beyond visible edge
-	var spawn_distance = randf_range(600, 800)
-	var spawn_angle = randf() * TAU  # Random angle (0 to 2π)
+	var spawn_distance = rng.randf_range(600, 800)
+	var spawn_angle = rng.randf() * TAU  # Random angle (0 to 2π)
 	var offset = Vector2(cos(spawn_angle), sin(spawn_angle)) * spawn_distance
 
 	return player_pos + offset
@@ -377,6 +431,7 @@ func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) ->
 	wave_stats.xp_earned += xp_reward
 
 	# Emit enemy died signal for visual feedback (screen shake, etc.)
+	@warning_ignore("return_value_discarded")
 	enemy_died.emit(enemy_id)
 
 	# Note: Drop tracking moved to _on_drops_collected() to track actually collected drops
@@ -443,11 +498,29 @@ func _complete_wave() -> void:
 	var wave_end_time = Time.get_ticks_msec() / 1000.0
 	var wave_time = wave_end_time - wave_start_time
 	wave_stats["wave_time"] = wave_time
-	print("[WaveManager] Wave completed in ", wave_time, " seconds")
+	print("[WaveManager] ========================================")
+	print("[WaveManager] WAVE ", current_wave, " COMPLETED (Phase 2.5b)")
+	print("[WaveManager]   Duration: ", wave_time, " seconds")
+	print(
+		"[WaveManager]   Enemies spawned: ",
+		enemies_spawned_this_wave,
+		" / ",
+		total_enemies_for_wave,
+		" planned"
+	)
+	print("[WaveManager]   Enemies killed: ", wave_stats.enemies_killed)
+	print(
+		"[WaveManager]   Spawn efficiency: ",
+		snappedf((float(enemies_spawned_this_wave) / total_enemies_for_wave) * 100, 0.1),
+		"%"
+	)
+	print("[WaveManager] ========================================")
 
 	# Emit wave completion
 	print("[WaveManager] Emitting wave_completed signal with stats: ", wave_stats)
+	@warning_ignore("return_value_discarded")
 	wave_completed.emit(current_wave, wave_stats)
+	@warning_ignore("return_value_discarded")
 	all_enemies_killed.emit()
 
 	# Show wave complete screen
