@@ -1,4 +1,4 @@
-extends AcceptDialog
+extends ConfirmationDialog
 ## Debug Menu for QA Testing
 ##
 ## Week 16 Priority 1: Debug tooling for manual tier testing

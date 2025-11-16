@@ -5,21 +5,9 @@
 [ext_resource type="Script" path="res://scripts/components/camera_controller.gd" id="2_camera_controller"]
 [ext_resource type="Script" path="res://scripts/components/grid_floor.gd" id="2_grid_floor"]
 [ext_resource type="PackedScene" uid="uid://cqy8j7xvx3kh5" path="res://scenes/ui/hud.tscn" id="3_hud"]
-[ext_resource type="Script" path="res://scenes/ui/wave_complete_screen.gd" id="3_wave_complete_screen"]
+[ext_resource type="PackedScene" uid="uid://b8k3m7n5p2qr9" path="res://scenes/ui/wave_complete_screen.tscn" id="3_wave_complete_screen"]
 [ext_resource type="Script" path="res://scenes/ui/game_over_screen.gd" id="4_game_over_screen"]
 [ext_resource type="PackedScene" uid="uid://ccvk0p2xb8iny" path="res://scenes/ui/virtual_joystick.tscn" id="5_virtual_joystick"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wave_complete_bg"]
-bg_color = Color(0, 0, 0, 0.7)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_game_over_bg"]
 bg_color = Color(0, 0, 0, 0.7)
@@ -66,51 +54,8 @@ boundaries = Rect2(-360, -640, 720, 1280)
 [node name="VirtualJoystick" parent="UI" instance=ExtResource("5_virtual_joystick")]
 z_index = 100
 
-[node name="WaveCompleteScreen" type="Panel" parent="UI" groups=["wave_complete_screen"]]
+[node name="WaveCompleteScreen" parent="UI" instance=ExtResource("3_wave_complete_screen")]
 visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_wave_complete_bg")
-script = ExtResource("3_wave_complete_screen")
-
-[node name="Content" type="VBoxContainer" parent="UI/WaveCompleteScreen"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VictoryLabel" type="Label" parent="UI/WaveCompleteScreen/Content"]
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 32
-text = "Wave Complete!"
-horizontal_alignment = 1
-
-[node name="StatsDisplay" type="VBoxContainer" parent="UI/WaveCompleteScreen/Content"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="NextWaveButton" type="Button" parent="UI/WaveCompleteScreen/Content"]
-custom_minimum_size = Vector2(200, 60)
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Next Wave"
 
 [node name="GameOverScreen" type="Panel" parent="UI" groups=["game_over_screen"]]
 visible = false
