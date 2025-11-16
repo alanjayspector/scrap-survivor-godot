@@ -44,13 +44,11 @@ const PLAYER_LAYER = 1  # Assuming player is on layer 1
 var is_enemy_projectile: bool = false
 
 ## Trail
-var trail: Line2D = null
+@onready var trail: Line2D = get_node_or_null("Trail")
 const TRAIL_MAX_LENGTH: int = 15  # Maximum number of trail points
 
 
 func _ready() -> void:
-	# Get trail node reference
-	trail = get_node_or_null("Trail")
 	# Set up collision
 	collision_layer = 0  # Projectiles don't collide with each other
 	# Bug #6 fix: Don't overwrite collision_mask if already set by activate() (2025-11-14)

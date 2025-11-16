@@ -17,7 +17,7 @@ var is_magnetized: bool = false  # Tracking state for visual feedback
 var is_collected: bool = false  # Guard against multiple collections
 
 ## Visual reference
-var visual_node: ColorRect = null
+@onready var visual_node: ColorRect = get_node_or_null("Visual")
 
 ## Currency colors (Brotato-inspired visual clarity)
 const CURRENCY_COLORS = {
@@ -37,9 +37,6 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 	print("[DropPickup] Signals connected")
-
-	# Get visual node reference
-	visual_node = get_node_or_null("Visual")
 	print("[DropPickup] Visual node: ", visual_node)
 
 	# Update visual based on currency type

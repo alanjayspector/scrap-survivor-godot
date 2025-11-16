@@ -212,7 +212,10 @@ def check_string_concatenation_in_loops(content: str, lines: List[str]) -> List[
 
                 # Check for string concatenation with +
                 # Look for patterns like "string" + var or var + "string"
-                if re.search(r'["\']\s*\+|"\s*\+\s*', current_line):
+                # Match: "..." + or '...' + or + "..." or + '...'
+                # Don't match: "+" or '+' (literal strings containing plus)
+                # Use negative lookbehind (?<!["']) to avoid matching + inside strings
+                if re.search(r'"[^"]*"\s*\+|\'[^\']*\'\s*\+|(?<!["\'])\+\s*["\']', current_line):
                     issues.append(PerformanceIssue(
                         line_num=j + 1,
                         issue_type="string_concat_in_loop",

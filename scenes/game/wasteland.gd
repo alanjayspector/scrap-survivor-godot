@@ -15,6 +15,7 @@ extends Node2D
 @onready var projectiles_container: Node2D = $Projectiles
 @onready var drops_container: Node2D = $Drops
 @onready var wave_manager: WaveManager = $GameController
+@onready var ui_layer: CanvasLayer = $UI
 @onready var wave_complete_screen: Panel = $UI/WaveCompleteScreen
 @onready var game_over_screen: Panel = $UI/GameOverScreen
 
@@ -601,7 +602,6 @@ func _trigger_screen_flash() -> void:
 	Note: Can't use Tweens on iOS (they don't execute), so we use manual _process animation.
 	"""
 	# Get or create flash overlay
-	var ui_layer = $UI
 	var flash_overlay = ui_layer.get_node_or_null("FlashOverlay")
 
 	if not flash_overlay:
@@ -799,7 +799,6 @@ func _process(delta: float) -> void:
 	"""Handle per-frame animations and monitoring (2025-11-15)"""
 
 	# Screen flash animation (manual, since Tweens don't work on iOS)
-	var ui_layer = $UI
 	var flash_overlay = ui_layer.get_node_or_null("FlashOverlay")
 
 	if (

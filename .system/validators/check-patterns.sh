@@ -166,18 +166,65 @@ echo ""
 echo "🔤 Checking type hints..."
 
 if [ -n "$ALL_GD_FILES" ]; then
-  for file in $ALL_GD_FILES; do
-    # Check for functions without return type hints
-    if grep -q "^func " "$file"; then
-      while IFS= read -r line; do
-        if [[ ! "$line" =~ "->" ]] && [[ ! "$line" =~ "_ready\(\)" ]] && [[ ! "$line" =~ "_process\(" ]] && [[ ! "$line" =~ "_physics_process\(" ]]; then
-          func_name=$(echo "$line" | awk '{print $2}' | cut -d'(' -f1)
-          echo -e "${YELLOW}⚠️  Function missing return type: $func_name in $file${NC}"
-          echo "   Add: -> ReturnType"
-        fi
-      done < <(grep "^func " "$file")
-    fi
-  done
+  # Use Python to handle multi-line function declarations properly
+  python3 << 'PYEOF'
+import sys
+import re
+import glob
+
+files = glob.glob("scripts/**/*.gd", recursive=True)
+issues = []
+
+for filepath in files:
+    try:
+        with open(filepath, 'r') as f:
+            lines = f.readlines()
+
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+            if line.startswith('func '):
+                # Extract function name
+                func_name = line.split()[1].split('(')[0] if len(line.split()) > 1 else "unknown"
+
+                # Skip Godot lifecycle methods and constructors
+                if func_name in ['_ready', '_process', '_physics_process', '_init', '_enter_tree', '_exit_tree', '_input', '_unhandled_input']:
+                    i += 1
+                    continue
+
+                # Check if -> is on this line
+                if '->' in line:
+                    i += 1
+                    continue
+
+                # Check next lines for -> until we find : (end of signature)
+                j = i + 1
+                found_return_type = False
+                while j < len(lines):
+                    next_line = lines[j]
+                    if '->' in next_line:
+                        found_return_type = True
+                        break
+                    # Function signature ends with :
+                    if next_line.strip().endswith(':'):
+                        break
+                    j += 1
+
+                if not found_return_type:
+                    issues.append(f"{filepath}:{func_name}")
+
+                i = j + 1
+            else:
+                i += 1
+    except Exception:
+        pass
+
+for issue in issues:
+    filepath, func_name = issue.split(':', 1)
+    print(f"\\033[1;33m⚠️  Function missing return type: {func_name} in {filepath}\\033[0m")
+    print("   Add: -> ReturnType")
+
+PYEOF
 fi
 
 echo ""

@@ -7,14 +7,11 @@ class_name CameraController
 @export var screen_shake_intensity: float = 10.0
 @export var boundaries: Rect2 = Rect2(-1000, -1000, 2000, 2000)
 
-var target: Node2D = null
+@onready var target: Node2D = get_tree().get_first_node_in_group("player")
 var shake_amount: float = 0.0
 
 
 func _ready() -> void:
-	# Find player
-	target = get_tree().get_first_node_in_group("player")
-
 	# Connect to combat events for screen shake
 	WeaponService.weapon_fired.connect(_on_weapon_fired)
 	CombatService.damage_dealt.connect(_on_damage_dealt)

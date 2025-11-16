@@ -271,29 +271,49 @@ def check_assertions_presence(content: str, lines: List[str]) -> List[TestPatter
     ASSERTION_PATTERNS = [
         # Basic GDScript assertions
         r'\bassert\(',
-        # GUT framework assertions
+        # GUT framework assertions - Comparison
         r'assert_eq\(',
         r'assert_ne\(',
-        r'assert_true\(',
-        r'assert_false\(',
-        r'assert_null\(',
-        r'assert_not_null\(',
+        r'assert_almost_eq\(',  # Floating point comparisons
+        r'assert_almost_ne\(',
         r'assert_gt\(',
         r'assert_lt\(',
         r'assert_gte\(',
         r'assert_lte\(',
         r'assert_between\(',
+        # GUT framework assertions - Boolean/Null
+        r'assert_true\(',
+        r'assert_false\(',
+        r'assert_null\(',
+        r'assert_not_null\(',
+        # GUT framework assertions - Collections
         r'assert_has\(',
         r'assert_does_not_have\(',
+        # GUT framework assertions - Strings
         r'assert_string_contains\(',
         r'assert_string_starts_with\(',
         r'assert_string_ends_with\(',
+        # GUT framework assertions - Signals (complete set)
+        # Reference: docs/godot-gut-framework-validation.md
+        # GUT 9.0+ signal assertions verified from official docs
+        r'assert_signal_emitted\(',
+        r'assert_signal_not_emitted\(',  # Added - was causing false positives
+        r'assert_signal_emit_count\(',
+        r'assert_signal_emitted_with_parameters\(',
+        r'assert_has_signal\(',
+        # GUT framework assertions - Method calls
         r'assert_called\(',
         r'assert_not_called\(',
-        r'assert_signal_emitted\(',
     ]
 
     for test_name, line_num, body in test_methods:
+        # Check if test uses pending() - this is a valid GUT framework method
+        # for marking tests as intentionally disabled/skipped
+        # Reference: docs/godot-gut-framework-validation.md
+        # GUT 9.0+: pending(text="") marks test as pending, not a failure
+        if re.search(r'\bpending\(', body):
+            continue  # Skip - pending tests are intentionally incomplete
+
         has_assertion = any(re.search(pattern, body) for pattern in ASSERTION_PATTERNS)
 
         if not has_assertion:

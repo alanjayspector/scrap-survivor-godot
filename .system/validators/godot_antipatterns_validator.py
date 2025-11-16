@@ -128,9 +128,10 @@ def check_get_node_in_process(content: str, lines: List[str]) -> List[AntiPatter
 
 def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
     """
-    Detect node references assigned in _ready() that should use @onready.
+    Detect node references assigned from scene tree that should use @onready.
 
-    Pattern: var in class scope assigned with get_node in _ready
+    Only flags variables assigned with scene tree methods (get_node, $, get_tree, etc.),
+    not dynamically created nodes (.new()).
     """
     patterns = []
 
@@ -139,7 +140,8 @@ def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
 
     for line_num, line in enumerate(lines, start=1):
         # Check for var declarations with Node types but no @onready
-        if re.search(var_pattern, line):
+        match = re.search(var_pattern, line)
+        if match:
             # Check if previous line has @onready
             if line_num > 1:
                 prev_line = lines[line_num - 2].strip()
@@ -150,12 +152,40 @@ def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
             if '@onready' in line:
                 continue
 
-            patterns.append(AntiPattern(
-                line_num=line_num,
-                pattern_type="missing_onready",
-                details="Node-typed variable without @onready (should cache in ready)",
-                severity="warning"
-            ))
+            var_name = match.group(1)
+
+            # Check if this variable is assigned from scene tree anywhere in the file
+            # Look for assignments using scene tree methods (get_node, $, get_tree, etc.)
+            # but NOT dynamic creation (.new())
+            is_scene_tree_assignment = False
+            for search_line in lines:
+                # Check for assignment to this variable
+                if f'{var_name} =' in search_line:
+                    # Check if it's a scene tree method
+                    # Use simple string checks for most, regex only for $
+                    has_scene_tree_method = (
+                        'get_node(' in search_line or
+                        'get_tree()' in search_line or
+                        'get_parent()' in search_line or
+                        'find_child(' in search_line or
+                        'get_node_or_null(' in search_line or
+                        'get_first_node_in_group(' in search_line or
+                        re.search(r'\$[A-Za-z_]', search_line)  # $ operator for node paths
+                    )
+
+                    # Skip if it's dynamic creation with .new()
+                    if has_scene_tree_method and '.new()' not in search_line:
+                        is_scene_tree_assignment = True
+                        break
+
+            # Only flag if it's actually assigned from scene tree
+            if is_scene_tree_assignment:
+                patterns.append(AntiPattern(
+                    line_num=line_num,
+                    pattern_type="missing_onready",
+                    details="Node-typed variable without @onready (should cache in ready)",
+                    severity="warning"
+                ))
 
     return patterns
 
