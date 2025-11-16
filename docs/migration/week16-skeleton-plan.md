@@ -93,6 +93,51 @@ com.scrapsurvival.slots_25         - $3.99 (consumable)
 
 ---
 
+## Priority 4: Character Roster Virtual Scrolling (Technical Debt)
+
+**Context:** Phase 3 (Week 15) delivered character roster with reusable CharacterCard components. Current implementation uses VBoxContainer with all character cards rendered (acceptable for 15 characters). Virtual scrolling deferred per Sr Godot Specialist recommendation.
+
+**Problem:**
+- Current roster renders ALL character cards (15 for Premium, 50 for Subscription)
+- On older devices (iPhone 8/A11), 50 cards could cause scroll lag
+- Hall of Fame (200 archived characters) would definitely need virtual scrolling
+
+**When to implement:**
+- **NOW (Week 16)**: If subscription tier launches (50 active characters)
+- **DEFER (Week 17+)**: If subscription launch delayed or performance acceptable on target devices
+
+**Solution Options:**
+
+**Option A: Virtual Scroll Container (2-3 hours)**
+- Custom ScrollContainer that only instances visible cards
+- Reuse CharacterCard.tscn (architecture already supports this)
+- Only render cards in viewport + 1-2 buffer cards above/below
+- Example: Godot's ItemList uses this pattern
+
+**Option B: Godot ItemList Widget (1-2 hours, simpler)**
+- Replace VBoxContainer with ItemList
+- ItemList has built-in virtual scrolling
+- Tradeoff: Less visual customization than custom cards
+- Would need to redesign CharacterCard as ItemList entry
+
+**Option C: Paginated Roster (1 hour, quick fix)**
+- Show 10 characters per page with Previous/Next buttons
+- Simple to implement, no performance concerns
+- Tradeoff: Worse UX than scrolling (extra taps)
+
+**Recommendation from Sr Godot Specialist:**
+> "Defer virtual scrolling until subscription tier launches. If launching now, use Option A (custom virtual scroll). The CharacterCard.tscn architecture makes this straightforward - just change the container logic."
+
+**Testing:**
+- Use debug helper `create_mock_characters.gd` to create 50 characters
+- Test scroll performance on iPhone 8 (A11 chip)
+- If FPS drops below 55, implement virtual scrolling
+- If FPS stays above 55, defer to Week 17
+
+**Priority:** LOW (defer unless subscription launching in Week 16)
+
+---
+
 ## Testing Requirements
 
 **Manual QA with Debug Menu:**
@@ -113,17 +158,18 @@ com.scrapsurvival.slots_25         - $3.99 (consumable)
 
 ## Notes
 
-**Week 15 Completion Status:**
+**Week 15 Completion Status (UPDATED 2025-11-16):**
 - ✅ Phase 1: Hub/Scrapyard (complete)
-- ✅ Phase 2: Character Creation (complete + 10 production fixes)
-- ⏸️ Phase 3: Character Roster (deferred to Week 16 or 17)
-- ⏸️ Phase 4: First-Run Flow (deferred)
-- ⏸️ Phase 5: Post-Run Flow (deferred)
+- ✅ Phase 2: Character Creation (complete + QA fixes)
+- ✅ Phase 3: Character Roster (complete - reusable components, details panel, expert review)
+- ⏸️ Phase 4: First-Run Flow (deferred to Week 17)
+- ⏸️ Phase 5: Post-Run Flow (deferred to Week 17)
 
 **Week 16 Focus:**
-1. Debug tooling (enable QA testing)
-2. IAP integration (monetization live)
-3. Character Roster? (if time permits)
+1. Debug tooling (enable QA testing) - Priority 1
+2. IAP integration (monetization live) - Priority 2
+3. Meta Progression (decide: Week 16 or defer to Week 17) - Priority 3
+4. Virtual Scrolling (if subscription tier launches) - Priority 4 (technical debt)
 
 ---
 

@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3h7j8k9l4m5n6"]
+
+[ext_resource type="Script" path="res://scripts/ui/character_card.gd" id="1_card"]
+
+[node name="CharacterCard" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 80)
+script = ExtResource("1_card")
+
+[node name="HBoxContainer" type="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CharacterIcon" type="ColorRect"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="InfoContainer" type="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="NameLabel" type="Label"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Character Name"
+
+[node name="TypeLabel" type="Label"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Scavenger"
+
+[node name="StatsLabel" type="Label"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Level 1 • Best Wave 0"
+
+[node name="DetailsButton" type="Button"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Details"
+
+[node name="PlayButton" type="Button"]
+custom_minimum_size = Vector2(100, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Play"
+
+[node name="Spacer" type="Control"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="DeleteButton" type="Button"]
+custom_minimum_size = Vector2(50, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "✕"
