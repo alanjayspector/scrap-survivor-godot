@@ -107,6 +107,51 @@ Before modifying validators or bypassing any gate:
 | Fixing test failure | The test file + implementation file |
 | Changing quality gate | Configuration files + ask user |
 
+## Running Tests and Validators
+
+**IMPORTANT**: NEVER try to find `godot` command in PATH. Always use the validator scripts.
+
+### Test Runner
+
+**Run automated tests:**
+```bash
+python3 .system/validators/godot_test_runner.py
+```
+
+This script:
+- Handles Godot executable location automatically
+- Runs all 520 GUT tests in headless mode
+- Creates class cache for custom classes
+- Outputs JUnit XML results to `test_results.xml`
+
+### Available Validators
+
+All validators are in `.system/validators/` directory:
+
+**Python Validators:**
+- `godot_test_runner.py` - Run automated tests (520 tests)
+- `test_method_validator.py` - Validate test method calls against service APIs
+- `test_naming_validator.py` - Check test naming conventions
+- `test_patterns_validator.py` - Check for test quality issues (non-blocking)
+- `test_quality_validator.py` - Check assertion quality (non-blocking)
+- `integration_test_checker.py` - Verify integration tests exist
+- `godot_antipatterns_validator.py` - Check for Godot anti-patterns (non-blocking)
+- `godot_performance_validator.py` - Check for performance issues (non-blocking)
+- `godot_config_validator.py` - Validate Godot project configuration
+- `scene_node_path_validator.py` - Validate scene node paths
+- `data_model_consistency_validator.py` - Check data model usage (non-blocking)
+- `service_architecture_validator.py` - Validate service architecture
+- Other validators: `native_class_checker.py`, `resource_validator.py`, etc.
+
+**Shell Script Validators:**
+- `check-imports.sh` - Validate asset import settings (non-blocking)
+- `check-patterns.sh` - Validate GDScript patterns (non-blocking)
+- `check-audio-assets.sh` - Check audio asset configuration
+
+**Non-Blocking vs Blocking:**
+- **Blocking**: Tests, test method validator, config validator - MUST pass for commit
+- **Non-blocking**: Test patterns, antipatterns, performance - warnings only, good to fix but won't block commit
+
 ## Enforcement Mechanism
 
 **User's role**: Call me out when I violate these rules

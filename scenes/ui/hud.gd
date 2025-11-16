@@ -56,6 +56,7 @@ func _ready() -> void:
 		HudService.hp_changed.connect(_on_hp_changed)
 		HudService.xp_changed.connect(_on_xp_changed)
 		HudService.wave_changed.connect(_on_wave_changed)
+		HudService.wave_timer_updated.connect(_on_wave_timer_updated)  # Week 14 Phase 2
 		HudService.currency_changed.connect(_on_currency_changed)
 	else:
 		GameLogger.error("HUD: HudService not found")
@@ -95,14 +96,6 @@ func _connect_to_wave_manager() -> void:
 		GameLogger.info("HUD: Connected to WaveManager signals")
 	else:
 		GameLogger.error("HUD: WaveManager not found in group")
-
-
-func _process(delta: float) -> void:
-	"""Update wave timer every frame"""
-	if wave_active and wave_time_remaining > 0:
-		wave_time_remaining -= delta
-		wave_time_remaining = max(0, wave_time_remaining)
-		_update_wave_timer_display()
 
 
 ## Signal Handlers
@@ -154,6 +147,19 @@ func _on_wave_changed(wave: int) -> void:
 	wave_label.text = "Wave %d" % wave
 
 	# Wave label animation disabled - Tweens don't work on iOS Metal renderer
+
+
+func _on_wave_timer_updated(time_remaining: float) -> void:
+	"""Called when wave timer updates (Week 14 Phase 2)
+
+	Args:
+		time_remaining: Seconds remaining in wave (0.0 = CLEANUP phase)
+	"""
+	if not wave_timer_label:
+		return
+
+	wave_time_remaining = time_remaining
+	_update_wave_timer_display()
 
 
 func _on_wave_started(wave: int) -> void:
@@ -225,10 +231,29 @@ func _update_currency_display() -> void:
 
 
 func _update_wave_timer_display() -> void:
-	"""Update wave timer label with remaining time and color coding"""
+	"""Update wave timer label with remaining time and color coding (Week 14 Phase 2)
+
+	Shows:
+	- Countdown timer during COMBAT phase (60s → 0s)
+	- "CLEANUP!" message during CLEANUP phase (time_remaining = 0.0)
+	- Color coding: White > 10s, Yellow 5-10s, Red < 5s, Orange during CLEANUP
+	"""
 	if not wave_timer_label:
 		return
 
+	# CLEANUP phase (time_remaining = 0.0)
+	if wave_time_remaining <= 0.0:
+		wave_timer_label.text = "CLEANUP!"
+		wave_timer_label.modulate = Color.ORANGE
+
+		# Stop pulsing animation if active
+		if timer_warning_tween:
+			timer_warning_tween.kill()
+			timer_warning_tween = null
+			wave_timer_label.scale = Vector2(1.0, 1.0)
+		return
+
+	# COMBAT phase - show countdown timer
 	# Format time as MM:SS
 	var minutes = int(wave_time_remaining) / 60
 	var seconds = int(wave_time_remaining) % 60
@@ -238,6 +263,12 @@ func _update_wave_timer_display() -> void:
 	if wave_time_remaining <= 5.0:
 		# Red when < 5 seconds
 		wave_timer_label.modulate = Color.RED
+
+		# Pulse faster when < 5s (iOS Metal compatible - using scale only)
+		if not timer_warning_tween or not timer_warning_tween.is_running():
+			timer_warning_tween = create_tween().set_loops()
+			timer_warning_tween.tween_property(wave_timer_label, "scale", Vector2(1.15, 1.15), 0.3)
+			timer_warning_tween.tween_property(wave_timer_label, "scale", Vector2(1.0, 1.0), 0.3)
 	elif wave_time_remaining <= 10.0:
 		# Yellow when < 10 seconds
 		wave_timer_label.modulate = Color.YELLOW

@@ -88,25 +88,29 @@ func test_wave_manager_spawns_correct_enemy_count() -> void:
 	# Get expected enemy count for wave 1
 	var expected_count = EnemyService.get_enemy_count_for_wave(1)
 
-	# Start wave
+	# Start wave (Week 14 Phase 2: Continuous spawning)
 	wave_manager.start_wave()
 
-	# Wait for enemies to spawn (with timeout)
-	var max_wait_time = 10.0  # seconds
+	# Simulate time passing to allow continuous spawning to spawn all enemies
+	# Continuous spawning uses _process() to spawn 1-3 enemies every 3-5 seconds
+	var max_wait_time = 70.0  # seconds (more than 60s wave duration)
 	var elapsed = 0.0
 	var delta = 0.1
 
-	while wave_manager.enemies_remaining < expected_count and elapsed < max_wait_time:
-		await get_tree().create_timer(delta).timeout
+	while wave_manager.enemies_spawned_this_wave < expected_count and elapsed < max_wait_time:
+		wave_manager._process(delta)  # Simulate frame processing
+		await get_tree().process_frame
 		elapsed += delta
 
-	# Assert correct number of enemies spawned
+	# Assert correct number of enemies spawned (Week 14 Phase 2 uses enemies_spawned_this_wave)
 	assert_eq(
-		wave_manager.enemies_remaining, expected_count, "Should spawn correct number of enemies"
+		wave_manager.enemies_spawned_this_wave,
+		expected_count,
+		"Should spawn correct number of enemies via continuous spawning"
 	)
 
 
-## Test: WaveManager completes wave when all enemies are killed
+## Test: WaveManager completes wave when all enemies are killed (Week 14 Phase 2: CLEANUP phase)
 func test_wave_manager_completes_wave_when_all_killed() -> void:
 	# Create wave manager
 	var wave_manager = WaveManager.new()
@@ -118,9 +122,9 @@ func test_wave_manager_completes_wave_when_all_killed() -> void:
 	# Watch for signals
 	watch_signals(wave_manager)
 
-	# Set up wave with manual enemy count
+	# Set up wave in CLEANUP state (Week 14 Phase 2: waves only complete in CLEANUP)
 	wave_manager.enemies_remaining = 3
-	wave_manager.current_state = WaveManager.WaveState.COMBAT
+	wave_manager.current_state = WaveManager.WaveState.CLEANUP  # Changed from COMBAT
 	wave_manager.wave_stats = {
 		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
 	}
@@ -133,7 +137,7 @@ func test_wave_manager_completes_wave_when_all_killed() -> void:
 	# Wait for signal processing
 	await get_tree().process_frame
 
-	# Assert wave completed
+	# Assert wave completed (only happens in CLEANUP state)
 	assert_eq(
 		wave_manager.current_state, WaveManager.WaveState.VICTORY, "Should be in VICTORY state"
 	)
@@ -246,10 +250,10 @@ func test_wave_manager_emits_wave_completed_with_stats() -> void:
 	# Watch for signals
 	watch_signals(wave_manager)
 
-	# Set up wave
+	# Set up wave in CLEANUP state (Week 14 Phase 2: waves only complete in CLEANUP)
 	wave_manager.current_wave = 1
 	wave_manager.enemies_remaining = 1
-	wave_manager.current_state = WaveManager.WaveState.COMBAT
+	wave_manager.current_state = WaveManager.WaveState.CLEANUP  # Changed from COMBAT
 	wave_manager.wave_stats = {
 		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
 	}
@@ -323,8 +327,8 @@ func test_wave_manager_calculates_wave_time() -> void:
 	# Watch for signals
 	watch_signals(wave_manager)
 
-	# Set up wave with start time in the past (so wave_time will be positive)
-	wave_manager.current_state = WaveManager.WaveState.COMBAT
+	# Set up wave with start time in the past (Week 14 Phase 2: CLEANUP state)
+	wave_manager.current_state = WaveManager.WaveState.CLEANUP  # Changed from COMBAT
 	wave_manager.wave_start_time = (Time.get_ticks_msec() / 1000.0) - 1.0  # 1 second ago
 	wave_manager.enemies_remaining = 1
 	wave_manager.living_enemies["enemy_1"] = Node2D.new()
@@ -332,7 +336,7 @@ func test_wave_manager_calculates_wave_time() -> void:
 		"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}
 	}
 
-	# Simulate enemy death (triggers wave completion)
+	# Simulate enemy death (triggers wave completion in CLEANUP state)
 	wave_manager._on_enemy_died("enemy_1", {}, 10)
 
 	# Wait for signal processing

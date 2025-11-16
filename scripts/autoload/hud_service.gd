@@ -15,6 +15,7 @@ extends Node
 signal hp_changed(current: float, max_value: float)
 signal xp_changed(current: int, required: int, level: int)
 signal wave_changed(wave: int)
+signal wave_timer_updated(time_remaining: float)  # Week 14 Phase 2
 signal currency_changed(currency_type: String, amount: int, new_total: int)
 
 ## Player reference (set by game scene)
@@ -85,6 +86,16 @@ func update_wave(wave: int) -> void:
 	current_wave = wave
 	wave_changed.emit(wave)
 	GameLogger.info("HudService: Wave updated", {"wave": wave})
+
+
+## Update wave timer (Week 14 Phase 2)
+func update_wave_timer(time_remaining: float) -> void:
+	"""Update wave timer countdown in HUD
+
+	Args:
+		time_remaining: Seconds remaining in wave (0.0 = CLEANUP phase)
+	"""
+	wave_timer_updated.emit(time_remaining)
 
 
 ## Signal Handlers - Player

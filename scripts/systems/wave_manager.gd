@@ -2,13 +2,19 @@ extends Node
 class_name WaveManager
 
 ## Manages wave-based combat loop with state machine
+## Week 14 Phase 1.5: Wave audio (start/complete sounds)
+## Week 14 Phase 2: Continuous spawning with 60s wave timer
 
-enum WaveState { IDLE, SPAWNING, COMBAT, VICTORY, GAME_OVER }
+enum WaveState { IDLE, SPAWNING, COMBAT, CLEANUP, VICTORY, GAME_OVER }
 
 signal wave_started(wave: int)
 signal wave_completed(wave: int, stats: Dictionary)
 signal all_enemies_killed
 signal enemy_died(enemy_id: String)
+
+## Audio (Week 14 Phase 1.5 - iOS-compatible preload pattern)
+const WAVE_START_SOUND: AudioStream = preload("res://assets/audio/ambient/wave_start.ogg")
+const WAVE_COMPLETE_SOUND: AudioStream = preload("res://assets/audio/ambient/wave_complete.ogg")
 
 @export var spawn_container: Node2D  # Enemies node
 var current_wave: int = 1
@@ -22,6 +28,17 @@ var wave_stats: Dictionary = {}
 var enemies_spawned_this_wave: int = 0
 var total_enemies_for_wave: int = 0
 
+## Continuous spawning (Week 14 Phase 2)
+const WAVE_DURATION: float = 60.0  # 60 seconds per wave
+const MAX_LIVING_ENEMIES: int = 35  # Cap to prevent overwhelming/performance issues
+const SPAWN_INTERVAL_MIN: float = 3.0  # Minimum time between spawns
+const SPAWN_INTERVAL_MAX: float = 5.0  # Maximum time between spawns
+const SPAWN_COUNT_MIN: int = 1  # Minimum enemies per spawn tick
+const SPAWN_COUNT_MAX: int = 3  # Maximum enemies per spawn tick
+
+var spawn_timer: float = 0.0  # Countdown to next spawn
+var wave_elapsed_time: float = 0.0  # Time elapsed in current wave
+
 
 func _ready() -> void:
 	# Add to group so HUD can connect to wave signals
@@ -33,84 +50,165 @@ func _ready() -> void:
 
 
 func start_wave() -> void:
-	print("[WaveManager] start_wave() called for wave ", current_wave)
-	current_state = WaveState.SPAWNING
+	"""Start a new wave with continuous spawning (Week 14 Phase 2)
+
+	Waves now use 60-second timer with continuous enemy spawning throughout.
+	Enemies spawn 1-3 at a time every 3-5 seconds until wave timer expires.
+	"""
+	print("[WaveManager] ========================================")
+	print("[WaveManager] WAVE ", current_wave, " STARTING")
+	print("[WaveManager] ========================================")
+
+	# Set state to COMBAT immediately (no SPAWNING state in continuous mode)
+	current_state = WaveState.COMBAT
 	living_enemies.clear()
 	wave_start_time = Time.get_ticks_msec() / 1000.0
+	wave_elapsed_time = 0.0
 	wave_stats = {"enemies_killed": 0, "damage_dealt": 0, "xp_earned": 0, "drops_collected": {}}
 
-	# Initialize spawn tracking (hotfix for premature wave completion - 2025-11-14)
+	# Initialize spawn tracking
 	enemies_spawned_this_wave = 0
 	total_enemies_for_wave = EnemyService.get_enemy_count_for_wave(current_wave)
-	print("[WaveManager] Total enemies planned for wave: ", total_enemies_for_wave)
 
-	print("[WaveManager] State set to SPAWNING, wave start time: ", wave_start_time)
+	# Initialize spawn timer (first spawn 1-2s into wave for immediate action)
+	spawn_timer = randf_range(1.0, 2.0)
+
+	print("[WaveManager] Wave Configuration:")
+	print("[WaveManager]   Duration: ", WAVE_DURATION, "s")
+	print("[WaveManager]   Total enemies planned: ", total_enemies_for_wave)
+	print("[WaveManager]   Max living enemies: ", MAX_LIVING_ENEMIES)
+	print("[WaveManager]   Spawn interval: ", SPAWN_INTERVAL_MIN, "-", SPAWN_INTERVAL_MAX, "s")
+	print("[WaveManager]   Enemies per spawn: ", SPAWN_COUNT_MIN, "-", SPAWN_COUNT_MAX)
+	print("[WaveManager]   First spawn in: ", spawn_timer, "s")
+	print("[WaveManager]   State: COMBAT")
 
 	# Update HUD
-	print("[WaveManager] Updating HUD...")
 	HudService.update_wave(current_wave)
-	print("[WaveManager] Emitting wave_started signal")
+	HudService.update_wave_timer(WAVE_DURATION)  # Start countdown
+	print("[WaveManager] HUD updated: wave number and timer initialized")
+
+	# Emit wave started signal
 	wave_started.emit(current_wave)
+	print("[WaveManager] wave_started signal emitted")
 
-	# Spawn enemies
-	print("[WaveManager] Getting enemy count for wave ", current_wave)
-	var enemy_count = EnemyService.get_enemy_count_for_wave(current_wave)
-	print("[WaveManager] Will spawn ", enemy_count, " enemies")
-	_spawn_wave_enemies(enemy_count)
+	# Play wave start sound (Week 14 Phase 1.5)
+	_play_sound(WAVE_START_SOUND, "wave_start", -3.0)
 
-	current_state = WaveState.COMBAT
-	print("[WaveManager] State set to COMBAT")
+	print("[WaveManager] Continuous spawning active - enemies will spawn throughout wave duration")
+	print("[WaveManager] ========================================")
 
 
-func _spawn_wave_enemies(count: int) -> void:
-	print("[WaveManager] _spawn_wave_enemies() called with count: ", count)
-	enemies_remaining = count
+func _process(delta: float) -> void:
+	"""Continuous spawning and wave timer logic (Week 14 Phase 2)
 
-	# Get spawn rate for this wave
-	var spawn_rate = EnemyService.get_spawn_rate(current_wave)
-	print("[WaveManager] Spawn rate: ", spawn_rate, " seconds")
+	Runs every frame during COMBAT state:
+	1. Updates wave timer and HUD
+	2. Checks for wave timeout (60s)
+	3. Spawns enemies continuously (1-3 every 3-5s)
+	4. Throttles spawning when approaching max capacity (35 enemies)
+	"""
+	# Only process during COMBAT state
+	if current_state != WaveState.COMBAT:
+		return
 
-	# Spawn enemies over time (not all at once)
-	# Note: We track "selections" (i) vs "actual enemies spawned" (counter)
-	# Swarm enemies spawn multiple units per selection
-	print("[WaveManager] Starting enemy spawn loop...")
-	var i = 0
-	while enemies_spawned_this_wave < total_enemies_for_wave:
-		i += 1
+	# Update wave elapsed time
+	wave_elapsed_time += delta
+	var time_remaining = WAVE_DURATION - wave_elapsed_time
+
+	# Update HUD every frame with current time remaining
+	HudService.update_wave_timer(time_remaining)
+
+	# Check if wave timer expired (60 seconds)
+	if wave_elapsed_time >= WAVE_DURATION:
+		print("[WaveManager] ========================================")
+		print("[WaveManager] WAVE TIMER EXPIRED (", WAVE_DURATION, "s)")
+		print("[WaveManager]   Living enemies: ", living_enemies.size())
 		print(
-			"[WaveManager] Spawn selection ",
-			i,
-			" (",
+			"[WaveManager]   Enemies spawned: ",
 			enemies_spawned_this_wave,
 			"/",
-			total_enemies_for_wave,
-			" spawned)"
+			total_enemies_for_wave
 		)
-		await get_tree().create_timer(spawn_rate).timeout
+		print("[WaveManager]   Entering CLEANUP phase")
+		print("[WaveManager] ========================================")
+		_end_wave()
+		return
 
-		# Bug #4 fix: Stop spawning if player died (2025-11-14)
-		var player = get_tree().get_first_node_in_group("player") as Player
-		if not player or not player.is_alive():
-			print("[WaveManager] Player dead, stopping spawn loop")
-			break
+	# Check if we've hit max living enemies (throttling) - Week 14 Phase 2.2
+	if living_enemies.size() >= MAX_LIVING_ENEMIES:
+		# Reset spawn timer when throttled to prevent burst spawning when enemies die
+		if spawn_timer <= 0:
+			spawn_timer = randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
+			print(
+				"[WaveManager:Throttle] Max capacity reached (",
+				living_enemies.size(),
+				"/",
+				MAX_LIVING_ENEMIES,
+				") - spawn delayed"
+			)
+		return
 
-		_spawn_single_enemy()
+	# Countdown spawn timer
+	spawn_timer -= delta
 
-		# Safety check: prevent infinite loop
-		if i > count * 2:
-			print("[WaveManager] WARNING: Spawn loop safety limit reached!")
-			break
-	print(
-		"[WaveManager] All enemies spawned: ",
-		enemies_spawned_this_wave,
-		"/",
-		total_enemies_for_wave
-	)
+	# Check if it's time to spawn enemies
+	if spawn_timer <= 0 and enemies_spawned_this_wave < total_enemies_for_wave:
+		# Calculate how many enemies to spawn (1-3)
+		var spawn_count = randi_range(SPAWN_COUNT_MIN, SPAWN_COUNT_MAX)
+
+		# Don't exceed total planned enemies for wave
+		spawn_count = mini(spawn_count, total_enemies_for_wave - enemies_spawned_this_wave)
+
+		# Don't exceed max living capacity (additional check)
+		var capacity_remaining = MAX_LIVING_ENEMIES - living_enemies.size()
+		spawn_count = mini(spawn_count, capacity_remaining)
+
+		if spawn_count > 0:
+			print("[WaveManager:Spawn] Spawn tick triggered:")
+			print(
+				"[WaveManager:Spawn]   Time: ",
+				snappedf(wave_elapsed_time, 0.1),
+				"s / ",
+				WAVE_DURATION,
+				"s"
+			)
+			print("[WaveManager:Spawn]   Spawning: ", spawn_count, " enemies")
+			print(
+				"[WaveManager:Spawn]   Progress: ",
+				enemies_spawned_this_wave,
+				" -> ",
+				enemies_spawned_this_wave + spawn_count,
+				" / ",
+				total_enemies_for_wave
+			)
+			print(
+				"[WaveManager:Spawn]   Living: ", living_enemies.size(), " / ", MAX_LIVING_ENEMIES
+			)
+
+			# Spawn enemies
+			for i in range(spawn_count):
+				_spawn_single_enemy()
+
+			print(
+				"[WaveManager:Spawn] Spawn complete - ",
+				enemies_spawned_this_wave,
+				"/",
+				total_enemies_for_wave,
+				" total spawned"
+			)
+
+		# Reset spawn timer for next spawn (3-5 seconds)
+		var next_spawn_delay = randf_range(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_MAX)
+		spawn_timer = next_spawn_delay
+		print("[WaveManager:Spawn] Next spawn in ", snappedf(next_spawn_delay, 0.1), "s")
 
 
 func _spawn_single_enemy() -> void:
-	print("[WaveManager] _spawn_single_enemy() called")
+	"""Spawn a single enemy (or swarm group) with wave-appropriate type selection
 
+	Called by continuous spawning system in _process().
+	Handles swarm enemies (spawn_count > 1) and tracks all spawned units.
+	"""
 	# Load enemy scene
 	const ENEMY_SCENE = preload("res://scenes/entities/enemy.tscn")
 
@@ -170,7 +268,12 @@ func _spawn_single_enemy() -> void:
 		var enemy_id = "enemy_%d_%d_%d" % [current_wave, randi(), i]
 		print("[WaveManager] Enemy ID: ", enemy_id)
 
-		# Setup enemy
+		# Add to scene FIRST (data.tree must be initialized before setup - Week 14 Phase 1.7 bugfix)
+		print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
+		spawn_container.add_child(enemy)
+		print("[WaveManager] Enemy added to scene")
+
+		# Setup enemy (now that it's in the tree, audio can play)
 		print("[WaveManager] Calling enemy.setup()...")
 		enemy.setup(enemy_id, random_type, current_wave)
 		print("[WaveManager] Enemy setup complete")
@@ -189,11 +292,6 @@ func _spawn_single_enemy() -> void:
 
 		enemy.global_position = spawn_pos
 		print("[WaveManager] Enemy positioned at: ", spawn_pos)
-
-		# Add to scene
-		print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
-		spawn_container.add_child(enemy)
-		print("[WaveManager] Enemy added to scene")
 
 		# Track in living_enemies for wave completion detection
 		living_enemies[enemy_id] = enemy
@@ -230,6 +328,47 @@ func _get_random_spawn_position() -> Vector2:
 	return player_pos + offset
 
 
+func _end_wave() -> void:
+	"""Called when wave timer expires (Week 14 Phase 2.3)
+
+	Transitions to CLEANUP state:
+	- No more enemy spawns
+	- HUD shows "CLEANUP" message
+	- Wave completes when all remaining enemies killed
+	"""
+	current_state = WaveState.CLEANUP
+
+	print("[WaveManager:Cleanup] ========================================")
+	print("[WaveManager:Cleanup] ENTERING CLEANUP PHASE")
+	print("[WaveManager:Cleanup]   Living enemies: ", living_enemies.size())
+	print(
+		"[WaveManager:Cleanup]   Enemies spawned: ",
+		enemies_spawned_this_wave,
+		"/",
+		total_enemies_for_wave
+	)
+	print("[WaveManager:Cleanup]   Wave stats:")
+	print("[WaveManager:Cleanup]     Killed: ", wave_stats.enemies_killed)
+	print("[WaveManager:Cleanup]     Damage: ", wave_stats.damage_dealt)
+	print("[WaveManager:Cleanup]     XP: ", wave_stats.xp_earned)
+	print("[WaveManager:Cleanup] ========================================")
+
+	# Update HUD to show cleanup state
+	HudService.update_wave_timer(0.0)  # Timer shows 0 or "CLEANUP"
+	print("[WaveManager:Cleanup] HUD updated: timer stopped")
+
+	# Check if all enemies already dead (wave complete immediately)
+	if living_enemies.is_empty():
+		print("[WaveManager:Cleanup] All enemies already eliminated - wave complete!")
+		_complete_wave()
+	else:
+		print(
+			"[WaveManager:Cleanup] ",
+			living_enemies.size(),
+			" enemies remaining - waiting for elimination"
+		)
+
+
 func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) -> void:
 	print("[WaveManager] _on_enemy_died called for enemy: ", enemy_id)
 
@@ -245,42 +384,37 @@ func _on_enemy_died(enemy_id: String, _drop_data: Dictionary, xp_reward: int) ->
 	# Remove from living_enemies tracking
 	if living_enemies.has(enemy_id):
 		living_enemies.erase(enemy_id)
-		print("[WaveManager] Enemy removed from living_enemies. Remaining: ", living_enemies.size())
+		print(
+			"[WaveManager:Death] Enemy eliminated: ",
+			enemy_id,
+			" | Living: ",
+			living_enemies.size(),
+			" | Killed: ",
+			wave_stats.enemies_killed,
+			"/",
+			total_enemies_for_wave
+		)
 	else:
-		print("[WaveManager] WARNING: Enemy ", enemy_id, " not found in living_enemies")
+		print("[WaveManager:Death] WARNING: Enemy ", enemy_id, " not found in living_enemies")
 
-	# Decrement remaining count (kept for backward compatibility)
+	# Decrement remaining count (kept for backward compatibility with tests)
 	enemies_remaining -= 1
 
-	# Check if wave is complete (hotfix: ALL enemies must spawn before wave can complete - 2025-11-14)
-	if (
-		living_enemies.is_empty()
-		and current_state == WaveState.COMBAT
-		and enemies_spawned_this_wave >= total_enemies_for_wave
-	):
-		print(
-			"[WaveManager] All enemies dead AND all enemies spawned (",
-			enemies_spawned_this_wave,
-			"/",
-			total_enemies_for_wave,
-			"), completing wave"
-		)
+	# Wave completion logic (Week 14 Phase 2.3)
+	# COMBAT state: Wave continues until timer expires (continuous spawning active)
+	# CLEANUP state: Wave completes when all enemies eliminated
+	if living_enemies.is_empty() and current_state == WaveState.CLEANUP:
+		print("[WaveManager:Death] ========================================")
+		print("[WaveManager:Death] ALL ENEMIES ELIMINATED DURING CLEANUP")
+		print("[WaveManager:Death]   Total killed: ", wave_stats.enemies_killed)
+		print("[WaveManager:Death]   Total spawned: ", enemies_spawned_this_wave)
+		print("[WaveManager:Death]   Wave completing...")
+		print("[WaveManager:Death] ========================================")
 		_complete_wave()
-	elif living_enemies.is_empty() and enemies_spawned_this_wave < total_enemies_for_wave:
-		# Hotfix: Prevent premature wave completion while enemies still spawning
+	elif living_enemies.is_empty() and current_state == WaveState.COMBAT:
+		# All enemies dead during COMBAT phase - continuous spawning will spawn more
 		print(
-			"[WaveManager] All current enemies dead, but still spawning (",
-			enemies_spawned_this_wave,
-			"/",
-			total_enemies_for_wave,
-			") - wave continues"
-		)
-	elif enemies_remaining <= 0 and living_enemies.size() > 0:
-		# Safety check: counter vs actual living enemies mismatch
-		print(
-			"[WaveManager] WARNING: enemies_remaining is 0 but ",
-			living_enemies.size(),
-			" enemies still living"
+			"[WaveManager:Death] All current enemies dead (COMBAT phase) - continuous spawning active"
 		)
 
 
@@ -301,6 +435,9 @@ func _on_drops_collected(drops: Dictionary) -> void:
 func _complete_wave() -> void:
 	print("[WaveManager] _complete_wave() called")
 	current_state = WaveState.VICTORY
+
+	# Play wave complete sound (Week 14 Phase 1.5)
+	_play_sound(WAVE_COMPLETE_SOUND, "wave_complete", 0.0)
 
 	# Calculate wave completion time
 	var wave_end_time = Time.get_ticks_msec() / 1000.0
@@ -353,3 +490,41 @@ func _cleanup_enemies() -> void:
 			enemy.queue_free()
 	living_enemies.clear()
 	print("[WaveManager] Cleanup complete")
+
+
+func _play_sound(sound: AudioStream, sound_name: String, volume_db: float) -> void:
+	"""Play ambient sound with diagnostic logging (Week 14 Phase 1.5)
+
+	Args:
+		sound: Preloaded AudioStream resource
+		sound_name: Sound name for logging ("wave_start", "wave_complete")
+		volume_db: Volume in decibels (-3.0 to 0.0 typical for ambient sounds)
+
+	iOS-compatible pattern: Uses preload() and programmatic AudioStreamPlayer
+	"""
+	if not sound:
+		print("[WaveManager:Audio] ERROR: No sound provided for ", sound_name)
+		return
+
+	# Create AudioStreamPlayer for non-positional audio
+	var audio_player = AudioStreamPlayer.new()
+	audio_player.stream = sound
+	audio_player.volume_db = volume_db
+
+	# Auto-cleanup after playback
+	audio_player.finished.connect(audio_player.queue_free)
+
+	# Add to scene tree
+	add_child(audio_player)
+	audio_player.play()
+
+	# Diagnostic logging
+	print(
+		"[WaveManager:Audio] Playing ",
+		sound_name,
+		" sound (wave: ",
+		current_wave,
+		", volume: ",
+		volume_db,
+		" dB)"
+	)
