@@ -183,48 +183,17 @@ func collect() -> void:
 	collected.emit(currency_type, amount)
 	print("[DropPickup]   Signal emitted successfully")
 
-	# Play collection animation (scale up + fade out)
-	print("[DropPickup]   Creating collection animation tween")
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.2)
-	tween.tween_property(self, "modulate:a", 0.0, 0.2)
-	tween.tween_callback(_on_collection_animation_complete)
-	print("[DropPickup]   Animation tween started")
-	print("[DropPickup] ═══ collect() EXIT (animation started) ═══")
-
-
-func _on_collection_animation_complete() -> void:
-	"""Called when collection animation completes - cleanup"""
-	print("[DropPickup] ═══ _on_collection_animation_complete() ENTRY ═══")
-	print("[DropPickup]   Currency: ", currency_type, " x", amount)
-	print("[DropPickup]   Instance ID: ", get_instance_id())
-	print("[DropPickup]   Is inside tree: ", is_inside_tree())
-	print("[DropPickup]   Is queued for deletion: ", is_queued_for_deletion())
-	print("[DropPickup]   Calling queue_free()")
+	# Immediate cleanup (iOS-compatible - Tweens don't work on iOS Metal renderer)
+	print("[DropPickup]   Calling queue_free() for immediate cleanup")
 	queue_free()
-	print("[DropPickup] ═══ _on_collection_animation_complete() EXIT ═══")
+	print("[DropPickup] ═══ collect() EXIT (immediate cleanup) ═══")
 
 
 func _start_idle_animations() -> void:
-	"""Start looping animations for visual appeal"""
-	# Bobbing animation (up and down)
-	var bob_tween = create_tween()
-	bob_tween.set_loops()
-	bob_tween.tween_property(self, "position:y", position.y - 3, 0.6).set_ease(Tween.EASE_IN_OUT)
-	bob_tween.tween_property(self, "position:y", position.y + 3, 0.6).set_ease(Tween.EASE_IN_OUT)
-
-	# Pulsing scale animation (breathing effect)
-	var pulse_tween = create_tween()
-	pulse_tween.set_loops()
-	pulse_tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.5).set_ease(Tween.EASE_IN_OUT)
-	pulse_tween.tween_property(self, "scale", Vector2(0.9, 0.9), 0.5).set_ease(Tween.EASE_IN_OUT)
-
-	# Slight rotation for extra flair
-	var rotate_tween = create_tween()
-	rotate_tween.set_loops()
-	rotate_tween.tween_property(self, "rotation", deg_to_rad(5), 0.8).set_ease(Tween.EASE_IN_OUT)
-	rotate_tween.tween_property(self, "rotation", deg_to_rad(-5), 0.8).set_ease(Tween.EASE_IN_OUT)
+	"""Start looping animations for visual appeal (disabled for iOS compatibility)"""
+	# NOTE: Idle animations disabled - Tweens don't work on iOS Metal renderer
+	# Pickups are still fully functional, just without cosmetic bob/pulse/rotate
+	return
 
 
 func _update_magnetized_visual() -> void:

@@ -153,10 +153,7 @@ func _on_wave_changed(wave: int) -> void:
 
 	wave_label.text = "Wave %d" % wave
 
-	# Wave label animation
-	var tween = create_tween()
-	tween.tween_property(wave_label, "scale", Vector2(1.5, 1.5), 0.2)
-	tween.tween_property(wave_label, "scale", Vector2(1.0, 1.0), 0.2)
+	# Wave label animation disabled - Tweens don't work on iOS Metal renderer
 
 
 func _on_wave_started(wave: int) -> void:
@@ -277,25 +274,16 @@ func _get_currency_label(currency_type: String) -> Label:
 ## Animation Functions
 
 
-func _flash_bar(bar: ProgressBar, flash_color: Color) -> void:
-	"""Flash a progress bar with a color"""
-	if not bar:
-		return
-
-	var original_color = bar.modulate
-	var tween = create_tween()
-	tween.tween_property(bar, "modulate", flash_color, 0.1)
-	tween.tween_property(bar, "modulate", original_color, 0.2)
+func _flash_bar(_bar: ProgressBar, _flash_color: Color) -> void:
+	"""Flash a progress bar with a color (disabled for iOS compatibility)"""
+	# NOTE: Bar flash disabled - Tweens don't work on iOS Metal renderer
+	return
 
 
-func _pulse_label(label: Label) -> void:
-	"""Pulse a label to indicate change"""
-	if not label:
-		return
-
-	var tween = create_tween()
-	tween.tween_property(label, "scale", Vector2(1.2, 1.2), 0.1)
-	tween.tween_property(label, "scale", Vector2(1.0, 1.0), 0.1)
+func _pulse_label(_label: Label) -> void:
+	"""Pulse a label to indicate change (disabled for iOS compatibility)"""
+	# NOTE: Label pulse disabled - Tweens don't work on iOS Metal renderer
+	return
 
 
 func _show_low_hp_warning() -> void:

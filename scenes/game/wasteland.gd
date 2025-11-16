@@ -831,34 +831,11 @@ func _process(delta: float) -> void:
 	# 				print("[LabelMonitor]   WARNING: Invalid label in active pool!")
 
 
-func screen_shake(intensity: float, duration: float) -> void:
-	"""Shake the camera for visual impact"""
-	if not camera:
-		return
-
-	# Cancel any existing shake
-	var existing_tweens = camera.get_tree().get_processed_tweens()
-	for tween in existing_tweens:
-		if tween.is_valid():
-			tween.kill()
-
-	# Create shake tween
-	var shake_tween = create_tween()
-	shake_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-
-	# Shake with random offsets
-	var shake_count = int(duration * 60)  # 60 shakes per second
-	var time_per_shake = duration / shake_count
-
-	for i in range(shake_count):
-		var shake_amount = intensity * (1.0 - float(i) / shake_count)  # Decay intensity
-		var offset = Vector2(
-			randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)
-		)
-		shake_tween.tween_property(camera, "offset", offset, time_per_shake)
-
-	# Return to center
-	shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+func screen_shake(_intensity: float, _duration: float) -> void:
+	"""Shake the camera for visual impact (disabled for iOS compatibility)"""
+	# NOTE: Camera shake disabled - Tweens don't work on iOS Metal renderer
+	# Screen flash already provides level-up feedback, shake is extra polish
+	return
 
 
 func _add_debug_weapon_switcher() -> void:

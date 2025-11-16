@@ -274,12 +274,7 @@ func _on_card_tapped(event: InputEvent, character_type: String) -> void:
 		print("[CharacterSelection] Card tapped: ", character_type)
 		_show_character_detail_panel(character_type)
 
-		# Visual feedback - brief scale animation
-		if character_type_cards.has(character_type):
-			var card = character_type_cards[character_type]
-			var tween = create_tween()
-			tween.tween_property(card, "scale", Vector2(0.95, 0.95), 0.1)
-			tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.1)
+		# Visual feedback disabled - Tweens don't work on iOS Metal renderer
 
 
 func _show_character_detail_panel(character_type: String) -> void:
@@ -566,51 +561,29 @@ func _build_detail_buttons(
 func _animate_detail_panel_entrance(
 	backdrop_style: StyleBoxFlat, content_panel: PanelContainer
 ) -> void:
-	"""Animate detail panel entrance (backdrop fade + slide-up)"""
-	var tween = create_tween()
-	tween.set_parallel(true)
-
-	# Backdrop fade-in (200ms)
-	tween.tween_property(backdrop_style, "bg_color", Color(0, 0, 0, 0.7), 0.2)
-
-	# Content panel slide-up (300ms ease-out)
-	tween.tween_property(content_panel, "offset_top", 0, 0.3).set_ease(Tween.EASE_OUT).set_trans(
-		Tween.TRANS_CUBIC
-	)
+	"""Animate detail panel entrance (disabled for iOS compatibility)"""
+	# NOTE: Entrance animation disabled - Tweens don't work on iOS Metal renderer
+	# Set final state immediately
+	print("[CharacterSelection] Panel entrance: iOS-compatible immediate display (no animation)")
+	backdrop_style.bg_color = Color(0, 0, 0, 0.7)
+	content_panel.offset_top = 0
 
 
 func _dismiss_detail_panel() -> void:
-	"""Dismiss the detail panel with slide-down animation"""
+	"""Dismiss the detail panel with immediate cleanup (iOS-compatible)"""
 	if not current_detail_panel:
 		return
 
 	var panel = current_detail_panel
-	var content_panel = panel.get_node_or_null("ContentPanel")
-	var backdrop = panel.get_node_or_null("Backdrop")
 
-	if content_panel and backdrop:
-		var tween = create_tween()
-		tween.set_parallel(true)
-
-		# Backdrop fade-out
-		var backdrop_style = backdrop.get_theme_stylebox("panel")
-		if backdrop_style and backdrop_style is StyleBoxFlat:
-			tween.tween_property(backdrop_style, "bg_color", Color(0, 0, 0, 0), 0.2)
-
-		# Content panel slide-down
-		(
-			tween
-			. tween_property(content_panel, "offset_top", 1000, 0.25)
-			. set_ease(Tween.EASE_IN)
-			. set_trans(Tween.TRANS_CUBIC)
-		)
-
-		# Wait for animation to complete, then remove
-		tween.tween_callback(func(): panel.queue_free())
-	else:
+	# Immediate cleanup (iOS-compatible - Tweens don't work on iOS Metal renderer)
+	print("[CharacterSelection] Dismissing detail panel (iOS-compatible immediate cleanup)")
+	print("[CharacterSelection]   Panel instance ID: ", panel.get_instance_id())
+	if panel:
 		panel.queue_free()
-
+		print("[CharacterSelection]   Panel queued for deletion")
 	current_detail_panel = null
+	print("[CharacterSelection]   current_detail_panel cleared")
 
 
 func _on_backdrop_tapped(event: InputEvent) -> void:
@@ -699,15 +672,7 @@ func _on_character_card_selected(character_type: String) -> void:
 	selected_character_type = character_type
 	GameLogger.info("Character type selected", {"type": character_type})
 
-	# Tap feedback animation (Week 13 Phase 2 - Professional mobile game feel)
-	if character_type_cards.has(character_type):
-		var card = character_type_cards[character_type]
-		if card:
-			# Scale animation: 1.0 → 1.05 → 1.0 (tactile feedback)
-			var tween = create_tween()
-			tween.set_parallel(false)
-			tween.tween_property(card, "scale", Vector2(1.05, 1.05), 0.1)
-			tween.tween_property(card, "scale", Vector2(1.0, 1.0), 0.1)
+	# Tap feedback animation disabled - Tweens don't work on iOS Metal renderer
 
 	# Update visual indication (highlight selected card)
 	_highlight_selected_card(character_type)

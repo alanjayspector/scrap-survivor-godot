@@ -50,7 +50,7 @@ const DECELERATION_RATE: float = 0.2  # Slow ramp-down (0.15-0.25 optimal) - smo
 
 ## Visual feedback
 var damage_flash_timer: float = 0.0
-var damage_flash_duration: float = 0.1
+var damage_flash_duration: float = 0.2  # iOS-compatible manual timer (was 0.1 for Tween)
 var original_visual_color: Color = Color(0.2, 0.6, 1, 1)  # Stored on _ready() - Bug #8 fix
 var active_damage_tween: Tween = null  # Track active tween to prevent conflicts on iOS
 
@@ -143,9 +143,11 @@ func _load_character_stats() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	# Update damage flash
+	# Update damage flash timer (iOS-compatible manual restoration)
 	if damage_flash_timer > 0:
 		damage_flash_timer -= delta
+		if damage_flash_timer <= 0:
+			_restore_visual_color()
 
 	# Update weapon cooldown
 	if weapon_cooldown > 0:
@@ -553,61 +555,34 @@ func die() -> void:
 
 
 func _flash_damage() -> void:
-	"""Visual feedback for taking damage"""
-	# Bug #8 fix (2025-01-14): Use stored original_visual_color instead of hardcoded blue
-	# Previous bug: Color(0.2, 0.6, 1, 1) hardcoded - player stuck blue after damage
-	# Fix: Restore to original color stored in _ready()
+	"""Visual feedback for taking damage (iOS-compatible - no Tweens)"""
+	print("[Player] _flash_damage() - iOS-compatible immediate color change")
 
-	print("[Player] _flash_damage() - restoring to original color: ", original_visual_color)
+	# Set damage flash timer for manual restoration
+	damage_flash_timer = damage_flash_duration
 
-	# iOS FIX: Kill any existing damage tween to prevent conflicts
-	if active_damage_tween and is_instance_valid(active_damage_tween):
-		print("[Player]   Killing previous damage tween to prevent conflict")
-		active_damage_tween.kill()
-
-	# Find Visual child and flash red
+	# Find Visual child and set to RED immediately
 	for child in get_children():
 		if child is ColorRect:
-			var current_color = child.color
-			print(
-				"[Player]   ColorRect current color: ",
-				current_color,
-				" (should be: ",
-				original_visual_color,
-				")"
-			)
-			print("[Player]   Creating damage flash tween for ColorRect")
-			active_damage_tween = create_tween()
-			active_damage_tween.tween_property(child, "color", Color.RED, 0.1)
-			active_damage_tween.tween_property(child, "color", original_visual_color, 0.1)  # Use stored color
-			active_damage_tween.tween_callback(func(): _on_damage_flash_complete(child))
-			print("[Player]   Tween created: RED -> ", original_visual_color)
+			print("[Player]   Setting ColorRect to RED (manual timer will restore)")
+			child.color = Color.RED
 		elif child is Sprite2D:
-			print("[Player]   Creating damage flash tween for Sprite2D")
-			active_damage_tween = create_tween()
-			active_damage_tween.tween_property(child, "modulate", Color.RED, 0.1)
-			active_damage_tween.tween_property(child, "modulate", Color.WHITE, 0.1)
-			print("[Player]   Tween created: RED -> WHITE")
+			print("[Player]   Setting Sprite2D modulate to RED (manual timer will restore)")
+			child.modulate = Color.RED
 
 
-func _on_damage_flash_complete(visual_node: Node) -> void:
-	"""Called when damage flash tween completes - verify color restored (Bug #8 diagnostic)"""
-	if visual_node is ColorRect:
-		var final_color = visual_node.color
-		print(
-			"[Player] Damage flash complete - ColorRect final color: ",
-			final_color,
-			" (expected: ",
-			original_visual_color,
-			")"
-		)
-		if final_color != original_visual_color:
-			print(
-				"[Player]   WARNING: Color mismatch! Expected ",
-				original_visual_color,
-				" but got ",
-				final_color
-			)
+func _restore_visual_color() -> void:
+	"""Restore visual color after damage flash (iOS-compatible manual restoration)"""
+	print("[Player] _restore_visual_color() - restoring to: ", original_visual_color)
+
+	# Find Visual child and restore color
+	for child in get_children():
+		if child is ColorRect:
+			child.color = original_visual_color
+			print("[Player]   ColorRect color restored to: ", original_visual_color)
+		elif child is Sprite2D:
+			child.modulate = Color.WHITE
+			print("[Player]   Sprite2D modulate restored to WHITE")
 
 
 ## Signal Handlers

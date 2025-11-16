@@ -140,13 +140,11 @@ func _create_particle_texture() -> GradientTexture2D:
 
 
 func _start_pulse_animation() -> void:
-	if _pulse_tween:
-		_pulse_tween.kill()
-
-	_pulse_tween = create_tween()
-	_pulse_tween.set_loops()
-	_pulse_tween.tween_property(_ring_visual, "modulate:a", 0.8, 1.0)
-	_pulse_tween.tween_property(_ring_visual, "modulate:a", 0.3, 1.0)
+	"""Start pulse animation (disabled for iOS compatibility)"""
+	# NOTE: Pulse animation disabled - Tweens don't work on iOS Metal renderer
+	# Aura still functions correctly, just without cosmetic pulsing visual
+	if _ring_visual:
+		_ring_visual.modulate.a = 0.5  # Set to middle opacity instead of pulsing
 
 
 func update_aura(new_type: String, new_radius: float) -> void:
