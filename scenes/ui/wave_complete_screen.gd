@@ -5,10 +5,10 @@ extends Panel
 signal next_wave_pressed
 signal return_to_hub_pressed
 
-@onready var victory_label: Label = $Content/VictoryLabel
-@onready var stats_display: VBoxContainer = $Content/StatsDisplay
-@onready var next_wave_button: Button = $Content/ButtonsContainer/NextWaveButton
-@onready var hub_button: Button = $Content/ButtonsContainer/HubButton
+@onready var victory_label: Label = $PaddingContainer/Content/VictoryLabel
+@onready var stats_display: VBoxContainer = $PaddingContainer/Content/StatsDisplay
+@onready var next_wave_button: Button = $PaddingContainer/Content/ButtonsContainer/NextWaveButton
+@onready var hub_button: Button = $PaddingContainer/Content/ButtonsContainer/HubButton
 
 
 func _ready() -> void:
@@ -24,7 +24,7 @@ func _ready() -> void:
 
 	# Ensure hub button is visible and properly sized
 	hub_button.visible = true
-	hub_button.custom_minimum_size = Vector2(150, 60)  # Match NextWaveButton size
+	hub_button.custom_minimum_size = Vector2(180, 70)  # Match NextWaveButton size (mobile-friendly)
 
 	print("[WaveComplete] Buttons initialized - Hub: ", hub_button, " Next: ", next_wave_button)
 
@@ -63,6 +63,7 @@ func _add_stat_label(text: String) -> void:
 	label.add_theme_font_size_override("font_size", 24)  # Mobile-friendly font size
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 3)
+	label.add_theme_constant_override("line_spacing", 4)  # Better line height
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_display.add_child(label)
 

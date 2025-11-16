@@ -64,49 +64,58 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -250.0
+offset_top = -200.0
+offset_right = 250.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_game_over_bg")
 script = ExtResource("4_game_over_screen")
 
-[node name="Content" type="VBoxContainer" parent="UI/GameOverScreen"]
+[node name="PaddingContainer" type="MarginContainer" parent="UI/GameOverScreen"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
 
-[node name="GameOverLabel" type="Label" parent="UI/GameOverScreen/Content"]
+[node name="Content" type="VBoxContainer" parent="UI/GameOverScreen/PaddingContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="GameOverLabel" type="Label" parent="UI/GameOverScreen/PaddingContainer/Content"]
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 36
 text = "Game Over"
 horizontal_alignment = 1
 
-[node name="StatsDisplay" type="VBoxContainer" parent="UI/GameOverScreen/Content"]
+[node name="StatsDisplay" type="VBoxContainer" parent="UI/GameOverScreen/PaddingContainer/Content"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 12
 
-[node name="RetryButton" type="Button" parent="UI/GameOverScreen/Content"]
-custom_minimum_size = Vector2(200, 60)
+[node name="ButtonsContainer" type="VBoxContainer" parent="UI/GameOverScreen/PaddingContainer/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_constants/separation = 15
+
+[node name="RetryButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
+custom_minimum_size = Vector2(180, 70)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
 text = "Retry"
 
-[node name="MainMenuButton" type="Button" parent="UI/GameOverScreen/Content"]
-custom_minimum_size = Vector2(200, 60)
+[node name="MainMenuButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
+custom_minimum_size = Vector2(180, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 22
 text = "Main Menu"
 
 [node name="GameController" type="Node" parent="."]

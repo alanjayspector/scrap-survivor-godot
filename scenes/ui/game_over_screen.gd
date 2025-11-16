@@ -4,10 +4,10 @@ extends Panel
 signal retry_pressed
 signal main_menu_pressed
 
-@onready var game_over_label: Label = $Content/GameOverLabel
-@onready var stats_display: VBoxContainer = $Content/StatsDisplay
-@onready var retry_button: Button = $Content/RetryButton
-@onready var main_menu_button: Button = $Content/MainMenuButton
+@onready var game_over_label: Label = $PaddingContainer/Content/GameOverLabel
+@onready var stats_display: VBoxContainer = $PaddingContainer/Content/StatsDisplay
+@onready var retry_button: Button = $PaddingContainer/Content/ButtonsContainer/RetryButton
+@onready var main_menu_button: Button = $PaddingContainer/Content/ButtonsContainer/MainMenuButton
 
 
 func _ready() -> void:
@@ -45,6 +45,7 @@ func _add_stat_label(text: String) -> void:
 	label.add_theme_font_size_override("font_size", 24)  # Mobile-friendly font size
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 3)
+	label.add_theme_constant_override("line_spacing", 4)  # Better line height
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_display.add_child(label)
 

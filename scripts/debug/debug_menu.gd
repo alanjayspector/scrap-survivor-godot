@@ -65,7 +65,7 @@ func _ready() -> void:
 	dialog_text = ""  # Clear default text - we're using custom UI
 	ok_button_text = "Apply Changes"
 	cancel_button_text = "Cancel"
-	size = Vector2i(700, 600)  # Ensure dialog is large enough
+	size = Vector2i(700, 650)  # Increased height to prevent button cutoff (matches .tscn)
 
 	GameLogger.info("[DEBUG MENU] Dialog properties set")
 
@@ -277,7 +277,8 @@ func _get_reset_mode_description(mode: String) -> String:
 
 
 func _get_save_file_size() -> String:
-	var save_path = SaveManager.SAVE_PATH % 0
+	# Construct save path using SaveSystem's constants
+	var save_path = SaveSystem.SAVE_DIR + "save_%d.cfg" % 0
 	if not FileAccess.file_exists(save_path):
 		return "No save file"
 
