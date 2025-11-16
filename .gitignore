@@ -3,6 +3,7 @@
 .godot/**
 !.godot/global_script_class_cache.cfg
 .import/
+*.import
 export_presets.cfg
 
 # Exported builds
