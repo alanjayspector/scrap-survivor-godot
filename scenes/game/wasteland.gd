@@ -40,6 +40,11 @@ func _ready() -> void:
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	print("[Wasteland] Player tier set to PREMIUM")
 
+	# Set weapon tier to SUBSCRIPTION for testing all weapons (Week 14 QA)
+	# TODO: Remove when proper account system is implemented
+	WeaponService.set_tier(WeaponService.UserTier.SUBSCRIPTION)
+	print("[Wasteland] Weapon tier set to SUBSCRIPTION (all weapons unlocked)")
+
 	# Verify scene nodes loaded
 	print("[Wasteland] Camera: ", camera)
 	print("[Wasteland] Player container: ", player_container)

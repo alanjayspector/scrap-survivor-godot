@@ -416,6 +416,9 @@ func _fire_weapon(direction: Vector2) -> void:
 		consecutive_shots += 1
 		spinup_timer = 0.0  # Reset timer on successful shot
 
+		# Play weapon sound (Week 14 Phase 1.2)
+		WeaponService.play_weapon_sound(equipped_weapon_id, global_position)
+
 		GameLogger.debug("Player fired weapon", {"weapon_id": equipped_weapon_id})
 
 
