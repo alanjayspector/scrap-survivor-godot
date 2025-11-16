@@ -267,6 +267,20 @@ var current_tier: UserTier = UserTier.FREE
 var equipped_weapons: Dictionary = {}  # character_id -> weapon_id
 var weapon_cooldowns: Dictionary = {}  # weapon_instance_id -> time_remaining
 
+## Audio (Week 14 Phase 1.2) - Preloaded OGG Vorbis for iOS compatibility
+const WEAPON_AUDIO: Dictionary = {
+	"plasma_pistol": preload("res://assets/audio/weapons/plasma_pistol.ogg"),
+	"rusty_blade": preload("res://assets/audio/weapons/rusty_blade.ogg"),
+	"steel_sword": preload("res://assets/audio/weapons/steel_sword.ogg"),
+	"shock_rifle": preload("res://assets/audio/weapons/shock_rifle.ogg"),
+	"shotgun": preload("res://assets/audio/weapons/shotgun.ogg"),
+	"sniper_rifle": preload("res://assets/audio/weapons/sniper_rifle.ogg"),
+	"flamethrower": preload("res://assets/audio/weapons/flamethrower.ogg"),
+	"laser_rifle": preload("res://assets/audio/weapons/laser_rifle.ogg"),
+	"minigun": preload("res://assets/audio/weapons/minigun.ogg"),
+	"rocket_launcher": preload("res://assets/audio/weapons/rocket_launcher.ogg"),
+}
+
 ## Signals
 signal weapon_equipped(character_id: String, weapon_id: String)
 signal weapon_fired(weapon_id: String, position: Vector2, direction: Vector2)
@@ -275,7 +289,10 @@ signal weapon_cooldown_ready(weapon_id: String)
 
 ## Initialize service
 func _ready() -> void:
-	GameLogger.info("WeaponService initialized", {"weapon_count": WEAPON_DEFINITIONS.size()})
+	GameLogger.info(
+		"WeaponService initialized",
+		{"weapon_count": WEAPON_DEFINITIONS.size(), "audio_count": WEAPON_AUDIO.size()}
+	)
 
 
 ## Update cooldowns each frame
@@ -285,6 +302,40 @@ func _process(delta: float) -> void:
 		if weapon_cooldowns[weapon_instance_id] <= 0.0:
 			weapon_cooldowns.erase(weapon_instance_id)
 			weapon_cooldown_ready.emit(weapon_instance_id)
+
+
+## Play weapon firing sound (Week 14 Phase 1.2)
+##
+## Creates positional audio with pitch variation and auto-cleanup.
+## Uses preloaded audio streams for iOS compatibility.
+func play_weapon_sound(weapon_id: String, position: Vector2) -> void:
+	# Get preloaded audio stream
+	if not WEAPON_AUDIO.has(weapon_id):
+		GameLogger.debug("No audio configured for weapon", {"weapon_id": weapon_id})
+		return
+
+	var stream: AudioStream = WEAPON_AUDIO[weapon_id]
+
+	# Create AudioStreamPlayer2D for positional audio
+	var audio_player = AudioStreamPlayer2D.new()
+	audio_player.stream = stream
+	audio_player.volume_db = -5.0  # Slightly quieter
+	audio_player.pitch_scale = randf_range(0.95, 1.05)  # Variation
+	audio_player.max_distance = 1500
+	audio_player.attenuation = 1.5
+	audio_player.global_position = position
+
+	# Auto-cleanup
+	audio_player.finished.connect(audio_player.queue_free)
+
+	# Add to scene
+	get_tree().root.add_child(audio_player)
+	audio_player.play()
+
+	GameLogger.debug(
+		"Weapon sound playing",
+		{"weapon_id": weapon_id, "position": position, "pitch": audio_player.pitch_scale}
+	)
 
 
 ## Set user tier (for tier-based weapon restrictions)

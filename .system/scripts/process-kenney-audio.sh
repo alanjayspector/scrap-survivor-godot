@@ -171,34 +171,34 @@ echo "==========================================="
 echo ""
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "laser1|laserSmall|zap" \
-    "$AUDIO_DIR/weapons/plasma_pistol.wav" "Plasma Pistol"
+    "$AUDIO_DIR/weapons/plasma_pistol.ogg" "Plasma Pistol"
 
 find_and_copy "$IMPACT_DIR" "impactMetal_heavy_000|impactMetal_medium_000" \
-    "$AUDIO_DIR/weapons/rusty_blade.wav" "Rusty Blade"
+    "$AUDIO_DIR/weapons/rusty_blade.ogg" "Rusty Blade"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "zapThreeToneDown|zapTwoTone2" \
-    "$AUDIO_DIR/weapons/shock_rifle.wav" "Shock Rifle"
+    "$AUDIO_DIR/weapons/shock_rifle.ogg" "Shock Rifle"
 
 find_and_copy "$IMPACT_DIR" "impactMetal_light_000|impactMetal_medium_001" \
-    "$AUDIO_DIR/weapons/steel_sword.wav" "Steel Sword"
+    "$AUDIO_DIR/weapons/steel_sword.ogg" "Steel Sword"
 
 find_and_copy "$IMPACT_DIR:$SCIFI_DIR" "impactPlate_heavy_004|explosionCrunch_000" \
-    "$AUDIO_DIR/weapons/shotgun.wav" "Shotgun"
+    "$AUDIO_DIR/weapons/shotgun.ogg" "Shotgun"
 
 find_and_copy "$IMPACT_DIR" "impactMetal_light_004|impactPlate_light_004" \
-    "$AUDIO_DIR/weapons/sniper_rifle.wav" "Sniper Rifle"
+    "$AUDIO_DIR/weapons/sniper_rifle.ogg" "Sniper Rifle"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "forceField_000|lowFrequency" \
-    "$AUDIO_DIR/weapons/flamethrower.wav" "Flamethrower"
+    "$AUDIO_DIR/weapons/flamethrower.ogg" "Flamethrower"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "laserLarge_000|laser2" \
-    "$AUDIO_DIR/weapons/laser_rifle.wav" "Laser Rifle"
+    "$AUDIO_DIR/weapons/laser_rifle.ogg" "Laser Rifle"
 
 find_and_copy "$IMPACT_DIR:$DIGITAL_DIR" "impactPlate_light_000|zapThreeToneUp" \
-    "$AUDIO_DIR/weapons/minigun.wav" "Minigun"
+    "$AUDIO_DIR/weapons/minigun.ogg" "Minigun"
 
 find_and_copy "$SCIFI_DIR:$IMPACT_DIR" "explosionCrunch_000|impactPlank_heavy_000" \
-    "$AUDIO_DIR/weapons/rocket_launcher.wav" "Rocket Launcher"
+    "$AUDIO_DIR/weapons/rocket_launcher.ogg" "Rocket Launcher"
 
 # Select and copy enemies
 echo ""
@@ -207,28 +207,28 @@ echo "========================================="
 echo ""
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "zapThreeToneDown|powerUp" \
-    "$AUDIO_DIR/enemies/spawn_1.wav" "Enemy Spawn 1"
+    "$AUDIO_DIR/enemies/spawn_1.ogg" "Enemy Spawn 1"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "threeTone1|twoTone1" \
-    "$AUDIO_DIR/enemies/spawn_2.wav" "Enemy Spawn 2"
+    "$AUDIO_DIR/enemies/spawn_2.ogg" "Enemy Spawn 2"
 
 find_and_copy "$DIGITAL_DIR" "phaseJump1|pepSound1" \
-    "$AUDIO_DIR/enemies/spawn_3.wav" "Enemy Spawn 3"
+    "$AUDIO_DIR/enemies/spawn_3.ogg" "Enemy Spawn 3"
 
 find_and_copy "$IMPACT_DIR" "impactSoft_medium_000|impactWood_light_000" \
-    "$AUDIO_DIR/enemies/damage_1.wav" "Enemy Damage 1"
+    "$AUDIO_DIR/enemies/damage_1.ogg" "Enemy Damage 1"
 
 find_and_copy "$IMPACT_DIR" "impactMetal_light_001|impactPlate_light_000" \
-    "$AUDIO_DIR/enemies/damage_2.wav" "Enemy Damage 2"
+    "$AUDIO_DIR/enemies/damage_2.ogg" "Enemy Damage 2"
 
 find_and_copy "$SCIFI_DIR:$IMPACT_DIR" "explosionCrunch_001|impactPlate_heavy_000" \
-    "$AUDIO_DIR/enemies/death_1.wav" "Enemy Death 1"
+    "$AUDIO_DIR/enemies/death_1.ogg" "Enemy Death 1"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "lowDown|powerDown" \
-    "$AUDIO_DIR/enemies/death_2.wav" "Enemy Death 2"
+    "$AUDIO_DIR/enemies/death_2.ogg" "Enemy Death 2"
 
 find_and_copy "$IMPACT_DIR" "impactPlank_heavy_000|impactGlass_heavy_000" \
-    "$AUDIO_DIR/enemies/death_3.wav" "Enemy Death 3"
+    "$AUDIO_DIR/enemies/death_3.ogg" "Enemy Death 3"
 
 # Select and copy ambient
 echo ""
@@ -237,13 +237,13 @@ echo "==========================================="
 echo ""
 
 find_and_copy "$DIGITAL_DIR:$SCIFI_DIR" "alarm|forceField_000" \
-    "$AUDIO_DIR/ambient/wave_start.wav" "Wave Start"
+    "$AUDIO_DIR/ambient/wave_start.ogg" "Wave Start"
 
 find_and_copy "$UI_DIR:$DIGITAL_DIR" "confirmation|powerUp" \
-    "$AUDIO_DIR/ambient/wave_complete.wav" "Wave Complete"
+    "$AUDIO_DIR/ambient/wave_complete.ogg" "Wave Complete"
 
 find_and_copy "$DIGITAL_DIR" "lowFrequency_explosion|tone" \
-    "$AUDIO_DIR/ambient/low_hp_warning.wav" "Low HP Warning"
+    "$AUDIO_DIR/ambient/low_hp_warning.ogg" "Low HP Warning"
 
 # Select and copy UI
 echo ""
@@ -252,13 +252,13 @@ echo "======================================"
 echo ""
 
 find_and_copy "$UI_DIR:$DIGITAL_DIR" "click1|tick" \
-    "$AUDIO_DIR/ui/button_click.wav" "Button Click"
+    "$AUDIO_DIR/ui/button_click.ogg" "Button Click"
 
 find_and_copy "$UI_DIR:$DIGITAL_DIR" "switch1|powerUp1" \
-    "$AUDIO_DIR/ui/character_select.wav" "Character Select"
+    "$AUDIO_DIR/ui/character_select.ogg" "Character Select"
 
 find_and_copy "$UI_DIR:$DIGITAL_DIR" "switch2|tone1" \
-    "$AUDIO_DIR/ui/error.wav" "Error"
+    "$AUDIO_DIR/ui/error.ogg" "Error"
 
 # Cleanup
 echo ""

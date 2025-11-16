@@ -64,42 +64,42 @@ check_audio_file() {
 
 # Weapon sounds (10 files, max 200 KB each)
 echo "🔫 WEAPONS (10 files, target < 200 KB each):"
-check_audio_file "$AUDIO_DIR/weapons/plasma_pistol.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/rusty_blade.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/shock_rifle.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/steel_sword.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/shotgun.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/sniper_rifle.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/flamethrower.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/laser_rifle.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/minigun.wav" 200 "weapon"
-check_audio_file "$AUDIO_DIR/weapons/rocket_launcher.wav" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/plasma_pistol.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/rusty_blade.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/shock_rifle.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/steel_sword.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/shotgun.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/sniper_rifle.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/flamethrower.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/laser_rifle.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/minigun.ogg" 200 "weapon"
+check_audio_file "$AUDIO_DIR/weapons/rocket_launcher.ogg" 200 "weapon"
 echo ""
 
 # Enemy sounds (8 files, max 100 KB each)
 echo "👾 ENEMIES (8 files, target < 100 KB each):"
-check_audio_file "$AUDIO_DIR/enemies/spawn_1.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/spawn_2.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/spawn_3.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/damage_1.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/damage_2.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/death_1.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/death_2.wav" 100 "enemy"
-check_audio_file "$AUDIO_DIR/enemies/death_3.wav" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/spawn_1.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/spawn_2.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/spawn_3.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/damage_1.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/damage_2.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/death_1.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/death_2.ogg" 100 "enemy"
+check_audio_file "$AUDIO_DIR/enemies/death_3.ogg" 100 "enemy"
 echo ""
 
 # Ambient sounds (3 files, max 500 KB each)
 echo "🌍 AMBIENT (3 files, target < 500 KB each):"
-check_audio_file "$AUDIO_DIR/ambient/wave_start.wav" 500 "ambient"
-check_audio_file "$AUDIO_DIR/ambient/wave_complete.wav" 500 "ambient"
-check_audio_file "$AUDIO_DIR/ambient/low_hp_warning.wav" 500 "ambient"
+check_audio_file "$AUDIO_DIR/ambient/wave_start.ogg" 500 "ambient"
+check_audio_file "$AUDIO_DIR/ambient/wave_complete.ogg" 500 "ambient"
+check_audio_file "$AUDIO_DIR/ambient/low_hp_warning.ogg" 500 "ambient"
 echo ""
 
 # UI sounds (3 files, max 50 KB each)
 echo "🖱️  UI (3 files, target < 50 KB each):"
-check_audio_file "$AUDIO_DIR/ui/button_click.wav" 50 "ui"
-check_audio_file "$AUDIO_DIR/ui/character_select.wav" 50 "ui"
-check_audio_file "$AUDIO_DIR/ui/error.wav" 50 "ui"
+check_audio_file "$AUDIO_DIR/ui/button_click.ogg" 50 "ui"
+check_audio_file "$AUDIO_DIR/ui/character_select.ogg" 50 "ui"
+check_audio_file "$AUDIO_DIR/ui/error.ogg" 50 "ui"
 echo ""
 
 # Summary
@@ -122,7 +122,7 @@ fi
 
 # Calculate total size
 if [ $FOUND_FILES -gt 0 ]; then
-    TOTAL_SIZE_KB=$(find "$AUDIO_DIR" -name "*.wav" -o -name "*.ogg" | xargs stat -f%z 2>/dev/null | awk '{sum+=$1} END {print int(sum/1024)}')
+    TOTAL_SIZE_KB=$(find "$AUDIO_DIR" -name "*.ogg" -o -name "*.ogg" | xargs stat -f%z 2>/dev/null | awk '{sum+=$1} END {print int(sum/1024)}')
     TOTAL_SIZE_MB=$(echo "scale=2; $TOTAL_SIZE_KB / 1024" | bc)
     echo "  Total size: ${TOTAL_SIZE_KB} KB (${TOTAL_SIZE_MB} MB)"
 

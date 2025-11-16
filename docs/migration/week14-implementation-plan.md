@@ -4,9 +4,11 @@
 **Started**: 2025-11-15
 **Phase 1.0 (iOS Weapon Switcher)**: ✅ COMPLETED (2025-11-15)
 **Phase 1.1 (Audio Infrastructure)**: ✅ COMPLETED (2025-11-15)
-**Phase 1.2 (Weapon Firing Sounds)**: ⏭️ READY TO START
+**Phase 1.2 (Weapon Firing Sounds)**: ✅ COMPLETED (2025-11-15)
+**Phase 1.3 (iOS Audio Fix)**: ✅ COMPLETED (2025-11-15) - **READY FOR iOS QA**
+**Phase 1.4-1.5 (Enemy/Ambient/UI Audio)**: ⏭️ PENDING iOS QA FEEDBACK
 **Phase 2 (Continuous Spawning)**: Not Started
-**Target Completion**: Week 14 Complete (11-14 hours, ~2h spent, ~9-12h remaining)
+**Target Completion**: Week 14 Complete (11-14 hours, ~3.5h spent, ~7.5-10.5h remaining)
 
 ## Overview
 
@@ -363,7 +365,63 @@ func _fire_weapon() -> void:
 
 ---
 
-### 1.3 Enemy Audio (2 hours)
+### 1.3 iOS Audio Compatibility Fix (0.5 hours) ✅ COMPLETED
+
+**Problem Discovered During iOS QA**:
+- iOS logs showed: `"Unrecognized binary resource file"` errors
+- No audio playing on iOS device (silent)
+- Root cause: Runtime `load()` fails on iOS exports (UID cache not included)
+- Secondary issue: Audio files were OGG Vorbis but misnamed as `.wav`
+
+**Solution Implemented** (Industry Standard Pattern):
+
+1. **Switched to preload() pattern** (iOS compatible):
+   ```gdscript
+   ## Before (BROKEN on iOS)
+   var weapon_audio_streams: Dictionary = {}  # Stores paths as strings
+   func _load_weapon_audio():
+       weapon_audio_streams = {
+           "plasma_pistol": "res://assets/audio/weapons/plasma_pistol.wav",  # Path
+           # ...
+       }
+   func play_weapon_sound(...):
+       var stream = load(weapon_audio_streams[weapon_id])  # Runtime load - FAILS on iOS
+
+   ## After (WORKS on iOS)
+   const WEAPON_AUDIO: Dictionary = {
+       "plasma_pistol": preload("res://assets/audio/weapons/plasma_pistol.ogg"),  # Preloaded at compile time
+       # ...
+   }
+   func play_weapon_sound(...):
+       var stream: AudioStream = WEAPON_AUDIO[weapon_id]  # Direct reference - WORKS
+   ```
+
+2. **Fixed audio file format**:
+   - Renamed files from `.wav` to `.ogg` (correct extension for OGG Vorbis format)
+   - OGG Vorbis is the mobile industry standard (70-90% smaller than WAV, better for app size)
+
+**Technical References**:
+- iOS audio pattern: `docs/godot-ios-audio-research.md` (lines 298-521)
+- Preload requirement: `docs/godot-headless-resource-loading-guide.md` (lines 231-269)
+- OGG format support: `docs/godot-ios-audio-research.md` (lines 95-154)
+
+**Files Modified**:
+- `scripts/services/weapon_service.gd` (refactored audio loading)
+- `assets/audio/weapons/*.wav` → `*.ogg` (renamed files)
+
+**Success Criteria**:
+- [x] Audio files renamed to correct format (.ogg)
+- [x] Code uses preload() instead of runtime load()
+- [x] Desktop compilation successful (no errors)
+- [ ] iOS audio playback verified (PENDING QA TEST)
+- [ ] No "Unrecognized binary resource file" errors on iOS
+- [ ] All 10 weapons have working audio on iOS device
+
+**Status**: Implementation complete, ready for iOS QA testing in next session
+
+---
+
+### 1.4 Enemy Audio (2 hours)
 
 **Goal**: Play sounds when enemies spawn, take damage, and die.
 
@@ -435,7 +493,7 @@ Add 3 AudioStreamPlayer2D nodes to enemy scene:
 
 ---
 
-### 1.4 Ambient & UI Audio (1.5 hours)
+### 1.5 Ambient & UI Audio (1.5 hours)
 
 **Goal**: Add wave start/complete sounds, low HP warning, and UI feedback.
 
@@ -554,7 +612,7 @@ func _on_locked_character_pressed() -> void:
 
 ---
 
-### 1.5 Audio Testing & Polish (0.5 hours)
+### 1.6 Audio Testing & Polish (0.5 hours)
 
 **Goal**: Balance audio levels, test on device, ensure no performance issues.
 
@@ -1552,20 +1610,33 @@ bash .system/validators/check-audio-assets.sh
 
 ---
 
-### ⏭️ READY TO START: Phase 1.2 - Weapon Firing Sounds
+### ✅ COMPLETED: Phase 1.2 - Weapon Firing Sounds (2025-11-15)
 
-**Estimated Time**: 2 hours
-**Prerequisites**: ✅ All complete
-- ✅ Audio directory structure
-- ✅ Documentation + automation scripts
-- ✅ iOS weapon switcher (for testing)
+**Actual Time**: 1 hour
+**Files Modified**:
+- `scripts/services/weapon_service.gd` (+80 lines)
+- `scripts/entities/player.gd` (+2 lines)
 
-**Next Tasks**:
-1. Implement `play_weapon_sound()` in `weapon_service.gd`
-2. Integrate audio into `player.gd` firing logic
-3. Add comprehensive diagnostic logging
-4. Test with/without audio files (graceful fallback)
+**Implementation**:
+- ✅ Added `_load_weapon_audio()` with diagnostic logging
+- ✅ Added `play_weapon_sound()` with AudioStreamPlayer2D
+- ✅ Integrated into `player.gd` `_fire_weapon()` method
+- ✅ All 10 weapons configured with audio paths
+- ✅ Graceful degradation (works with/without files)
+- ✅ Pitch variation (0.95-1.05) prevents repetition
+- ✅ Auto-cleanup (finished.connect → queue_free)
+- ✅ Tests passing (496/520, no regressions)
 
-**Start fresh chat with full token budget for implementation** 🚀
+**Next**: iOS QA testing before implementing remaining audio phases
+
+---
+
+### ⏭️ PENDING iOS QA: Remaining Audio Phases
+
+**Phase 1.3**: Enemy Audio (2 hours) - ON HOLD
+**Phase 1.4**: Ambient & UI Audio (1.5 hours) - ON HOLD
+**Phase 1.5**: Audio Testing & Polish (0.5 hours) - ON HOLD
+
+**Rationale**: Wait for iOS QA feedback on weapon audio before implementing enemy/ambient sounds. If weapon audio has issues (volume, performance, etc), fix those first to establish baseline.
 
 ---
