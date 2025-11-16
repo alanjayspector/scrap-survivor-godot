@@ -10,7 +10,7 @@ extends GutTest
 class_name AuraFoundationTest
 
 # Preload AuraVisual to avoid duplicate loads
-const AuraVisual = preload("res://scripts/components/aura_visual.gd")
+const AURA_VISUAL = preload("res://scripts/components/aura_visual.gd")
 
 
 func before_each() -> void:
@@ -257,7 +257,7 @@ func test_all_aura_types_have_required_fields() -> void:
 
 func test_aura_visual_can_be_instantiated() -> void:
 	# Arrange & Act
-	var aura_visual = autofree(AuraVisual.new())
+	var aura_visual = autofree(AURA_VISUAL.new())
 
 	# Assert
 	assert_not_null(aura_visual, "AuraVisual should instantiate successfully")
@@ -267,7 +267,7 @@ func test_aura_visual_can_be_instantiated() -> void:
 
 func test_aura_visual_creates_child_nodes() -> void:
 	# Arrange
-	var aura_visual = AuraVisual.new()
+	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 
 	# Wait for _ready() to be called
@@ -289,7 +289,7 @@ func test_aura_visual_creates_child_nodes() -> void:
 
 func test_aura_visual_update_changes_parameters() -> void:
 	# Arrange
-	var aura_visual = AuraVisual.new()
+	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 	await wait_physics_frames(2)
 
@@ -307,7 +307,7 @@ func test_aura_visual_update_changes_parameters() -> void:
 
 func test_aura_visual_set_emitting() -> void:
 	# Arrange
-	var aura_visual = AuraVisual.new()
+	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 	await wait_physics_frames(2)
 
@@ -337,7 +337,7 @@ func test_aura_visual_colors_match_aura_types() -> void:
 
 	# Act & Assert - Test each aura type
 	for aura_type in test_types:
-		var aura_visual = AuraVisual.new()
+		var aura_visual = AURA_VISUAL.new()
 		add_child_autofree(aura_visual)
 		await wait_physics_frames(1)
 
@@ -354,7 +354,7 @@ func test_aura_visual_colors_match_aura_types() -> void:
 
 func test_aura_visual_ring_has_correct_point_count() -> void:
 	# Arrange
-	var aura_visual = AuraVisual.new()
+	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 	await wait_physics_frames(2)
 
@@ -380,7 +380,7 @@ func test_mutant_has_damage_aura_visual() -> void:
 	assert_eq(mutant.aura.type, "damage", "Mutant should have damage aura")
 
 	# Create visual for mutant aura
-	var aura_visual = AuraVisual.new()
+	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 
 	# Calculate aura parameters from mutant stats

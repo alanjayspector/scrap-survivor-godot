@@ -218,9 +218,17 @@ func test_cross_service_state_consistency() -> void:
 
 	SaveManager.load_all_services(TEST_SLOT)
 
-	assert_eq(BankingService.get_balance(BankingService.CurrencyType.SCRAP), 1000)
-	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM)
-	assert_eq(ShopRerollService.get_reroll_count(), 1)
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
+		1000,
+		"Should restore scrap balance after load"
+	)
+	assert_eq(
+		BankingService.current_tier,
+		BankingService.UserTier.PREMIUM,
+		"Should restore banking tier after load"
+	)
+	assert_eq(ShopRerollService.get_reroll_count(), 1, "Should restore reroll count after load")
 
 
 # Stateless Service Tests

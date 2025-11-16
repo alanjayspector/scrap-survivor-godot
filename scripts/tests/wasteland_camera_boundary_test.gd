@@ -1,4 +1,5 @@
 extends GutTest
+class_name WastelandCameraBoundaryTest
 ## Wasteland Camera Boundary Integration Tests
 ##
 ## USER STORY: "As a player, I want the camera to stay within the game world

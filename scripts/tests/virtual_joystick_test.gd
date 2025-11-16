@@ -1,4 +1,5 @@
 extends GutTest
+class_name VirtualJoystickTest
 ## VirtualJoystick Unit Tests
 ##
 ## USER STORY: "As a mobile player, I want responsive and accurate touch controls
@@ -13,14 +14,14 @@ extends GutTest
 ## - 150x150px rect bug (full-screen anchors required)
 ## - Round 4 dead zone "stuck" feeling (one-time threshold gate)
 
-const VirtualJoystick = preload("res://scenes/ui/virtual_joystick.tscn")
+const VIRTUAL_JOYSTICK = preload("res://scenes/ui/virtual_joystick.tscn")
 
 var joystick: Control
 
 
 func before_each() -> void:
 	"""Set up test fixtures before each test"""
-	joystick = VirtualJoystick.instantiate()
+	joystick = VIRTUAL_JOYSTICK.instantiate()
 	add_child_autofree(joystick)
 	await wait_frames(2)  # Wait for _ready() to complete
 

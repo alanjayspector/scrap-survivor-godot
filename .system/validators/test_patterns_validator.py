@@ -333,6 +333,7 @@ def check_memory_management(content: str, lines: List[str]) -> List[TestPatternI
     - Node/CharacterBody2D/Player instances should be freed with .free() not .queue_free()
     - Tests creating instances should have cleanup in after_each() or test method
     - Watch for orphaned instances (created but never freed)
+    - GUT framework: add_child_autofree() is valid (automatically frees nodes)
     """
     issues = []
 
@@ -351,8 +352,12 @@ def check_memory_management(content: str, lines: List[str]) -> List[TestPatternI
         # Look for .free() or .queue_free() calls for this variable
         freed_with_free = any(f"{var_name}.free()" in line for line in lines)
         freed_with_queue_free = any(f"{var_name}.queue_free()" in line for line in lines)
+        # GUT framework: add_child_autofree() automatically frees the node
+        # Pattern: add_child_autofree(var_name) - node is passed to autofree
+        # Reference: docs/godot-testing-research.md:686 - add_child_autofree() is recommended pattern
+        freed_with_autofree = any(f"add_child_autofree({var_name})" in line for line in lines)
 
-        if not freed_with_free and not freed_with_queue_free:
+        if not freed_with_free and not freed_with_queue_free and not freed_with_autofree:
             issues.append(TestPatternIssue(
                 line_num=create_line,
                 issue_type="missing_free",

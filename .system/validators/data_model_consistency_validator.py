@@ -58,8 +58,9 @@ class DataModelValidator:
         try:
             content = service_file.read_text()
 
-            # Pattern 1: Dictionary literal assignments like {"field": value, ...}
-            dict_patterns = re.findall(r'\{[^}]*?"(\w+)":\s*[^,}]+', content)
+            # Pattern 1: Dictionary key-value pairs like "field": value (handles multiline)
+            # Match any "field_name": pattern within the content
+            dict_patterns = re.findall(r'"(\w+)"\s*:', content)
             fields.update(dict_patterns)
 
             # Pattern 2: object.field = value (direct field assignments)

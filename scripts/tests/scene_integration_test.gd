@@ -1,4 +1,5 @@
 extends GutTest
+class_name SceneIntegrationTest
 ## Scene Integration Tests - Week 10 Phase 1
 ##
 ## USER STORY: "As a developer, I want Player and Enemy entities to integrate
@@ -324,7 +325,8 @@ func test_player_level_up_reloads_stats() -> void:
 
 	# Act - Trigger level up by adding enough XP
 	var character = CharacterService.get_character(test_character_id)
-	var xp_needed = character.get("xp_to_next_level", 100)
+	var level = character.get("level", 1)
+	var xp_needed = level * CharacterService.XP_PER_LEVEL
 	CharacterService.add_experience(test_character_id, xp_needed)
 
 	await wait_physics_frames(5)  # Let signal propagate
