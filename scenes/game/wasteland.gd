@@ -489,13 +489,14 @@ func _on_retry_pressed() -> void:
 
 func _on_main_menu_pressed() -> void:
 	"""Return to main menu"""
-	print("[Wasteland] Main menu pressed - returning to character selection")
+	print("[Wasteland] Main menu pressed - returning to hub")
 
 	# Unpause before transitioning (otherwise main menu starts paused)
 	get_tree().paused = false
 	print("[Wasteland] Game unpaused")
 
-	get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+	# Week 15 Phase 1: Return to Hub instead of character_selection
+	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
 
 
 func _on_wave_started(wave: int) -> void:

@@ -96,19 +96,26 @@ func save_all_services(slot: int = 0) -> bool:
 
 
 ## Load all game services from specified slot
-## Returns true if load succeeded
-func load_all_services(slot: int = 0) -> bool:
+## Returns Dictionary with {success: bool, source: String, error: String}
+## Week 15: Enhanced with backup detection and analytics tracking
+func load_all_services(slot: int = 0) -> Dictionary:
 	load_started.emit()
 
-	GameLogger.info("Loading all services", {"slot": slot})
+	GameLogger.info("[SaveManager] Loading all services", {"slot": slot})
 
-	# Read from disk via SaveSystem
+	# Read from disk via SaveSystem (tries main → backup automatically)
 	var result = SaveSystem.load_game(slot)
 
 	if not result.success:
-		GameLogger.error("Failed to load save file", {"slot": slot, "error": result.error})
+		# Track save corruption in analytics
+		if is_instance_valid(Analytics):
+			Analytics.save_corruption_detected("local", result.error)
+
+		GameLogger.error(
+			"[SaveManager] Failed to load save file", {"slot": slot, "error": result.error}
+		)
 		load_completed.emit(false)
-		return false
+		return {"success": false, "source": "none", "error": result.error}
 
 	var save_data = result.data
 
@@ -116,11 +123,11 @@ func load_all_services(slot: int = 0) -> bool:
 	var version = save_data.get("version", 0)
 	if version > CURRENT_SAVE_VERSION:
 		GameLogger.error(
-			"Save from newer version",
+			"[SaveManager] Save from newer version",
 			{"save_version": version, "current_version": CURRENT_SAVE_VERSION}
 		)
 		load_completed.emit(false)
-		return false
+		return {"success": false, "source": "none", "error": "Save from newer version"}
 
 	# Deserialize all services
 	if save_data.has("services"):
@@ -142,9 +149,17 @@ func load_all_services(slot: int = 0) -> bool:
 			CharacterService.deserialize(services.character)
 
 	_unsaved_changes = false
-	GameLogger.info("All services loaded successfully", {"slot": slot})
+
+	# Determine source (SaveSystem already tried backup if main failed)
+	var source = "primary"
+	# Note: SaveSystem doesn't expose which file was used (main vs backup)
+	# Week 16: Can enhance SaveSystem to return source info
+
+	GameLogger.info(
+		"[SaveManager] All services loaded successfully", {"slot": slot, "source": source}
+	)
 	load_completed.emit(true)
-	return true
+	return {"success": true, "source": source, "error": ""}
 
 
 ## Check if a save exists for specified slot

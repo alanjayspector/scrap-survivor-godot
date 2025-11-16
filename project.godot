@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Scrap Survivor"
-run/main_scene="res://scenes/ui/character_selection.tscn"
+run/main_scene="res://scenes/hub/scrapyard.tscn"
 config/features=PackedStringArray("4.5", "4.5.1", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GameState="*res://scripts/autoload/game_state.gd"
+Analytics="*res://scripts/autoload/analytics.gd"
 ErrorService="*res://scripts/services/error_service.gd"
 SaveSystem="*res://scripts/systems/save_system.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"

@@ -796,8 +796,9 @@ func _on_back_pressed() -> void:
 	# Play button click sound (Week 14 Phase 1.5)
 	_play_ui_sound(BUTTON_CLICK_SOUND, "button_click")
 
-	# Return to previous screen
-	queue_free()
+	# Week 15 Phase 1: Navigate back to Hub (main scene)
+	# Old behavior was queue_free() which left a grey screen
+	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
 
 
 func _on_free_trial_requested(character_type: String) -> void:

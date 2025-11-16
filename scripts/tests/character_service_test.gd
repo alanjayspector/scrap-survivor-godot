@@ -639,9 +639,9 @@ func test_full_save_load_cycle_with_save_manager() -> void:
 		CharacterService.get_all_characters().size(), 0, "Characters should be cleared after reset"
 	)
 
-	# Load all services
-	var load_success = SaveManager.load_all_services(0)
-	assert_true(load_success, "Load should succeed")
+	# Load all services (Week 15: returns Dictionary)
+	var load_result = SaveManager.load_all_services(0)
+	assert_true(load_result.success, "Load should succeed")
 
 	# Assert - Verify character was restored
 	var character = CharacterService.get_character(char_id)
