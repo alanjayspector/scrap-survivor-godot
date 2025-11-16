@@ -188,8 +188,8 @@ func test_enemy_moves_toward_player() -> void:
 	await wait_physics_frames(5)
 
 	enemy = Enemy.new()
-	enemy.setup("test_enemy_2", "scrap_bot", 1)
-	add_child_autofree(enemy)
+	add_child_autofree(enemy)  # Add to tree FIRST (data.tree gets initialized)
+	enemy.setup("test_enemy_2", "scrap_bot", 1)  # Then initialize
 
 	player.global_position = Vector2(100, 0)
 	enemy.global_position = Vector2(0, 0)
@@ -214,8 +214,8 @@ func test_enemy_moves_toward_player() -> void:
 func test_enemy_death_emits_signal() -> void:
 	# Arrange
 	enemy = Enemy.new()
-	enemy.setup("test_enemy_3", "scrap_bot", 1)
-	add_child_autofree(enemy)
+	add_child_autofree(enemy)  # Add to tree FIRST
+	enemy.setup("test_enemy_3", "scrap_bot", 1)  # Then initialize
 
 	watch_signals(enemy)
 
@@ -343,8 +343,8 @@ func test_player_level_up_reloads_stats() -> void:
 func test_enemy_get_health_percentage() -> void:
 	# Arrange
 	enemy = Enemy.new()
-	enemy.setup("test_enemy_6", "scrap_bot", 1)
-	add_child_autofree(enemy)
+	add_child_autofree(enemy)  # Add to tree FIRST
+	enemy.setup("test_enemy_6", "scrap_bot", 1)  # Then initialize
 
 	# Act & Assert - Full health
 	assert_eq(enemy.get_health_percentage(), 1.0, "Enemy at full health should be 100%")

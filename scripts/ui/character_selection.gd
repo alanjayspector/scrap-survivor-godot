@@ -1,6 +1,7 @@
 extends Control
 ## Character Selection UI Controller
 ## Week 8 Phase 3: Character selection screen with type previews and tier restrictions
+## Week 14 Phase 1.5: UI audio feedback (button clicks, character selection, errors)
 ##
 ## Features:
 ## - Display all character types with stat previews
@@ -13,6 +14,11 @@ signal character_selected(character_id: String)
 signal character_created(character_id: String)
 signal tier_upgrade_requested(required_tier: int)
 signal free_trial_requested(character_type: String)
+
+## Audio (Week 14 Phase 1.5 - iOS-compatible preload pattern)
+const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
+const CHARACTER_SELECT_SOUND: AudioStream = preload("res://assets/audio/ui/character_select.ogg")
+const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/error.ogg")
 
 ## UI References (cached from scene tree with @onready for performance)
 @onready var character_cards_container: GridContainer = get_node(
@@ -594,18 +600,27 @@ func _on_backdrop_tapped(event: InputEvent) -> void:
 
 func _on_detail_try_pressed(character_type: String) -> void:
 	"""Handle Try button press from detail panel"""
+	# Play button click sound (Week 14 Phase 1.5)
+	_play_ui_sound(BUTTON_CLICK_SOUND, "button_click")
+
 	_dismiss_detail_panel()
 	_on_free_trial_requested(character_type)
 
 
 func _on_detail_unlock_pressed(required_tier: int) -> void:
 	"""Handle Unlock button press from detail panel"""
+	# Play button click sound (Week 14 Phase 1.5)
+	_play_ui_sound(BUTTON_CLICK_SOUND, "button_click")
+
 	_dismiss_detail_panel()
 	_on_unlock_requested(required_tier)
 
 
 func _on_detail_select_pressed(character_type: String) -> void:
 	"""Handle Select button press from detail panel"""
+	# Play character select sound (Week 14 Phase 1.5)
+	_play_ui_sound(CHARACTER_SELECT_SOUND, "character_select")
+
 	_dismiss_detail_panel()
 	_on_character_card_selected(character_type)
 
@@ -716,6 +731,9 @@ func _on_create_character_pressed() -> void:
 	var type_def = CharacterService.CHARACTER_TYPES[selected_character_type]
 
 	if type_def.tier_required > user_tier:
+		# Play error sound (Week 14 Phase 1.5)
+		_play_ui_sound(ERROR_SOUND, "error")
+
 		GameLogger.warning(
 			"Cannot create character - tier too low",
 			{
@@ -730,9 +748,15 @@ func _on_create_character_pressed() -> void:
 
 	# Check if player has available slots
 	if not CharacterService.can_create_character():
+		# Play error sound (Week 14 Phase 1.5)
+		_play_ui_sound(ERROR_SOUND, "error")
+
 		GameLogger.warning("Cannot create character - slot limit reached")
 		_show_slot_limit_message()
 		return
+
+	# Play character select sound (Week 14 Phase 1.5)
+	_play_ui_sound(CHARACTER_SELECT_SOUND, "character_select")
 
 	# Create character (would normally open a name input dialog)
 	var character_name = "Hero_%d" % randi()
@@ -769,6 +793,9 @@ func _launch_demo(character_id: String) -> void:
 
 
 func _on_back_pressed() -> void:
+	# Play button click sound (Week 14 Phase 1.5)
+	_play_ui_sound(BUTTON_CLICK_SOUND, "button_click")
+
 	# Return to previous screen
 	queue_free()
 
@@ -807,3 +834,32 @@ func set_user_tier(tier: int) -> void:
 
 func get_selected_character_type() -> String:
 	return selected_character_type
+
+
+func _play_ui_sound(sound: AudioStream, sound_name: String) -> void:
+	"""Play UI sound with diagnostic logging (Week 14 Phase 1.5)
+
+	Args:
+		sound: Preloaded AudioStream resource
+		sound_name: Sound name for logging ("button_click", "character_select", "error")
+
+	iOS-compatible pattern: Uses preload() and programmatic AudioStreamPlayer
+	"""
+	if not sound:
+		print("[CharacterSelection:Audio] ERROR: No sound provided for ", sound_name)
+		return
+
+	# Create AudioStreamPlayer for non-positional audio
+	var audio_player = AudioStreamPlayer.new()
+	audio_player.stream = sound
+	audio_player.volume_db = -10.0 if sound_name == "button_click" else -5.0
+
+	# Auto-cleanup after playback
+	audio_player.finished.connect(audio_player.queue_free)
+
+	# Add to scene tree
+	add_child(audio_player)
+	audio_player.play()
+
+	# Diagnostic logging
+	print("[CharacterSelection:Audio] Playing ", sound_name, " sound")

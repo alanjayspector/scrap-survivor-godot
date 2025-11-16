@@ -325,16 +325,37 @@ func play_weapon_sound(weapon_id: String, position: Vector2) -> void:
 	audio_player.attenuation = 1.5
 	audio_player.global_position = position
 
-	# Auto-cleanup
-	audio_player.finished.connect(audio_player.queue_free)
+	# Add to scene (with null check for race condition - Week 14 Phase 1.5 bugfix)
+	var tree = get_tree()
+	if not tree:
+		GameLogger.warning(
+			"Cannot play weapon sound - WeaponService not in scene tree",
+			{
+				"weapon_id": weapon_id,
+				"position": position,
+				"reason": "get_tree() returned null (service likely being destroyed)"
+			}
+		)
+		audio_player.queue_free()
+		return
 
-	# Add to scene
-	get_tree().root.add_child(audio_player)
+	tree.root.add_child(audio_player)
+
+	# Auto-cleanup after playback (connect AFTER adding to tree, use lambda to avoid tree reference issues)
+	audio_player.finished.connect(func(): audio_player.queue_free())
+
 	audio_player.play()
 
 	GameLogger.debug(
 		"Weapon sound playing",
-		{"weapon_id": weapon_id, "position": position, "pitch": audio_player.pitch_scale}
+		{
+			"weapon_id": weapon_id,
+			"position": position,
+			"pitch": snapped(audio_player.pitch_scale, 0.01),
+			"volume_db": audio_player.volume_db,
+			"max_distance": audio_player.max_distance,
+			"in_tree": is_inside_tree()
+		}
 	)
 
 

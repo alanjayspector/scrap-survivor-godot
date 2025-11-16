@@ -5,10 +5,11 @@ extends Panel
 ## TEMPORARY: Remove before production release.
 ##
 ## Created: 2025-11-15 (Week 14 Phase 1.0)
+## Updated: 2025-11-15 (Week 14 Phase 1.0b - Toggle hide/show for full HUD visibility)
 ## Purpose: Test all 10 weapon sounds on iOS device
 
 var player: Player = null
-var panel_visible: bool = false
+var panel_visible: bool = true  # Start visible for discoverability
 
 # Weapon list (matches WeaponService.WEAPON_DEFINITIONS keys)
 const WEAPONS = [
@@ -40,10 +41,20 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	"""Build weapon switcher UI programmatically"""
-	# Panel configuration
-	custom_minimum_size = Vector2(340, 600)
-	position = Vector2(10, 10)  # Top-left corner (safe area)
+	"""Build weapon switcher UI programmatically (Week 14 Phase 1.0b)
+
+	Panel can be toggled to hide/show:
+	- Hidden: Compact 70x70 button (top-left corner)
+	- Shown: Full 340x600 panel with weapon grid
+	"""
+	# Initial position (top-left corner, safe area)
+	position = Vector2(10, 10)
+
+	# Set initial size based on panel_visible state
+	if panel_visible:
+		custom_minimum_size = Vector2(340, 600)
+	else:
+		custom_minimum_size = Vector2(70, 70)
 
 	# Semi-transparent dark background
 	var style = StyleBoxFlat.new()
@@ -54,20 +65,31 @@ func _build_ui() -> void:
 	style.corner_radius_bottom_right = 8
 	add_theme_stylebox_override("panel", style)
 
-	# Toggle button (always visible, top of panel)
+	# Toggle button (always visible, changes size/text based on state)
 	var toggle_btn = Button.new()
 	toggle_btn.name = "ToggleButton"
-	toggle_btn.text = "WEAPONS ▼"
-	toggle_btn.custom_minimum_size = Vector2(320, 60)
-	toggle_btn.position = Vector2(10, 10)
+	toggle_btn.text = "✕" if panel_visible else "WPN"  # ✕ = close, WPN = open
+	toggle_btn.custom_minimum_size = Vector2(60, 60)
+	toggle_btn.position = Vector2(5, 5)
 	toggle_btn.pressed.connect(_on_toggle_pressed)
+
+	# Style toggle button
+	toggle_btn.add_theme_font_size_override("font_size", 16)
+	var btn_style = StyleBoxFlat.new()
+	btn_style.bg_color = Color(0.2, 0.2, 0.2, 0.9)
+	btn_style.corner_radius_top_left = 6
+	btn_style.corner_radius_top_right = 6
+	btn_style.corner_radius_bottom_left = 6
+	btn_style.corner_radius_bottom_right = 6
+	toggle_btn.add_theme_stylebox_override("normal", btn_style)
+
 	add_child(toggle_btn)
 
-	# Content container (can be hidden)
+	# Content container (only visible when panel_visible = true)
 	var content = VBoxContainer.new()
 	content.name = "Content"
-	content.position = Vector2(10, 80)
-	content.custom_minimum_size = Vector2(320, 500)
+	content.position = Vector2(10, 75)  # Below toggle button
+	content.custom_minimum_size = Vector2(320, 510)
 	content.visible = panel_visible
 	add_child(content)
 
@@ -145,16 +167,32 @@ func _update_active_weapon_highlight(active_weapon_id: String) -> void:
 
 
 func _on_toggle_pressed() -> void:
-	"""Toggle panel content visibility"""
+	"""Toggle panel visibility (Week 14 Phase 1.0b)
+
+	Hidden state: Compact 70x70 button for full HUD visibility
+	Shown state: Full 340x600 panel with weapon grid
+	"""
 	panel_visible = !panel_visible
 
-	var content = get_node_or_null("Content")
-	var toggle_btn = get_node_or_null("ToggleButton")
+	# Update panel size
+	if panel_visible:
+		custom_minimum_size = Vector2(340, 600)
+		size = Vector2(340, 600)  # Force immediate resize
+	else:
+		custom_minimum_size = Vector2(70, 70)
+		size = Vector2(70, 70)  # Force immediate resize
 
+	# Update content visibility
+	var content = get_node_or_null("Content")
 	if content:
 		content.visible = panel_visible
 
+	# Update toggle button text
+	var toggle_btn = get_node_or_null("ToggleButton")
 	if toggle_btn:
-		toggle_btn.text = "WEAPONS ▲" if panel_visible else "WEAPONS ▼"
+		toggle_btn.text = "✕" if panel_visible else "WPN"
 
-	print("[DebugWeaponSwitcher] Panel ", "shown" if panel_visible else "hidden")
+	print(
+		"[DebugWeaponSwitcher] Panel ",
+		"SHOWN (340x600)" if panel_visible else "HIDDEN (70x70 - full HUD visible)"
+	)

@@ -45,6 +45,11 @@ func _ready() -> void:
 	WeaponService.set_tier(WeaponService.UserTier.SUBSCRIPTION)
 	print("[Wasteland] Weapon tier set to SUBSCRIPTION (all weapons unlocked)")
 
+	# Set character tier to SUBSCRIPTION for testing all characters (Week 14 Phase 1.0b)
+	# TODO: Remove when proper account system is implemented
+	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+	print("[Wasteland] Character tier set to SUBSCRIPTION (all characters unlocked)")
+
 	# Verify scene nodes loaded
 	print("[Wasteland] Camera: ", camera)
 	print("[Wasteland] Player container: ", player_container)

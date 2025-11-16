@@ -4,10 +4,29 @@ class_name Enemy
 ##
 ## Integrates with EnemyService, DropSystem, and combat systems
 ## Handles AI pathfinding, health, and drop spawning
+## Week 14 Phase 1.4: Audio system (spawn/damage/death sounds)
 
 ## Signals
 signal died(enemy_id: String, drops: Dictionary, xp_reward: int)
 signal damaged(damage: float)
+
+## Audio (Week 14 Phase 1.4 - iOS-compatible preload pattern)
+const SPAWN_SOUNDS: Array[AudioStream] = [
+	preload("res://assets/audio/enemies/spawn_1.ogg"),
+	preload("res://assets/audio/enemies/spawn_2.ogg"),
+	preload("res://assets/audio/enemies/spawn_3.ogg"),
+]
+
+const DAMAGE_SOUNDS: Array[AudioStream] = [
+	preload("res://assets/audio/enemies/damage_1.ogg"),
+	preload("res://assets/audio/enemies/damage_2.ogg"),
+]
+
+const DEATH_SOUNDS: Array[AudioStream] = [
+	preload("res://assets/audio/enemies/death_1.ogg"),
+	preload("res://assets/audio/enemies/death_2.ogg"),
+	preload("res://assets/audio/enemies/death_3.ogg"),
+]
 
 ## Enemy configuration
 @export var enemy_id: String = ""
@@ -85,6 +104,9 @@ func setup(id: String, type: String, wave: int) -> void:
 	if visual:
 		visual.color = base_color
 
+	# Play spawn sound (Week 14 Phase 1.4)
+	_play_random_sound(SPAWN_SOUNDS, "spawn", -10.0, 1000.0)
+
 	GameLogger.debug(
 		"Enemy setup complete", {"id": enemy_id, "type": type, "wave": wave, "hp": max_hp}
 	)
@@ -123,7 +145,10 @@ func _physics_process(delta: float) -> void:
 
 	# Find player if needed
 	if not player:
-		player = get_tree().get_first_node_in_group("player") as Player
+		var tree = get_tree()
+		if not tree:
+			return  # Not in scene tree yet (e.g., during tests before add_child)
+		player = tree.get_first_node_in_group("player") as Player
 		return
 
 	# AI: Behavior-based movement (Week 13 Phase 3)
@@ -217,7 +242,17 @@ func _ranged_attack(target: Player) -> void:
 	)
 
 	# Add to scene (get parent node for projectiles)
-	var projectiles_container = get_tree().get_first_node_in_group("projectiles")
+	var tree = get_tree()
+	if not tree:
+		# Not in scene tree - clean up projectile and abort
+		projectile.queue_free()
+		GameLogger.warning(
+			"Cannot fire projectile - enemy not in scene tree",
+			{"enemy_id": enemy_id, "enemy_type": enemy_type}
+		)
+		return
+
+	var projectiles_container = tree.get_first_node_in_group("projectiles")
 	if projectiles_container:
 		projectiles_container.add_child(projectile)
 	else:
@@ -241,6 +276,9 @@ func take_damage(dmg: float) -> bool:
 
 	# Visual feedback (flash white)
 	_flash_damage()
+
+	# Play damage sound (Week 14 Phase 1.4)
+	_play_random_sound(DAMAGE_SOUNDS, "damage", -8.0, 800.0)
 
 	# Emit damage signal
 	damaged.emit(dmg)
@@ -281,6 +319,9 @@ func die() -> void:
 	GameLogger.info(
 		"Enemy died - START", {"id": enemy_id, "type": enemy_type, "position": global_position}
 	)
+
+	# Play death sound (Week 14 Phase 1.4)
+	_play_random_sound(DEATH_SOUNDS, "death", -5.0, 1200.0)
 
 	# Generate drops using DropSystem
 	var drops = {}
@@ -335,3 +376,90 @@ func get_health_percentage() -> float:
 func is_alive() -> bool:
 	"""Check if enemy is alive"""
 	return current_hp > 0
+
+
+func _play_random_sound(
+	sound_array: Array[AudioStream], sound_type: String, volume_db: float, max_distance: float
+) -> void:
+	"""Play random sound from array with diagnostic logging (Week 14 Phase 1.4)
+
+	Args:
+		sound_array: Array of preloaded AudioStream resources
+		sound_type: Sound type for logging ("spawn", "damage", "death")
+		volume_db: Volume in decibels (-10.0 = quiet, 0.0 = full volume)
+		max_distance: Max distance for positional audio (1200.0 = across most of world)
+
+	iOS-compatible pattern: Uses preload() instead of runtime load()
+	"""
+	if sound_array.is_empty():
+		print("[Enemy:Audio] WARNING: No ", sound_type, " sounds available for ", enemy_type)
+		return
+
+	# Select random sound
+	var random_index = randi() % sound_array.size()
+	var sound_stream = sound_array[random_index]
+
+	if not sound_stream:
+		print(
+			"[Enemy:Audio] ERROR: Failed to get ",
+			sound_type,
+			" sound at index ",
+			random_index,
+			" for ",
+			enemy_type
+		)
+		return
+
+	# Create AudioStreamPlayer2D for positional audio
+	var audio_player = AudioStreamPlayer2D.new()
+	audio_player.stream = sound_stream
+	audio_player.volume_db = volume_db
+	audio_player.pitch_scale = randf_range(0.9, 1.1)  # Variation to prevent repetition fatigue
+	audio_player.max_distance = max_distance
+	audio_player.attenuation = 1.5  # Distance falloff
+	audio_player.global_position = global_position
+
+	# Add to scene tree (with null check for race condition - Week 14 Phase 1.5 bugfix)
+	var tree = get_tree()
+	if not tree:
+		print(
+			"[Enemy:Audio] ERROR: Cannot play ",
+			sound_type,
+			" sound - enemy '",
+			enemy_id,
+			"' (",
+			enemy_type,
+			") not in scene tree (likely removed during cleanup)"
+		)
+		audio_player.queue_free()
+		return
+
+	tree.root.add_child(audio_player)
+
+	# Auto-cleanup after playback (connect AFTER adding to tree, use lambda to avoid tree reference issues)
+	audio_player.finished.connect(func(): audio_player.queue_free())
+
+	audio_player.play()
+
+	# Diagnostic logging
+	print(
+		"[Enemy:Audio] Playing ",
+		sound_type,
+		" sound for ",
+		enemy_type,
+		" (enemy_id: ",
+		enemy_id,
+		", index: ",
+		random_index,
+		"/",
+		sound_array.size(),
+		", volume: ",
+		volume_db,
+		" dB, pitch: ",
+		snapped(audio_player.pitch_scale, 0.01),
+		", pos: ",
+		global_position,
+		", in_tree: ",
+		is_inside_tree(),
+		")"
+	)

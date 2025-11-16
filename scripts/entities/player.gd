@@ -4,6 +4,7 @@ class_name Player
 ##
 ## Integrates with CharacterService, WeaponService, and combat systems
 ## Handles movement, aiming, auto-fire, and health management
+## Week 14 Phase 1.5: Low HP warning audio
 
 ## Signals
 signal health_changed(current_health: float, max_health: float)
@@ -11,6 +12,9 @@ signal player_damaged(current_hp: float, max_hp: float)
 signal player_healed(current_hp: float, max_hp: float)
 signal player_leveled_up(new_level: int, stats: Dictionary)
 signal died
+
+## Audio (Week 14 Phase 1.5 - iOS-compatible preload pattern)
+const LOW_HP_WARNING_SOUND: AudioStream = preload("res://assets/audio/ambient/low_hp_warning.ogg")
 
 ## Character integration
 @export var character_id: String = ""
@@ -28,6 +32,10 @@ var equipped_weapon_id: String = ""
 
 ## Weapon firing state
 var weapon_cooldown: float = 0.0
+
+## Low HP warning (Week 14 Phase 1.5)
+var low_hp_audio_player: AudioStreamPlayer = null
+const LOW_HP_THRESHOLD: float = 0.25  # Trigger at 25% HP
 
 ## Diagnostic state
 var _logged_boundaries: bool = false
@@ -91,6 +99,9 @@ func _ready() -> void:
 	if joystick:
 		joystick.direction_changed.connect(_on_joystick_direction_changed)
 		# print("[Player] Connected to virtual joystick")  # DISABLED: Reduce log size
+
+	# Initialize low HP warning audio (Week 14 Phase 1.5)
+	_init_low_hp_audio()
 
 	# Draw initial pickup range indicator
 	_update_pickup_range_indicator()
@@ -332,6 +343,9 @@ func _physics_process(delta: float) -> void:
 				print("[Player] DEBUG: Switched to Arc Blaster")
 
 	_last_pressed_key = current_key
+
+	# Check for low HP warning (Week 14 Phase 1.5)
+	_check_low_hp_warning()
 
 
 func _fire_weapon_with_targeting() -> void:
@@ -667,3 +681,48 @@ func _update_pickup_range_indicator() -> void:
 
 	# Update Line2D points
 	pickup_range_indicator.points = points
+
+
+func _init_low_hp_audio() -> void:
+	"""Initialize low HP warning audio player (Week 14 Phase 1.5)
+
+	Creates looping audio player that plays when HP drops below 25%
+	iOS-compatible: Uses preload() pattern and programmatic AudioStreamPlayer
+	"""
+	low_hp_audio_player = AudioStreamPlayer.new()
+	low_hp_audio_player.stream = LOW_HP_WARNING_SOUND
+	low_hp_audio_player.volume_db = -8.0  # Subtle warning (not too loud)
+	low_hp_audio_player.bus = "Master"  # Use default audio bus
+	add_child(low_hp_audio_player)
+	print("[Player:Audio] Low HP warning audio initialized")
+
+
+func _check_low_hp_warning() -> void:
+	"""Check HP and play/stop low HP warning (Week 14 Phase 1.5)
+
+	Called from _physics_process() each frame to monitor HP level
+	"""
+	if not low_hp_audio_player:
+		return
+
+	var max_hp = stats.get("max_health", 100.0)
+	var hp_percent = current_hp / max_hp
+
+	if hp_percent <= LOW_HP_THRESHOLD and is_alive():
+		# Below threshold - start looping warning if not already playing
+		if not low_hp_audio_player.playing:
+			low_hp_audio_player.play()
+			print(
+				"[Player:Audio] Low HP warning started (HP: ",
+				current_hp,
+				"/",
+				max_hp,
+				" = ",
+				int(hp_percent * 100),
+				"%)"
+			)
+	else:
+		# Above threshold or dead - stop warning
+		if low_hp_audio_player.playing:
+			low_hp_audio_player.stop()
+			print("[Player:Audio] Low HP warning stopped")
