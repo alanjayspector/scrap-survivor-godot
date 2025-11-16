@@ -15,7 +15,7 @@ func before_each() -> void:
 	# Reset service state before each test
 	CharacterService.reset()
 
-	# Set PREMIUM tier for most tests (allows 10 characters)
+	# Set PREMIUM tier for most tests (allows 15 characters)
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
 
 
@@ -261,8 +261,8 @@ func test_get_active_character_returns_correct_data() -> void:
 ## ============================================================================
 ## SECTION 4: Tier-Based Slot Limits Tests
 ## User Story: "As a free player, I want to create up to 3 characters"
-## User Story: "As a premium player, I want to create up to 10 characters"
-## User Story: "As a subscription player, I want unlimited characters"
+## User Story: "As a premium player, I want to create up to 15 characters"
+## User Story: "As a subscription player, I want to create up to 50 active characters"
 ## ============================================================================
 
 
@@ -284,34 +284,38 @@ func test_free_tier_allows_3_characters() -> void:
 	assert_eq(CharacterService.get_all_characters().size(), 3, "Should have exactly 3 characters")
 
 
-func test_premium_tier_allows_10_characters() -> void:
+func test_premium_tier_allows_15_characters() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
 
-	# Act - Create 10 characters
-	for i in range(10):
+	# Act - Create 15 characters
+	for i in range(15):
 		var char_id = CharacterService.create_character("Premium%d" % i)
 		assert_ne(char_id, "", "Character %d should succeed" % i)
 
-	# Try to create 11th character
-	var char11 = CharacterService.create_character("Premium11")
+	# Try to create 16th character
+	var char16 = CharacterService.create_character("Premium16")
 
 	# Assert
-	assert_eq(char11, "", "11th character should fail (PREMIUM tier limit)")
-	assert_eq(CharacterService.get_all_characters().size(), 10, "Should have exactly 10 characters")
+	assert_eq(char16, "", "16th character should fail (PREMIUM tier limit)")
+	assert_eq(CharacterService.get_all_characters().size(), 15, "Should have exactly 15 characters")
 
 
-func test_subscription_tier_allows_unlimited_characters() -> void:
+func test_subscription_tier_allows_50_characters() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
 
-	# Act - Create 15 characters (more than PREMIUM limit)
-	for i in range(15):
+	# Act - Create 50 characters (SUBSCRIPTION limit)
+	for i in range(50):
 		var char_id = CharacterService.create_character("Sub%d" % i)
-		assert_ne(char_id, "", "Character %d should succeed (SUBSCRIPTION = unlimited)" % i)
+		assert_ne(char_id, "", "Character %d should succeed" % i)
+
+	# Try to create 51st character
+	var char51 = CharacterService.create_character("Sub51")
 
 	# Assert
-	assert_eq(CharacterService.get_all_characters().size(), 15, "Should have 15 characters")
+	assert_eq(char51, "", "51st character should fail (SUBSCRIPTION tier limit)")
+	assert_eq(CharacterService.get_all_characters().size(), 50, "Should have exactly 50 characters")
 
 
 func test_can_create_character_respects_tier_limits() -> void:
@@ -650,7 +654,118 @@ func test_full_save_load_cycle_with_save_manager() -> void:
 
 
 ## ============================================================================
-## SECTION 9: Signal Tests
+## SECTION 9: Helper Methods Tests (Week 15 Phase 2)
+## User Story: "As a UI developer, I need convenient helper methods"
+## ============================================================================
+
+
+func test_get_character_count_returns_correct_count() -> void:
+	# Arrange - Start with 0 characters
+	assert_eq(CharacterService.get_character_count(), 0, "Should start with 0 characters")
+
+	# Act - Create 3 characters
+	CharacterService.create_character("Char1")
+	CharacterService.create_character("Char2")
+	CharacterService.create_character("Char3")
+
+	# Assert
+	assert_eq(CharacterService.get_character_count(), 3, "Should return correct count")
+
+
+func test_get_character_count_updates_after_delete() -> void:
+	# Arrange
+	var char1_id = CharacterService.create_character("Char1")
+	CharacterService.create_character("Char2")
+	assert_eq(CharacterService.get_character_count(), 2, "Should have 2 characters")
+
+	# Act - Delete one character
+	CharacterService.delete_character(char1_id)
+
+	# Assert
+	assert_eq(CharacterService.get_character_count(), 1, "Should have 1 character after delete")
+
+
+func test_add_xp_returns_level_up_info() -> void:
+	# Arrange
+	var character_id = CharacterService.create_character("XPTest")
+
+	# Act - Add 100 XP (enough for 1 level up)
+	var result = CharacterService.add_xp(character_id, 100)
+
+	# Assert
+	assert_true(result.leveled_up, "Should indicate level up occurred")
+	assert_eq(result.new_level, 2, "Should be level 2")
+	assert_eq(result.levels_gained, 1, "Should have gained 1 level")
+	assert_eq(result.xp_overflow, 0, "Should have 0 XP overflow")
+
+
+func test_add_xp_handles_multiple_level_ups() -> void:
+	# Arrange
+	var character_id = CharacterService.create_character("MultiLevelTest")
+
+	# Act - Add 350 XP (100 for L2, 200 for L3, 50 overflow)
+	var result = CharacterService.add_xp(character_id, 350)
+
+	# Assert
+	assert_true(result.leveled_up, "Should indicate level up occurred")
+	assert_eq(result.new_level, 3, "Should be level 3")
+	assert_eq(result.levels_gained, 2, "Should have gained 2 levels")
+	assert_eq(result.xp_overflow, 50, "Should have 50 XP overflow toward level 4")
+
+
+func test_add_xp_with_no_level_up() -> void:
+	# Arrange
+	var character_id = CharacterService.create_character("NoLevelTest")
+
+	# Act - Add 50 XP (not enough for level up, need 100)
+	var result = CharacterService.add_xp(character_id, 50)
+
+	# Assert
+	assert_false(result.leveled_up, "Should not level up")
+	assert_eq(result.new_level, 1, "Should still be level 1")
+	assert_eq(result.levels_gained, 0, "Should have gained 0 levels")
+	assert_eq(result.xp_overflow, 50, "Should have 50 XP toward next level")
+
+
+func test_add_xp_with_invalid_character_id() -> void:
+	# Arrange
+	var invalid_id = "char_999"
+
+	# Act
+	var result = CharacterService.add_xp(invalid_id, 100)
+
+	# Assert
+	assert_false(result.leveled_up, "Should not level up invalid character")
+	assert_eq(result.new_level, 1, "Should return default level")
+	assert_eq(result.levels_gained, 0, "Should have 0 levels gained")
+
+
+func test_add_xp_with_zero_xp() -> void:
+	# Arrange
+	var character_id = CharacterService.create_character("ZeroXPTest")
+
+	# Act
+	var result = CharacterService.add_xp(character_id, 0)
+
+	# Assert
+	assert_false(result.leveled_up, "Should not level up with 0 XP")
+	assert_eq(result.levels_gained, 0, "Should have 0 levels gained")
+
+
+func test_add_xp_with_negative_xp() -> void:
+	# Arrange
+	var character_id = CharacterService.create_character("NegativeXPTest")
+
+	# Act
+	var result = CharacterService.add_xp(character_id, -50)
+
+	# Assert
+	assert_false(result.leveled_up, "Should not level up with negative XP")
+	assert_eq(result.levels_gained, 0, "Should have 0 levels gained")
+
+
+## ============================================================================
+## SECTION 10: Signal Tests
 ## User Story: "As a UI developer, I want to be notified of character changes"
 ## ============================================================================
 

@@ -16,11 +16,11 @@ extends Node
 ## User tier levels (matches TierService.ts and BankingService)
 enum UserTier { FREE, PREMIUM, SUBSCRIPTION }
 
-## Character slot limits per tier
+## Character slot limits per tier (from docs/tier-experiences/)
 const SLOT_LIMITS = {
-	UserTier.FREE: 3,
-	UserTier.PREMIUM: 10,
-	UserTier.SUBSCRIPTION: -1,  # -1 = unlimited
+	UserTier.FREE: 3,  # Free tier: 3 character slots
+	UserTier.PREMIUM: 15,  # Premium tier: 15 character slots (+ purchasable slot packs)
+	UserTier.SUBSCRIPTION: 50,  # Subscription tier: 50 active character slots (+ 200 Hall of Fame archived slots)
 }
 
 ## XP progression constants (linear for simplicity, can change to exponential later)
@@ -466,11 +466,6 @@ func on_character_death(character_id: String, death_context: Dictionary = {}) ->
 ## Check if user can create more characters
 func can_create_character() -> bool:
 	var limit = SLOT_LIMITS[current_tier]
-
-	# -1 means unlimited
-	if limit == -1:
-		return true
-
 	return characters.size() < limit
 
 
@@ -482,11 +477,6 @@ func get_character_slot_limit() -> int:
 ## Get number of available slots remaining
 func get_available_slots() -> int:
 	var limit = SLOT_LIMITS[current_tier]
-
-	# -1 means unlimited
-	if limit == -1:
-		return 999  # Return large number for UI display
-
 	return max(0, limit - characters.size())
 
 
@@ -499,6 +489,40 @@ func set_tier(tier: UserTier) -> void:
 ## Get current user tier
 func get_tier() -> UserTier:
 	return current_tier
+
+
+## Get character count (convenience method)
+func get_character_count() -> int:
+	return characters.size()
+
+
+## Add XP to character with detailed level-up information
+## Returns dictionary with level-up details
+func add_xp(character_id: String, xp: int) -> Dictionary:
+	if not characters.has(character_id):
+		GameLogger.warning("Cannot add XP: character not found", {"character_id": character_id})
+		return {"leveled_up": false, "new_level": 1, "xp_overflow": 0, "levels_gained": 0}
+
+	if xp <= 0:
+		return {"leveled_up": false, "new_level": 1, "xp_overflow": 0, "levels_gained": 0}
+
+	var character = characters[character_id]
+	var old_level = character.level
+
+	# Use existing add_experience method
+	var leveled_up = add_experience(character_id, xp)
+
+	# Calculate detailed results
+	var new_level = character.level
+	var levels_gained = new_level - old_level
+	var xp_overflow = character.experience
+
+	return {
+		"leveled_up": leveled_up,
+		"new_level": new_level,
+		"xp_overflow": xp_overflow,
+		"levels_gained": levels_gained
+	}
 
 
 ## Reset service state (for testing or new game)

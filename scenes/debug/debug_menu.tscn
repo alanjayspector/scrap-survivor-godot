@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxm7k3qp5yhbn"]
+
+[ext_resource type="Script" path="res://scripts/debug/debug_menu.gd" id="1_debug"]
+
+[node name="DebugMenu" type="AcceptDialog"]
+title = "🛠️ QA Debug Menu"
+initial_position = 2
+size = Vector2i(600, 500)
+ok_button_text = "Apply Changes"
+dialog_text = "Change tier and reset account for testing"
+script = ExtResource("1_debug")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 592.0
+offset_bottom = 451.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TierLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Select Tier:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TierButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResetOptionsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Separator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Status will appear here..."
+horizontal_alignment = 1
+autowrap_mode = 3
