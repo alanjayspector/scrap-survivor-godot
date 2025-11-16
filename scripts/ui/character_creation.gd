@@ -95,19 +95,20 @@ func _create_character_type_cards() -> void:
 		var type_def = CharacterService.CHARACTER_TYPES[char_type]
 
 		# Check if player has access to this type (tier restriction)
-		if type_def.tier_required > CharacterService.get_tier():
+		var is_locked = type_def.tier_required > CharacterService.get_tier()
+
+		if is_locked:
 			GameLogger.info(
-				"[CharacterCreation] Character type locked",
+				"[CharacterCreation] Character type LOCKED (will show with lock overlay)",
 				{
 					"type": char_type,
 					"required_tier": type_def.tier_required,
 					"current_tier": CharacterService.get_tier()
 				}
 			)
-			# Skip locked types for now (Week 16: show locked with upgrade CTA)
-			continue
 
-		var card_button = _create_type_card_button(char_type, type_def)
+		# Show ALL character types (locked and unlocked)
+		var card_button = _create_type_card_button(char_type, type_def, is_locked)
 		character_type_cards.add_child(card_button)
 		character_type_card_buttons[char_type] = card_button
 		cards_created += 1
@@ -118,16 +119,29 @@ func _create_character_type_cards() -> void:
 	GameLogger.info("[CharacterCreation] Character type cards created", {"count": cards_created})
 
 
-func _create_type_card_button(character_type: String, type_def: Dictionary) -> Button:
+func _create_type_card_button(
+	character_type: String, type_def: Dictionary, is_locked: bool = false
+) -> Button:
 	"""Create a button-based character type card"""
 	var button = Button.new()
 	button.custom_minimum_size = Vector2(170, 200)
-	button.text = type_def.display_name + "\n\n" + type_def.description
+
+	# Show lock icon and tier requirement for locked types
+	if is_locked:
+		var tier_names = ["FREE", "PREMIUM", "SUBSCRIPTION"]
+		var required_tier_name = (
+			tier_names[type_def.tier_required]
+			if type_def.tier_required < tier_names.size()
+			else "???"
+		)
+		button.text = type_def.display_name + "\n\n🔒 LOCKED\n\n" + required_tier_name + " Required"
+	else:
+		button.text = type_def.display_name + "\n\n" + type_def.description
 
 	# Style (mobile-friendly card design)
 	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.15, 0.15, 0.15)
-	style_normal.border_color = type_def.color
+	style_normal.bg_color = Color(0.15, 0.15, 0.15) if not is_locked else Color(0.1, 0.1, 0.1)  # Darker for locked
+	style_normal.border_color = type_def.color if not is_locked else Color(0.5, 0.5, 0.5)  # Gray border for locked
 	style_normal.border_width_left = 2
 	style_normal.border_width_top = 2
 	style_normal.border_width_right = 2
@@ -146,12 +160,25 @@ func _create_type_card_button(character_type: String, type_def: Dictionary) -> B
 	style_pressed.border_width_top = 4
 	style_pressed.border_width_right = 4
 	style_pressed.border_width_bottom = 4
-	style_pressed.bg_color = type_def.color.darkened(0.3)
+
+	if not is_locked:
+		style_pressed.bg_color = type_def.color.darkened(0.3)
+	else:
+		# Locked cards don't change much on press (shows they're not selectable)
+		style_pressed.bg_color = Color(0.12, 0.12, 0.12)
 
 	button.add_theme_stylebox_override("normal", style_normal)
 	button.add_theme_stylebox_override("pressed", style_pressed)
 	button.add_theme_stylebox_override("hover", style_pressed)
 	button.add_theme_font_size_override("font_size", 16)
+
+	# Store locked state as metadata
+	button.set_meta("is_locked", is_locked)
+	button.set_meta("required_tier", type_def.tier_required)
+
+	# Dim locked cards visually
+	if is_locked:
+		button.modulate = Color(0.5, 0.5, 0.5)  # 50% dimmed
 
 	button.pressed.connect(_on_type_card_pressed.bind(character_type))
 
@@ -246,6 +273,19 @@ func _update_create_button_state() -> void:
 
 func _on_type_card_pressed(character_type: String) -> void:
 	"""Handle character type card tap"""
+	# Check if this card is locked
+	if character_type_card_buttons.has(character_type):
+		var button = character_type_card_buttons[character_type]
+		var is_locked = button.get_meta("is_locked", false)
+
+		if is_locked:
+			# Locked card clicked - show upgrade dialog
+			_play_sound(ERROR_SOUND)
+			var required_tier = button.get_meta("required_tier", CharacterService.UserTier.PREMIUM)
+			_show_locked_character_dialog(character_type, required_tier)
+			return
+
+	# Unlocked card - select it
 	_play_sound(CHARACTER_SELECT_SOUND)
 	_select_character_type(character_type)
 
@@ -569,6 +609,99 @@ Please try again or free up storage space."""
 
 	# Auto-cleanup
 	error_dialog.confirmed.connect(func(): error_dialog.queue_free())
+
+
+func _show_locked_character_dialog(character_type: String, required_tier: int) -> void:
+	"""Show upgrade dialog when locked character is clicked"""
+	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
+	var character_name = type_def.get("display_name", character_type.capitalize())
+	var tier_names = ["Free", "Premium", "Subscription"]
+	var tier_name = tier_names[required_tier] if required_tier < tier_names.size() else "Unknown"
+
+	GameLogger.info(
+		"[CharacterCreation] Locked character clicked",
+		{"character": character_type, "required_tier": tier_name}
+	)
+
+	# Track analytics
+	Analytics.track_event(
+		"locked_character_clicked",
+		{"character_type": character_type, "required_tier": required_tier, "tier_name": tier_name}
+	)
+
+	# Create unlock dialog
+	var dialog = AcceptDialog.new()
+	dialog.title = "%s - %s Tier Required" % [character_name, tier_name]
+	dialog.dialog_text = _get_locked_character_dialog_text(character_type, required_tier)
+	dialog.ok_button_text = "Maybe Later"
+
+	# Add tier-specific upgrade button
+	if required_tier == CharacterService.UserTier.PREMIUM:
+		dialog.add_button("Unlock Premium ($4.99)", true, "upgrade_premium")
+	elif required_tier == CharacterService.UserTier.SUBSCRIPTION:
+		dialog.add_button("Subscribe ($2.99/mo)", true, "upgrade_subscription")
+
+	# Connect signals
+	dialog.custom_action.connect(_on_upgrade_dialog_action)
+
+	# Auto-cleanup
+	dialog.confirmed.connect(func(): dialog.queue_free())
+	dialog.canceled.connect(func(): dialog.queue_free())
+	dialog.custom_action.connect(func(_action): dialog.queue_free())
+
+	# Show dialog
+	add_child(dialog)
+	dialog.popup_centered()
+
+
+func _get_locked_character_dialog_text(character_type: String, required_tier: int) -> String:
+	"""Get tier-specific dialog copy for locked characters"""
+	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
+	var character_name = type_def.get("display_name", character_type.capitalize())
+	var character_desc = type_def.get("description", "A powerful character")
+
+	match required_tier:
+		CharacterService.UserTier.PREMIUM:
+			return (
+				"""%s is a Premium character!
+
+"%s"
+
+✨ Unlock with Premium Tier ✨
+
+Premium includes:
+• 15 character slots (5x more!)
+• 3 exclusive character types (Tank, Commando, Mutant)
+• Black Market access
+• 8 exclusive weapons
+• Minions system (2 active companions)
+
+One-time price: $4.99"""
+				% [character_name, character_desc]
+			)
+
+		CharacterService.UserTier.SUBSCRIPTION:
+			return (
+				"""%s is a Subscription-exclusive character!
+
+"%s"
+
+✨ Unlock with Subscription ✨
+
+Subscription includes:
+• All Premium features
+• 50 active character slots
+• 200 Hall of Fame archived slots
+• Quantum Banking (transfer currency)
+• Quantum Storage (transfer items)
+• Atomic Vending Machine (personalized shop)
+
+Monthly: $2.99"""
+				% [character_name, character_desc]
+			)
+
+		_:
+			return "%s requires a higher tier to unlock." % character_name
 
 
 func _play_sound(sound_path: String) -> void:

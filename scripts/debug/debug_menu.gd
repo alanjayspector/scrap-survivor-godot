@@ -38,29 +38,45 @@ var selected_reset_mode: String = "keep_chars"  # "keep_chars", "reset_chars", "
 
 
 func _ready() -> void:
+	GameLogger.warning("[DEBUG MENU] _ready() called - initializing...")
+
 	# Safety check - this should NEVER be accessible in production builds
 	if not OS.is_debug_build():
 		push_error(
 			"[DEBUG MENU] Attempted to open debug menu in production build! This is a critical error."
 		)
+		GameLogger.error("[DEBUG MENU] OS.is_debug_build() returned false - aborting")
 		queue_free()
 		return
+
+	GameLogger.info("[DEBUG MENU] Debug build confirmed - continuing...")
 
 	# Verify CharacterService is loaded
 	if not is_instance_valid(CharacterService):
 		push_error("[DEBUG MENU] CharacterService not loaded! Cannot open debug menu.")
+		GameLogger.error("[DEBUG MENU] CharacterService not valid - aborting")
 		queue_free()
 		return
 
-	# Setup dialog
+	GameLogger.info("[DEBUG MENU] CharacterService valid - continuing...")
+
+	# Setup dialog properties
 	title = "🛠️ QA Debug Menu"
-	dialog_text = "Change tier and reset account for testing. All actions are logged."
+	dialog_text = ""  # Clear default text - we're using custom UI
 	ok_button_text = "Apply Changes"
 	cancel_button_text = "Cancel"
+	size = Vector2i(700, 600)  # Ensure dialog is large enough
+
+	GameLogger.info("[DEBUG MENU] Dialog properties set")
 
 	# Build UI
+	GameLogger.info("[DEBUG MENU] Building tier buttons...")
 	_setup_tier_buttons()
+
+	GameLogger.info("[DEBUG MENU] Building reset options...")
 	_setup_reset_options()
+
+	GameLogger.info("[DEBUG MENU] Updating status display...")
 	_update_status_display()
 
 	# Connect signals
@@ -72,13 +88,21 @@ func _ready() -> void:
 	canceled.connect(queue_free)
 
 	# Log opening
-	GameLogger.warning("[DEBUG] Debug menu opened")
+	GameLogger.warning("[DEBUG MENU] Debug menu initialized and ready to show")
 
 
 func _setup_tier_buttons() -> void:
+	GameLogger.info("[DEBUG MENU] _setup_tier_buttons() called")
+	GameLogger.info(
+		"[DEBUG MENU] tier_buttons_container valid: %s" % is_instance_valid(tier_buttons_container)
+	)
+
 	if not is_instance_valid(tier_buttons_container):
 		push_error("[DEBUG MENU] TierButtonsContainer not found!")
+		GameLogger.error("[DEBUG MENU] TierButtonsContainer is null or invalid!")
 		return
+
+	GameLogger.info("[DEBUG MENU] TierButtonsContainer found - creating buttons...")
 
 	# Create tier selection buttons
 	free_button = Button.new()
@@ -108,11 +132,33 @@ func _setup_tier_buttons() -> void:
 	selected_tier = CharacterService.current_tier
 	_update_tier_button_states()
 
+	GameLogger.info(
+		(
+			"[DEBUG MENU] Tier buttons created: Free=%s, Premium=%s, Sub=%s"
+			% [
+				is_instance_valid(free_button),
+				is_instance_valid(premium_button),
+				is_instance_valid(subscription_button)
+			]
+		)
+	)
+
 
 func _setup_reset_options() -> void:
+	GameLogger.info("[DEBUG MENU] _setup_reset_options() called")
+	GameLogger.info(
+		(
+			"[DEBUG MENU] reset_options_container valid: %s"
+			% is_instance_valid(reset_options_container)
+		)
+	)
+
 	if not is_instance_valid(reset_options_container):
 		push_error("[DEBUG MENU] ResetOptionsContainer not found!")
+		GameLogger.error("[DEBUG MENU] ResetOptionsContainer is null or invalid!")
 		return
+
+	GameLogger.info("[DEBUG MENU] ResetOptionsContainer found - creating buttons...")
 
 	# Create reset mode buttons
 	var label = Label.new()
@@ -146,6 +192,17 @@ func _setup_reset_options() -> void:
 
 	# Default selection
 	_update_reset_button_states()
+
+	GameLogger.info(
+		(
+			"[DEBUG MENU] Reset buttons created: Keep=%s, Reset=%s, Nuclear=%s"
+			% [
+				is_instance_valid(keep_chars_button),
+				is_instance_valid(reset_chars_button),
+				is_instance_valid(nuclear_reset_button)
+			]
+		)
+	)
 
 
 func _on_tier_selected(tier: CharacterService.UserTier) -> void:

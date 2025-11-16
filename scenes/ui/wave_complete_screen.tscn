@@ -58,13 +58,17 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="HubButton" type="Button" parent="Content/ButtonsContainer"]
-custom_minimum_size = Vector2(150, 60)
+visible = true
+custom_minimum_size = Vector2(140, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Return to Hub"
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Hub"
 
 [node name="NextWaveButton" type="Button" parent="Content/ButtonsContainer"]
-custom_minimum_size = Vector2(150, 60)
+visible = true
+custom_minimum_size = Vector2(140, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
 text = "Next Wave"

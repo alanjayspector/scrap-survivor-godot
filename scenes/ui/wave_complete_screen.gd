@@ -13,6 +13,21 @@ signal return_to_hub_pressed
 
 func _ready() -> void:
 	hide()  # Hidden by default
+
+	# Verify nodes exist (defensive programming)
+	if not is_instance_valid(next_wave_button):
+		push_error("[WaveComplete] NextWaveButton not found!")
+		return
+	if not is_instance_valid(hub_button):
+		push_error("[WaveComplete] HubButton not found!")
+		return
+
+	# Ensure hub button is visible and properly sized
+	hub_button.visible = true
+	hub_button.custom_minimum_size = Vector2(150, 60)  # Match NextWaveButton size
+
+	print("[WaveComplete] Buttons initialized - Hub: ", hub_button, " Next: ", next_wave_button)
+
 	next_wave_button.pressed.connect(_on_next_wave_pressed)
 	hub_button.pressed.connect(_on_hub_button_pressed)
 

@@ -98,11 +98,15 @@ func _setup_buttons() -> void:
 	settings_button.tooltip_text = "Coming in Week 16"
 
 	# Show debug QA button ONLY in debug builds (Week 16 Priority 1)
-	if OS.is_debug_build():
+	var is_debug = OS.is_debug_build()
+	GameLogger.warning("[Hub] OS.is_debug_build() = %s" % is_debug)
+
+	if is_debug:
 		debug_qa_button.visible = true
-		GameLogger.info("[Hub] Debug QA button enabled (debug build)")
+		GameLogger.warning("[Hub] Debug QA button ENABLED and VISIBLE (bottom-right corner: 🛠️ QA)")
 	else:
 		debug_qa_button.visible = false
+		GameLogger.info("[Hub] Debug QA button hidden (not a debug build)")
 
 	# If first run, force character creation flow
 	if is_first_run:
@@ -221,6 +225,8 @@ func _on_debug_qa_pressed() -> void:
 	"""Handle Debug QA button - open debug menu for tier testing (Week 16 Priority 1)"""
 	_play_button_click_sound()
 
+	GameLogger.warning("[Hub] Debug QA button pressed!")
+
 	# Safety check - should never reach here in production
 	if not OS.is_debug_build():
 		GameLogger.error(
@@ -228,13 +234,19 @@ func _on_debug_qa_pressed() -> void:
 		)
 		return
 
-	GameLogger.warning("[Hub] Debug QA button pressed - opening debug menu")
+	GameLogger.warning("[Hub] Debug build confirmed - loading debug menu scene...")
 
 	# Load and show debug menu
 	var debug_menu_scene = load("res://scenes/debug/debug_menu.tscn")
 	if debug_menu_scene:
+		GameLogger.info("[Hub] Debug menu scene loaded successfully")
 		var debug_menu = debug_menu_scene.instantiate()
+		GameLogger.info("[Hub] Debug menu instantiated - adding to scene tree...")
 		add_child(debug_menu)
+		GameLogger.info("[Hub] Debug menu added to scene - calling popup_centered()...")
 		debug_menu.popup_centered()
+		GameLogger.warning("[Hub] Debug menu popup_centered() called - should be visible now")
 	else:
-		GameLogger.error("[Hub] Failed to load debug menu scene")
+		GameLogger.error(
+			"[Hub] Failed to load debug menu scene at res://scenes/debug/debug_menu.tscn"
+		)
