@@ -17,6 +17,7 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 @onready var settings_button: Button = $MenuContainer/SettingsButton
 @onready var quit_button: Button = $MenuContainer/QuitButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
+@onready var debug_qa_button: Button = $DebugQAButton
 
 var is_first_run: bool = false
 
@@ -87,6 +88,7 @@ func _connect_signals() -> void:
 	characters_button.pressed.connect(_on_characters_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
+	debug_qa_button.pressed.connect(_on_debug_qa_pressed)
 
 
 func _setup_buttons() -> void:
@@ -94,6 +96,13 @@ func _setup_buttons() -> void:
 	# Disable settings button (not implemented in Week 15)
 	settings_button.disabled = true
 	settings_button.tooltip_text = "Coming in Week 16"
+
+	# Show debug QA button ONLY in debug builds (Week 16 Priority 1)
+	if OS.is_debug_build():
+		debug_qa_button.visible = true
+		GameLogger.info("[Hub] Debug QA button enabled (debug build)")
+	else:
+		debug_qa_button.visible = false
 
 	# If first run, force character creation flow
 	if is_first_run:
@@ -140,7 +149,7 @@ func _on_play_pressed() -> void:
 	# Week 15 Phase 1: Temporary fallback until Phase 2/3 scenes exist
 	if is_first_run:
 		# First run: Force character creation (Phase 2 - not yet implemented)
-		if FileAccess.file_exists("res://scenes/ui/character_creation.tscn"):
+		if ResourceLoader.exists("res://scenes/ui/character_creation.tscn"):
 			get_tree().change_scene_to_file("res://scenes/ui/character_creation.tscn")
 		else:
 			GameLogger.warning("[Hub] character_creation.tscn not yet implemented (Phase 2)")
@@ -148,7 +157,7 @@ func _on_play_pressed() -> void:
 			get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
 	else:
 		# Has characters: Show character roster (Phase 3 - not yet implemented)
-		if FileAccess.file_exists("res://scenes/ui/character_roster.tscn"):
+		if ResourceLoader.exists("res://scenes/ui/character_roster.tscn"):
 			get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")
 		else:
 			GameLogger.warning("[Hub] character_roster.tscn not yet implemented (Phase 3)")
@@ -166,7 +175,7 @@ func _on_characters_pressed() -> void:
 	GameLogger.info("[Hub] Characters button pressed")
 
 	# Week 15 Phase 1: Temporary fallback until Phase 3 exists
-	if FileAccess.file_exists("res://scenes/ui/character_roster.tscn"):
+	if ResourceLoader.exists("res://scenes/ui/character_roster.tscn"):
 		get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")
 	else:
 		GameLogger.warning("[Hub] character_roster.tscn not yet implemented (Phase 3)")
@@ -206,3 +215,26 @@ func _on_quit_pressed() -> void:
 			GameLogger.error("[Hub] Save failed before quit")
 
 	get_tree().quit()
+
+
+func _on_debug_qa_pressed() -> void:
+	"""Handle Debug QA button - open debug menu for tier testing (Week 16 Priority 1)"""
+	_play_button_click_sound()
+
+	# Safety check - should never reach here in production
+	if not OS.is_debug_build():
+		GameLogger.error(
+			"[Hub] Debug QA button pressed in production build - THIS IS A CRITICAL ERROR"
+		)
+		return
+
+	GameLogger.warning("[Hub] Debug QA button pressed - opening debug menu")
+
+	# Load and show debug menu
+	var debug_menu_scene = load("res://scenes/debug/debug_menu.tscn")
+	if debug_menu_scene:
+		var debug_menu = debug_menu_scene.instantiate()
+		add_child(debug_menu)
+		debug_menu.popup_centered()
+	else:
+		GameLogger.error("[Hub] Failed to load debug menu scene")

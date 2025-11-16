@@ -89,9 +89,10 @@ func _setup_wave_manager() -> void:
 	print("[Wasteland] Wave manager spawn container set to: ", enemies_container)
 
 	# Connect wave complete screen to wave manager
-	print("[Wasteland] Connecting wave complete screen signal...")
+	print("[Wasteland] Connecting wave complete screen signals...")
 	wave_complete_screen.next_wave_pressed.connect(_on_next_wave_pressed)
-	print("[Wasteland] Signal connected")
+	wave_complete_screen.return_to_hub_pressed.connect(_on_wave_complete_hub_pressed)
+	print("[Wasteland] Wave complete screen signals connected")
 
 	# Connect game over screen signals
 	print("[Wasteland] Connecting game over screen signals...")
@@ -138,6 +139,18 @@ func _setup_wave_manager() -> void:
 func _on_next_wave_pressed() -> void:
 	"""Handle next wave button press"""
 	wave_manager.next_wave()
+
+
+func _on_wave_complete_hub_pressed() -> void:
+	"""Handle Return to Hub button from wave complete screen"""
+	print("[Wasteland] Return to Hub pressed from wave complete screen")
+
+	# Unpause game (wave complete pauses the game)
+	get_tree().paused = false
+	print("[Wasteland] Game unpaused")
+
+	# Week 15 Phase 1: Return to Hub
+	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
 
 
 func _on_weapon_fired(weapon_id: String, position: Vector2, direction: Vector2) -> void:

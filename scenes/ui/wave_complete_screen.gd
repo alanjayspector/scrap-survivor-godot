@@ -3,15 +3,18 @@ extends Panel
 ## Wave completion screen showing stats and next wave button
 
 signal next_wave_pressed
+signal return_to_hub_pressed
 
 @onready var victory_label: Label = $Content/VictoryLabel
 @onready var stats_display: VBoxContainer = $Content/StatsDisplay
-@onready var next_wave_button: Button = $Content/NextWaveButton
+@onready var next_wave_button: Button = $Content/ButtonsContainer/NextWaveButton
+@onready var hub_button: Button = $Content/ButtonsContainer/HubButton
 
 
 func _ready() -> void:
 	hide()  # Hidden by default
 	next_wave_button.pressed.connect(_on_next_wave_pressed)
+	hub_button.pressed.connect(_on_hub_button_pressed)
 
 
 func show_stats(wave: int, stats: Dictionary) -> void:
@@ -52,3 +55,8 @@ func _add_stat_label(text: String) -> void:
 func _on_next_wave_pressed() -> void:
 	hide()
 	next_wave_pressed.emit()
+
+
+func _on_hub_button_pressed() -> void:
+	hide()
+	return_to_hub_pressed.emit()
