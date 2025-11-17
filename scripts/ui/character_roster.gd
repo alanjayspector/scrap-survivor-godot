@@ -70,26 +70,26 @@ func _populate_character_list() -> void:
 
 	# Create list item for each character
 	for character in characters:
-		var list_item = _create_character_list_item(character)
-		character_list.add_child(list_item)
+		_create_character_list_item(character)
 
 	GameLogger.info("[CharacterRoster] Displayed characters", {"count": characters.size()})
 
 
-func _create_character_list_item(character: Dictionary) -> PanelContainer:
+func _create_character_list_item(character: Dictionary) -> void:
 	"""Create a character list item using CharacterCard component (QA Fix #2)"""
 	# Instantiate CharacterCard component
 	var card = CHARACTER_CARD_SCENE.instantiate()
 
-	# Setup with character data
+	# Add to scene tree FIRST (so @onready variables initialize)
+	character_list.add_child(card)
+
+	# THEN setup with character data (after @onready vars are ready)
 	card.setup(character)
 
 	# Connect signals
 	card.play_pressed.connect(_on_character_play_pressed)
 	card.delete_pressed.connect(_on_character_delete_pressed)
 	card.details_pressed.connect(_on_character_details_pressed)
-
-	return card
 
 
 func _show_empty_state() -> void:
@@ -196,7 +196,7 @@ func _on_character_details_pressed(character_id: String) -> void:
 	if character_details_panel == null:
 		character_details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
 		add_child(character_details_panel)
-		character_details_panel.close_requested.connect(_on_details_panel_closed)
+		character_details_panel.closed.connect(_on_details_panel_closed)
 
 	# Show character details
 	character_details_panel.show_character(character)
