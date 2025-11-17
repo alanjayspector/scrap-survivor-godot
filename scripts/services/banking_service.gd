@@ -3,7 +3,7 @@ extends Node
 ##
 ## Simplified version for Week 5 (no Supabase yet - that's Week 6).
 ## Implements:
-## - Scrap and premium currency tracking
+## - Three currency types: Scrap (common), Components (Workshop), Nanites (Lab)
 ## - Tier-gating for premium features
 ## - Balance caps by tier
 ## - Transaction validation
@@ -14,7 +14,7 @@ extends Node
 enum UserTier { FREE, PREMIUM, SUBSCRIPTION }
 
 ## Currency types
-enum CurrencyType { SCRAP, PREMIUM, COMPONENTS, NANITES }
+enum CurrencyType { SCRAP, COMPONENTS, NANITES }
 
 
 ## Balance caps for each tier
@@ -37,7 +37,7 @@ signal transaction_failed(reason: String)
 signal state_loaded
 
 ## Current balances (local-first, will sync to Supabase in Week 6)
-var balances: Dictionary = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
+var balances: Dictionary = {"scrap": 0, "components": 0, "nanites": 0}
 
 ## Current user tier (set by TierService, defaults to FREE)
 var current_tier: UserTier = UserTier.FREE
@@ -154,11 +154,10 @@ func get_transaction_history() -> Array:
 
 ## Reset all balances (for testing or new game)
 func reset() -> void:
-	balances = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
+	balances = {"scrap": 0, "components": 0, "nanites": 0}
 	transaction_history.clear()
 	current_tier = UserTier.FREE
 	currency_changed.emit(CurrencyType.SCRAP, 0)
-	currency_changed.emit(CurrencyType.PREMIUM, 0)
 	currency_changed.emit(CurrencyType.COMPONENTS, 0)
 	currency_changed.emit(CurrencyType.NANITES, 0)
 	GameLogger.info("Banking service reset")
@@ -190,7 +189,7 @@ func deserialize(data: Dictionary) -> void:
 		if not balances.has("nanites"):
 			balances["nanites"] = 0
 	else:
-		balances = {"scrap": 0, "premium": 0, "components": 0, "nanites": 0}
+		balances = {"scrap": 0, "components": 0, "nanites": 0}
 
 	# Restore tier
 	if data.has("tier"):
@@ -206,7 +205,6 @@ func deserialize(data: Dictionary) -> void:
 
 	# Emit signals to notify UI
 	currency_changed.emit(CurrencyType.SCRAP, balances.get("scrap", 0))
-	currency_changed.emit(CurrencyType.PREMIUM, balances.get("premium", 0))
 	currency_changed.emit(CurrencyType.COMPONENTS, balances.get("components", 0))
 	currency_changed.emit(CurrencyType.NANITES, balances.get("nanites", 0))
 	state_loaded.emit()
@@ -215,7 +213,6 @@ func deserialize(data: Dictionary) -> void:
 		"BankingService state loaded",
 		{
 			"scrap": balances.get("scrap", 0),
-			"premium": balances.get("premium", 0),
 			"components": balances.get("components", 0),
 			"nanites": balances.get("nanites", 0),
 			"tier": current_tier
@@ -244,8 +241,6 @@ func _currency_type_to_string(type: CurrencyType) -> String:
 	match type:
 		CurrencyType.SCRAP:
 			return "scrap"
-		CurrencyType.PREMIUM:
-			return "premium"
 		CurrencyType.COMPONENTS:
 			return "components"
 		CurrencyType.NANITES:

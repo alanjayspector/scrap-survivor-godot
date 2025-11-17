@@ -182,8 +182,6 @@ func _on_banking_currency_changed(type: int, new_balance: int) -> void:
 	match type:
 		BankingService.CurrencyType.SCRAP:
 			currency_type_str = "scrap"
-		BankingService.CurrencyType.PREMIUM:
-			currency_type_str = "premium"
 		BankingService.CurrencyType.COMPONENTS:
 			currency_type_str = "components"
 		BankingService.CurrencyType.NANITES:
@@ -208,8 +206,6 @@ func _get_currency_total(currency: String) -> int:
 	match currency:
 		"scrap":
 			return BankingService.balances.get("scrap", 0)
-		"premium":
-			return BankingService.balances.get("premium", 0)
 		"components":
 			return BankingService.balances.get("components", 0)
 		"nanites":

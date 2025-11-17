@@ -184,7 +184,8 @@ func create_character(character_name: String, character_type: String = "scavenge
 		"total_kills": 0,
 		"highest_wave": 0,
 		"current_wave": 0,
-		"aura": {"type": type_def.aura_type, "enabled": true, "level": 1}
+		"aura": {"type": type_def.aura_type, "enabled": true, "level": 1},
+		"starting_currency": {"scrap": 0, "nanites": 0, "components": 0}
 	}
 
 	# Fire pre-hook (perks can modify starting stats/items)
@@ -192,7 +193,7 @@ func create_character(character_name: String, character_type: String = "scavenge
 		"character_type": character_data.character_type,
 		"base_stats": character_data.stats.duplicate(true),
 		"starting_items": [],
-		"starting_currency": {"scrap": 0, "premium": 0, "nanites": 0},
+		"starting_currency": {"scrap": 0, "nanites": 0, "components": 0},
 		"allow_create": true
 	}
 
@@ -404,6 +405,74 @@ func add_experience(character_id: String, xp_amount: int) -> bool:
 		character_stats_changed.emit(character_id)
 
 	return leveled_up
+
+
+## Increment total kills counter
+## Week 15 Phase 4: Track lifetime kill count
+func increment_total_kills(character_id: String) -> bool:
+	if not characters.has(character_id):
+		GameLogger.warning(
+			"Cannot increment kills: character not found", {"character_id": character_id}
+		)
+		return false
+
+	characters[character_id].total_kills += 1
+	return true
+
+
+## Update highest wave reached
+## Week 15 Phase 4: Track progression milestone
+func update_highest_wave(character_id: String, wave: int) -> bool:
+	if not characters.has(character_id):
+		GameLogger.warning(
+			"Cannot update highest_wave: character not found", {"character_id": character_id}
+		)
+		return false
+
+	var character = characters[character_id]
+	if wave > character.highest_wave:
+		character.highest_wave = wave
+		GameLogger.info(
+			"New highest wave record",
+			{"character_id": character_id, "old_record": character.highest_wave, "new_record": wave}
+		)
+		return true
+
+	return false
+
+
+## Add currency to character
+## Week 15 Phase 4: Track economy (scrap, nanites, components)
+func add_currency(character_id: String, currency_type: String, amount: int) -> bool:
+	if not characters.has(character_id):
+		GameLogger.warning(
+			"Cannot add currency: character not found", {"character_id": character_id}
+		)
+		return false
+
+	var character = characters[character_id]
+
+	# Validate currency type exists
+	if not character.starting_currency.has(currency_type):
+		GameLogger.warning(
+			"Invalid currency type", {"character_id": character_id, "currency_type": currency_type}
+		)
+		return false
+
+	# Add currency
+	character.starting_currency[currency_type] += amount
+
+	GameLogger.info(
+		"Currency added",
+		{
+			"character_id": character_id,
+			"currency": currency_type,
+			"amount": amount,
+			"new_total": character.starting_currency[currency_type]
+		}
+	)
+
+	return true
 
 
 ## Handle character death (durability loss, perks, resurrection)

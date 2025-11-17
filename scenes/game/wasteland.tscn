@@ -32,9 +32,9 @@ script = ExtResource("2_grid_floor")
 world_bounds = Rect2(-1000, -1000, 2000, 2000)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
 zoom = Vector2(1.5, 1.5)
-position_smoothing_enabled = true
-position_smoothing_speed = 5.0
+position_smoothing_enabled = false
 script = ExtResource("2_camera_controller")
 follow_smoothness = 5.0
 boundaries = Rect2(-360, -640, 720, 1280)

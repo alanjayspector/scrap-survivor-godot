@@ -86,6 +86,73 @@ func test_create_character_sets_default_stats() -> void:
 	assert_eq(character.stats.armor, 0, "Should have default armor")
 
 
+func test_create_character_initializes_starting_currency() -> void:
+	"""Regression guard: Character must have starting_currency field
+
+	ISSUE: Week 15 Phase 4 - add_currency() crashed with 'Invalid access to starting_currency'
+	ROOT CAUSE: create_character() never added starting_currency to character_data dictionary
+	FIX: Added starting_currency: {scrap: 0, nanites: 0, components: 0} to character_data
+	"""
+	# Arrange
+	var name = "TestCharacter"
+
+	# Act
+	var character_id = CharacterService.create_character(name)
+	var character = CharacterService.get_character(character_id)
+
+	# Assert - verify starting_currency field exists
+	assert_true(
+		character.has("starting_currency"),
+		"Character MUST have starting_currency field (Week 15 Phase 4 fix)"
+	)
+
+
+func test_starting_currency_has_all_three_types() -> void:
+	"""Verify all 3 currency types are initialized (scrap, nanites, components)
+
+	NOTE: Premium currency removed - vestigial code from original TypeScript BankingService
+	GAME CURRENCIES:
+	- scrap: Common currency
+	- nanites: The Lab's currency
+	- components: The Workshop currency
+	"""
+	# Arrange
+	var name = "TestCharacter"
+
+	# Act
+	var character_id = CharacterService.create_character(name)
+	var character = CharacterService.get_character(character_id)
+
+	# Assert - verify all 3 currency types initialized to 0
+	assert_has(character.starting_currency, "scrap", "Should have scrap currency")
+	assert_has(character.starting_currency, "nanites", "Should have nanites currency")
+	assert_has(character.starting_currency, "components", "Should have components currency")
+
+	assert_eq(character.starting_currency["scrap"], 0, "Scrap should start at 0")
+	assert_eq(character.starting_currency["nanites"], 0, "Nanites should start at 0")
+	assert_eq(character.starting_currency["components"], 0, "Components should start at 0")
+
+
+func test_add_currency_updates_character_data() -> void:
+	"""Verify add_currency() persists to character.starting_currency
+
+	REGRESSION GUARD: Currency collected but never displayed in character details
+	"""
+	# Arrange
+	var character_id = CharacterService.create_character("TestChar")
+
+	# Act
+	var success = CharacterService.add_currency(character_id, "scrap", 100)
+
+	# Assert
+	assert_true(success, "add_currency should succeed")
+
+	var character = CharacterService.get_character(character_id)
+	assert_eq(
+		character.starting_currency["scrap"], 100, "Currency should persist to character data"
+	)
+
+
 func test_first_character_becomes_active() -> void:
 	# Arrange
 	var name = "FirstCharacter"

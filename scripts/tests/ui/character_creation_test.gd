@@ -388,8 +388,8 @@ func test_buttons_have_minimum_size_for_touch() -> void:
 	)
 
 	# Assert - Minimum 60pt height for touch targets (WCAG AA)
-	assert_ge(back_button.custom_minimum_size.y, 60, "Back button should have min height 60")
-	assert_ge(create_button.custom_minimum_size.y, 60, "Create button should have min height 60")
+	assert_gte(back_button.custom_minimum_size.y, 60, "Back button should have min height 60")
+	assert_gte(create_button.custom_minimum_size.y, 60, "Create button should have min height 60")
 
 
 ## ============================================================================

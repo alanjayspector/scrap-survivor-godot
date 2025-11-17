@@ -170,10 +170,9 @@ func test_active_character_persists_across_scenes() -> void:
 	# Note: GameState.active_character_id is not saved by SaveManager
 	# It's set by the scene when character is selected
 	# So we verify character exists and can be set as active again
-	var success = GameState.set_active_character(character_id)
+	GameState.set_active_character(character_id)
 
 	# Assert
-	assert_true(success, "Should be able to set active character")
 	assert_eq(GameState.active_character_id, character_id, "Active character should be set")
 
 

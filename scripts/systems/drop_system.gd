@@ -95,6 +95,9 @@ func award_xp_for_kill(character_id: String, enemy_type: String) -> bool:
 	# Award XP to character (may trigger level up)
 	var leveled_up = CharacterService.add_experience(character_id, xp_reward)
 
+	# Track kill count (Week 15 Phase 4)
+	CharacterService.increment_total_kills(character_id)
+
 	# Emit signal
 	xp_awarded.emit(character_id, xp_reward, leveled_up)
 
@@ -216,18 +219,21 @@ func _on_drop_collected(currency_type: String, amount: int) -> void:
 		"nanites":
 			currency_enum = BankingService.CurrencyType.NANITES
 			print("[DropSystem] Mapped to NANITES enum")
-		"premium":
-			currency_enum = BankingService.CurrencyType.PREMIUM
-			print("[DropSystem] Mapped to PREMIUM enum")
 		_:
 			print("[DropSystem] ERROR: Unknown currency type: ", currency_type)
 			GameLogger.warning("Unknown currency type collected", {"currency": currency_type})
 			return
 
-	# Add currency to player's bank
+	# Add currency to player's bank (current run)
 	print("[DropSystem] Adding ", amount, " to BankingService, type: ", currency_enum)
 	BankingService.add_currency(currency_enum, amount)
 	print("[DropSystem] Currency added to bank")
+
+	# Add currency to character's persistent totals (Week 15 Phase 4)
+	var active_char_id = GameState.active_character_id
+	if active_char_id:
+		CharacterService.add_currency(active_char_id, currency_type, amount)
+		print("[DropSystem] Currency added to character persistent totals")
 
 	# Emit signal
 	var drops_dict = {currency_type: amount}

@@ -88,6 +88,37 @@ func test_wasteland_camera_has_follow_smoothness() -> void:
 	assert_eq(camera.follow_smoothness, 5.0, "Camera follow_smoothness should be 5.0")
 
 
+func test_camera_built_in_smoothing_disabled() -> void:
+	"""Regression guard: Built-in Camera2D smoothing must be disabled to prevent double-smoothing
+
+	ISSUE: Week 15 Phase 4 camera jump bug - double smoothing conflict
+	- Custom lerp in CameraController._process() provides boundary-aware smoothing
+	- Camera2D position_smoothing_enabled creates second smoothing layer
+	- Result: Visual position (smoothed_camera_pos) != node position (global_position)
+	- This causes visual camera jump on spawn despite correct logged positions
+
+	FIX: Disable built-in smoothing, use only custom lerp (Option B from expert panel)
+	"""
+	assert_false(
+		camera.position_smoothing_enabled,
+		"Camera2D built-in smoothing MUST be disabled - we use custom lerp for boundary clamping"
+	)
+
+
+func test_camera_starts_disabled() -> void:
+	"""Regression guard: Camera must start disabled, spawn code enables it
+
+	ISSUE: Camera enabled=true from scene start caused jump (QA log showed enabled=true pre-spawn)
+	FIX: Explicit enabled=false in wasteland.tscn, spawn code sets enabled=true after positioning
+	"""
+	# Camera from before_each() is fresh from scene instantiation
+	# before_each() doesn't modify enabled state, so we can test it here
+	assert_false(
+		camera.enabled,
+		"Camera should start disabled in scene, spawn code enables it after positioning"
+	)
+
+
 ## ============================================================================
 ## SECTION 2: Camera Boundary Clamping Tests
 ## ============================================================================

@@ -135,7 +135,7 @@ func test_banking_currency_changed_signal() -> void:
 	watch_signals(BankingService)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
-	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 100)
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 
 	assert_signal_emitted(BankingService, "currency_changed", "currency_changed should emit")
 
@@ -217,7 +217,7 @@ func test_legendary_weapon_grants_high_scrap() -> void:
 
 func test_complete_gameplay_scenario() -> void:
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 1000)
+	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
 
 	# Dismantle 5 uncommon items
 	for i in range(5):
