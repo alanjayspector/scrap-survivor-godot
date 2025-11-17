@@ -16,7 +16,7 @@ func before_each() -> void:
 	# Reset all services
 	CharacterService.reset()
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
-	GameState.reset()
+	GameState.reset_game_state()
 	SaveManager.delete_save(0)  # Clear save file
 
 	# Wait for services to stabilize
@@ -26,7 +26,7 @@ func before_each() -> void:
 func after_each() -> void:
 	# Cleanup
 	CharacterService.reset()
-	GameState.reset()
+	GameState.reset_game_state()
 
 
 ## ============================================================================
@@ -67,11 +67,11 @@ func test_character_persists_after_save_and_load() -> void:
 
 	# Act - Reset services and load
 	CharacterService.reset()
-	GameState.reset()
-	var load_success = SaveManager.load_all_services()
+	GameState.reset_game_state()
+	var load_result = SaveManager.load_all_services()
 
 	# Assert - Character restored
-	assert_true(load_success, "Load should succeed")
+	assert_true(load_result.success, "Load should succeed")
 	assert_eq(CharacterService.get_character_count(), 1, "Should have 1 character after load")
 
 	var loaded_character = CharacterService.get_character(character_id)
@@ -90,12 +90,13 @@ func test_multiple_characters_persist_correctly() -> void:
 
 	# Act - Reset and load
 	CharacterService.reset()
-	GameState.reset()
+	GameState.reset_game_state()
 	SaveManager.load_all_services()
 
 	# Assert - All characters restored
 	assert_eq(CharacterService.get_character_count(), 3, "Should have 3 characters")
-	assert_eq(GameState.active_character_id, char2_id, "Active character should be restored")
+	# Note: active_character_id is NOT persisted - must be set by scene after load
+	assert_eq(GameState.active_character_id, "", "Active character should be cleared after reset")
 
 
 ## ============================================================================
@@ -164,7 +165,7 @@ func test_active_character_persists_across_scenes() -> void:
 
 	# Act - Simulate scene change by clearing and reloading
 	var saved_active_id = GameState.active_character_id
-	GameState.reset()
+	GameState.reset_game_state()
 	SaveManager.load_all_services()
 
 	# Note: GameState.active_character_id is not saved by SaveManager

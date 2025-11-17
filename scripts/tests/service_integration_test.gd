@@ -217,7 +217,6 @@ func test_legendary_weapon_grants_high_scrap() -> void:
 
 func test_complete_gameplay_scenario() -> void:
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
 
 	# Dismantle 5 uncommon items
 	for i in range(5):

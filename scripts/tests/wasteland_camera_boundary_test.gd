@@ -15,6 +15,8 @@ var camera: CameraController
 var player: Player
 var test_character_id: String = ""
 
+const WASTELAND_SCENE = preload("res://scenes/game/wasteland.tscn")
+
 ## World boundaries from wasteland.tscn and camera_controller.gd
 ## Week 13 Phase 1: Reduced from 4000x4000 to 2000x2000 for better combat density
 const WORLD_BOUNDS: Rect2 = Rect2(-1000, -1000, 2000, 2000)
@@ -41,7 +43,6 @@ func before_each() -> void:
 	CharacterService.set_active_character(test_character_id)
 
 	# Load wasteland scene
-	const WASTELAND_SCENE = preload("res://scenes/game/wasteland.tscn")
 	wasteland_scene = WASTELAND_SCENE.instantiate()
 	add_child_autofree(wasteland_scene)
 
@@ -110,11 +111,25 @@ func test_camera_starts_disabled() -> void:
 
 	ISSUE: Camera enabled=true from scene start caused jump (QA log showed enabled=true pre-spawn)
 	FIX: Explicit enabled=false in wasteland.tscn, spawn code sets enabled=true after positioning
+
+	NOTE: This test loads wasteland scene WITHOUT an active character to test initial camera state
 	"""
-	# Camera from before_each() is fresh from scene instantiation
-	# before_each() doesn't modify enabled state, so we can test it here
+	# Delete test character and reset services so wasteland._ready() doesn't spawn player
+	CharacterService.delete_character(test_character_id)
+	CharacterService.reset()  # This clears active_character_id
+
+	# Load fresh wasteland scene
+	var fresh_wasteland = WASTELAND_SCENE.instantiate()
+	add_child_autofree(fresh_wasteland)
+
+	# Get camera before player spawn
+	var fresh_camera = fresh_wasteland.get_node("Camera2D") as CameraController
+
+	# Wait for scene _ready() but without active character, camera should stay disabled
+	await wait_frames(2)
+
 	assert_false(
-		camera.enabled,
+		fresh_camera.enabled,
 		"Camera should start disabled in scene, spawn code enables it after positioning"
 	)
 

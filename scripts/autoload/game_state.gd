@@ -92,6 +92,7 @@ func reset_game_state() -> void:
 	set_score(0)
 	set_gameplay_active(false)
 	set_current_character("")
+	active_character_id = ""  # Clear active character (Week 15 Phase 4 fix)
 	is_paused = false
 
 

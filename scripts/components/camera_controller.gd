@@ -55,7 +55,8 @@ func _process(delta: float) -> void:
 		)
 		shake_amount = lerp(shake_amount, 0.0, 10.0 * delta)
 	else:
-		offset = Vector2.ZERO
+		# Smoothly lerp offset back to zero instead of instant reset (fixes camera jump at ~3s)
+		offset = offset.lerp(Vector2.ZERO, 15.0 * delta)
 
 
 func trigger_shake(intensity: float) -> void:

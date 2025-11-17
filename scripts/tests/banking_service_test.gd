@@ -27,11 +27,11 @@ func test_initial_state_all_balances_are_zero() -> void:
 
 	# Act
 	var scrap_balance = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
-	var premium_balance = BankingService.get_balance(BankingService.CurrencyType.PREMIUM)
+	var components_balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
 
 	# Assert
 	assert_eq(scrap_balance, 0, "Initial scrap balance should be 0")
-	assert_eq(premium_balance, 0, "Initial premium balance should be 0")
+	assert_eq(components_balance, 0, "Initial components balance should be 0")
 
 
 func test_add_currency_increases_balance() -> void:
@@ -222,18 +222,16 @@ func test_currency_changed_signal_emits_on_subtract() -> void:
 ## Week 11 Phase 4: Tests for new currency types (Components, Nanites)
 
 
-func test_initial_state_all_four_currencies_are_zero() -> void:
+func test_initial_state_all_three_currencies_are_zero() -> void:
 	# Arrange (done in before_each)
 
 	# Act
 	var scrap_balance = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
-	var premium_balance = BankingService.get_balance(BankingService.CurrencyType.PREMIUM)
 	var components_balance = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
 	var nanites_balance = BankingService.get_balance(BankingService.CurrencyType.NANITES)
 
 	# Assert
 	assert_eq(scrap_balance, 0, "Initial scrap balance should be 0")
-	assert_eq(premium_balance, 0, "Initial premium balance should be 0")
 	assert_eq(components_balance, 0, "Initial components balance should be 0")
 	assert_eq(nanites_balance, 0, "Initial nanites balance should be 0")
 
@@ -302,7 +300,6 @@ func test_serialize_includes_all_currencies() -> void:
 	# Arrange
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
-	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 25)
 	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
 	BankingService.add_currency(BankingService.CurrencyType.NANITES, 75)
 
@@ -312,16 +309,15 @@ func test_serialize_includes_all_currencies() -> void:
 	# Assert
 	assert_has(serialized, "balances", "Serialized data should have balances")
 	assert_eq(serialized.balances.scrap, 100, "Serialized scrap should be 100")
-	assert_eq(serialized.balances.premium, 25, "Serialized premium should be 25")
 	assert_eq(serialized.balances.components, 50, "Serialized components should be 50")
 	assert_eq(serialized.balances.nanites, 75, "Serialized nanites should be 75")
 
 
 func test_deserialize_handles_missing_new_currencies() -> void:
-	# Arrange - Old save data without components/nanites
+	# Arrange - Old save data without nanites
 	var old_save_data = {
 		"version": 1,
-		"balances": {"scrap": 200, "premium": 10},
+		"balances": {"scrap": 200, "components": 10},
 		"tier": BankingService.UserTier.PREMIUM,
 		"transaction_history": []
 	}
@@ -336,14 +332,9 @@ func test_deserialize_handles_missing_new_currencies() -> void:
 		"Scrap should be loaded from old save"
 	)
 	assert_eq(
-		BankingService.get_balance(BankingService.CurrencyType.PREMIUM),
-		10,
-		"Premium should be loaded from old save"
-	)
-	assert_eq(
 		BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
-		0,
-		"Components should default to 0 for old save"
+		10,
+		"Components should be loaded from old save"
 	)
 	assert_eq(
 		BankingService.get_balance(BankingService.CurrencyType.NANITES),
