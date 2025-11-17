@@ -2387,11 +2387,16 @@ After completing Week 15 Foundation Package, Week 16 options:
 | 2025-11-16 | **QA Session #5**: Camera fix validated ✅. CRITICAL: Roster broken - characters not appearing | User (Alan) |
 | 2025-11-16 | **HOTFIX**: CharacterCard.tscn corrupted - missing parent node specifications, scene wouldn't instantiate | Claude Code |
 | 2025-11-16 | **HOTFIX DEPLOYED**: Fixed all node parent paths in character_card.tscn (9 nodes), roster now working | Claude Code |
+| 2025-11-16 | **QA Session #6**: Details button not working - setup timing issue and signal name mismatch (QA log 2025-11-16/7) | User (Alan) |
+| 2025-11-16 | **QA Fix #3**: Fixed CharacterCard setup timing - add to scene tree BEFORE calling setup() (character_roster.gd:73-92) | Claude Code |
+| 2025-11-16 | **QA Fix #4**: Fixed CharacterDetailsPanel signal name - `close_requested` → `closed` (character_roster.gd:199) | Claude Code |
+| 2025-11-16 | **Phase 3 VALIDATED**: Details button working, all QA issues resolved, 568/592 tests passing | Claude Code |
+| 2025-11-16 | **Week 16 PLANNED**: Created comprehensive Mobile UI Standards plan (3,033 lines, 6 phases) | Claude Code |
 
 ---
 
-**Document Version**: 1.7 (QA-Driven Completion)
-**Last Updated**: 2025-11-16 (Phase 3 complete with all QA fixes)
+**Document Version**: 1.8 (Final QA Validation)
+**Last Updated**: 2025-11-16 (Phase 3 complete and validated, Week 16 planned)
 **Next Review**: Before Phase 4 implementation
 
 **NOTE**: Phases 4-5 will have Expert Review and Diagnostic Logging sections added before implementation of each phase (following the Expert Review Process).
@@ -2399,6 +2404,22 @@ After completing Week 15 Foundation Package, Week 16 options:
 **Phase 1 Status**: ✅ **COMPLETE** (with device testing and bug fixes)
 **Phase 2 Status**: ✅ **COMPLETE** (manual QA validated, all fixes deployed)
 **Phase 3 Status**: ✅ **COMPLETE** (QA-driven completion: components integrated, all issues fixed, 568 tests passing)
+
+**Key Additions in v1.8:** (Final QA Validation)
+- **Phase 3 VALIDATED**: All QA issues resolved, details button working perfectly
+- **QA Fix #3**: Fixed CharacterCard setup timing issue
+  - **Problem**: @onready variables null when setup() called before add_child()
+  - **Solution**: Add card to scene tree FIRST, THEN call setup()
+  - **Impact**: Resolved "Invalid assignment of property 'color' on Nil" error
+- **QA Fix #4**: Fixed CharacterDetailsPanel signal name
+  - **Problem**: Connecting to wrong signal name `close_requested`
+  - **Solution**: Changed to correct signal `closed`
+  - **Impact**: Resolved "Invalid access to property 'close_requested'" error
+- **Test Results**: 568/592 tests passing, all validators green
+- **Week 16 Planned**: Created comprehensive Mobile UI Standards plan
+  - 3,033 lines, 6 phases with expert reviews
+  - iOS HIG + Brotato/Vampire Survivors standards
+  - Complete mobile transformation roadmap
 
 **Key Additions in v1.7:** (QA-Driven Completion)
 - **Phase 3 NOW COMPLETE**: Manual QA revealed gaps, all issues resolved via Option A (complete properly)
