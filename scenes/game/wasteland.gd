@@ -149,7 +149,15 @@ func _on_wave_complete_hub_pressed() -> void:
 	get_tree().paused = false
 	print("[Wasteland] Game unpaused")
 
-	# Week 15 Phase 1: Return to Hub
+	# Week 15 Phase 4: Save character progress before returning to hub
+	print("[Wasteland] Saving character progress...")
+	var save_success = SaveManager.save_all_services()
+	if save_success:
+		GameLogger.info("[Wasteland] Character progress saved successfully")
+	else:
+		GameLogger.error("[Wasteland] Failed to save character progress")
+
+	# Return to Hub
 	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
 
 
@@ -407,18 +415,95 @@ func _spawn_player(char_id: String) -> void:
 
 	# Add to scene
 	print("[Wasteland] Adding player to scene...")
+	print(
+		"[DIAGNOSTIC] PRE-ADD: Player global_pos=",
+		player_instance.global_position,
+		" Camera global_pos=",
+		camera.global_position,
+		" Camera enabled=",
+		camera.enabled
+	)
 	player_container.add_child(player_instance)
 	print("[Wasteland] Player added to scene tree")
+	print(
+		"[DIAGNOSTIC] POST-ADD: Player global_pos=",
+		player_instance.global_position,
+		" Camera global_pos=",
+		camera.global_position
+	)
 
-	# Set camera to follow player
-	camera.target = player_instance
-	camera.global_position = player_instance.global_position  # QA Fix: Prevent visual jump
-	camera.enabled = true
-	print("[Wasteland] Camera enabled and set to follow player")
-
-	# Equip default weapon (plasma pistol is FREE tier)
+	# Wait for player _ready() to complete before setting up camera
 	print("[Wasteland] Waiting for player _ready()...")
 	await get_tree().process_frame  # Wait for player _ready() to complete
+	print(
+		"[DIAGNOSTIC] AFTER-FRAME-WAIT: Player global_pos=",
+		player_instance.global_position,
+		" Camera global_pos=",
+		camera.global_position,
+		" Camera offset=",
+		camera.offset
+	)
+
+	# Set camera to follow player (AFTER player is fully initialized)
+	# QA Fix Phase 4: Prevent visual jump by resetting camera smoothing
+	print(
+		"[Wasteland] Setting up camera - Player position: ",
+		player_instance.global_position,
+		" Camera position before: ",
+		camera.global_position
+	)
+	camera.target = player_instance
+	camera.global_position = player_instance.global_position
+	print(
+		"[DIAGNOSTIC] BEFORE force_update_scroll: Camera offset=",
+		camera.offset,
+		" Camera zoom=",
+		camera.zoom
+	)
+
+	# CRITICAL FIX (from AI research 2025-11-16):
+	# Must call force_update_scroll() BEFORE reset_smoothing()
+	# This updates viewport canvas transform and camera_pos internal variable
+	# Then reset_smoothing() can properly sync smoothed_camera_pos
+	camera.force_update_scroll()  # Update viewport transform first
+	camera.reset_smoothing()  # Then sync smoothed position
+	camera.enabled = true
+
+	print("[DIAGNOSTIC] Camera fix applied: force_update_scroll() → reset_smoothing()")
+	print(
+		"[Wasteland] Camera enabled - Camera position after: ",
+		camera.global_position,
+		" Target: ",
+		camera.target
+	)
+	print(
+		"[DIAGNOSTIC] CAMERA FINAL STATE: pos=",
+		camera.global_position,
+		" offset=",
+		camera.offset,
+		" zoom=",
+		camera.zoom,
+		" enabled=",
+		camera.enabled,
+		" target=",
+		camera.target
+	)
+
+	# Track camera position for next 3 frames to catch the jump
+	for frame_num in range(3):
+		await get_tree().process_frame
+		print(
+			"[DIAGNOSTIC] FRAME ",
+			frame_num + 1,
+			" AFTER ENABLE: Player pos=",
+			player_instance.global_position,
+			" Camera pos=",
+			camera.global_position,
+			" Camera offset=",
+			camera.offset
+		)
+
+	# Equip default weapon (plasma pistol is FREE tier)
 	print("[Wasteland] Equipping plasma_pistol...")
 	var equipped = player_instance.equip_weapon("plasma_pistol")
 	print("[Wasteland] Weapon equipped: ", equipped)
@@ -509,7 +594,15 @@ func _on_main_menu_pressed() -> void:
 	get_tree().paused = false
 	print("[Wasteland] Game unpaused")
 
-	# Week 15 Phase 1: Return to Hub instead of character_selection
+	# Week 15 Phase 4: Save character progress before returning to hub
+	print("[Wasteland] Saving character progress after game over...")
+	var save_success = SaveManager.save_all_services()
+	if save_success:
+		GameLogger.info("[Wasteland] Character progress saved successfully after game over")
+	else:
+		GameLogger.error("[Wasteland] Failed to save character progress after game over")
+
+	# Return to Hub
 	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
 
 
@@ -561,6 +654,10 @@ func _on_wave_completed(wave: int, stats: Dictionary) -> void:
 	GameLogger.info(
 		"Wave completed", {"wave": wave, "wave_kills": wave_kills, "total_kills": total_kills}
 	)
+
+	# Update highest wave record (Week 15 Phase 4)
+	if character_id:
+		CharacterService.update_highest_wave(character_id, wave)
 
 	# Freeze gameplay - disable player
 	if player_instance:

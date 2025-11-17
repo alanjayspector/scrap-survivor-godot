@@ -66,8 +66,16 @@ func show_character(character: Dictionary) -> void:
 	var total_kills = character.get("total_kills", 0)
 	var highest_wave = character.get("highest_wave", 0)
 	var death_count = character.get("death_count", 0)
+
+	# Currency (Week 15 Phase 4)
+	var currency = character.get("starting_currency", {})
+	var scrap = currency.get("scrap", 0)
+	var nanites = currency.get("nanites", 0)
+	var components = currency.get("components", 0)
+
 	records_label.text = (
-		"Total Kills: %d\nHighest Wave: %d\nDeaths: %d" % [total_kills, highest_wave, death_count]
+		"Total Kills: %d\nHighest Wave: %d\nDeaths: %d\n\nCurrency:\nScrap: %d\nNanites: %d\nComponents: %d"
+		% [total_kills, highest_wave, death_count, scrap, nanites, components]
 	)
 
 	# Show panel
