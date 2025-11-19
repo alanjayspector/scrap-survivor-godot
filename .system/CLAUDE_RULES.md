@@ -313,5 +313,79 @@ Using --no-verify to bypass and move forward."
 
 ---
 
-**Last Updated**: 2025-01-10 by Claude Code
+## Session Continuity Protocol
+
+**Purpose**: Maintain context across sessions for multi-phase projects
+
+### At Session Start (AUTOMATIC)
+
+**I MUST do this at the beginning of EVERY session:**
+
+1. **Check for `.system/NEXT_SESSION.md`**
+   - If file exists → Read it IMMEDIATELY (before user's first request)
+   - If file doesn't exist → Proceed normally
+
+2. **Acknowledge current state** (if file exists):
+   - "I see we're currently working on [PHASE] - [STATUS]"
+   - "Phase [X] is complete, Phase [Y] is in progress"
+   - Show awareness of what was accomplished in previous session
+
+3. **Use Quick Start Prompt** (if user says "continue"):
+   - Use the prompt from `.system/NEXT_SESSION.md`
+   - Load all referenced files
+   - Present plan for current phase
+
+### At Session End (AUTOMATIC)
+
+**When wrapping up a session, I MUST:**
+
+1. **Update `.system/NEXT_SESSION.md`** with:
+   - Current date/time
+   - Current phase and status (complete/in progress)
+   - What we accomplished this session
+   - Next phase objectives
+   - Ready-to-paste Quick Start Prompt for next session
+   - Any important decisions made
+   - Current test status
+   - Current git status (branch, last commit)
+
+2. **Ask for approval to commit** (per Blocking Protocol):
+   - "**APPROVAL REQUIRED**: Commit session handoff update"
+   - Show what changed in `.system/NEXT_SESSION.md`
+   - Wait for user "yes"
+
+3. **Commit the update**:
+   ```
+   git add .system/NEXT_SESSION.md
+   git commit -m "docs: update session handoff for [PHASE]"
+   ```
+
+### Session Continuity Triggers
+
+**User says any of these → I read NEXT_SESSION.md automatically:**
+- "continue"
+- "continue from last session"
+- "where did we leave off?"
+- "what's next?"
+- "resume"
+
+**User starts with a new task → I don't use NEXT_SESSION.md:**
+- User provides specific instructions unrelated to NEXT_SESSION.md content
+- User explicitly says "ignore NEXT_SESSION.md"
+
+### Staleness Check
+
+**If `.system/NEXT_SESSION.md` is more than 7 days old:**
+- Alert user: "⚠️ NEXT_SESSION.md is X days old - is this still current?"
+- Wait for confirmation before using it
+
+### Branch Mismatch Detection
+
+**If current git branch ≠ branch in NEXT_SESSION.md:**
+- Alert user: "⚠️ Branch mismatch: Currently on [BRANCH], NEXT_SESSION.md says [OTHER_BRANCH]"
+- Ask which is correct
+
+---
+
+**Last Updated**: 2025-11-18 by Claude Code (Session Continuity Protocol added)
 **Next Review**: When violations occur or user requests update
