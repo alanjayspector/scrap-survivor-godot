@@ -55,8 +55,17 @@ func _process(delta: float) -> void:
 		)
 		shake_amount = lerp(shake_amount, 0.0, 10.0 * delta)
 	else:
-		# Smoothly lerp offset back to zero instead of instant reset (fixes camera jump at ~3s)
-		offset = offset.lerp(Vector2.ZERO, 15.0 * delta)
+		# Instant reset when shake ends - imperceptible at high framerates (120fps)
+		# QA Fix 2025-11-18: Eliminates multi-frame drift that caused "shift to left" at 58s mark
+		if offset.length() > 0.1:
+			print(
+				"[Camera:Shake] Offset resetting from ",
+				offset.snapped(Vector2(0.1, 0.1)),
+				" at game time: ",
+				Time.get_ticks_msec() / 1000.0,
+				"s"
+			)
+		offset = Vector2.ZERO
 
 
 func trigger_shake(intensity: float) -> void:

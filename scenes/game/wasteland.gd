@@ -58,6 +58,15 @@ func _ready() -> void:
 	print("[Wasteland] Wave manager: ", wave_manager)
 	print("[Wasteland] Wave complete screen: ", wave_complete_screen)
 
+	# QA Tool: Add visual spawn marker at (0,0) for camera debugging (2025-11-18)
+	var spawn_marker = ColorRect.new()
+	spawn_marker.size = Vector2(10, 10)
+	spawn_marker.color = Color.RED
+	spawn_marker.position = Vector2(-5, -5)  # Center the 10x10 square on (0,0)
+	spawn_marker.z_index = 100  # Render on top of everything
+	add_child(spawn_marker)
+	print("[Wasteland] QA spawn marker added at (0,0) - red 10x10 square")
+
 	# Initialize iOS-safe label pool (replaces queue_free() pattern)
 	# Label pool (DISABLED - no longer using text overlays, 2025-11-15)
 	# label_pool = IOSLabelPool.new($UI)
