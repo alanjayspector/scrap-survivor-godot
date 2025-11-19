@@ -472,12 +472,12 @@ grep -r "Analytics\." scripts/ --include="*.gd"
 ### 0.6 Success Criteria: Phase 0
 
 - [x] Brotato reference documented (key patterns extracted)
-- [ ] `feature/week16-mobile-ui` branch created and pushed
-- [ ] Visual regression script implemented
-- [ ] Baseline screenshots captured and committed
-- [ ] Analytics autoload stub created and registered
-- [ ] Current analytics coverage documented
-- [ ] Ready to begin Phase 1 audit
+- [x] `feature/week16-mobile-ui` branch created and pushed
+- [x] Visual regression script implemented
+- [x] Baseline screenshots captured and committed
+- [x] Analytics autoload stub created and registered
+- [x] Current analytics coverage documented
+- [x] Ready to begin Phase 1 audit
 
 ---
 
@@ -3574,7 +3574,7 @@ Accessibility:
 **Last Updated**: 2025-11-18
 **Next Review**: After Week 16 completion
 
-**Phase 0 Status**: 📋 Planned (0.5 hours) - Infrastructure setup
+**Phase 0 Status**: ✅ Complete (0.5 hours) - Infrastructure setup
 **Phase 1 Status**: 📋 Planned (2.5 hours) - UI Audit (includes Combat HUD)
 **Phase 2 Status**: 📋 Planned (2.5 hours) - Typography
 **Phase 3 Status**: 📋 Planned (3 hours) - Touch Targets
