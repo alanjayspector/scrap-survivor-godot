@@ -97,7 +97,7 @@ theme_override_font_sizes/font_size = 24
 text = "Cancel"
 
 [node name="CreateButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(200, 60)
+custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Create Survivor"

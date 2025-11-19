@@ -137,13 +137,13 @@ layout_mode = 2
 theme_override_constants/separation = 15
 
 [node name="RetryButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
-custom_minimum_size = Vector2(180, 70)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Try Again"
 
 [node name="MainMenuButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
-custom_minimum_size = Vector2(180, 70)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Return to Hub"

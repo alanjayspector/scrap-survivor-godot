@@ -37,13 +37,13 @@ theme_override_font_sizes/font_size = 17
 text = "Level 1 • Best Wave 0"
 
 [node name="DetailsButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(80, 60)
+custom_minimum_size = Vector2(160, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Details"
 
 [node name="PlayButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(100, 60)
+custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Play"
@@ -53,7 +53,7 @@ custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 
 [node name="DeleteButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(50, 60)
+custom_minimum_size = Vector2(120, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "✕"

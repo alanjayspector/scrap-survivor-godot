@@ -66,7 +66,7 @@ alignment = 1
 
 [node name="HubButton" type="Button" parent="PaddingContainer/Content/ButtonsContainer"]
 visible = true
-custom_minimum_size = Vector2(180, 70)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
@@ -74,7 +74,7 @@ text = "Hub"
 
 [node name="NextWaveButton" type="Button" parent="PaddingContainer/Content/ButtonsContainer"]
 visible = true
-custom_minimum_size = Vector2(180, 70)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22

@@ -56,8 +56,8 @@ theme_override_constants/outline_size = 2
 [node name="CharacterCardsContainer" type="GridContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
 columns = 2
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -66,13 +66,13 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(200, 60)
+custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Back"
 
 [node name="CreateButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(250, 60)
+custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.3, 0.8, 0.3, 1)
