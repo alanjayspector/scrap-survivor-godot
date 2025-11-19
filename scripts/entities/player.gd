@@ -258,34 +258,42 @@ func _physics_process(delta: float) -> void:
 	var position_after = global_position
 
 	# DIAGNOSTIC: Check for unexpected collisions
-	# DISABLED: Reduce log size
-	# if get_slide_collision_count() > 0:
-	# 	print("[Player] ⚠️ COLLISION DETECTED! Count: ", get_slide_collision_count())
-	# 	print("[Player]   At position: ", global_position.snapped(Vector2.ONE))
-	# 	for i in range(get_slide_collision_count()):
-	# 		var collision = get_slide_collision(i)
-	# 		print(
-	# 			"[Player]   Collision ",
-	# 			i,
-	# 			": collider=",
-	# 			collision.get_collider(),
-	# 			" | normal=",
-	# 			collision.get_normal().snapped(Vector2(0.01, 0.01))
-	# 		)
+	# TEMPORARY: Re-enabled for teleport bug investigation (2025-11-18)
+	if get_slide_collision_count() > 0:
+		print(
+			"[Player:Collision] Count: ",
+			get_slide_collision_count(),
+			" at ",
+			global_position.snapped(Vector2.ONE)
+		)
+		for i in range(get_slide_collision_count()):
+			var collision = get_slide_collision(i)
+			print(
+				"[Player:Collision]   #",
+				i,
+				": ",
+				collision.get_collider(),
+				" | normal=",
+				collision.get_normal().snapped(Vector2(0.01, 0.01)),
+				" | depth=",
+				collision.get_depth()
+			)
 
 	# DIAGNOSTIC: Log movement (only significant movement to reduce spam)
-	# DISABLED: Reduce log size
-	# if position_before.distance_to(position_after) > 1.0:
-	# 	print(
-	# 		"[Player] Moved: from ",
-	# 		position_before.snapped(Vector2.ONE),
-	# 		" to ",
-	# 		position_after.snapped(Vector2.ONE),
-	# 		" | velocity: ",
-	# 		velocity.snapped(Vector2.ONE),
-	# 		" | input: ",
-	# 		input_direction.snapped(Vector2(0.01, 0.01))
-	# 	)
+	# TEMPORARY: Re-enabled for teleport bug investigation (2025-11-18)
+	if position_before.distance_to(position_after) > 1.0:
+		print(
+			"[Player:Move] from ",
+			position_before.snapped(Vector2.ONE),
+			" to ",
+			position_after.snapped(Vector2.ONE),
+			" | Δ=",
+			(position_after - position_before).snapped(Vector2.ONE),
+			" | vel=",
+			velocity.snapped(Vector2.ONE),
+			" | input=",
+			input_direction.snapped(Vector2(0.01, 0.01))
+		)
 
 	# Mouse aiming (rotate weapon pivot for visual feedback)
 	if weapon_pivot:

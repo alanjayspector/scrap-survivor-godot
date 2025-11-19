@@ -322,7 +322,19 @@ func _spawn_single_enemy() -> void:
 		var enemy_id = "enemy_%d_%d_%d" % [current_wave, randi(), i]
 		print("[WaveManager] Enemy ID: ", enemy_id)
 
-		# Add to scene FIRST (data.tree must be initialized before setup - Week 14 Phase 1.7 bugfix)
+		# CRITICAL FIX (2025-11-18): Set position BEFORE adding to tree
+		# Prevents collision overlap at (0,0) with player, which causes physics pushout "teleport"
+		# Random spawn position (off-screen)
+		var spawn_pos = _get_random_spawn_position()
+
+		# For swarm spawns, add slight position variation
+		if spawn_count > 1:
+			spawn_pos += Vector2(rng.randf_range(-50, 50), rng.randf_range(-50, 50))
+
+		enemy.global_position = spawn_pos
+		print("[WaveManager] Enemy positioned at: ", spawn_pos, " (before adding to tree)")
+
+		# Add to scene (node must be in tree before setup for audio - Week 14 Phase 1.7 bugfix)
 		print("[WaveManager] Adding enemy to spawn_container: ", spawn_container)
 		spawn_container.add_child(enemy)
 		print("[WaveManager] Enemy added to scene")
@@ -336,16 +348,6 @@ func _spawn_single_enemy() -> void:
 		enemy.died.connect(_on_enemy_died)
 		enemy.damaged.connect(_on_enemy_damaged)
 		print("[WaveManager] Death and damage signals connected")
-
-		# Random spawn position (off-screen)
-		var spawn_pos = _get_random_spawn_position()
-
-		# For swarm spawns, add slight position variation
-		if spawn_count > 1:
-			spawn_pos += Vector2(rng.randf_range(-50, 50), rng.randf_range(-50, 50))
-
-		enemy.global_position = spawn_pos
-		print("[WaveManager] Enemy positioned at: ", spawn_pos)
 
 		# Track in living_enemies for wave completion detection
 		living_enemies[enemy_id] = enemy
