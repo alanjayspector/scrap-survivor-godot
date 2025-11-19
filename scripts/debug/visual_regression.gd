@@ -21,7 +21,7 @@ func capture_all_baselines() -> void:
 
 	for scene_path in scenes_to_capture:
 		var scene_name = scene_path.get_file().get_basename()
-		var output_path = BASELINE_PATH + scene_name + ".png"
+		var output_path = "%s%s.png" % [BASELINE_PATH, scene_name]
 
 		await _capture_scene_screenshot(scene_path, output_path)
 		GameLogger.info("[VisualRegression] Baseline captured: %s" % scene_name)
@@ -37,7 +37,7 @@ func capture_all_current() -> void:
 
 	for scene_path in scenes_to_capture:
 		var scene_name = scene_path.get_file().get_basename()
-		var output_path = CURRENT_PATH + scene_name + ".png"
+		var output_path = "%s%s.png" % [CURRENT_PATH, scene_name]
 
 		await _capture_scene_screenshot(scene_path, output_path)
 		GameLogger.info("[VisualRegression] Current captured: %s" % scene_name)

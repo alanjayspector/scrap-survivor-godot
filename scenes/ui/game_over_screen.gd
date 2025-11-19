@@ -200,17 +200,18 @@ func _add_stat_label(text: String) -> void:
 func _format_number(num: int) -> String:
 	"""Format number with comma separators"""
 	var s = str(num)
-	var result = ""
+	var parts = []
 	var count = 0
 
 	for i in range(s.length() - 1, -1, -1):
 		if count == 3:
-			result = "," + result
+			parts.push_back(",")
 			count = 0
-		result = s[i] + result
+		parts.push_back(s[i])
 		count += 1
 
-	return result
+	parts.reverse()
+	return "".join(parts)
 
 
 func _format_time(seconds: float) -> String:
