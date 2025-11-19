@@ -21,6 +21,7 @@ class_name DebugMenu
 @onready var tier_buttons_container: HBoxContainer = %TierButtonsContainer
 @onready var status_label: Label = %StatusLabel
 @onready var reset_options_container: VBoxContainer = %ResetOptionsContainer
+@onready var visual_regression_container: VBoxContainer = %VisualRegressionContainer
 
 ## Tier buttons
 var free_button: Button
@@ -31,6 +32,13 @@ var subscription_button: Button
 var keep_chars_button: Button
 var reset_chars_button: Button
 var nuclear_reset_button: Button
+
+## Visual regression buttons
+var capture_baseline_button: Button
+var capture_current_button: Button
+
+## Visual regression script (loaded once to avoid duplication)
+const VISUAL_REGRESSION_SCRIPT = preload("res://scripts/debug/visual_regression.gd")
 
 ## Current selections
 var selected_tier: CharacterService.UserTier = CharacterService.UserTier.FREE
@@ -75,6 +83,9 @@ func _ready() -> void:
 
 	GameLogger.info("[DEBUG MENU] Building reset options...")
 	_setup_reset_options()
+
+	GameLogger.info("[DEBUG MENU] Building visual regression tools...")
+	_setup_visual_regression()
 
 	GameLogger.info("[DEBUG MENU] Updating status display...")
 	_update_status_display()
@@ -202,6 +213,75 @@ func _setup_reset_options() -> void:
 				is_instance_valid(nuclear_reset_button)
 			]
 		)
+	)
+
+
+func _setup_visual_regression() -> void:
+	GameLogger.info("[DEBUG MENU] _setup_visual_regression() called")
+	GameLogger.info(
+		(
+			"[DEBUG MENU] visual_regression_container valid: %s"
+			% is_instance_valid(visual_regression_container)
+		)
+	)
+
+	if not is_instance_valid(visual_regression_container):
+		push_error("[DEBUG MENU] VisualRegressionContainer not found!")
+		GameLogger.error("[DEBUG MENU] VisualRegressionContainer is null or invalid!")
+		return
+
+	GameLogger.info("[DEBUG MENU] VisualRegressionContainer found - creating buttons...")
+
+	# Create section label
+	var label = Label.new()
+	label.text = "Visual Regression (Week 16):"
+	label.add_theme_font_size_override("font_size", 16)
+	visual_regression_container.add_child(label)
+
+	# Capture baseline screenshots button
+	capture_baseline_button = Button.new()
+	capture_baseline_button.text = "📸 Capture Baseline Screenshots"
+	capture_baseline_button.custom_minimum_size = Vector2(400, 60)
+	capture_baseline_button.pressed.connect(_on_capture_baselines)
+	visual_regression_container.add_child(capture_baseline_button)
+
+	# Capture current screenshots button
+	capture_current_button = Button.new()
+	capture_current_button.text = "📸 Capture Current Screenshots"
+	capture_current_button.custom_minimum_size = Vector2(400, 60)
+	capture_current_button.pressed.connect(_on_capture_current)
+	visual_regression_container.add_child(capture_current_button)
+
+	GameLogger.info(
+		(
+			"[DEBUG MENU] Visual regression buttons created: Baseline=%s, Current=%s"
+			% [
+				is_instance_valid(capture_baseline_button),
+				is_instance_valid(capture_current_button)
+			]
+		)
+	)
+
+
+func _on_capture_baselines() -> void:
+	GameLogger.info("[DEBUG] Capturing baseline screenshots...")
+	var vr = VISUAL_REGRESSION_SCRIPT.new()
+	add_child(vr)
+	await vr.capture_all_baselines()
+	vr.queue_free()
+	_show_success_notification(
+		"Baseline screenshots captured!\nCheck: tests/visual_regression/baseline/"
+	)
+
+
+func _on_capture_current() -> void:
+	GameLogger.info("[DEBUG] Capturing current screenshots...")
+	var vr = VISUAL_REGRESSION_SCRIPT.new()
+	add_child(vr)
+	await vr.capture_all_current()
+	vr.queue_free()
+	_show_success_notification(
+		"Current screenshots captured!\nCheck: tests/visual_regression/current/"
 	)
 
 
