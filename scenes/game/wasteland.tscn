@@ -93,7 +93,7 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 text = "Game Over"
 horizontal_alignment = 1
 
@@ -111,7 +111,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 30
 text = "XP Gained: +0"
 horizontal_alignment = 1
 
@@ -121,7 +121,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 32
 text = "LEVEL UP!"
 horizontal_alignment = 1
 
@@ -139,13 +139,13 @@ theme_override_constants/separation = 15
 [node name="RetryButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "Try Again"
 
 [node name="MainMenuButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "Return to Hub"
 
 [node name="GameController" type="Node" parent="."]
