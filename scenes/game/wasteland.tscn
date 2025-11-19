@@ -102,6 +102,36 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
+[node name="XPContainer" type="VBoxContainer" parent="UI/GameOverScreen/PaddingContainer/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="XPGainedLabel" type="Label" parent="UI/GameOverScreen/PaddingContainer/Content/XPContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 26
+text = "XP Gained: +0"
+horizontal_alignment = 1
+
+[node name="LevelUpLabel" type="Label" parent="UI/GameOverScreen/PaddingContainer/Content/XPContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
+text = "LEVEL UP!"
+horizontal_alignment = 1
+
+[node name="XPProgressBar" type="ProgressBar" parent="UI/GameOverScreen/PaddingContainer/Content/XPContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+max_value = 100.0
+value = 50.0
+show_percentage = false
+
 [node name="ButtonsContainer" type="VBoxContainer" parent="UI/GameOverScreen/PaddingContainer/Content"]
 layout_mode = 2
 theme_override_constants/separation = 15
@@ -110,13 +140,13 @@ theme_override_constants/separation = 15
 custom_minimum_size = Vector2(180, 70)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "Retry"
+text = "Try Again"
 
 [node name="MainMenuButton" type="Button" parent="UI/GameOverScreen/PaddingContainer/Content/ButtonsContainer"]
 custom_minimum_size = Vector2(180, 70)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "Main Menu"
+text = "Return to Hub"
 
 [node name="GameController" type="Node" parent="."]
 script = ExtResource("2_wave_manager")

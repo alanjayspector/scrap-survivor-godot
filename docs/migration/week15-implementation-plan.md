@@ -1,8 +1,8 @@
 # Week 15 Implementation Plan - Foundation Package (Hub + Character System)
 
-**Status**: ✅ **Phase 4 COMPLETE** (2025-11-16) - Phase 5 Pending
+**Status**: ✅ **Phase 5 COMPLETE** (2025-11-18) - Week 15 COMPLETE
 **Started**: Week 15
-**Completed Phases**: Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅ | Phase 5 ⏳
+**Completed Phases**: Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅ | Phase 5 ✅
 **Target Completion**: Week 15 Complete (12-15 hours, ~2 work days)
 
 ## Overview
@@ -2192,6 +2192,25 @@ Wasteland (Node2D)
 - [x] Character ID passed correctly
 - [x] Navigation buttons work (hub/retry)
 
+**Implementation Notes (2025-11-18)**:
+- ✅ Enhanced existing `game_over_screen.gd` instead of creating new scene (reduced implementation time)
+- ✅ Added XP UI elements to `wasteland.tscn` inline (XPContainer, labels, progress bar)
+- ✅ XP formula: `10 XP per wave + 1 XP per 10 enemies killed`
+- ✅ Character records updated: `highest_wave`, `total_kills`, `death_count`
+- ✅ Comprehensive diagnostic logging added per QA requirements
+- ✅ Navigation flow: "Try Again" (keeps character) vs "Return to Hub" (clears character)
+- ✅ Added `damage_dealt` to stats collection
+- ✅ Integrated `GameState.end_run(stats)` call
+- ✅ Automatic save via `SaveManager` after death
+- ✅ 14 new unit tests (all passing)
+- **Actual Time**: ~1.5 hours (on target with expert review estimate)
+
+**Files Modified**:
+- `scenes/game/wasteland.tscn` - Added XP UI elements
+- `scenes/game/wasteland.gd` - Stats collection + navigation handlers
+- `scenes/ui/game_over_screen.gd` - XP award logic + character progression
+- `scripts/tests/ui/game_over_screen_test.gd` - New test suite (14 tests)
+
 ---
 
 ## Success Criteria (Overall Week 15)
@@ -2222,12 +2241,12 @@ Wasteland (Node2D)
   - [ ] Tutorial overlay shows on first combat
   - [ ] Tutorial dismissible and doesn't reappear
 
-- [ ] **Post-Run Flow**:
-  - [ ] Death screen shows run statistics
-  - [ ] XP awarded and level ups handled
-  - [ ] Highest wave record updated
-  - [ ] Return to Hub button works
-  - [ ] Try Again button restarts with character
+- [x] **Post-Run Flow**:
+  - [x] Death screen shows run statistics
+  - [x] XP awarded and level ups handled
+  - [x] Highest wave record updated
+  - [x] Return to Hub button works
+  - [x] Try Again button restarts with character
 
 - [x] **Testing**:
   - [x] All 497+ automated tests passing

@@ -574,42 +574,47 @@ func _on_player_died() -> void:
 	var stats = {
 		"wave": wave_manager.current_wave,
 		"kills": total_kills,
+		"damage_dealt": wave_manager.wave_stats.get("damage_dealt", 0),
 		"time": survival_time,
 		"scrap": scrap,
 		"components": components,
 		"nanites": nanites
 	}
-	game_over_screen.show_game_over(stats)
+
+	# End run in GameState (Week 15 Phase 5)
+	GameState.end_run(stats)
+
+	# Show game over screen with character_id (Week 15 Phase 5)
+	game_over_screen.show_game_over(stats, GameState.active_character_id)
 
 	GameLogger.info("Player died", stats)
 
 
 func _on_retry_pressed() -> void:
-	"""Retry the game"""
-	print("[Wasteland] Retry pressed - reloading scene")
+	"""Try Again - restart with same character (Week 15 Phase 5)"""
+	GameLogger.info(
+		"[Wasteland] Try Again pressed", {"character_id": GameState.active_character_id}
+	)
 
 	# Unpause before reloading (otherwise new scene starts paused)
 	get_tree().paused = false
-	print("[Wasteland] Game unpaused")
 
+	# Character remains active in GameState - just reload scene
 	get_tree().reload_current_scene()
 
 
 func _on_main_menu_pressed() -> void:
-	"""Return to main menu"""
-	print("[Wasteland] Main menu pressed - returning to hub")
+	"""Return to Hub - clear active character (Week 15 Phase 5)"""
+	GameLogger.info(
+		"[Wasteland] Return to Hub pressed", {"character_id": GameState.active_character_id}
+	)
 
-	# Unpause before transitioning (otherwise main menu starts paused)
+	# Unpause before transitioning (otherwise hub starts paused)
 	get_tree().paused = false
-	print("[Wasteland] Game unpaused")
 
-	# Week 15 Phase 4: Save character progress before returning to hub
-	print("[Wasteland] Saving character progress after game over...")
-	var save_success = SaveManager.save_all_services()
-	if save_success:
-		GameLogger.info("[Wasteland] Character progress saved successfully after game over")
-	else:
-		GameLogger.error("[Wasteland] Failed to save character progress after game over")
+	# Clear active character (return to character selection state)
+	GameState.set_active_character("")
+	GameLogger.info("[Wasteland] Active character cleared")
 
 	# Return to Hub
 	get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
