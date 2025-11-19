@@ -11,6 +11,11 @@ class_name DropSystemTest
 
 
 func before_each() -> void:
+	# CRITICAL FIX: Seed global RNG for deterministic tests
+	# Prevents random failures in statistical tests (e.g., test_scavenging_multiplies_drop_amounts)
+	# Pattern matches WaveManager RNG approach (scripts/systems/wave_manager.gd:44-53)
+	seed(12345)
+
 	# Reset services
 	CharacterService.reset()
 	EnemyService.reset()
