@@ -55,7 +55,7 @@ func test_save_all_services_succeeds() -> void:
 
 func test_load_all_services_restores_state() -> void:
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
-	BankingService.add_currency(BankingService.CurrencyType.PREMIUM, 50)
+	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
 	SaveManager.save_all_services(TEST_SLOT)
@@ -66,7 +66,9 @@ func test_load_all_services_restores_state() -> void:
 	assert_true(load_result.success, "Load should succeed")
 	assert_eq(BankingService.get_balance(BankingService.CurrencyType.SCRAP), 1000, "Scrap restored")
 	assert_eq(
-		BankingService.get_balance(BankingService.CurrencyType.PREMIUM), 50, "Premium restored"
+		BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
+		50,
+		"Components restored"
 	)
 	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM, "Tier restored")
 
