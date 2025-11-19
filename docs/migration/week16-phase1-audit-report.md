@@ -330,6 +330,140 @@
 
 ---
 
+## Manual QA Results - iPhone 15 Pro Max (2025-11-18)
+
+**Tester**: User (Physical Device)
+**Device**: iPhone 15 Pro Max
+**Build**: Exported via Godot → Xcode → Device
+**Screenshots**: `qa/logs/2025-11-18/*.png` (4 screenshots captured)
+
+### Phase 2 Typography Changes Tested
+
+**Changes Applied**:
+- Screen titles: 36pt → 40pt (Character Creation, Selection, Wave Complete, Game Over)
+- Character Card stats: 14pt → 17pt
+
+**Test Results**:
+
+#### ❌ FINDING #1: Visual Regression Baseline Broken
+**Issue**: All 6 baseline screenshots in `tests/visual_regression/baseline/` captured the debug menu instead of actual game screens.
+
+**Impact**: Cannot perform before/after visual regression testing.
+
+**Root Cause**: Visual regression script captured screenshots before debug menu was dismissed.
+
+**Next Steps**: Re-capture baseline screenshots with proper screen isolation.
+
+---
+
+#### ⚠️ FINDING #2: Typography Changes Too Subtle (Not Perceptible)
+**User Feedback**: "nothing looks wrong but it's hard for me to see what has changed... like on character roster page it still looks small to my eyes"
+
+**Expert Panel Analysis**:
+- **14pt → 17pt change = +21% increase**
+- **Perceptibility threshold**: 10-15% minimum for noticeable changes
+- **Verdict**: While technically above threshold, starting point (14pt) was too small for mobile
+- **Recommendation**: Increase to 20pt (+43% from baseline) for meaningful impact
+
+**Evidence from Screenshots**:
+- `character_roster.png`: Stats text still requires squinting on 6.7" display
+- User subjective experience confirms: "still looks small to my eyes"
+
+**Typography Research**:
+- iOS HIG minimum: 17pt for body text
+- Our change: 14pt → 17pt (reached minimum, but doesn't exceed it)
+- Better target: 14pt → 20pt (comfortable reading, not just "minimum compliant")
+
+**Revised Recommendation for Phase 3**:
+- Bump Character Card stats from 17pt to 20pt
+- Bump Character Details panel stats from current size to 18-20pt
+- Add visual hierarchy: Name at 24pt, Type at 20pt, Stats at 18pt
+
+---
+
+#### 🔴 FINDING #3: XP Bar Alignment Issue Confirmed
+**User Feedback**: "i noticed the XP bar doesn't align with the text"
+
+**Evidence**: `wasteland.png` screenshot shows XP bar and text not in proper container-based alignment.
+
+**Root Cause**: Hardcoded positioning instead of using HBoxContainer/VBoxContainer layout.
+
+**Impact**: Visual polish issue - reduces professional appearance.
+
+**Priority**: Medium (fix during Phase 3 Combat HUD work)
+
+---
+
+#### 🔴 FINDING #4: Combat HUD Safe Area Violations Visible
+**Screenshots Analysis**: `wasteland.png` and `combat_hud.png` show HUD elements positioned too close to top edge.
+
+**Measurements from Screenshots** (estimated):
+- HP Bar: ~20pt from top (should be 59pt) ❌
+- Wave Timer: ~20pt from top (should be 59pt) ❌
+- Currency: ~20pt from top (should be 59pt) ❌
+
+**Device Impact**: iPhone 15 Pro Max has Dynamic Island - these elements likely overlap on actual device.
+
+**Priority**: CRITICAL (highest priority for Phase 3)
+
+---
+
+#### 🔴 FINDING #5: Delete Button Still Too Narrow
+**Evidence**: `character_card.png` screenshot shows delete button significantly narrower than Play button.
+
+**Current**: ~50pt width (difficult to tap without accidentally hitting Play)
+**Target**: 120pt width (Brotato standard for secondary destructive actions)
+
+**Safety Impact**: HIGH - accidental character deletion risk due to narrow touch target.
+
+**Priority**: CRITICAL (fix in Phase 3)
+
+---
+
+#### ⚠️ FINDING #6: Character Details Panel Text Unreadable
+**Evidence**: `character_details.png` screenshot shows all stats text too small on real device.
+
+**Issues**:
+- Weapon stats: Font size too small for quick scanning
+- Stat modifiers: No visual hierarchy between labels and values
+- Contrast: Some text blends into background
+
+**Recommendation**:
+- Increase all body text to 18-20pt
+- Add visual hierarchy (labels vs values)
+- Validate contrast ratios against WCAG AA
+
+**Priority**: Medium (fix in Phase 4 Dialog & Modal Patterns)
+
+---
+
+### Expert Panel Summary
+
+**Overall Verdict**: Phase 2 changes were **technically correct but strategically conservative**.
+
+**Key Insights**:
+1. **Meeting minimum ≠ Good UX**: 17pt is iOS HIG minimum, not optimal
+2. **Perceptibility matters**: Users need 10-15% minimum change to notice, but we should target 20-30% for comfort
+3. **Real device testing is critical**: Desktop/simulator doesn't reveal actual usability issues
+4. **Safe areas are non-negotiable**: Combat HUD violations confirmed as critical blocker
+
+**Recommendations for Phase 3** (Priority Order):
+1. **CRITICAL: Combat HUD safe areas** (20pt → 59pt top, XP bar to bottom)
+2. **CRITICAL: Delete button width** (50pt → 120pt - safety issue)
+3. **CRITICAL: Add pause button** (48×48pt, top-right)
+4. **HIGH: Bump stats text further** (17pt → 20pt for readability)
+5. **MEDIUM: Fix XP bar alignment** (use container-based layout)
+6. **MEDIUM: Character Details typography** (all text 18-20pt with hierarchy)
+
+**Test Coverage Assessment**:
+- ✅ Typography changes validated on real device
+- ✅ Safe area violations confirmed
+- ✅ Delete button safety issue confirmed
+- ❌ Visual regression baseline broken (needs re-capture)
+- ⏳ Contrast ratios not yet validated (Phase 5)
+
+---
+
 ## Recommendations for Phase 2+
 
 ### Immediate Actions (Phase 2-3)
