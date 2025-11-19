@@ -11,6 +11,7 @@ Checks for:
 3. Missing @onready for node references - missing optimization
 4. Missing type hints on @export variables - unclear API
 5. Animation playback in game loop - state management issue
+6. add_child() before setting position - physics artifacts (2025-11-18 discovery)
 
 Exit Codes:
   0 - No anti-patterns detected
@@ -287,6 +288,73 @@ def check_animation_in_process(content: str, lines: List[str]) -> List[AntiPatte
     return patterns
 
 
+def check_add_child_before_position(lines: List[str]) -> List[AntiPattern]:
+    """
+    Detect add_child() calls where the node's position is set AFTER adding to tree.
+
+    This is a critical anti-pattern that causes physics artifacts because:
+    1. Node is added to scene tree at default position (often 0,0)
+    2. If another physics body is at that position, collision overlap occurs
+    3. Physics engine pushes bodies apart over multiple frames (20-40px/frame)
+    4. Results in "teleport" behavior (2025-11-18 bug: player pushed 600px over 10-20 frames)
+
+    Example violation:
+        add_child(enemy)
+        enemy.global_position = spawn_pos  # Too late! Physics already active
+
+    Should be:
+        enemy.global_position = spawn_pos  # Set first
+        add_child(enemy)  # Added at correct position, no overlap
+
+    Reference: docs/migration/WEEK15-PHASE4-SESSION-SUMMARY.md Session 4 Part 2
+    """
+    patterns = []
+
+    for line_num, line in enumerate(lines, start=1):
+        # Look for add_child() calls with a variable
+        add_child_match = re.search(r'add_child\s*\(\s*(\w+)\s*\)', line)
+
+        if add_child_match:
+            node_var = add_child_match.group(1)
+
+            # Check if position was already set BEFORE this add_child (look back 20 lines)
+            position_set_before = False
+            for i in range(max(1, line_num - 20), line_num):
+                prev_line = lines[i - 1]
+                position_pattern = rf'{re.escape(node_var)}\s*\.\s*(position|global_position)\s*='
+                if re.search(position_pattern, prev_line):
+                    position_set_before = True
+                    break
+
+            # If position was set before, this is good - skip
+            if position_set_before:
+                continue
+
+            # Look forward up to 20 lines for position assignment to this variable
+            # Stop if we encounter a new function definition (different scope)
+            for i in range(1, min(21, len(lines) - line_num + 1)):
+                future_line_num = line_num + i
+                future_line = lines[future_line_num - 1]
+
+                # Stop if we hit a new function definition (scope boundary)
+                if re.match(r'^\s*func\s+', future_line):
+                    break
+
+                # Check for position or global_position assignment
+                position_pattern = rf'{re.escape(node_var)}\s*\.\s*(position|global_position)\s*='
+
+                if re.search(position_pattern, future_line):
+                    patterns.append(AntiPattern(
+                        line_num=line_num,
+                        pattern_type="add_child_before_position",
+                        details=f"add_child({node_var}) on line {line_num}, but {node_var}.position set later on line {future_line_num}",
+                        severity="error"
+                    ))
+                    break
+
+    return patterns
+
+
 def validate_file(file_path: Path) -> List[AntiPattern]:
     """Run all anti-pattern checks on a GDScript file."""
     try:
@@ -301,6 +369,7 @@ def validate_file(file_path: Path) -> List[AntiPattern]:
         all_patterns.extend(check_missing_onready(lines))
         all_patterns.extend(check_export_without_type(lines))
         all_patterns.extend(check_animation_in_process(content, lines))
+        all_patterns.extend(check_add_child_before_position(lines))
 
         return all_patterns
 
@@ -390,6 +459,9 @@ def main():
                     # Provide fix suggestions
                     if pattern.pattern_type == "get_parent_chain":
                         print(f"  {CYAN}💡 Fix: Use signals or pass references via ready(). See docs/godot-community-research.md{NC}")
+                    elif pattern.pattern_type == "add_child_before_position":
+                        print(f"  {CYAN}💡 Fix: Set node.position/global_position BEFORE add_child() to avoid physics overlap{NC}")
+                        print(f"  {CYAN}📚 Reference: docs/migration/WEEK15-PHASE4-SESSION-SUMMARY.md (2025-11-18 bug investigation){NC}")
 
                 print()
 
