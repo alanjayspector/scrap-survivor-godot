@@ -9,6 +9,90 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 # ============================================================================
+# CLAUDE RULES ENFORCEMENT (Defense-in-depth)
+# ============================================================================
+# This section enforces .system/CLAUDE_RULES.md for AI-assisted commits
+# NOTE: This hook CANNOT catch --no-verify flag (it bypasses hooks entirely)
+# The git-wrapper.sh script is the first line of defense for that
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${BOLD}⚠️  CLAUDE CODE REMINDER${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check for dangerous git states
+IS_AMEND=false
+IS_MERGE=false
+
+# Detect amend (comparing proposed commit with HEAD)
+if git rev-parse --verify HEAD >/dev/null 2>&1; then
+    # Check if this would rewrite HEAD (amend detection)
+    if [ -f .git/COMMIT_EDITMSG ]; then
+        # If ORIG_HEAD exists and equals HEAD, we might be amending
+        if [ -f .git/ORIG_HEAD ]; then
+            ORIG_HEAD=$(cat .git/ORIG_HEAD)
+            CURRENT_HEAD=$(git rev-parse HEAD)
+            if [ "$ORIG_HEAD" = "$CURRENT_HEAD" ]; then
+                IS_AMEND=true
+            fi
+        fi
+    fi
+fi
+
+# Detect merge commit
+if [ -f .git/MERGE_HEAD ]; then
+    IS_MERGE=true
+fi
+
+# Show status
+if [ "$IS_AMEND" = true ]; then
+    echo -e "${YELLOW}🚨 AMEND DETECTED - Check CLAUDE_RULES.md line 22${NC}"
+    echo ""
+fi
+
+if [ "$IS_MERGE" = true ]; then
+    echo -e "${BLUE}ℹ️  Merge commit detected${NC}"
+    echo ""
+fi
+
+# Always show rules reminder for Claude Code sessions
+echo "Before committing, verify compliance with:"
+echo "  📋 .system/CLAUDE_RULES.md"
+echo ""
+echo "BANNED FLAGS (will fail if used):"
+echo "  ❌ --no-verify  (bypasses this hook - use git-wrapper.sh to catch)"
+echo "  ❌ --amend      (detected above if present)"
+echo "  ❌ --force      (push only)"
+echo "  ❌ --skip-ci    (CI bypass)"
+echo ""
+echo "BLOCKING PROTOCOL (CLAUDE_RULES.md lines 7-24):"
+echo "  1. Announce: 'APPROVAL REQUIRED: [action]'"
+echo "  2. Show evidence checklist"
+echo "  3. Show exact command"
+echo "  4. WAIT for user 'yes'"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# If amend detected without explicit approval, provide extra warning
+if [ "$IS_AMEND" = true ]; then
+    echo -e "${RED}${BOLD}WARNING: Amend detected!${NC}"
+    echo "  - Check authorship: git log -1 --format='%an %ae'"
+    echo "  - Ensure commit not pushed: git status"
+    echo "  - CLAUDE: Did you get explicit user approval?"
+    echo ""
+
+    # Show current commit author
+    AUTHOR=$(git log -1 --format='%an <%ae>' 2>/dev/null || echo "No commits yet")
+    echo "  Current HEAD author: $AUTHOR"
+    echo ""
+
+    # Pause for 2 seconds to ensure Claude/user sees this
+    echo "Continuing in 3 seconds (Ctrl+C to abort)..."
+    sleep 3
+    echo ""
+fi
+
+# ============================================================================
 # Standard validation checks
 # ============================================================================
 echo "🔍 Running pre-commit checks..."
