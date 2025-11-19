@@ -2,7 +2,8 @@
 
 **Status**: Planning 📋
 **Started**: TBD
-**Target Completion**: Week 16 Complete (12-15 hours, ~2 work days)
+**Target Completion**: Week 16 Complete (16.5 hours, ~3 work days)
+**Branch**: `feature/week16-mobile-ui`
 
 ## Overview
 
@@ -83,12 +84,16 @@ Week 16 establishes mobile-native baseline quality that makes the game feel prof
 
 ### Test Devices
 
-| Device | Screen Size | Resolution | PPI | Notes |
-|--------|-------------|------------|-----|-------|
-| **iPhone 8** (Min) | 4.7" | 1334×750 | 326 | Baseline - everything must work here |
-| **iPhone 13/14** (Mid) | 6.1" | 2532×1170 | 460 | Most common current iPhone |
-| **iPhone 15 Pro Max** (Max) | 6.7" | 2796×1290 | 460 | Maximum screen real estate |
-| **Pixel 6/7** (Android) | 6.4" | 2400×1080 | 411 | Android reference |
+| Device | Screen Size | Resolution | PPI | Availability | Notes |
+|--------|-------------|------------|-----|--------------|-------|
+| **iPhone 8** (Min) | 4.7" | 1334×750 | 326 | **Simulator Only** | Baseline - everything must work here |
+| **iPhone 15 Pro Max** (Max) | 6.7" | 2796×1290 | 460 | **Physical Device** | Primary test device - validates haptics, performance, safe areas |
+
+**Testing Strategy:**
+- **iPhone 15 Pro Max (Physical):** Primary validation for haptics, performance, touch accuracy, safe areas
+- **iPhone 8 (Simulator):** Layout/sizing validation only (no haptics, simulated touch)
+- **Simulator Limitations:** Cannot test haptics, touch accuracy differs from real fingers, performance not representative
+- **Pre-Release:** Recruit beta tester with iPhone 8 for final physical device validation before broader rollout
 
 ### Design Approach: **Responsive Scaling**
 
@@ -208,11 +213,20 @@ button.custom_minimum_size = Vector2(UIScale.scale_pt(100), UIScale.scale_pt(44)
 
 ## Week 16 Goals
 
-### Phase 1: UI Component Audit & Baseline Measurements (2 hours)
-1. Audit ALL scenes for current font sizes, button sizes, spacing
+### Phase 0: Pre-Work & Baseline Capture (0.5 hours)
+1. Read `docs/brotato-reference.md` for competitive analysis
+2. Create `feature/week16-mobile-ui` git branch
+3. Set up visual regression testing infrastructure (screenshot capture)
+4. Create Analytics autoload stub (for Week 17 wireup)
+5. Capture baseline screenshots of all screens (before state)
+6. Document current analytics stub coverage
+
+### Phase 1: UI Component Audit & Baseline Measurements (2.5 hours)
+1. Audit ALL scenes for current font sizes, button sizes, spacing (including Combat HUD)
 2. Document current state vs. mobile standards
 3. Create UI specification document (typography scale, touch targets, spacing)
 4. Generate visual audit report with screenshots
+5. **NEW:** Audit Combat HUD (XP bar, health, timer, wave counter) for mobile readability
 
 ### Phase 2: Typography System Overhaul (2.5 hours)
 1. Create Godot Theme resource with mobile-optimized font sizes
@@ -225,33 +239,245 @@ button.custom_minimum_size = Vector2(UIScale.scale_pt(100), UIScale.scale_pt(44)
 2. Create mobile-friendly button theme (rounded corners, depth, clear states)
 3. Implement press states (normal, pressed, disabled)
 4. Add generous spacing between interactive elements (16-24pt)
+5. **Add analytics stubs:** Track `button_pressed` events with screen/button context
+
+### Phase 3.5: Mid-Week Validation Checkpoint (0.5 hours)
+1. Manual QA on iPhone 15 Pro Max: Does UI feel better than before?
+2. Test on iPhone 8 simulator: Readability and touch target sizing
+3. Run full test suite: Verify 568+ tests still passing
+4. **GO/NO-GO Decision:** If UI doesn't feel improved, stop and analyze before proceeding
 
 ### Phase 4: Dialog & Modal Patterns (2 hours)
 1. Redesign confirmation dialogs (larger, mobile-native)
 2. Standardize modal presentation (full-screen overlays)
 3. Improve CharacterDetailsPanel sizing/spacing
 4. Add dismiss gestures (swipe down, tap outside)
+5. **Add analytics stubs:** Track `dialog_opened`, `dialog_confirmed`, `dialog_cancelled`, `dialog_dismissed`
 
 ### Phase 5: Visual Feedback & Polish (2 hours)
 1. Add button press animations (scale bounce, color shift)
 2. Implement haptic feedback for all interactions
 3. Add loading indicators for scene transitions
 4. Improve color contrast across all screens
+5. **Add analytics stubs:** Track `scene_transition_started`, `scene_transition_completed`, animation/haptic preference changes
 
 ### Phase 6: Spacing & Layout Optimization (1.5 hours)
 1. Apply mobile spacing scale (16-32pt margins, 12-24pt between elements)
 2. Optimize for safe area insets (notches, home indicator)
-3. Test on all device sizes (iPhone 8 → iPhone 15 Pro Max)
-4. Android scaling verification
+3. Test on iPhone 15 Pro Max (physical) and iPhone 8 (simulator)
+4. Verify responsive scaling across device sizes
+
+### Phase 7: Combat HUD Mobile Optimization (2 hours)
+1. Audit and resize Combat HUD elements (XP bar, health, timer, wave counter)
+2. Ensure HUD respects safe areas (top notch/Dynamic Island, bottom home indicator)
+3. Optimize font sizes for mobile readability (current sizes likely too small)
+4. Verify HUD doesn't occlude gameplay (test with thumb placement)
+5. Add touch-friendly pause button (if not already adequate)
+6. **Add analytics stubs:** Track HUD interaction events
+7. Test on iPhone 15 Pro Max during actual combat scenario
 
 **Success Criteria:**
 - All touch targets ≥ 44pt (iOS HIG compliance)
 - All body text ≥ 17pt, headers ≥ 22pt
 - All buttons have clear pressed states
 - Generous spacing (16-24pt between interactive elements)
+- Combat HUD readable during gameplay on iPhone 15 Pro Max
 - No squinting required on any device
+- Safe areas respected (no UI overlap with notch/Dynamic Island/home indicator)
 - Passes manual QA: "Feels like a mobile app, not a desktop app"
 - All 568+ automated tests still passing
+- Analytics stubs added for ~30-40 events (ready for Week 17 wireup)
+
+---
+
+## Phase 0: Pre-Work & Baseline Capture
+
+**Goal**: Set up infrastructure and capture baseline state before making changes.
+
+**Estimated Effort**: 0.5 hours
+
+---
+
+### 0.1 Brotato Reference Analysis
+
+**Read:** `docs/brotato-reference.md`
+
+**Extract:**
+- Mobile UI patterns (button sizes, spacing, typography)
+- Combat HUD design (minimal, edge-positioned, non-intrusive)
+- Menu patterns (full-screen modals, large touch targets)
+- Visual feedback patterns (animations, color coding, haptics)
+
+**Document:** Key patterns to replicate in our implementation
+
+---
+
+### 0.2 Git Branch Setup
+
+**Create branch:**
+```bash
+git checkout -b feature/week16-mobile-ui
+git push -u origin feature/week16-mobile-ui
+```
+
+**Branch strategy:**
+- All Week 16 work on this branch
+- Incremental commits after each phase
+- Merge to main after Phase 7 completion + final validation
+
+---
+
+### 0.3 Visual Regression Infrastructure
+
+**Create:** `scripts/debug/visual_regression.gd`
+
+```gdscript
+extends Node
+## Visual Regression Testing - Screenshot capture for before/after comparison
+## Week 16 Phase 0: Baseline capture
+
+const BASELINE_PATH = "tests/visual_regression/baseline/"
+const CURRENT_PATH = "tests/visual_regression/current/"
+
+var scenes_to_capture = [
+	"res://scenes/hub/scrapyard.tscn",
+	"res://scenes/ui/character_roster.tscn",
+	"res://scenes/ui/character_creation.tscn",
+	"res://scenes/ui/character_selection.tscn",
+	"res://scenes/game/wasteland.tscn",  # For HUD capture
+	"res://scenes/debug/debug_menu.tscn",
+]
+
+
+func capture_all_baselines() -> void:
+	"""Capture baseline screenshots of all scenes"""
+	_ensure_directory_exists(BASELINE_PATH)
+
+	for scene_path in scenes_to_capture:
+		var scene_name = scene_path.get_file().get_basename()
+		var output_path = BASELINE_PATH + scene_name + ".png"
+
+		_capture_scene_screenshot(scene_path, output_path)
+		GameLogger.info("[VisualRegression] Baseline captured: %s" % scene_name)
+
+
+func capture_all_current() -> void:
+	"""Capture current screenshots for comparison"""
+	_ensure_directory_exists(CURRENT_PATH)
+
+	for scene_path in scenes_to_capture:
+		var scene_name = scene_path.get_file().get_basename()
+		var output_path = CURRENT_PATH + scene_name + ".png"
+
+		_capture_scene_screenshot(scene_path, output_path)
+		GameLogger.info("[VisualRegression] Current captured: %s" % scene_name)
+
+
+func _capture_scene_screenshot(scene_path: String, output_path: String) -> void:
+	"""Capture screenshot of a scene"""
+	var scene = load(scene_path).instantiate()
+	get_tree().root.add_child(scene)
+
+	# Wait for scene to render
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	# Capture screenshot
+	var img = get_viewport().get_texture().get_image()
+	img.save_png(output_path)
+
+	scene.queue_free()
+
+
+func _ensure_directory_exists(path: String) -> void:
+	"""Create directory if it doesn't exist"""
+	if not DirAccess.dir_exists_absolute(path):
+		DirAccess.make_dir_recursive_absolute(path)
+```
+
+**Usage:**
+```gdscript
+# In Debug Menu or autoload:
+VisualRegression.capture_all_baselines()  # Phase 0
+VisualRegression.capture_all_current()    # After each phase
+```
+
+**Commit baseline screenshots:**
+```bash
+git add tests/visual_regression/baseline/
+git commit -m "docs: add Week 16 baseline screenshots for visual regression"
+```
+
+---
+
+### 0.4 Analytics Autoload Stub
+
+**Create:** `scripts/autoload/analytics.gd`
+
+```gdscript
+extends Node
+## Analytics - Event tracking stub (Week 17: Wire to backend)
+## Week 16: Add event stubs throughout implementation
+
+var enabled: bool = false  # Week 17: Set to true when backend wired
+
+
+func track_event(event_name: String, properties: Dictionary = {}) -> void:
+	"""Track analytics event (stub implementation)"""
+	if not enabled:
+		# Week 16: Just log to GameLogger for debugging
+		GameLogger.debug("[Analytics] %s: %s" % [event_name, properties])
+		return
+
+	# Week 17: Send to actual analytics backend (Mixpanel, PostHog, etc.)
+	# _send_to_backend(event_name, properties)
+
+
+func set_user_property(property_name: String, value: Variant) -> void:
+	"""Set user property (stub)"""
+	if not enabled:
+		GameLogger.debug("[Analytics] User Property: %s = %s" % [property_name, value])
+		return
+
+	# Week 17: Send to backend
+```
+
+**Register autoload:**
+- Project Settings → Autoload → Add `analytics.gd` as `Analytics`
+
+**Events to stub during Week 16:**
+```gdscript
+# Examples of events we'll add throughout phases:
+Analytics.track_event("button_pressed", {"screen": "hub", "button": "play"})
+Analytics.track_event("dialog_opened", {"dialog_type": "delete_confirmation"})
+Analytics.track_event("scene_transition_started", {"from": "hub", "to": "wasteland"})
+```
+
+---
+
+### 0.5 Current Analytics Stub Coverage
+
+**Grep for existing analytics:**
+```bash
+grep -r "Analytics\." scripts/ --include="*.gd"
+```
+
+**Document:** Create `docs/analytics-coverage.md` listing:
+- Existing analytics calls (if any)
+- New events added in Week 16
+- Events to wire up in Week 17
+
+---
+
+### 0.6 Success Criteria: Phase 0
+
+- [x] Brotato reference documented (key patterns extracted)
+- [ ] `feature/week16-mobile-ui` branch created and pushed
+- [ ] Visual regression script implemented
+- [ ] Baseline screenshots captured and committed
+- [ ] Analytics autoload stub created and registered
+- [ ] Current analytics coverage documented
+- [ ] Ready to begin Phase 1 audit
 
 ---
 
@@ -259,7 +485,7 @@ button.custom_minimum_size = Vector2(UIScale.scale_pt(100), UIScale.scale_pt(44)
 
 **Goal**: Document current state of ALL UI components, identify gaps vs. mobile standards.
 
-**Estimated Effort**: 2 hours
+**Estimated Effort**: 2.5 hours (extended to include Combat HUD)
 
 ---
 
@@ -318,19 +544,21 @@ button.custom_minimum_size = Vector2(UIScale.scale_pt(100), UIScale.scale_pt(44)
 
 **All Screens to Audit:**
 
-| Screen | Scene File | Script | Priority |
-|--------|------------|--------|----------|
-| Hub (Scrapyard) | `scenes/hub/scrapyard.tscn` | `scripts/hub/scrapyard.gd` | P0 (High traffic) |
-| Character Roster | `scenes/ui/character_roster.tscn` | `scripts/ui/character_roster.gd` | P0 (High traffic) |
-| Character Creation | `scenes/ui/character_creation.tscn` | `scripts/ui/character_creation.gd` | P0 (High traffic) |
-| Character Selection | `scenes/ui/character_selection.tscn` | `scripts/ui/character_selection.gd` | P1 (Still used in combat) |
-| Wasteland (Combat HUD) | `scenes/game/wasteland.tscn` | `scenes/game/wasteland.gd` | P0 (Constant visibility) |
-| Wave Complete | Inline in wasteland.tscn | Inline script | P0 (End of every wave) |
-| Game Over | Inline in wasteland.tscn | Inline script | P0 (Every death) |
-| Debug Menu | `scenes/debug/debug_menu.tscn` | `scripts/debug/debug_menu.gd` | P2 (Dev-only) |
-| Character Details Panel | `scenes/ui/character_details_panel.tscn` | `scripts/ui/character_details_panel.gd` | P1 (On-demand) |
-| Character Card Component | `scenes/ui/character_card.tscn` | `scripts/ui/character_card.gd` | P0 (Reusable) |
-| Delete Confirmation Dialog | Built-in ConfirmationDialog | N/A | P1 (Modal) |
+| Screen | Scene File | Script | Priority | Week 16 Phase |
+|--------|------------|--------|----------|---------------|
+| Hub (Scrapyard) | `scenes/hub/scrapyard.tscn` | `scripts/hub/scrapyard.gd` | P0 (High traffic) | Phases 1-6 |
+| Character Roster | `scenes/ui/character_roster.tscn` | `scripts/ui/character_roster.gd` | P0 (High traffic) | Phases 1-6 |
+| Character Creation | `scenes/ui/character_creation.tscn` | `scripts/ui/character_creation.gd` | P0 (High traffic) | Phases 1-6 |
+| Character Selection | `scenes/ui/character_selection.tscn` | `scripts/ui/character_selection.gd` | P1 (Still used in combat) | Phases 1-6 |
+| **Combat HUD** | `scenes/game/wasteland.tscn` | `scenes/game/wasteland.gd` | **P0 (80% of playtime)** | **Phase 7** |
+| Wave Complete | Inline in wasteland.tscn | Inline script | P0 (End of every wave) | Phases 1-6 |
+| Game Over | Inline in wasteland.tscn | Inline script | P0 (Every death) | Phases 1-6 |
+| Debug Menu | `scenes/debug/debug_menu.tscn` | `scripts/debug/debug_menu.gd` | P2 (Dev-only) | Phases 1-6 |
+| Character Details Panel | `scenes/ui/character_details_panel.tscn` | `scripts/ui/character_details_panel.gd` | P1 (On-demand) | Phases 1-6 |
+| Character Card Component | `scenes/ui/character_card.tscn` | `scripts/ui/character_card.gd` | P0 (Reusable) | Phases 1-6 |
+| Delete Confirmation Dialog | Built-in ConfirmationDialog | N/A | P1 (Modal) | Phase 4 |
+
+**NOTE:** Combat HUD gets dedicated Phase 7 due to critical importance (players spend 80% of time in combat).
 
 ---
 
@@ -1375,21 +1603,98 @@ func _find_all_buttons(node: Node) -> Array[Button]:
 
 ---
 
+## Phase 3.5: Mid-Week Validation Checkpoint
+
+**Goal**: Validate improvements so far before proceeding to remaining phases.
+
+**Estimated Effort**: 0.5 hours
+
+---
+
+### 3.5.1 Manual QA Testing
+
+**Test on iPhone 15 Pro Max (Physical Device):**
+
+**Typography Validation:**
+- [ ] All text readable without squinting
+- [ ] Headers clearly larger than body text (visual hierarchy)
+- [ ] No text overflow or clipping
+
+**Touch Target Validation:**
+- [ ] All buttons easy to tap with thumb (one-handed use)
+- [ ] No accidental button presses (Play vs Delete spacing adequate)
+- [ ] Buttons feel appropriately sized (not comically large, not too small)
+
+**Overall Feel:**
+- [ ] UI feels MORE mobile-native than before (baseline comparison)
+- [ ] Improvements are noticeable and positive
+
+**Test on iPhone 8 (Simulator):**
+- [ ] All text readable on smallest screen
+- [ ] No layout breakage (text fits in containers)
+- [ ] Button sizes still adequate
+
+---
+
+### 3.5.2 Automated Test Suite
+
+**Run full test suite:**
+```bash
+python3 .system/validators/godot_test_runner.py
+```
+
+**Expected:** All 568+ tests passing
+**If tests fail:** Fix regressions before proceeding
+
+---
+
+### 3.5.3 Visual Regression Check
+
+**Capture current screenshots:**
+```gdscript
+VisualRegression.capture_all_current()
+```
+
+**Manual comparison:**
+- Open baseline vs current screenshots side-by-side
+- Verify changes are intentional (larger fonts, bigger buttons)
+- Check for unintended layout breaks
+
+---
+
+### 3.5.4 GO/NO-GO Decision
+
+**GO Criteria:**
+- ✅ Manual QA passes on iPhone 15 Pro Max
+- ✅ Simulator test shows no layout breaks
+- ✅ All automated tests passing
+- ✅ UI feels noticeably better
+
+**If GO:** Proceed to Phase 4
+
+**If NO-GO:**
+- Stop and analyze what's not working
+- Adjust typography/touch target approach
+- Re-test before proceeding
+- **Do NOT proceed to Phase 4 if UI doesn't feel improved**
+
+---
+
+### 3.5.5 Success Criteria: Phase 3.5
+
+- [ ] iPhone 15 Pro Max manual QA passed
+- [ ] iPhone 8 simulator validation passed
+- [ ] All 568+ tests passing
+- [ ] Visual regression checked (no unintended breaks)
+- [ ] GO decision made to proceed to Phase 4
+
+---
+
 ## Phase 4: Dialog & Modal Patterns
 
 **Goal**: Redesign confirmation dialogs and modal presentations for mobile.
 
 **Estimated Effort**: 2 hours
-
----
-
-**NOTE: Incrementally saving progress. Remaining phases to be added:**
-- Phase 5: Visual Feedback & Polish (2 hours)
-- Phase 6: Spacing & Layout Optimization (1.5 hours)
-- Success Criteria
-- Timeline & Estimates
-- Expert Panel Final Review
-- Changelog
 
 ---
 
@@ -2844,9 +3149,258 @@ func _on_show_safe_area_pressed() -> void:
 - [ ] Wave Complete spacing updated (20pt between buttons)
 - [ ] ResponsiveScale helper implemented (scales for device sizes)
 - [ ] SafeAreaDebugger implemented and tested
-- [ ] Tested on iPhone 8, iPhone 13, iPhone 15 Pro Max (safe areas respected)
+- [ ] Tested on iPhone 15 Pro Max (physical) and iPhone 8 (simulator)
 - [ ] Verified no UI overlap with notch, Dynamic Island, home indicator
 - [ ] All 568+ automated tests still passing
+
+---
+
+## Phase 7: Combat HUD Mobile Optimization
+
+**Goal**: Optimize in-game HUD for mobile readability and usability during combat.
+
+**Estimated Effort**: 2 hours
+
+**Rationale**: Players spend 80% of playtime in combat. HUD must be mobile-native quality before inviting testers.
+
+---
+
+### Expert Review: Phase 7 Pre-Implementation
+
+**Sr Mobile Game Designer:**
+> "Combat HUD is CRITICAL - it's always visible and must be readable while player is focused on combat. Key principles:
+> 1. **Corner positioning** - Brotato puts HUD elements at screen corners (top-left: wave/timer, top-right: health, bottom-right: XP). Keeps center clear for gameplay.
+> 2. **High contrast** - Combat is visually busy. HUD must be readable at a glance. Use bold text, bright colors, strong backgrounds.
+> 3. **Font sizing** - Minimum 16pt for HUD text, 20pt for critical info (health, wave number). Smaller = unreadable during combat.
+> 4. **Thumb zones** - Bottom corners are easiest to tap. Put pause/settings there. Top corners are for read-only info.
+> 5. **Safe area compliance** - Notch can hide top HUD elements. Home indicator can block bottom buttons.
+> **RECOMMENDATION**: Audit Brotato's HUD sizing (screenshot + measure). Match their standards."
+
+**Sr Godot Specialist:**
+> "Combat HUD technical considerations:
+> 1. **CanvasLayer** - HUD should be on CanvasLayer (layer 10+) to always render on top
+> 2. **Safe area margins** - Use ScreenContainer pattern or manual safe area insets
+> 3. **Performance** - HUD updates every frame. Keep layout simple, avoid complex StyleBoxes
+> 4. **Testing** - Test with actual combat, not just static scene. Player's thumbs will occlude parts of screen
+> **RECOMMENDATION**: Use MarginContainer with safe area margins at root of HUD."
+
+**Sr QA Engineer:**
+> "Combat HUD testing requirements:
+> 1. **Readability during combat** - Test while dodging enemies. Can you still see health/timer?
+> 2. **Thumb occlusion** - Hold phone naturally, thumbs on screen. Do thumbs block critical info?
+> 3. **Safe area validation** - Enable SafeAreaDebugger during combat. Verify no overlap.
+> 4. **Dynamic Island test** - On iPhone 15 Pro Max, verify Dynamic Island doesn't hide HUD
+> **RECOMMENDATION**: Record gameplay video on iPhone 15 Pro Max. Review for readability issues."
+
+**Sr Product Manager:**
+> "Combat HUD is players' first impression during gameplay:
+> 1. **Brotato comparison** - Their HUD is MINIMAL (wave + timer top-left, health top-right, XP bar bottom). Ours should match.
+> 2. **Pause button** - CRITICAL for mobile. Desktop players use ESC, mobile needs tap target. Make it 60×60pt minimum.
+> 3. **Info density** - Don't cram too much. Show only what's actionable (health, timer, wave). Everything else in pause menu.
+> **RECOMMENDATION**: If HUD feels cluttered, move non-critical info to pause menu."
+
+**Expert Panel Consensus**: ✅ **APPROVED - CRITICAL for mobile experience**
+
+---
+
+### 7.1 Combat HUD Audit (Current State)
+
+**Audit Wasteland scene HUD elements:**
+
+**Identify all HUD elements:**
+- [ ] Health bar/indicator
+- [ ] XP bar/level indicator
+- [ ] Wave counter/number
+- [ ] Timer (elapsed time or wave time)
+- [ ] Score/kills counter
+- [ ] Pause button
+- [ ] Any other overlays
+
+**Measure each element:**
+- [ ] Font sizes (likely too small for mobile)
+- [ ] Position (corners vs center vs edges)
+- [ ] Size (width × height)
+- [ ] Safe area compliance
+
+**Document:**
+- Current sizes
+- Target sizes (based on Brotato reference)
+- Gaps to mobile standards
+
+---
+
+### 7.2 HUD Typography & Sizing
+
+**Resize HUD text elements:**
+
+| Element | Current Size | Target Size | Rationale |
+|---------|-------------|-------------|-----------|
+| Wave number | ? | 24pt bold | Critical info, high visibility |
+| Timer | ? | 20pt | Important but not critical |
+| Health value | ? | 22pt bold | Life-or-death info |
+| XP progress | ? | 18pt | Less critical, glanceable |
+| Score/kills | ? | 16pt | Metadata |
+
+**Implementation:**
+```gdscript
+# In wasteland.gd:
+@onready var wave_label: Label = $HUD/WaveLabel
+@onready var timer_label: Label = $HUD/TimerLabel
+@onready var health_label: Label = $HUD/HealthLabel
+
+func _ready() -> void:
+	# Apply mobile typography
+	wave_label.add_theme_font_size_override("font_size", 24)
+	timer_label.add_theme_font_size_override("font_size", 20)
+	health_label.add_theme_font_size_override("font_size", 22)
+```
+
+---
+
+### 7.3 Safe Area Compliance for HUD
+
+**Ensure HUD respects safe areas:**
+
+**Top HUD elements (wave, timer):**
+- Must not overlap with notch/Dynamic Island
+- Add top safe area margin
+
+**Bottom HUD elements (XP bar, pause button):**
+- Must not overlap with home indicator
+- Add bottom safe area margin
+
+**Implementation:**
+```gdscript
+# Wrap HUD in ScreenContainer or apply manual margins:
+
+@onready var hud_container: MarginContainer = $HUD/SafeAreaContainer
+
+func _ready() -> void:
+	_apply_safe_area_to_hud()
+
+func _apply_safe_area_to_hud() -> void:
+	var safe_area = DisplayServer.get_display_safe_area()
+	var viewport_size = get_viewport().get_visible_rect().size
+
+	var margin_top = max(int(safe_area.position.y), 16)
+	var margin_bottom = max(int(viewport_size.y - safe_area.end.y), 16)
+
+	hud_container.add_theme_constant_override("margin_top", margin_top)
+	hud_container.add_theme_constant_override("margin_bottom", margin_bottom)
+```
+
+---
+
+### 7.4 Pause Button Optimization
+
+**Current state:** Likely small or keyboard-focused
+
+**Target:** 60×60pt minimum, bottom corner (thumb zone)
+
+**Implementation:**
+```gdscript
+const PAUSE_BUTTON_SIZE = Vector2(60, 60)
+
+@onready var pause_button: Button = $HUD/PauseButton
+
+func _ready() -> void:
+	pause_button.custom_minimum_size = PAUSE_BUTTON_SIZE
+	pause_button.position = Vector2(
+		get_viewport().get_visible_rect().size.x - PAUSE_BUTTON_SIZE.x - 16,
+		get_viewport().get_visible_rect().size.y - PAUSE_BUTTON_SIZE.y - 32  # Above home indicator
+	)
+```
+
+**Add analytics stub:**
+```gdscript
+func _on_pause_pressed() -> void:
+	Analytics.track_event("pause_button_pressed", {"source": "hud"})
+	# ... existing pause logic
+```
+
+---
+
+### 7.5 HUD Contrast & Readability
+
+**Ensure high contrast during combat:**
+
+**Background overlays for text:**
+```gdscript
+# Add semi-transparent background behind HUD text for readability
+# Example: Black 60% opacity behind wave counter
+
+var background_style = StyleBoxFlat.new()
+background_style.bg_color = Color(0, 0, 0, 0.6)
+background_style.corner_radius_top_left = 8
+background_style.corner_radius_top_right = 8
+background_style.corner_radius_bottom_right = 8
+background_style.corner_radius_bottom_left = 8
+
+wave_label.add_theme_stylebox_override("normal", background_style)
+```
+
+**Color choices:**
+- Health: Bright green (#4CAF50) or red when low (#F44336)
+- XP: Gold/yellow (#FFC107)
+- Timer: White (#FFFFFF)
+- Backgrounds: Black 60-80% opacity
+
+---
+
+### 7.6 Testing During Combat
+
+**Test HUD during actual gameplay:**
+
+**On iPhone 15 Pro Max:**
+1. Start combat run
+2. Play for 2-3 waves
+3. Verify readability while dodging/fighting
+4. Check thumb occlusion (does thumb block health?)
+5. Verify safe areas (no overlap with Dynamic Island/home indicator)
+
+**Enable SafeAreaDebugger during combat:**
+```gdscript
+# In debug mode, enable safe area visualization during combat
+if OS.is_debug_build():
+	SafeAreaDebugger.toggle_debug()
+```
+
+**Record gameplay video** for post-analysis
+
+---
+
+### 7.7 Analytics Stubs for HUD
+
+**Add tracking for HUD interactions:**
+
+```gdscript
+# Pause button
+Analytics.track_event("pause_button_pressed", {"source": "hud", "wave": current_wave})
+
+# HUD visibility (if toggleable)
+Analytics.track_event("hud_toggled", {"visible": hud_visible})
+
+# Combat start/end (to measure HUD exposure time)
+Analytics.track_event("combat_started", {})
+Analytics.track_event("combat_ended", {"duration_seconds": elapsed_time})
+```
+
+---
+
+### 7.8 Success Criteria: Phase 7
+
+- [ ] Combat HUD audited (all elements identified and measured)
+- [ ] HUD typography updated (minimum 16pt, critical info 20-24pt)
+- [ ] Safe area margins applied (no overlap with notch/Dynamic Island/home indicator)
+- [ ] Pause button resized to 60×60pt minimum
+- [ ] Pause button positioned in thumb zone (bottom corner)
+- [ ] HUD contrast improved (backgrounds added for readability)
+- [ ] Tested during actual combat on iPhone 15 Pro Max
+- [ ] SafeAreaDebugger verified (no overlaps)
+- [ ] Gameplay video recorded and reviewed
+- [ ] HUD analytics stubs added
+- [ ] All 568+ automated tests still passing
+- [ ] HUD feels mobile-native (comparable to Brotato quality)
 
 ---
 
@@ -2900,57 +3454,88 @@ func _on_show_safe_area_pressed() -> void:
 
 ## Timeline & Phase Dependencies
 
-**Total Estimated Time:** 12-15 hours (~2 work days)
+**Total Estimated Time:** 16.5 hours (~3 work days)
+
+**Phase Breakdown:**
+- Phase 0: Pre-work & Baseline (0.5h)
+- Phase 1: UI Audit (2.5h - extended for Combat HUD)
+- Phase 2: Typography (2.5h)
+- Phase 3: Touch Targets (3h)
+- Phase 3.5: Mid-Week Checkpoint (0.5h)
+- Phase 4: Dialogs (2h)
+- Phase 5: Visual Feedback (2h)
+- Phase 6: Spacing (1.5h)
+- Phase 7: Combat HUD (2h)
 
 **Phase Order Rationale:**
 
-1. **Phase 1 First (Audit)** - Must understand current state before making changes
-2. **Phase 2 Next (Typography)** - Typography changes are non-breaking, high ROI
-3. **Phase 3 Next (Touch Targets)** - Requires typography to be stable (font sizes affect button sizes)
-4. **Phase 4 Next (Dialogs)** - Uses button components from Phase 3
-5. **Phase 5 Next (Visual Feedback)** - Polish layer on top of functional UI
-6. **Phase 6 Last (Spacing)** - Final layout optimization after all components sized
+1. **Phase 0 First (Pre-Work)** - Set up infrastructure (branch, visual regression, analytics stub)
+2. **Phase 1 Next (Audit)** - Must understand current state before making changes (includes Combat HUD audit)
+3. **Phase 2 Next (Typography)** - Typography changes are non-breaking, high ROI
+4. **Phase 3 Next (Touch Targets)** - Requires typography to be stable (font sizes affect button sizes)
+5. **Phase 3.5 CHECKPOINT** - Validate improvements so far (GO/NO-GO decision point)
+6. **Phase 4 Next (Dialogs)** - Uses button components from Phase 3
+7. **Phase 5 Next (Visual Feedback)** - Polish layer on top of functional UI
+8. **Phase 6 Next (Spacing)** - Final layout optimization after all components sized
+9. **Phase 7 Last (Combat HUD)** - Apply all learnings from Phases 1-6 to combat HUD
 
 **Phase Dependencies:**
 
 ```
-Phase 1 (Audit) ─────────────────────┐
-                                      ▼
-Phase 2 (Typography) ─────────────────┤
-                                      ▼
-Phase 3 (Touch Targets) ──────────────┤
-         │                            ▼
-         ├───────► Phase 4 (Dialogs) ─┤
-         │                            ▼
-         └───────► Phase 5 (Feedback)─┤
-                                      ▼
-Phase 6 (Spacing) ◄───────────────────┘
+Phase 0 (Pre-Work) ──────────────────────┐
+                                         ▼
+Phase 1 (Audit - All Screens) ───────────┤
+                                         ▼
+Phase 2 (Typography) ─────────────────────┤
+                                         ▼
+Phase 3 (Touch Targets) ──────────────────┤
+                                         ▼
+Phase 3.5 (CHECKPOINT) ───────────────────┤ ← GO/NO-GO Decision
+                                         ▼
+Phase 4 (Dialogs) ────────────────────────┤
+                                         ▼
+Phase 5 (Visual Feedback) ────────────────┤
+                                         ▼
+Phase 6 (Spacing & Safe Areas) ───────────┤
+                                         ▼
+Phase 7 (Combat HUD) ◄────────────────────┘ ← Apply all patterns to HUD
 ```
 
 **Testing Checkpoints:**
 
-- **After Phase 2:** Typography readability test on iPhone 8
+- **After Phase 0:** Infrastructure ready (branch, visual regression, analytics stub)
+- **After Phase 2:** Typography readability test on iPhone 15 Pro Max
 - **After Phase 3:** Touch target accuracy test (fat finger test)
+- **Phase 3.5:** **CRITICAL CHECKPOINT** - GO/NO-GO decision
 - **After Phase 4:** Dialog interaction test (accidental dismissal prevention)
-- **After Phase 5:** Animation performance test (60 FPS on iPhone 8)
-- **After Phase 6:** Full device matrix test (iPhone 8, 13, 15 Pro Max)
+- **After Phase 5:** Animation performance test (60 FPS on iPhone 15 Pro Max)
+- **After Phase 6:** Full safe area validation (iPhone 15 Pro Max + iPhone 8 simulator)
+- **After Phase 7:** Combat HUD tested during actual gameplay
 
 **QA Validation Requirements:**
 
 **Manual QA Checklist:**
 ```
-Device: iPhone 8 (Minimum)
+Device: iPhone 8 (Simulator - Layout Validation)
+[ ] All text readable without squinting
+[ ] All buttons adequately sized (≥44pt)
+[ ] No layout breakage (text fits in containers)
+
+Device: iPhone 15 Pro Max (Physical - Full Validation)
 [ ] All text readable without squinting
 [ ] All buttons tappable with thumb (one-handed)
 [ ] No accidental button presses
-[ ] Animations run at 60 FPS
-[ ] No UI overlap with safe areas
-
-Device: iPhone 15 Pro Max (Maximum)
-[ ] Text scales up appropriately (not too small)
-[ ] Spacing feels generous (not cramped)
+[ ] Haptics work correctly (light/medium/heavy)
+[ ] Button animations feel smooth (60 FPS)
 [ ] No UI overlap with Dynamic Island
 [ ] No UI overlap with home indicator
+[ ] Safe areas respected (top notch, bottom home indicator)
+
+Combat HUD (iPhone 15 Pro Max):
+[ ] HUD readable during actual combat
+[ ] Thumb placement doesn't occlude critical info
+[ ] Pause button easy to tap mid-combat
+[ ] No HUD overlap with safe areas
 
 Accessibility:
 [ ] Large Text enabled - all text readable
@@ -2961,6 +3546,7 @@ Accessibility:
 [ ] Buttons feel satisfying to tap (haptics + animations)
 [ ] Dialogs feel native (full-screen, clear actions)
 [ ] Navigation feels smooth (loading indicators)
+[ ] Combat HUD feels polished (Brotato quality)
 [ ] Overall: "This was designed for mobile" (not a desktop port)
 ```
 
@@ -2974,53 +3560,86 @@ Accessibility:
 | 2025-11-16 | Added Phases 4-6, Success Criteria, Timeline | Claude Code |
 | 2025-11-16 | Expert panel reviews completed for all phases | Claude Code |
 | 2025-11-16 | Implementation examples and code provided for all phases | Claude Code |
+| 2025-11-18 | **MAJOR UPDATE**: Added Phase 0 (Pre-Work), Phase 3.5 (Checkpoint), Phase 7 (Combat HUD) | Claude Code |
+| 2025-11-18 | Updated device matrix (iPhone 15 Pro Max physical + iPhone 8 simulator) | Claude Code |
+| 2025-11-18 | Added visual regression testing strategy | Claude Code |
+| 2025-11-18 | Added analytics stub strategy (stubs in Week 16, wireup in Week 17) | Claude Code |
+| 2025-11-18 | Updated timeline to 16.5 hours (~3 work days) | Claude Code |
+| 2025-11-18 | Added branch strategy (`feature/week16-mobile-ui`) | Claude Code |
 
 ---
 
-**Document Version**: 1.0 (Complete)
+**Document Version**: 2.0 (Complete - Ready for Execution)
 **Document Status**: ✅ **COMPLETE** - Ready for Week 16 implementation
-**Last Updated**: 2025-11-16
-**Next Review**: Before Week 16 execution
+**Last Updated**: 2025-11-18
+**Next Review**: After Week 16 completion
 
-**Phase 1 Status**: 📋 Planned (2 hours)
-**Phase 2 Status**: 📋 Planned (2.5 hours)
-**Phase 3 Status**: 📋 Planned (3 hours)
-**Phase 4 Status**: 📋 Planned (2 hours)
-**Phase 5 Status**: 📋 Planned (2 hours)
-**Phase 6 Status**: 📋 Planned (1.5 hours)
+**Phase 0 Status**: 📋 Planned (0.5 hours) - Infrastructure setup
+**Phase 1 Status**: 📋 Planned (2.5 hours) - UI Audit (includes Combat HUD)
+**Phase 2 Status**: 📋 Planned (2.5 hours) - Typography
+**Phase 3 Status**: 📋 Planned (3 hours) - Touch Targets
+**Phase 3.5 Status**: 📋 Planned (0.5 hours) - **CRITICAL CHECKPOINT**
+**Phase 4 Status**: 📋 Planned (2 hours) - Dialogs
+**Phase 5 Status**: 📋 Planned (2 hours) - Visual Feedback
+**Phase 6 Status**: 📋 Planned (1.5 hours) - Spacing
+**Phase 7 Status**: 📋 Planned (2 hours) - Combat HUD
 
-**Total Scope**: 12-15 hours (entire Week 16 activity)
+**Total Scope**: 16.5 hours (~3 work days)
 
 ---
 
 **Key Deliverables:**
 
 **New Systems:**
+- **Visual regression testing** - Screenshot comparison infrastructure
+- **Analytics stub system** - Event tracking ready for Week 17 wireup
 - Mobile UI theme system (typography, touch targets, spacing)
 - Haptic feedback system (light/medium/heavy)
 - MobileDialog component (reusable full-screen modals)
 - Progressive delete confirmation (prevent accidents)
 - Undo delete toast (5-second recovery window)
 - Loading overlay for scene transitions
-- Safe area handling (notches, Dynamic Island)
+- Safe area handling (notches, Dynamic Island, home indicator)
 - Accessibility settings (animations, haptics, sounds)
 - Button animation system
 - Responsive scaling helper
+- ScreenContainer component (auto safe area margins)
 
 **Updated Scenes:**
 - Hub (Scrapyard) - Mobile spacing, large buttons
 - Character Roster - Mobile spacing, safe buttons
 - Character Creation - Mobile typography
+- Character Selection - Mobile standards
 - Wave Complete - Properly styled buttons (fixes QA screenshot issue!)
+- Game Over - Mobile typography and buttons
+- **Combat HUD (Wasteland)** - Mobile-optimized HUD, safe area compliant
 - All dialogs - Full-screen mobile patterns
 
+**Analytics Events Stubbed:**
+~30-40 events including:
+- button_pressed (screen, button context)
+- dialog_opened/confirmed/cancelled/dismissed
+- scene_transition_started/completed
+- delete_confirmation_step_1/confirmed/timeout
+- delete_undone
+- pause_button_pressed
+- combat_started/ended
+- And more...
+
 **Reference Standards:**
-- iOS Human Interface Guidelines compliance
-- Brotato/Vampire Survivors mobile roguelite patterns
+- iOS Human Interface Guidelines (HIG) compliance
+- Brotato mobile UI patterns (from `docs/brotato-reference.md`)
 - WCAG AA color contrast (4.5:1 minimum)
-- iPhone 8 → iPhone 15 Pro Max device matrix
+- iPhone 15 Pro Max (physical) + iPhone 8 (simulator) device matrix
+
+**Validation Criteria:**
+- All 568+ automated tests passing
+- iPhone 15 Pro Max manual QA passed
+- iPhone 8 simulator layout validation passed
+- Combat HUD tested during actual gameplay
+- **User acceptance:** "Feels like a mobile app, not a desktop port"
 
 ---
 
-**End of Week 16 Implementation Plan**
+**End of Week 16 Implementation Plan - Version 2.0**
 
