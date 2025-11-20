@@ -175,6 +175,14 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 	delete_confirmation.dialog_text = (
 		"Delete survivor '%s'?\nThis cannot be undone." % character_name
 	)
+
+	# iOS HIG: Apply red destructive styling to Delete button
+	var ok_button = delete_confirmation.get_ok_button()
+	if ok_button:
+		ok_button.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
+		ok_button.add_theme_color_override("font_hover_color", Color(1, 0.3, 0.3))
+		ok_button.add_theme_color_override("font_pressed_color", Color(0.9, 0.1, 0.1))
+
 	delete_confirmation.popup_centered()
 
 

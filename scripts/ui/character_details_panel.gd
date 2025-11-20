@@ -90,9 +90,15 @@ func show_character(character: Dictionary) -> void:
 
 func _populate_stats(stats: Dictionary) -> void:
 	"""Populate all 14 stats in organized categories"""
-	# Clear existing stats
+	GameLogger.info("[CharacterDetailsPanel] Populating stats", {"stats_count": stats.size()})
+
+	# Clear existing stats - FIXED: Synchronous deletion prevents race condition
 	for child in stats_container.get_children():
-		child.queue_free()
+		child.free()
+
+	GameLogger.debug(
+		"[CharacterDetailsPanel] Stats cleared", {"child_count": stats_container.get_child_count()}
+	)
 
 	# Core Survival Stats
 	_add_stat_category("Core Survival")
@@ -129,6 +135,10 @@ func _add_stat_category(category_name: String) -> void:
 	category_label.add_theme_font_size_override("font_size", 22)
 	category_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
 	stats_container.add_child(category_label)
+	GameLogger.debug(
+		"[CharacterDetailsPanel] Category added",
+		{"name": category_name, "children": stats_container.get_child_count()}
+	)
 
 
 func _add_stat_row(stat_name: String, stat_value) -> void:
@@ -150,6 +160,10 @@ func _add_stat_row(stat_name: String, stat_value) -> void:
 	hbox.add_child(value_label)
 
 	stats_container.add_child(hbox)
+	GameLogger.debug(
+		"[CharacterDetailsPanel] Stat added",
+		{"stat": stat_name, "children": stats_container.get_child_count()}
+	)
 
 
 func _on_close_pressed() -> void:
