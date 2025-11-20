@@ -121,7 +121,7 @@ func _add_stat_category(category_name: String) -> void:
 	"""Add a stat category header"""
 	var category_label = Label.new()
 	category_label.text = category_name
-	category_label.add_theme_font_size_override("font_size", 18)
+	category_label.add_theme_font_size_override("font_size", 22)
 	category_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
 	stats_container.add_child(category_label)
 
@@ -134,13 +134,13 @@ func _add_stat_row(stat_name: String, stat_value) -> void:
 	var name_label = Label.new()
 	name_label.text = stat_name + ":"
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_label.add_theme_font_size_override("font_size", 14)
+	name_label.add_theme_font_size_override("font_size", 20)
 	hbox.add_child(name_label)
 
 	var value_label = Label.new()
 	value_label.text = str(stat_value)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	value_label.add_theme_font_size_override("font_size", 14)
+	value_label.add_theme_font_size_override("font_size", 20)
 	value_label.add_theme_color_override("font_color", Color.WHITE)
 	hbox.add_child(value_label)
 

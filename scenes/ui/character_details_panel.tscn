@@ -65,12 +65,12 @@ theme_override_constants/separation = 5
 [node name="AuraTitle" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Aura"
 
 [node name="AuraLabel" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 20
 text = "Aura: Collect (Level 1)"
 
 [node name="Separator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
@@ -79,7 +79,7 @@ layout_mode = 2
 [node name="StatsTitle" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Stats"
 
 [node name="StatsScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
@@ -101,12 +101,12 @@ theme_override_constants/separation = 5
 [node name="ItemsTitle" type="Label" parent="MarginContainer/VBoxContainer/ItemsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Equipped Items"
 
 [node name="ItemsLabel" type="Label" parent="MarginContainer/VBoxContainer/ItemsContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 20
 text = "No equipped items"
 
 [node name="Separator4" type="HSeparator" parent="MarginContainer/VBoxContainer"]
@@ -119,12 +119,12 @@ theme_override_constants/separation = 5
 [node name="RecordsTitle" type="Label" parent="MarginContainer/VBoxContainer/RecordsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Records"
 
 [node name="RecordsLabel" type="Label" parent="MarginContainer/VBoxContainer/RecordsContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 20
 text = "Total Kills: 0
 Highest Wave: 0
 Deaths: 0"

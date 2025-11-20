@@ -1,6 +1,6 @@
-class_name ColorPalette
+class_name GameColorPalette
 extends RefCounted
-## Color Palette - Brotato exact colors + WCAG contrast validation
+## Game Color Palette - Brotato exact colors + WCAG contrast validation
 ## Week 16 Phase 2: Typography System Overhaul
 ## Source: docs/mobile-ui-specification.md v1.1
 
@@ -50,7 +50,7 @@ static func _static_init():
 	_cache_contrast_ratio(GAME_GRAY, GAME_BG)
 	_cache_contrast_ratio(TEXT_PRIMARY, GAME_BG)
 
-	GameLogger.info("[ColorPalette] Pre-calculated %d contrast ratios" % _contrast_cache.size())
+	GameLogger.info("[GameColorPalette] Pre-calculated %d contrast ratios" % _contrast_cache.size())
 
 
 static func _cache_contrast_ratio(color1: Color, color2: Color):
