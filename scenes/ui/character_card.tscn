@@ -22,7 +22,7 @@ theme_override_constants/separation = 2
 
 [node name="NameLabel" type="Label" parent="HBoxContainer/InfoContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "Character Name"
 
 [node name="TypeLabel" type="Label" parent="HBoxContainer/InfoContainer"]
@@ -39,7 +39,7 @@ text = "Level 1 • Best Wave 0"
 [node name="DetailsButton" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(160, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Details"
 
 [node name="PlayButton" type="Button" parent="HBoxContainer"]

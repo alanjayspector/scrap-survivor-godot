@@ -31,6 +31,11 @@ func _ready() -> void:
 
 func show_character(character: Dictionary) -> void:
 	"""Display full character details"""
+	# CRITICAL FIX: Wait for _ready() to complete if panel was just instantiated
+	# Prevents race condition where @onready vars are still null
+	if not is_node_ready():
+		await ready
+
 	var character_id = character.get("id", "")
 	var character_name = character.get("name", "Unknown")
 	var character_type = character.get("character_type", "scavenger")
