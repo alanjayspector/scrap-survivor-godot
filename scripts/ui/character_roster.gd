@@ -19,6 +19,7 @@ const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
 	"res://scenes/ui/character_details_panel.tscn"
 )
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var character_list: VBoxContainer = $CharacterListContainer/ScrollContainer/CharacterList
 @onready var slot_label: Label = $HeaderContainer/SlotLabel
@@ -136,6 +137,9 @@ func _connect_signals() -> void:
 	# Apply button styling
 	ThemeHelper.apply_button_style(create_new_button, ThemeHelper.ButtonStyle.PRIMARY)
 	ThemeHelper.apply_button_style(back_button, ThemeHelper.ButtonStyle.SECONDARY)
+
+	# Apply button icons
+	UIIcons.apply_button_icon(back_button, UIIcons.Icon.BACK)
 
 
 func _on_character_play_pressed(character_id: String) -> void:

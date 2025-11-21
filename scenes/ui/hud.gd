@@ -3,15 +3,18 @@ extends Control
 ##
 ## Week 10 Phase 3: HUD Implementation with HP, XP, wave, and currency displays
 ## Week 12 Phase 2: Wave countdown timer
+## Week 16: Icon integration for currency display
 ##
 ## Displays:
 ## - HP bar (current/max health)
 ## - XP bar (current/required XP, level)
 ## - Wave counter
 ## - Wave countdown timer
-## - Currency display (scrap, components, nanites)
+## - Currency display (scrap, components, nanites) with icons
 ##
 ## Based on: docs/migration/week10-implementation-plan.md (lines 467-562)
+
+const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
 
 ## Node references (set when nodes are available)
 @onready var hp_bar: ProgressBar = $HPBar if has_node("HPBar") else null
@@ -23,13 +26,34 @@ extends Control
 @onready
 var currency_display: HBoxContainer = $CurrencyDisplay if has_node("CurrencyDisplay") else null
 @onready var scrap_label: Label = (
-	$CurrencyDisplay/ScrapLabel if has_node("CurrencyDisplay/ScrapLabel") else null
+	$CurrencyDisplay/ScrapContainer/ScrapLabel
+	if has_node("CurrencyDisplay/ScrapContainer/ScrapLabel")
+	else null
+)
+@onready var scrap_icon: TextureRect = (
+	$CurrencyDisplay/ScrapContainer/ScrapIcon
+	if has_node("CurrencyDisplay/ScrapContainer/ScrapIcon")
+	else null
 )
 @onready var components_label: Label = (
-	$CurrencyDisplay/ComponentsLabel if has_node("CurrencyDisplay/ComponentsLabel") else null
+	$CurrencyDisplay/ComponentsContainer/ComponentsLabel
+	if has_node("CurrencyDisplay/ComponentsContainer/ComponentsLabel")
+	else null
+)
+@onready var components_icon: TextureRect = (
+	$CurrencyDisplay/ComponentsContainer/ComponentsIcon
+	if has_node("CurrencyDisplay/ComponentsContainer/ComponentsIcon")
+	else null
 )
 @onready var nanites_label: Label = (
-	$CurrencyDisplay/NanitesLabel if has_node("CurrencyDisplay/NanitesLabel") else null
+	$CurrencyDisplay/NanitesContainer/NanitesLabel
+	if has_node("CurrencyDisplay/NanitesContainer/NanitesLabel")
+	else null
+)
+@onready var nanites_icon: TextureRect = (
+	$CurrencyDisplay/NanitesContainer/NanitesIcon
+	if has_node("CurrencyDisplay/NanitesContainer/NanitesIcon")
+	else null
 )
 
 ## Currency tracking (local state)
@@ -70,6 +94,9 @@ func _ready() -> void:
 		# TODO Week 11: Add components and nanites to BankingService
 		components = 0
 		nanites = 0
+
+	# Load currency icons
+	_setup_currency_icons()
 
 	# Update displays
 	_update_currency_display()
@@ -218,16 +245,31 @@ func _on_currency_changed(currency_type: String, _amount: int, new_total: int) -
 ## Display Update Functions
 
 
+func _setup_currency_icons() -> void:
+	"""Load and apply currency icons (Week 16)"""
+	# Scrap uses gear icon (mechanical scrap)
+	if scrap_icon:
+		UIIcons.apply_icon(scrap_icon, UIIcons.Icon.SETTINGS)
+
+	# Components uses target icon
+	if components_icon:
+		UIIcons.apply_icon(components_icon, UIIcons.Icon.TARGET)
+
+	# Nanites uses star icon
+	if nanites_icon:
+		UIIcons.apply_icon(nanites_icon, UIIcons.Icon.STAR)
+
+
 func _update_currency_display() -> void:
-	"""Update all currency labels (compact mobile-friendly format)"""
+	"""Update all currency labels (icon + number format)"""
 	if scrap_label:
-		scrap_label.text = "S: %d" % scrap
+		scrap_label.text = "%d" % scrap
 
 	if components_label:
-		components_label.text = "C: %d" % components
+		components_label.text = "%d" % components
 
 	if nanites_label:
-		nanites_label.text = "N: %d" % nanites
+		nanites_label.text = "%d" % nanites
 
 
 func _update_wave_timer_display() -> void:

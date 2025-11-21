@@ -36,6 +36,7 @@ const ERROR_SOUND: String = "res://assets/audio/ui/error.ogg"
 
 ## Theme
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
 
 
 func _ready() -> void:
@@ -252,6 +253,9 @@ func _connect_signals() -> void:
 	# Apply button styling
 	ThemeHelper.apply_button_style(create_button, ThemeHelper.ButtonStyle.PRIMARY)
 	ThemeHelper.apply_button_style(back_button, ThemeHelper.ButtonStyle.SECONDARY)
+
+	# Apply button icons
+	UIIcons.apply_button_icon(back_button, UIIcons.Icon.BACK)
 
 
 func _on_name_changed(new_text: String) -> void:

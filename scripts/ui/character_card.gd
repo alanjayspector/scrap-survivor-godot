@@ -14,6 +14,7 @@ signal delete_pressed(character_id: String, character_name: String)
 signal details_pressed(character_id: String)
 
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var character_icon: ColorRect = $HBoxContainer/CharacterIcon
 @onready var name_label: Label = $HBoxContainer/InfoContainer/NameLabel
@@ -64,6 +65,9 @@ func setup(character: Dictionary) -> void:
 	ThemeHelper.apply_button_style(details_button, ThemeHelper.ButtonStyle.SECONDARY)
 	ThemeHelper.apply_button_style(play_button, ThemeHelper.ButtonStyle.PRIMARY)
 	ThemeHelper.apply_button_style(delete_button, ThemeHelper.ButtonStyle.DANGER)
+
+	# Apply button icons
+	UIIcons.apply_button_icon(delete_button, UIIcons.Icon.DELETE)
 
 	# Connect buttons
 	details_button.pressed.connect(_on_details_pressed)

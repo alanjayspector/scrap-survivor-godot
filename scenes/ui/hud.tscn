@@ -103,29 +103,60 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -400.0
+offset_left = -450.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 50.0
+offset_bottom = 56.0
 grow_horizontal = 0
+theme_override_constants/separation = 16
 
-[node name="ScrapLabel" type="Label" parent="CurrencyDisplay"]
+[node name="ScrapContainer" type="HBoxContainer" parent="CurrencyDisplay"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ScrapIcon" type="TextureRect" parent="CurrencyDisplay/ScrapContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="ScrapLabel" type="Label" parent="CurrencyDisplay/ScrapContainer"]
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 32
-text = "S: 0"
+text = "0"
 
-[node name="ComponentsLabel" type="Label" parent="CurrencyDisplay"]
+[node name="ComponentsContainer" type="HBoxContainer" parent="CurrencyDisplay"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ComponentsIcon" type="TextureRect" parent="CurrencyDisplay/ComponentsContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="ComponentsLabel" type="Label" parent="CurrencyDisplay/ComponentsContainer"]
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 32
-text = "C: 0"
+text = "0"
 
-[node name="NanitesLabel" type="Label" parent="CurrencyDisplay"]
+[node name="NanitesContainer" type="HBoxContainer" parent="CurrencyDisplay"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NanitesIcon" type="TextureRect" parent="CurrencyDisplay/NanitesContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="NanitesLabel" type="Label" parent="CurrencyDisplay/NanitesContainer"]
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 32
-text = "N: 0"
+text = "0"

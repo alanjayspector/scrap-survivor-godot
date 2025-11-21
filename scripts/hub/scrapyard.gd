@@ -14,6 +14,7 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 
 ## Theme
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var play_button: Button = $MenuContainer/PlayButton
 @onready var characters_button: Button = $MenuContainer/CharactersButton
@@ -100,6 +101,9 @@ func _setup_buttons() -> void:
 	ThemeHelper.apply_button_style(characters_button, ThemeHelper.ButtonStyle.SECONDARY)
 	ThemeHelper.apply_button_style(settings_button, ThemeHelper.ButtonStyle.SECONDARY)
 	ThemeHelper.apply_button_style(quit_button, ThemeHelper.ButtonStyle.GHOST)
+
+	# Apply button icons
+	UIIcons.apply_button_icon(settings_button, UIIcons.Icon.SETTINGS)
 
 	# Disable settings button (not implemented in Week 15)
 	settings_button.disabled = true
