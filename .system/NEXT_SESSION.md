@@ -1,277 +1,166 @@
-# Next Session: Theme System Implementation
+# Next Session: Apply Theme to All Screens + Icon Assets
 
-**Last Updated**: 2025-11-20 21:00
-**Current Branch**: `main`
-**Next Task**: Godot Theme System Research + Implementation
-
----
-
-## Bug Fix Summary (COMPLETED)
-
-### iOS Metal ScrollContainer Clipping Bug - SOLVED
-
-**Root Cause**: iOS Metal TBDR (Tile-Based Deferred Rendering) strictly culls 0x0 geometry. Combined with `clip_contents = true` (default), dynamically created content was being incorrectly clipped even when sizes were valid.
-
-**The Fix (Applied)**:
-1. `clip_contents = false` on ScrollContainer
-2. Proper async timing with `await get_tree().process_frame` after `queue_free()` and after adding children
-3. `custom_minimum_size` on all dynamically created nodes
+**Last Updated**: 2025-11-20 22:00
+**Current Branch**: `main` (after merge from `feature/theme-system`)
+**Next Task**: Apply theme to remaining screens + Source icon assets
 
 ---
 
-## Character Details Panel Redesign (COMPLETED)
+## Theme System Phase 1 (COMPLETED)
 
-Implemented modern mobile UI pattern based on expert panel research (Vampire Survivors, Brotato, Survivor.io):
+### What Was Built
 
-**New Structure**:
-- 3-tab layout: Stats | Gear | Records
-- Primary stats card: 4 key stats always visible (HP, DMG, ARM, SPD)
-- Collapsible sections: Offense/Defense/Utility (tap to expand)
-- Currency moved to Records tab
+**Branch**: `feature/theme-system` (merged to main)
+**Commits**: `72ae23b`, `21f4c24`
 
-**Issues Remaining** (to be fixed by Theme System):
-- Emojis don't render on iOS (need sprite-based icons or styled text)
-- No visual styling on cards/buttons (default Godot look)
-- Tabs and collapsible headers look like plain text
-- Overall UI lacks game-ready polish
+**New Files Created**:
+```
+themes/
+├── game_theme.tres              # Main theme resource
+└── styles/
+    ├── button_primary.tres      # Purple filled button
+    ├── button_primary_pressed.tres
+    ├── button_secondary.tres    # Outlined button
+    ├── button_secondary_pressed.tres
+    ├── button_danger.tres       # Red filled button
+    ├── button_danger_pressed.tres
+    ├── button_ghost.tres        # Transparent button
+    ├── button_ghost_pressed.tres
+    ├── panel_card.tres          # Card background
+    ├── panel_elevated.tres      # Elevated panel with shadow
+    ├── tab_selected.tres        # Selected tab style
+    └── tab_unselected.tres      # Unselected tab style
+
+scripts/ui/theme/
+└── theme_helper.gd              # Programmatic styling utilities
+
+scripts/ui/components/
+└── ui_icon.gd                   # iOS-safe icon system (text fallbacks)
+```
+
+**Key Changes**:
+- All emojis replaced with colored ASCII text (iOS-safe)
+- Theme applied to CharacterDetailsPanel
+- Buttons styled (close button = secondary, collapsible headers = ghost)
+- TabContainer has styled selected/unselected states
+
+### iOS Emoji Issue - Root Cause
+
+Godot only supports **bitmap (PNG) emoji fonts**. iOS system fonts use COLR/SVG formats which Godot cannot render. Solution: Use TextureRect icons or text fallbacks.
 
 ---
 
-## Week16 Phases 4-7: Revised Order
+## Icon Research Findings
 
-The original `docs/migration/week16-implementation-plan.md` had phases 4-7 with styling baked in. Analysis shows **Theme System is the foundation** - those phases already assume styled resources exist (e.g., `load("res://themes/styles/button_danger.tres")`).
+### Icons Needed (~21 total)
 
-### Revised Implementation Order
+**Stats (11)**:
+- Health, Damage, Armor, Speed, Crit Chance, Attack Speed, Range, Regen, Lifesteal, Dodge, Luck
 
-```
-1. Theme System (NEW - research + implementation)
-   ├── Theme resource (.tres)
-   ├── StyleBoxes (button_primary, button_secondary, button_danger, card, etc.)
-   ├── Typography settings
-   ├── Icon system (replacing broken emojis)
-   └── Apply to CharacterDetailsPanel (validation)
+**Currency (5)**:
+- Scrap, Nanites, Components, XP, Gold
 
-2. Phase 5 (partial) - Independent components
-   ├── Haptic feedback autoload
-   ├── ButtonAnimation component
-   └── Accessibility settings
+**UI Actions (5)**:
+- Expand, Collapse, Close, Settings, Back, Delete, Info
 
-3. Phase 6 (partial) - Independent layout
-   ├── ScreenContainer (safe areas)
-   ├── ResponsiveScale utility
-   └── Safe area debugger
+### Best Free Resources (CC0 Licensed)
 
-4. Phase 4: Dialogs (now uses Theme)
-   ├── MobileDialog base component
-   ├── DeleteConfirmationDialog (progressive confirmation)
-   └── Undo toast
+| Source | Pack | Details | Link |
+|--------|------|---------|------|
+| **Kenney** | Game Icons | 105 assets, CC0, vector | https://kenney.nl/assets/game-icons |
+| **Kenney** | UI Pack RPG Expansion | 85 assets, CC0, RPG | https://kenney.nl/assets/ui-pack-rpg-expansion |
+| **OpenGameArt** | CC0 Resources | Hearts, swords, shields | https://opengameart.org/content/cc0-resources |
+| **itch.io** | Soulbit Free 16x16 | Sword, shield, potion | Free on itch.io |
 
-5. Phase 5 (remainder) - LoadingOverlay
+### Recommended Approach
 
-6. Phase 7: Combat HUD (uses Theme)
-   └── Typography and styling for in-game HUD
-```
+**Option A: Kenney Game Icons** (Recommended)
+- Clean, readable at small sizes
+- Works with color tinting (UIIcon system supports this)
+- CC0 = no attribution required
 
-### Phase Dependency Analysis
+**Option B: Custom Wasteland Icons**
+- Take clean icons, apply grunge/rust treatment
+- Match game's post-apocalyptic theme
 
-| Phase | Theme Dependency | Status |
-|-------|------------------|--------|
-| **Theme System** | - | **DO FIRST** |
-| Phase 4 (Dialogs) | ❌ Blocked - references `button_danger.tres` etc. | After Theme |
-| Phase 5 (Haptics/Animation) | ✅ Independent | Can do anytime |
-| Phase 5 (LoadingOverlay) | ❌ Needs styled panel | After Theme |
-| Phase 6 (ScreenContainer) | ✅ Independent | Can do anytime |
-| Phase 6 (Spacing constants) | ❌ Should be in Theme | Absorbed by Theme |
-| Phase 7 (Combat HUD) | ❌ Needs typography/styling | After Theme |
+### AI Prompt for Icon Research
 
----
-
-## Theme System Implementation Plan
-
-### Quick Start Prompt
+Use this prompt with another AI for deeper research:
 
 ```
-I'm implementing a Godot 4.5.1 Theme System for production-ready mobile game UI.
+I'm developing a mobile roguelike survivor game called "Scrap Survivor" in Godot 4.5.1.
+The game has a POST-APOCALYPTIC WASTELAND theme - rusty metal, scavenged tech, irradiated wastelands.
 
-Please start by:
-1. Read .system/CLAUDE_RULES.md
-2. Read .system/NEXT_SESSION.md (this file)
-3. Do research on Godot 4 Theme system best practices
+I need ~20 UI icons for stat displays (Health, Damage, Armor, Speed, etc.) and UI actions.
+Icons displayed at 20-24px on mobile, need to be readable at small sizes.
 
-Context:
-- Branch: main (start new feature/theme-system branch)
-- All tests passing: 647/671
-- We have existing UIConstants and ColorPalette in scripts/ui/theme/
-- Current UI uses default Godot styling - needs game-ready polish
-- Target: Mobile survivor game (iOS primary, landscape orientation)
+Color palette: Dark purples (#282747), danger red (#CC3737), toxic green (#76FF76), warning yellow (#EAC43D)
 
-Research questions to answer:
-1. Theme resource (.tres) vs StyleBox approach - which is better for mobile games?
-2. How to handle emoji/icon rendering on iOS (sprite sheets vs custom font?)
-3. Best practices for TabContainer and Button styling in Godot 4
-4. How other Godot mobile games structure their theme systems
-5. Performance considerations for mobile theme systems
-
-After research, create implementation plan for:
-- Styled buttons (primary, secondary, destructive)
-- Styled cards/panels with backgrounds
-- Styled tabs
-- Icon system that works on iOS
-- Consistent typography
-```
-
-### Gemini Research Prompts
-
-For deeper research, use these prompts with Gemini:
-
-**Prompt 1: Godot 4 Theme System Deep Dive**
-```
-I'm building a mobile game in Godot 4.5.1 (survivor-like, iOS primary). I need to implement a professional Theme system. Please research and explain:
-
-1. Theme resource architecture in Godot 4:
-   - Theme inheritance and overrides
-   - StyleBox types (Flat, Texture, Line, Empty) and when to use each
-   - Theme type variations (hover, pressed, disabled states)
-
-2. Best practices for mobile game themes:
-   - Performance considerations
-   - Touch state feedback (pressed states, visual feedback)
-   - Accessibility (contrast, touch targets)
-
-3. Real-world examples:
-   - How do successful Godot mobile games structure their themes?
-   - Common patterns and anti-patterns
-
-4. Integration with existing code:
-   - I have UIConstants.gd and ColorPalette.gd already
-   - How should Theme resource reference these?
-
-Provide concrete Godot 4.5 code examples and .tres file structure.
-```
-
-**Prompt 2: iOS Icon Rendering Solutions**
-```
-In my Godot 4.5.1 mobile game, emoji characters (❤️⚔️🛡️) don't render on iOS devices. Research solutions:
-
-1. Why do emojis fail to render on iOS in Godot?
-2. Alternative approaches:
-   - Custom icon font (like Font Awesome)
-   - Sprite sheet with TextureRect
-   - Using Godot's built-in icon system
-   - SVG icons
-
-3. For each approach, provide:
-   - Pros/cons for mobile performance
-   - Implementation complexity
-   - Godot 4.5 code examples
-
-4. Recommended solution for a mobile game with ~20 different UI icons
-
-I need a solution that works reliably on iOS and Android, with good performance.
-```
-
-**Prompt 3: Modern Mobile Game UI Patterns in Godot**
-```
-Research how to implement these modern mobile game UI patterns in Godot 4.5.1:
-
-1. Styled TabContainer:
-   - Custom tab bar appearance
-   - Tab indicator/underline animations
-   - Touch-friendly tab sizing
-
-2. Collapsible/Accordion sections:
-   - Smooth expand/collapse animations
-   - Visual expand/collapse indicators
-   - Touch feedback
-
-3. Card-style panels:
-   - Elevated appearance (shadow/border)
-   - Rounded corners
-   - Background styling
-
-4. Button variations:
-   - Primary (prominent, colored)
-   - Secondary (outlined)
-   - Destructive (red, for delete actions)
-   - Ghost (minimal, text-only)
-
-For each, provide Godot 4.5 Theme/StyleBox configuration and any required GDScript.
-Reference games like Vampire Survivors, Brotato, Survivor.io for visual inspiration.
+Questions:
+1. What free asset packs fit this theme? Specific names and URLs.
+2. Visual motifs for each stat in wasteland theme? (e.g., Health = radiation symbol? blood bag?)
+3. Pixel art (16x16/32x32) vs vector for 20-24px mobile display?
+4. Tools for adding wasteland "grunge" effects to clean icons?
+5. Style references from games/media with good wasteland UI?
 ```
 
 ---
 
-## Branch Strategy
+## Next Session Tasks
 
-```
-main (current)
-  └── feature/theme-system (create this)
-        ├── Theme resource (.tres)
-        ├── Styled components
-        └── Icon system
-```
+### 1. Source Icon Assets
+- [ ] Download Kenney Game Icons pack
+- [ ] Identify icons for each stat/action
+- [ ] Process icons (resize to 24x24, export as PNG)
+- [ ] Place in `themes/icons/` folder
+- [ ] Update UIIcon system to load textures
 
-After theme system is complete, merge to main, then continue with phases 4-7.
+### 2. Apply Theme to Remaining Screens
+- [ ] `character_roster.tscn` - Apply game_theme.tres
+- [ ] `character_creation.tscn` - Style buttons and inputs
+- [ ] `character_card.tscn` - Card styling
+- [ ] `wave_complete_screen.tscn` - Buttons and panels
+- [ ] `scrapyard.tscn` (hub) - All buttons
+- [ ] `hud.tscn` - Combat UI styling
 
-**Abandoned branch**: `feature/week16-mobile-ui` - Superseded by diagnostic branch work, safe to delete.
-
----
-
-## Files to Reference
-
-**Existing Theme Infrastructure**:
-- `scripts/ui/theme/ui_constants.gd` - Measurements, spacing, touch targets
-- `scripts/ui/theme/color_palette.gd` - Colors with WCAG contrast validation
-
-**Mobile UI Spec**:
-- `docs/mobile-ui-specification.md` - Complete design system spec (v1.1)
-
-**Current Panel Implementation**:
-- `scenes/ui/character_details_panel.tscn` - New tabbed structure
-- `scripts/ui/character_details_panel.gd` - Collapsible logic
-
-**Week16 Plan Reference**:
-- `docs/migration/week16-implementation-plan.md` - Phases 4-7 detail (use after Theme System)
-
-**Research Documents**:
-- `docs/gemini-mobile-ui-research.md` - Previous research
-- `docs/claude-mobile-game-ui-design-system.md` - Design system docs
+### 3. Continue with Independent Phases (Week16)
+After theme is applied everywhere:
+- [ ] Haptic feedback system
+- [ ] ButtonAnimation component
+- [ ] ScreenContainer for safe areas
 
 ---
 
-## Success Criteria for Theme System
+## Files Reference
 
-1. **Buttons** look styled (not default Godot gray)
-2. **Cards/panels** have visible backgrounds with rounded corners
-3. **Tabs** are clearly tappable with visual selection state
-4. **Icons** render correctly on iOS (no broken emojis)
-5. **Collapsible headers** look like buttons, not plain text
-6. **Consistent typography** across all screens
-7. **All touch targets** remain iOS HIG compliant (44pt+)
-8. **Performance** - No frame drops on mobile
+**Theme System**:
+- `themes/game_theme.tres` - Main theme
+- `scripts/ui/theme/theme_helper.gd` - Programmatic helpers
+- `scripts/ui/components/ui_icon.gd` - Icon system
+
+**Existing Infrastructure**:
+- `scripts/ui/theme/ui_constants.gd` - Measurements
+- `scripts/ui/theme/color_palette.gd` - Colors
+
+**Screens to Update**:
+- `scenes/ui/character_roster.tscn`
+- `scenes/ui/character_creation.tscn`
+- `scenes/ui/character_card.tscn`
+- `scenes/ui/wave_complete_screen.tscn`
+- `scenes/hub/scrapyard.tscn`
+- `scenes/ui/hud.tscn`
 
 ---
 
-## Post-Theme System Work (from Week16 Plan)
+## Success Criteria (Theme System Phase 2)
 
-After Theme System is complete, continue with:
-
-### Independent Components (can parallelize)
-- [ ] Haptic feedback system (`scripts/autoload/haptics.gd`)
-- [ ] ButtonAnimation component (`scripts/ui/components/button_animation.gd`)
-- [ ] Accessibility settings (`scripts/autoload/accessibility.gd`)
-- [ ] ScreenContainer for safe areas (`scripts/ui/components/screen_container.gd`)
-- [ ] ResponsiveScale utility (`scripts/ui/responsive_scale.gd`)
-- [ ] Safe area debugger (`scripts/debug/safe_area_debugger.gd`)
-
-### Theme-Dependent Components (sequential)
-- [ ] MobileDialog base component (Phase 4)
-- [ ] DeleteConfirmationDialog with progressive confirmation (Phase 4)
-- [ ] Undo delete toast (Phase 4)
-- [ ] LoadingOverlay for scene transitions (Phase 5)
-- [ ] Combat HUD mobile optimization (Phase 7)
+1. All UI screens use `game_theme.tres`
+2. All buttons styled appropriately (primary/secondary/danger/ghost)
+3. Icon textures load and display correctly
+4. Consistent look across all screens
+5. Tests still passing (647/671)
 
 ---
 
 **Session Date**: 2025-11-20
-**Commits on main**: Up to `96a709f` (feat: redesign character details panel)
+**Commits on feature/theme-system**: `72ae23b`, `21f4c24`
