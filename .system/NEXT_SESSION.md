@@ -1,8 +1,8 @@
-# Next Session: Source Icon Assets
+# Next Session: Continue Week16 Phases
 
 **Last Updated**: 2025-11-21
 **Current Branch**: `main`
-**Next Task**: Source icon assets from Kenney + Continue with Week16 phases
+**Next Task**: Continue with Week16 independent phases (Haptic, ButtonAnimation, ScreenContainer)
 
 ---
 
@@ -135,14 +135,12 @@ magick "$icon" \
 
 ## Next Session Tasks
 
-### 1. Source Icon Assets
-- [ ] Download Kenney Game Icons pack (https://kenney.nl/assets/game-icons)
-- [ ] Download 7Soul's RPG Graphics (optional)
-- [ ] Select icons matching wasteland motifs (see table above)
-- [ ] Process through grunge pipeline (or use clean with tint)
-- [ ] Export as 24x24 PNG with 1px outline
-- [ ] Place in `themes/icons/` folder
-- [ ] Update UIIcon system to load textures
+### ~~1. Source Icon Assets~~ (COMPLETED)
+- [x] Download Kenney Game Icons pack (https://kenney.nl/assets/game-icons)
+- [x] Select icons for game use (25 icons in themes/icons/game/)
+- [x] Create `UIIcons` class (`scripts/ui/theme/ui_icons.gd`)
+- [ ] Download 7Soul's RPG Graphics (optional - if more icons needed)
+- [ ] Process through grunge pipeline (optional wasteland effect)
 
 ### 2. ~~Apply Theme to Remaining Screens~~ (DONE)
 - [x] `character_roster.tscn` - Theme + Primary/Secondary buttons
@@ -163,8 +161,13 @@ magick "$icon" \
 
 **Theme System**:
 - `themes/game_theme.tres` - Main theme
-- `scripts/ui/theme/theme_helper.gd` - Programmatic helpers
-- `scripts/ui/components/ui_icon.gd` - Icon system
+- `scripts/ui/theme/theme_helper.gd` - Programmatic button styling
+- `scripts/ui/theme/ui_icons.gd` - Icon loader (UIIcons class)
+- `scripts/ui/components/ui_icon.gd` - iOS-safe text fallbacks
+
+**Icons** (Kenney Game Icons - CC0):
+- `themes/icons/game/` - 25 white icons (2x resolution)
+- gear, home, return, audioOn/Off, musicOn/Off, trashcan, cross, info, warning, star, plus, locked, checkmark, target, trophy, medals, arrows, etc.
 
 **Existing Infrastructure**:
 - `scripts/ui/theme/ui_constants.gd` - Measurements
@@ -185,9 +188,9 @@ magick "$icon" \
 
 1. ✅ All UI screens use `game_theme.tres`
 2. ✅ All buttons styled appropriately (primary/secondary/danger/ghost)
-3. ⏳ Icon textures load and display correctly (pending - using text fallbacks)
+3. ✅ Icon textures available via `UIIcons` class (25 Kenney icons in themes/icons/game/)
 4. ✅ Consistent look across all screens
-5. Tests still passing (647/671)
+5. ✅ Tests still passing (647/671)
 
 ---
 
