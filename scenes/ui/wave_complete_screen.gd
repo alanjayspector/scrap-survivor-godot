@@ -5,6 +5,8 @@ extends Panel
 signal next_wave_pressed
 signal return_to_hub_pressed
 
+const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+
 @onready var victory_label: Label = $PaddingContainer/Content/VictoryLabel
 @onready var stats_display: VBoxContainer = $PaddingContainer/Content/StatsDisplay
 @onready var next_wave_button: Button = $PaddingContainer/Content/ButtonsContainer/NextWaveButton
@@ -30,6 +32,10 @@ func _ready() -> void:
 
 	next_wave_button.pressed.connect(_on_next_wave_pressed)
 	hub_button.pressed.connect(_on_hub_button_pressed)
+
+	# Apply button styling
+	ThemeHelper.apply_button_style(next_wave_button, ThemeHelper.ButtonStyle.PRIMARY)
+	ThemeHelper.apply_button_style(hub_button, ThemeHelper.ButtonStyle.SECONDARY)
 
 
 func show_stats(wave: int, stats: Dictionary) -> void:

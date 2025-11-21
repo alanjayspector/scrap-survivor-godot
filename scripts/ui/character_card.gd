@@ -13,6 +13,8 @@ signal play_pressed(character_id: String)
 signal delete_pressed(character_id: String, character_name: String)
 signal details_pressed(character_id: String)
 
+const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+
 @onready var character_icon: ColorRect = $HBoxContainer/CharacterIcon
 @onready var name_label: Label = $HBoxContainer/InfoContainer/NameLabel
 @onready var type_label: Label = $HBoxContainer/InfoContainer/TypeLabel
@@ -58,10 +60,10 @@ func setup(character: Dictionary) -> void:
 	style.corner_radius_bottom_right = 8
 	add_theme_stylebox_override("panel", style)
 
-	# iOS HIG: Style delete button as destructive action (red)
-	delete_button.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
-	delete_button.add_theme_color_override("font_hover_color", Color(1, 0.3, 0.3))
-	delete_button.add_theme_color_override("font_pressed_color", Color(0.9, 0.1, 0.1))
+	# Apply button styling
+	ThemeHelper.apply_button_style(details_button, ThemeHelper.ButtonStyle.SECONDARY)
+	ThemeHelper.apply_button_style(play_button, ThemeHelper.ButtonStyle.PRIMARY)
+	ThemeHelper.apply_button_style(delete_button, ThemeHelper.ButtonStyle.DANGER)
 
 	# Connect buttons
 	details_button.pressed.connect(_on_details_pressed)

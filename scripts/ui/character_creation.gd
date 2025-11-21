@@ -34,6 +34,9 @@ const BUTTON_CLICK_SOUND: String = "res://assets/audio/ui/button_click.ogg"
 const CHARACTER_SELECT_SOUND: String = "res://assets/audio/ui/character_select.ogg"
 const ERROR_SOUND: String = "res://assets/audio/ui/error.ogg"
 
+## Theme
+const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+
 
 func _ready() -> void:
 	var start_time = Time.get_ticks_msec()
@@ -245,6 +248,10 @@ func _connect_signals() -> void:
 	"""Connect button signals"""
 	create_button.pressed.connect(_on_create_pressed)
 	back_button.pressed.connect(_on_back_pressed)
+
+	# Apply button styling
+	ThemeHelper.apply_button_style(create_button, ThemeHelper.ButtonStyle.PRIMARY)
+	ThemeHelper.apply_button_style(back_button, ThemeHelper.ButtonStyle.SECONDARY)
 
 
 func _on_name_changed(new_text: String) -> void:

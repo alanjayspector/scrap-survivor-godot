@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://bv8xq7jy4f3hc"]
+[gd_scene load_steps=3 format=3 uid="uid://bv8xq7jy4f3hc"]
 
 [ext_resource type="Script" path="res://scripts/ui/character_creation.gd" id="1"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [node name="CharacterCreation" type="Control"]
+theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

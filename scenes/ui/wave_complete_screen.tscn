@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8k3m7n5p2qr9"]
+[gd_scene load_steps=4 format=3 uid="uid://b8k3m7n5p2qr9"]
 
 [ext_resource type="Script" path="res://scenes/ui/wave_complete_screen.gd" id="1_wave_complete_script"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel_bg"]
 bg_color = Color(0, 0, 0, 0.7)
@@ -15,6 +16,7 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [node name="WaveCompleteScreen" type="Panel" groups=["wave_complete_screen"]]
+theme = ExtResource("2_theme")
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

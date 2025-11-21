@@ -12,6 +12,9 @@ extends Control
 ## Audio (iOS-compatible preload pattern)
 const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
 
+## Theme
+const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
+
 @onready var play_button: Button = $MenuContainer/PlayButton
 @onready var characters_button: Button = $MenuContainer/CharactersButton
 @onready var settings_button: Button = $MenuContainer/SettingsButton
@@ -92,6 +95,12 @@ func _connect_signals() -> void:
 
 func _setup_buttons() -> void:
 	"""Configure button states based on game state"""
+	# Apply button styling
+	ThemeHelper.apply_button_style(play_button, ThemeHelper.ButtonStyle.PRIMARY)
+	ThemeHelper.apply_button_style(characters_button, ThemeHelper.ButtonStyle.SECONDARY)
+	ThemeHelper.apply_button_style(settings_button, ThemeHelper.ButtonStyle.SECONDARY)
+	ThemeHelper.apply_button_style(quit_button, ThemeHelper.ButtonStyle.GHOST)
+
 	# Disable settings button (not implemented in Week 15)
 	settings_button.disabled = true
 	settings_button.tooltip_text = "Coming in Week 16"

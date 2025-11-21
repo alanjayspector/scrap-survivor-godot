@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3h7j8k9l4m5n6"]
+[gd_scene load_steps=3 format=3 uid="uid://b3h7j8k9l4m5n6"]
 
 [ext_resource type="Script" path="res://scripts/ui/character_card.gd" id="1_card"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [node name="CharacterCard" type="PanelContainer"]
+theme = ExtResource("2_theme")
 custom_minimum_size = Vector2(0, 80)
 script = ExtResource("1_card")
 

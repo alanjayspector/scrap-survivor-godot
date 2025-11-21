@@ -1,8 +1,8 @@
-# Next Session: Apply Theme to All Screens + Icon Assets
+# Next Session: Source Icon Assets
 
-**Last Updated**: 2025-11-20 23:30
-**Current Branch**: `main` (after merge from `feature/theme-system`)
-**Next Task**: Apply theme to remaining screens + Source icon assets
+**Last Updated**: 2025-11-21
+**Current Branch**: `main`
+**Next Task**: Source icon assets from Kenney + Continue with Week16 phases
 
 ---
 
@@ -43,6 +43,31 @@ scripts/ui/components/
 - Theme applied to CharacterDetailsPanel
 - Buttons styled (close button = secondary, collapsible headers = ghost)
 - TabContainer has styled selected/unselected states
+
+---
+
+## Theme System Phase 2 (COMPLETED)
+
+**Applied theme to ALL screens**:
+- `character_roster.tscn` - Theme + button styling (Primary/Secondary)
+- `character_card.tscn` - Theme + button styling (Primary/Secondary/Danger)
+- `character_creation.tscn` - Theme + button styling (Primary/Secondary)
+- `wave_complete_screen.tscn` - Theme + button styling (Primary/Secondary)
+- `scrapyard.tscn` - Theme + button styling (Primary/Secondary/Ghost) + removed emoji from QA button
+- `hud.tscn` - Theme applied
+
+**Scripts updated with ThemeHelper**:
+- `scripts/ui/character_roster.gd`
+- `scripts/ui/character_card.gd`
+- `scripts/ui/character_creation.gd`
+- `scripts/hub/scrapyard.gd`
+- `scenes/ui/wave_complete_screen.gd`
+
+**Button style assignments**:
+- PRIMARY: Play, Create, Next Wave (call to action)
+- SECONDARY: Back, Details, Hub, Characters (secondary action)
+- DANGER: Delete buttons (destructive action)
+- GHOST: Quit, collapsible headers (tertiary/subtle)
 
 ### iOS Emoji Issue - Root Cause
 
@@ -111,24 +136,23 @@ magick "$icon" \
 ## Next Session Tasks
 
 ### 1. Source Icon Assets
-- [ ] Download Kenney Game Icons pack
-- [ ] Download 7Soul's RPG Graphics (optional depth)
-- [ ] Select icons matching wasteland motifs above
+- [ ] Download Kenney Game Icons pack (https://kenney.nl/assets/game-icons)
+- [ ] Download 7Soul's RPG Graphics (optional)
+- [ ] Select icons matching wasteland motifs (see table above)
 - [ ] Process through grunge pipeline (or use clean with tint)
 - [ ] Export as 24x24 PNG with 1px outline
 - [ ] Place in `themes/icons/` folder
 - [ ] Update UIIcon system to load textures
 
-### 2. Apply Theme to Remaining Screens
-- [ ] `character_roster.tscn` - Apply game_theme.tres
-- [ ] `character_creation.tscn` - Style buttons and inputs
-- [ ] `character_card.tscn` - Card styling
-- [ ] `wave_complete_screen.tscn` - Buttons and panels
-- [ ] `scrapyard.tscn` (hub) - All buttons
-- [ ] `hud.tscn` - Combat UI styling
+### 2. ~~Apply Theme to Remaining Screens~~ (DONE)
+- [x] `character_roster.tscn` - Theme + Primary/Secondary buttons
+- [x] `character_creation.tscn` - Theme + Primary/Secondary buttons
+- [x] `character_card.tscn` - Theme + Primary/Secondary/Danger buttons
+- [x] `wave_complete_screen.tscn` - Theme + Primary/Secondary buttons
+- [x] `scrapyard.tscn` (hub) - Theme + Primary/Secondary/Ghost buttons
+- [x] `hud.tscn` - Theme applied
 
 ### 3. Continue with Independent Phases (Week16)
-After theme is applied everywhere:
 - [ ] Haptic feedback system
 - [ ] ButtonAnimation component
 - [ ] ScreenContainer for safe areas
@@ -146,22 +170,23 @@ After theme is applied everywhere:
 - `scripts/ui/theme/ui_constants.gd` - Measurements
 - `scripts/ui/theme/color_palette.gd` - Colors
 
-**Screens to Update**:
-- `scenes/ui/character_roster.tscn`
-- `scenes/ui/character_creation.tscn`
-- `scenes/ui/character_card.tscn`
-- `scenes/ui/wave_complete_screen.tscn`
-- `scenes/hub/scrapyard.tscn`
-- `scenes/ui/hud.tscn`
+**Screens Updated** (All have theme + button styling):
+- `scenes/ui/character_roster.tscn` ✅
+- `scenes/ui/character_creation.tscn` ✅
+- `scenes/ui/character_card.tscn` ✅
+- `scenes/ui/wave_complete_screen.tscn` ✅
+- `scenes/hub/scrapyard.tscn` ✅
+- `scenes/ui/hud.tscn` ✅
+- `scenes/ui/character_details_panel.tscn` ✅ (Phase 1)
 
 ---
 
-## Success Criteria (Theme System Phase 2)
+## Success Criteria (Theme System Phase 2) ✅ COMPLETE
 
-1. All UI screens use `game_theme.tres`
-2. All buttons styled appropriately (primary/secondary/danger/ghost)
-3. Icon textures load and display correctly
-4. Consistent look across all screens
+1. ✅ All UI screens use `game_theme.tres`
+2. ✅ All buttons styled appropriately (primary/secondary/danger/ghost)
+3. ⏳ Icon textures load and display correctly (pending - using text fallbacks)
+4. ✅ Consistent look across all screens
 5. Tests still passing (647/671)
 
 ---

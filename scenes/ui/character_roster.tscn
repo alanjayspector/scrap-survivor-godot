@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7g8k9h1j2m3n4"]
+[gd_scene load_steps=3 format=3 uid="uid://c7g8k9h1j2m3n4"]
 
 [ext_resource type="Script" path="res://scripts/ui/character_roster.gd" id="1_roster"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [node name="CharacterRoster" type="Control"]
+theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

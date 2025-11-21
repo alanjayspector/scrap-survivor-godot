@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://dqw5k3j8m9vxr"]
+[gd_scene load_steps=3 format=3 uid="uid://dqw5k3j8m9vxr"]
 
 [ext_resource type="Script" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [node name="Scrapyard" type="Control"]
+theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -113,4 +115,4 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.5, 0, 1)
 theme_override_font_sizes/font_size = 18
-text = "🛠️ QA"
+text = "[QA]"

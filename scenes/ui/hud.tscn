@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://cqy8j7xvx3kh5"]
+[gd_scene load_steps=4 format=3 uid="uid://cqy8j7xvx3kh5"]
 
 [ext_resource type="Script" path="res://scenes/ui/hud.gd" id="1_hud_script"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_fill"]
 bg_color = Color(0.8, 0.6, 0, 1)
@@ -11,6 +12,7 @@ border_width_bottom = 1
 border_color = Color(1, 0.8, 0, 1)
 
 [node name="HUD" type="Control"]
+theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
