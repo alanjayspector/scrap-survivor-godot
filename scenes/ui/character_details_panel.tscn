@@ -31,103 +31,243 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 10
 
 [node name="HeaderContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 2
 
 [node name="CharacterNameLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 28
 text = "Character Name"
 horizontal_alignment = 1
 
 [node name="CharacterTypeLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Scavenger"
-horizontal_alignment = 1
-
-[node name="LevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Level 1"
+text = "Scavenger • Level 1"
 horizontal_alignment = 1
 
 [node name="Separator1" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="AuraContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="AuraContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 8
 
-[node name="AuraTitle" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
+[node name="AuraIcon" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 22
-text = "Aura"
+theme_override_font_sizes/font_size = 20
+text = "✨"
 
 [node name="AuraLabel" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Aura: Collect (Level 1)"
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Collect (Level 1)"
 
 [node name="Separator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="StatsTitle" type="Label" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 22
-text = "Stats"
-
-[node name="StatsScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_font_sizes/font_size = 18
 
-[node name="StatsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/StatsScrollContainer"]
+[node name="Stats" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="StatsContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 5
+theme_override_constants/separation = 8
 
-[node name="Separator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="PrimaryStatsCard" type="PanelContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
 layout_mode = 2
 
-[node name="ItemsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="PrimaryStatsGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard"]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 8
+columns = 2
 
-[node name="ItemsTitle" type="Label" parent="MarginContainer/VBoxContainer/ItemsContainer"]
+[node name="HPContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 22
-text = "Equipped Items"
+theme_override_constants/separation = 6
 
-[node name="ItemsLabel" type="Label" parent="MarginContainer/VBoxContainer/ItemsContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "No equipped items"
-
-[node name="Separator4" type="HSeparator" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="RecordsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 5
-
-[node name="RecordsTitle" type="Label" parent="MarginContainer/VBoxContainer/RecordsContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 22
-text = "Records"
-
-[node name="RecordsLabel" type="Label" parent="MarginContainer/VBoxContainer/RecordsContainer"]
+[node name="HPIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/HPContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Total Kills: 0
-Highest Wave: 0
-Deaths: 0"
+text = "❤️"
+
+[node name="HPLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/HPContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "100 HP"
+
+[node name="DamageContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DamageIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/DamageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "⚔️"
+
+[node name="DamageLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/DamageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "10 DMG"
+
+[node name="ArmorContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ArmorIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/ArmorContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "🛡️"
+
+[node name="ArmorLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/ArmorContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0 ARM"
+
+[node name="SpeedContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SpeedIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/SpeedContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "👟"
+
+[node name="SpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/SpeedContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "200 SPD"
+
+[node name="CollapsibleStats" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Gear" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ItemsLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Gear"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "No equipped items yet"
+autowrap_mode = 3
+
+[node name="ItemsNote" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Gear"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "Inventory system coming soon!"
+
+[node name="Records" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RecordsTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "Combat Records"
+
+[node name="RecordsGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Records"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="KillsLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Total Kills:"
+
+[node name="KillsValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="WaveLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Highest Wave:"
+
+[node name="WaveValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="DeathsLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Deaths:"
+
+[node name="DeathsValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/RecordsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="Separator" type="HSeparator" parent="MarginContainer/VBoxContainer/TabContainer/Records"]
+layout_mode = 2
+
+[node name="CurrencyTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "Currency"
+
+[node name="CurrencyGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Records"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="ScrapLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🔩 Scrap:"
+
+[node name="ScrapValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="NanitesLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "💎 Nanites:"
+
+[node name="NanitesValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="ComponentsLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⚙️ Components:"
+
+[node name="ComponentsValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
 
 [node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)

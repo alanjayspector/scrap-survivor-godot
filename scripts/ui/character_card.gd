@@ -58,6 +58,11 @@ func setup(character: Dictionary) -> void:
 	style.corner_radius_bottom_right = 8
 	add_theme_stylebox_override("panel", style)
 
+	# iOS HIG: Style delete button as destructive action (red)
+	delete_button.add_theme_color_override("font_color", Color(1, 0.2, 0.2))
+	delete_button.add_theme_color_override("font_hover_color", Color(1, 0.3, 0.3))
+	delete_button.add_theme_color_override("font_pressed_color", Color(0.9, 0.1, 0.1))
+
 	# Connect buttons
 	details_button.pressed.connect(_on_details_pressed)
 	play_button.pressed.connect(_on_play_pressed)

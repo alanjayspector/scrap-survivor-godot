@@ -1,41 +1,75 @@
 extends Panel
-## CharacterDetailsPanel - Full character information preview
-## Week 15 Phase 3: Game Designer recommendation
+## CharacterDetailsPanel - Tabbed character information panel
+## Week 15 Phase 3: Modern mobile UI redesign
 ##
 ## Features:
-## - Display all character information
-## - Aura type and level
-## - All 14 stats with values
-## - Equipped items (when inventory system exists)
-## - Character records (kills, waves, deaths)
-## - Close button to dismiss
+## - 3-tab layout: Stats | Gear | Records
+## - Primary stats card with 4 key stats + icons
+## - Collapsible stat categories (Offense/Defense/Utility)
+## - Readable fonts (18-20px) for accessibility
 
 signal closed
 
-@onready
-var character_name_label: Label = $MarginContainer/VBoxContainer/HeaderContainer/CharacterNameLabel
-@onready
-var character_type_label: Label = $MarginContainer/VBoxContainer/HeaderContainer/CharacterTypeLabel
-@onready var level_label: Label = $MarginContainer/VBoxContainer/HeaderContainer/LevelLabel
-@onready var aura_label: Label = $MarginContainer/VBoxContainer/AuraContainer/AuraLabel
-@onready
-var stats_container: VBoxContainer = $MarginContainer/VBoxContainer/StatsScrollContainer/StatsContainer
-@onready var items_label: Label = $MarginContainer/VBoxContainer/ItemsContainer/ItemsLabel
-@onready var records_label: Label = $MarginContainer/VBoxContainer/RecordsContainer/RecordsLabel
-@onready var close_button: Button = $MarginContainer/VBoxContainer/CloseButton
+# UI references (set in _ready to keep lines short)
+var character_name_label: Label
+var character_type_label: Label
+var aura_label: Label
+var tab_container: TabContainer
+var hp_label: Label
+var damage_label: Label
+var armor_label: Label
+var speed_label: Label
+var collapsible_stats: VBoxContainer
+var items_label: Label
+var kills_value: Label
+var wave_value: Label
+var deaths_value: Label
+var scrap_value: Label
+var nanites_value: Label
+var components_value: Label
+var close_button: Button
+
+# Track expanded state of collapsible sections
+var _expanded_sections: Dictionary = {"Offense": false, "Defense": false, "Utility": false}
 
 
 func _ready() -> void:
+	# Get node references (paths split for line length compliance)
+	var vbox = $MarginContainer/VBoxContainer
+	var header = vbox.get_node("HeaderContainer")
+	character_name_label = header.get_node("CharacterNameLabel")
+	character_type_label = header.get_node("CharacterTypeLabel")
+	aura_label = vbox.get_node("AuraContainer/AuraLabel")
+	tab_container = vbox.get_node("TabContainer")
+	close_button = vbox.get_node("CloseButton")
+
+	# Stats tab references
+	var stats_grid = tab_container.get_node("Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid")
+	hp_label = stats_grid.get_node("HPContainer/HPLabel")
+	damage_label = stats_grid.get_node("DamageContainer/DamageLabel")
+	armor_label = stats_grid.get_node("ArmorContainer/ArmorLabel")
+	speed_label = stats_grid.get_node("SpeedContainer/SpeedLabel")
+	collapsible_stats = tab_container.get_node("Stats/StatsContent/CollapsibleStats")
+
+	# Gear tab
+	items_label = tab_container.get_node("Gear/ItemsLabel")
+
+	# Records tab
+	var records_grid = tab_container.get_node("Records/RecordsGrid")
+	kills_value = records_grid.get_node("KillsValue")
+	wave_value = records_grid.get_node("WaveValue")
+	deaths_value = records_grid.get_node("DeathsValue")
+	var currency_grid = tab_container.get_node("Records/CurrencyGrid")
+	scrap_value = currency_grid.get_node("ScrapValue")
+	nanites_value = currency_grid.get_node("NanitesValue")
+	components_value = currency_grid.get_node("ComponentsValue")
+
 	close_button.pressed.connect(_on_close_pressed)
+	tab_container.current_tab = 0  # Start on Stats tab
 
 
 func show_character(character: Dictionary) -> void:
-	"""Display full character details"""
-	# CRITICAL FIX: Wait for _ready() to complete if panel was just instantiated
-	# Prevents race condition where @onready vars are still null
-	if not is_node_ready():
-		await ready
-
+	"""Display full character details in tabbed layout"""
 	var character_id = character.get("id", "")
 	var character_name = character.get("name", "Unknown")
 	var character_type = character.get("character_type", "scavenger")
@@ -47,127 +81,166 @@ func show_character(character: Dictionary) -> void:
 	var type_display_name = type_def.get("display_name", character_type.capitalize())
 	var type_color = type_def.get("color", Color.GRAY)
 
-	# Header
+	# Header - Compact format
 	character_name_label.text = character_name
-	character_type_label.text = type_display_name
+	character_type_label.text = "%s • Level %d" % [type_display_name, character_level]
 	character_type_label.add_theme_color_override("font_color", type_color)
-	level_label.text = "Level %d" % character_level
 
 	# Aura
 	var aura_type = aura_data.get("type", "none")
 	var aura_level = aura_data.get("level", 1)
 	if aura_type == null or aura_type == "none":
-		aura_label.text = "Aura: None (Pure DPS build)"
+		aura_label.text = "None (Pure DPS)"
 	else:
-		aura_label.text = "Aura: %s (Level %d)" % [aura_type.capitalize(), aura_level]
+		aura_label.text = "%s (Level %d)" % [aura_type.capitalize(), aura_level]
 
-	# Stats - Display all 14 stats
-	_populate_stats(stats)
+	# Stats Tab - Primary Stats Card
+	_update_primary_stats(stats)
 
-	# Items (placeholder for future inventory system)
-	items_label.text = "No equipped items (Inventory system coming in Week 16+)"
+	# Stats Tab - Collapsible sections
+	await _populate_collapsible_stats(stats)
 
-	# Records
-	var total_kills = character.get("total_kills", 0)
-	var highest_wave = character.get("highest_wave", 0)
-	var death_count = character.get("death_count", 0)
+	# Gear Tab
+	items_label.text = "No equipped items yet"
 
-	# Currency (Week 15 Phase 4)
+	# Records Tab
+	kills_value.text = str(character.get("total_kills", 0))
+	wave_value.text = str(character.get("highest_wave", 0))
+	deaths_value.text = str(character.get("death_count", 0))
+
+	# Currency
 	var currency = character.get("starting_currency", {})
-	var scrap = currency.get("scrap", 0)
-	var nanites = currency.get("nanites", 0)
-	var components = currency.get("components", 0)
+	scrap_value.text = str(currency.get("scrap", 0))
+	nanites_value.text = str(currency.get("nanites", 0))
+	components_value.text = str(currency.get("components", 0))
 
-	records_label.text = (
-		"Total Kills: %d\nHighest Wave: %d\nDeaths: %d\n\nCurrency:\nScrap: %d\nNanites: %d\nComponents: %d"
-		% [total_kills, highest_wave, death_count, scrap, nanites, components]
-	)
-
-	# Show panel
+	# Reset to Stats tab and show
+	tab_container.current_tab = 0
 	show()
-	GameLogger.info("[CharacterDetailsPanel] Showing details", {"character_id": character_id})
 
 
-func _populate_stats(stats: Dictionary) -> void:
-	"""Populate all 14 stats in organized categories"""
-	GameLogger.info("[CharacterDetailsPanel] Populating stats", {"stats_count": stats.size()})
+func _update_primary_stats(stats: Dictionary) -> void:
+	"""Update the 4 primary stats in the always-visible card"""
+	hp_label.text = "%d HP" % stats.get("max_hp", 100)
+	damage_label.text = "%d DMG" % stats.get("damage", 10)
+	armor_label.text = "%d ARM" % stats.get("armor", 0)
+	speed_label.text = "%d SPD" % stats.get("speed", 200)
 
-	# Clear existing stats - FIXED: Synchronous deletion prevents race condition
-	for child in stats_container.get_children():
-		child.free()
 
-	GameLogger.debug(
-		"[CharacterDetailsPanel] Stats cleared", {"child_count": stats_container.get_child_count()}
+func _populate_collapsible_stats(stats: Dictionary) -> void:
+	"""Create collapsible sections for secondary stats"""
+	# Clear existing
+	for child in collapsible_stats.get_children():
+		child.queue_free()
+
+	await get_tree().process_frame
+
+	# Offense section (collapsed by default)
+	_add_collapsible_section(
+		"Offense",
+		[
+			["🎯 Crit Chance", "%d%%" % int(stats.get("crit_chance", 0.05) * 100)],
+			["⚡ Attack Speed", "%d%%" % int(stats.get("attack_speed", 0))],
+			["🔪 Melee DMG", str(stats.get("melee_damage", 0))],
+			["🏹 Ranged DMG", str(stats.get("ranged_damage", 0))],
+			["🔮 Resonance", str(stats.get("resonance", 0))],
+		]
 	)
 
-	# Core Survival Stats
-	_add_stat_category("Core Survival")
-	_add_stat_row("Max HP", stats.get("max_hp", 100))
-	_add_stat_row("HP Regen", stats.get("hp_regen", 0))
-	_add_stat_row("Life Steal", "%d%%" % int(stats.get("life_steal", 0) * 100))
-	_add_stat_row("Armor", stats.get("armor", 0))
-
-	# Offense Stats
-	_add_stat_category("Offense")
-	_add_stat_row("Damage", stats.get("damage", 10))
-	_add_stat_row("Melee Damage", stats.get("melee_damage", 0))
-	_add_stat_row("Ranged Damage", stats.get("ranged_damage", 0))
-	_add_stat_row("Attack Speed", "%d%%" % int(stats.get("attack_speed", 0)))
-	_add_stat_row("Crit Chance", "%d%%" % int(stats.get("crit_chance", 0.05) * 100))
-	_add_stat_row("Resonance", stats.get("resonance", 0))
-
-	# Defense Stats
-	_add_stat_category("Defense")
-	_add_stat_row("Dodge", "%d%%" % int(stats.get("dodge", 0) * 100))
-
-	# Utility Stats
-	_add_stat_category("Utility")
-	_add_stat_row("Speed", stats.get("speed", 200))
-	_add_stat_row("Luck", stats.get("luck", 0))
-	_add_stat_row("Pickup Range", stats.get("pickup_range", 100))
-	_add_stat_row("Scavenging", "%d%%" % int(stats.get("scavenging", 0)))
-
-
-func _add_stat_category(category_name: String) -> void:
-	"""Add a stat category header"""
-	var category_label = Label.new()
-	category_label.text = category_name
-	category_label.add_theme_font_size_override("font_size", 22)
-	category_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
-	stats_container.add_child(category_label)
-	GameLogger.debug(
-		"[CharacterDetailsPanel] Category added",
-		{"name": category_name, "children": stats_container.get_child_count()}
+	# Defense section
+	_add_collapsible_section(
+		"Defense",
+		[
+			["💨 Dodge", "%d%%" % int(stats.get("dodge", 0) * 100)],
+			["💗 Life Steal", "%d%%" % int(stats.get("life_steal", 0) * 100)],
+			["💚 HP Regen", str(stats.get("hp_regen", 0))],
+		]
 	)
 
+	# Utility section
+	_add_collapsible_section(
+		"Utility",
+		[
+			["🍀 Luck", str(stats.get("luck", 0))],
+			["🧲 Pickup Range", str(stats.get("pickup_range", 100))],
+			["♻️ Scavenging", "%d%%" % int(stats.get("scavenging", 0))],
+		]
+	)
 
-func _add_stat_row(stat_name: String, stat_value) -> void:
-	"""Add a stat row (name + value)"""
+	await get_tree().process_frame
+
+
+func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
+	"""Add a collapsible section with header button and stat rows"""
+	var section_container = VBoxContainer.new()
+	section_container.name = section_name + "Section"
+	section_container.add_theme_constant_override("separation", 4)
+
+	# Header button (tap to expand/collapse)
+	var header_btn = Button.new()
+	header_btn.name = section_name + "Header"
+	header_btn.custom_minimum_size = Vector2(0, 44)  # Touch-friendly
+	header_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_update_section_header(header_btn, section_name, _expanded_sections.get(section_name, false))
+	header_btn.add_theme_font_size_override("font_size", 18)
+	header_btn.pressed.connect(_on_section_toggled.bind(section_name, section_container))
+	section_container.add_child(header_btn)
+
+	# Content container (stats)
+	var content = VBoxContainer.new()
+	content.name = section_name + "Content"
+	content.add_theme_constant_override("separation", 6)
+	content.visible = _expanded_sections.get(section_name, false)
+
+	for stat_data in stat_rows:
+		var row = _create_stat_row(stat_data[0], stat_data[1])
+		content.add_child(row)
+
+	section_container.add_child(content)
+	collapsible_stats.add_child(section_container)
+
+
+func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
+	"""Create a single stat row with icon+name and value"""
 	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	hbox.custom_minimum_size = Vector2(0, 28)
 
 	var name_label = Label.new()
-	name_label.text = stat_name + ":"
+	name_label.text = stat_name
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_label.add_theme_font_size_override("font_size", 20)
+	name_label.add_theme_font_size_override("font_size", 18)
 	hbox.add_child(name_label)
 
 	var value_label = Label.new()
-	value_label.text = str(stat_value)
+	value_label.text = stat_value
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	value_label.add_theme_font_size_override("font_size", 20)
-	value_label.add_theme_color_override("font_color", Color.WHITE)
+	value_label.add_theme_font_size_override("font_size", 18)
 	hbox.add_child(value_label)
 
-	stats_container.add_child(hbox)
-	GameLogger.debug(
-		"[CharacterDetailsPanel] Stat added",
-		{"stat": stat_name, "children": stats_container.get_child_count()}
-	)
+	return hbox
+
+
+func _on_section_toggled(section_name: String, section_container: VBoxContainer) -> void:
+	"""Toggle a collapsible section"""
+	_expanded_sections[section_name] = not _expanded_sections.get(section_name, false)
+	var is_expanded = _expanded_sections[section_name]
+
+	# Update header text
+	var header_btn = section_container.get_node(section_name + "Header") as Button
+	_update_section_header(header_btn, section_name, is_expanded)
+
+	# Show/hide content
+	var content = section_container.get_node(section_name + "Content")
+	content.visible = is_expanded
+
+
+func _update_section_header(header_btn: Button, section_name: String, is_expanded: bool) -> void:
+	"""Update section header with expand/collapse indicator"""
+	var arrow = "▼ " if is_expanded else "▶ "
+	header_btn.text = arrow + section_name
 
 
 func _on_close_pressed() -> void:
 	"""Handle close button"""
-	GameLogger.info("[CharacterDetailsPanel] Closed")
 	closed.emit()
 	hide()
