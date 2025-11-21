@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://d4i8j9k0l5m6n7"]
+[gd_scene load_steps=3 format=3 uid="uid://d4i8j9k0l5m6n7"]
 
 [ext_resource type="Script" path="res://scripts/ui/character_details_panel.gd" id="1_details"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
 [node name="CharacterDetailsPanel" type="Panel"]
+theme = ExtResource("2_theme")
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -59,7 +61,7 @@ theme_override_constants/separation = 8
 [node name="AuraIcon" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "✨"
+text = "[A]"
 
 [node name="AuraLabel" type="Label" parent="MarginContainer/VBoxContainer/AuraContainer"]
 layout_mode = 2
@@ -101,7 +103,8 @@ theme_override_constants/separation = 6
 [node name="HPIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/HPContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "❤️"
+theme_override_colors/font_color = Color(0.463, 1, 0.463, 1)
+text = "[HP]"
 
 [node name="HPLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/HPContainer"]
 layout_mode = 2
@@ -115,7 +118,8 @@ theme_override_constants/separation = 6
 [node name="DamageIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/DamageContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "⚔️"
+theme_override_colors/font_color = Color(0.8, 0.216, 0.216, 1)
+text = "[DMG]"
 
 [node name="DamageLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/DamageContainer"]
 layout_mode = 2
@@ -129,7 +133,8 @@ theme_override_constants/separation = 6
 [node name="ArmorIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/ArmorContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "🛡️"
+theme_override_colors/font_color = Color(0.329, 0.322, 0.529, 1)
+text = "[ARM]"
 
 [node name="ArmorLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/ArmorContainer"]
 layout_mode = 2
@@ -143,7 +148,8 @@ theme_override_constants/separation = 6
 [node name="SpeedIcon" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/SpeedContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "👟"
+theme_override_colors/font_color = Color(0.918, 0.773, 0.239, 1)
+text = "[SPD]"
 
 [node name="SpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid/SpeedContainer"]
 layout_mode = 2
@@ -239,7 +245,8 @@ columns = 2
 [node name="ScrapLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "🔩 Scrap:"
+theme_override_colors/font_color = Color(0.918, 0.773, 0.239, 1)
+text = "[S] Scrap:"
 
 [node name="ScrapValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2
@@ -250,7 +257,8 @@ horizontal_alignment = 2
 [node name="NanitesLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "💎 Nanites:"
+theme_override_colors/font_color = Color(0.302, 0.58, 1, 1)
+text = "[N] Nanites:"
 
 [node name="NanitesValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2
@@ -261,7 +269,8 @@ horizontal_alignment = 2
 [node name="ComponentsLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "⚙️ Components:"
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "[C] Components:"
 
 [node name="ComponentsValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Records/CurrencyGrid"]
 layout_mode = 2

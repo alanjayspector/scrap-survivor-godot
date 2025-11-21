@@ -67,6 +67,9 @@ func _ready() -> void:
 	close_button.pressed.connect(_on_close_pressed)
 	tab_container.current_tab = 0  # Start on Stats tab
 
+	# Apply button styling
+	ThemeHelper.apply_button_style(close_button, ThemeHelper.ButtonStyle.SECONDARY)
+
 
 func show_character(character: Dictionary) -> void:
 	"""Display full character details in tabbed layout"""
@@ -139,11 +142,11 @@ func _populate_collapsible_stats(stats: Dictionary) -> void:
 	_add_collapsible_section(
 		"Offense",
 		[
-			["🎯 Crit Chance", "%d%%" % int(stats.get("crit_chance", 0.05) * 100)],
-			["⚡ Attack Speed", "%d%%" % int(stats.get("attack_speed", 0))],
-			["🔪 Melee DMG", str(stats.get("melee_damage", 0))],
-			["🏹 Ranged DMG", str(stats.get("ranged_damage", 0))],
-			["🔮 Resonance", str(stats.get("resonance", 0))],
+			["[CRIT] Crit Chance", "%d%%" % int(stats.get("crit_chance", 0.05) * 100)],
+			["[ASPD] Attack Speed", "%d%%" % int(stats.get("attack_speed", 0))],
+			["[MEL] Melee DMG", str(stats.get("melee_damage", 0))],
+			["[RNG] Ranged DMG", str(stats.get("ranged_damage", 0))],
+			["[RES] Resonance", str(stats.get("resonance", 0))],
 		]
 	)
 
@@ -151,9 +154,9 @@ func _populate_collapsible_stats(stats: Dictionary) -> void:
 	_add_collapsible_section(
 		"Defense",
 		[
-			["💨 Dodge", "%d%%" % int(stats.get("dodge", 0) * 100)],
-			["💗 Life Steal", "%d%%" % int(stats.get("life_steal", 0) * 100)],
-			["💚 HP Regen", str(stats.get("hp_regen", 0))],
+			["[DOD] Dodge", "%d%%" % int(stats.get("dodge", 0) * 100)],
+			["[LS] Life Steal", "%d%%" % int(stats.get("life_steal", 0) * 100)],
+			["[REG] HP Regen", str(stats.get("hp_regen", 0))],
 		]
 	)
 
@@ -161,9 +164,9 @@ func _populate_collapsible_stats(stats: Dictionary) -> void:
 	_add_collapsible_section(
 		"Utility",
 		[
-			["🍀 Luck", str(stats.get("luck", 0))],
-			["🧲 Pickup Range", str(stats.get("pickup_range", 100))],
-			["♻️ Scavenging", "%d%%" % int(stats.get("scavenging", 0))],
+			["[LCK] Luck", str(stats.get("luck", 0))],
+			["[PKP] Pickup Range", str(stats.get("pickup_range", 100))],
+			["[SCV] Scavenging", "%d%%" % int(stats.get("scavenging", 0))],
 		]
 	)
 
@@ -236,8 +239,10 @@ func _on_section_toggled(section_name: String, section_container: VBoxContainer)
 
 func _update_section_header(header_btn: Button, section_name: String, is_expanded: bool) -> void:
 	"""Update section header with expand/collapse indicator"""
-	var arrow = "▼ " if is_expanded else "▶ "
+	var arrow = "[-] " if is_expanded else "[+] "
 	header_btn.text = arrow + section_name
+	# Apply ghost button styling for collapsible headers
+	ThemeHelper.apply_button_style(header_btn, ThemeHelper.ButtonStyle.GHOST)
 
 
 func _on_close_pressed() -> void:

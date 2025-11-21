@@ -1,7 +1,7 @@
 # Next Session: Theme System Implementation
 
-**Last Updated**: 2025-11-20 20:30
-**Current Branch**: `main` (merged from `test/performance-diagnostic-7acc9e0`)
+**Last Updated**: 2025-11-20 21:00
+**Current Branch**: `main`
 **Next Task**: Godot Theme System Research + Implementation
 
 ---
@@ -16,14 +16,6 @@
 1. `clip_contents = false` on ScrollContainer
 2. Proper async timing with `await get_tree().process_frame` after `queue_free()` and after adding children
 3. `custom_minimum_size` on all dynamically created nodes
-
-**Key Technical Findings**:
-| Issue | Solution |
-|-------|----------|
-| `queue_free()` is async | Await frame after clearing before adding new nodes |
-| iOS Metal culls 0x0 geometry | Set `custom_minimum_size` on dynamic nodes |
-| `clip_contents=true` broken on iOS | Set `clip_contents = false` |
-| Layout needs time to propagate | Await frame after adding children |
 
 ---
 
@@ -45,7 +37,56 @@ Implemented modern mobile UI pattern based on expert panel research (Vampire Sur
 
 ---
 
-## Next Session: Theme System
+## Week16 Phases 4-7: Revised Order
+
+The original `docs/migration/week16-implementation-plan.md` had phases 4-7 with styling baked in. Analysis shows **Theme System is the foundation** - those phases already assume styled resources exist (e.g., `load("res://themes/styles/button_danger.tres")`).
+
+### Revised Implementation Order
+
+```
+1. Theme System (NEW - research + implementation)
+   ├── Theme resource (.tres)
+   ├── StyleBoxes (button_primary, button_secondary, button_danger, card, etc.)
+   ├── Typography settings
+   ├── Icon system (replacing broken emojis)
+   └── Apply to CharacterDetailsPanel (validation)
+
+2. Phase 5 (partial) - Independent components
+   ├── Haptic feedback autoload
+   ├── ButtonAnimation component
+   └── Accessibility settings
+
+3. Phase 6 (partial) - Independent layout
+   ├── ScreenContainer (safe areas)
+   ├── ResponsiveScale utility
+   └── Safe area debugger
+
+4. Phase 4: Dialogs (now uses Theme)
+   ├── MobileDialog base component
+   ├── DeleteConfirmationDialog (progressive confirmation)
+   └── Undo toast
+
+5. Phase 5 (remainder) - LoadingOverlay
+
+6. Phase 7: Combat HUD (uses Theme)
+   └── Typography and styling for in-game HUD
+```
+
+### Phase Dependency Analysis
+
+| Phase | Theme Dependency | Status |
+|-------|------------------|--------|
+| **Theme System** | - | **DO FIRST** |
+| Phase 4 (Dialogs) | ❌ Blocked - references `button_danger.tres` etc. | After Theme |
+| Phase 5 (Haptics/Animation) | ✅ Independent | Can do anytime |
+| Phase 5 (LoadingOverlay) | ❌ Needs styled panel | After Theme |
+| Phase 6 (ScreenContainer) | ✅ Independent | Can do anytime |
+| Phase 6 (Spacing constants) | ❌ Should be in Theme | Absorbed by Theme |
+| Phase 7 (Combat HUD) | ❌ Needs typography/styling | After Theme |
+
+---
+
+## Theme System Implementation Plan
 
 ### Quick Start Prompt
 
@@ -170,7 +211,7 @@ main (current)
         └── Icon system
 ```
 
-After theme system is complete, merge to main.
+After theme system is complete, merge to main, then continue with phases 4-7.
 
 **Abandoned branch**: `feature/week16-mobile-ui` - Superseded by diagnostic branch work, safe to delete.
 
@@ -189,6 +230,9 @@ After theme system is complete, merge to main.
 - `scenes/ui/character_details_panel.tscn` - New tabbed structure
 - `scripts/ui/character_details_panel.gd` - Collapsible logic
 
+**Week16 Plan Reference**:
+- `docs/migration/week16-implementation-plan.md` - Phases 4-7 detail (use after Theme System)
+
 **Research Documents**:
 - `docs/gemini-mobile-ui-research.md` - Previous research
 - `docs/claude-mobile-game-ui-design-system.md` - Design system docs
@@ -205,6 +249,27 @@ After theme system is complete, merge to main.
 6. **Consistent typography** across all screens
 7. **All touch targets** remain iOS HIG compliant (44pt+)
 8. **Performance** - No frame drops on mobile
+
+---
+
+## Post-Theme System Work (from Week16 Plan)
+
+After Theme System is complete, continue with:
+
+### Independent Components (can parallelize)
+- [ ] Haptic feedback system (`scripts/autoload/haptics.gd`)
+- [ ] ButtonAnimation component (`scripts/ui/components/button_animation.gd`)
+- [ ] Accessibility settings (`scripts/autoload/accessibility.gd`)
+- [ ] ScreenContainer for safe areas (`scripts/ui/components/screen_container.gd`)
+- [ ] ResponsiveScale utility (`scripts/ui/responsive_scale.gd`)
+- [ ] Safe area debugger (`scripts/debug/safe_area_debugger.gd`)
+
+### Theme-Dependent Components (sequential)
+- [ ] MobileDialog base component (Phase 4)
+- [ ] DeleteConfirmationDialog with progressive confirmation (Phase 4)
+- [ ] Undo delete toast (Phase 4)
+- [ ] LoadingOverlay for scene transitions (Phase 5)
+- [ ] Combat HUD mobile optimization (Phase 7)
 
 ---
 
