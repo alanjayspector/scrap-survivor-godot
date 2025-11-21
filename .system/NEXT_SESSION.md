@@ -1,6 +1,6 @@
 # Next Session: Apply Theme to All Screens + Icon Assets
 
-**Last Updated**: 2025-11-20 22:00
+**Last Updated**: 2025-11-20 23:30
 **Current Branch**: `main` (after merge from `feature/theme-system`)
 **Next Task**: Apply theme to remaining screens + Source icon assets
 
@@ -50,59 +50,61 @@ Godot only supports **bitmap (PNG) emoji fonts**. iOS system fonts use COLR/SVG 
 
 ---
 
-## Icon Research Findings
+## Icon Research (RECONCILED)
 
-### Icons Needed (~21 total)
+### Asset Sources (Priority Order)
 
-**Stats (11)**:
-- Health, Damage, Armor, Speed, Crit Chance, Attack Speed, Range, Regen, Lifesteal, Dodge, Luck
+| Priority | Source | Details | Use For |
+|----------|--------|---------|---------|
+| **1** | **Kenney Game Icons** | 105 assets, CC0, vector | Base icons (tint with colors) |
+| **2** | **7Soul's RPG Graphics** | 1700+ icons, CC0 | RPG-specific (potions, armor variants) |
+| **3** | **Kenney UI Pack RPG** | 85 assets, panels/buttons | Structural UI elements |
+| **4** | **CraftPix Post-Apocalypse** | 512px painted | Hero images for level-up screens only |
 
-**Currency (5)**:
-- Scrap, Nanites, Components, XP, Gold
+### Wasteland Visual Motifs
 
-**UI Actions (5)**:
-- Expand, Collapse, Close, Settings, Back, Delete, Info
+**Key Insight**: Icons must be "translated" from generic RPG to wasteland theme.
 
-### Best Free Resources (CC0 Licensed)
+| Stat | Generic RPG | **Wasteland Motif** | Visual Anchor (24px) |
+|------|-------------|---------------------|----------------------|
+| Health | Red Heart | **Taped Heart / Blood Bag** | Cross-hatch "tape" or IV tube |
+| Armor | Shield | **Car Door / Scrap Plate** | Rivet pixel in corner |
+| Damage | Sword | **Spiked Bat / Serrated Knife** | Jagged edges / nails |
+| Speed | Boot | **Winged Tire** | Tread pattern on circle |
+| Attack Spd | Lightning | **Firing Piston** | Motion lines / spark |
+| Luck | Clover | **Fuzzy Dice / Mutated Clover** | Dice pips or glowing veins |
+| Currency | Gold Coin | **Rusted Cog / Hex Nut** | Missing tooth on cog |
+| XP/Level | Star | **Dog Tag** | Ball-chain detail |
 
-| Source | Pack | Details | Link |
-|--------|------|---------|------|
-| **Kenney** | Game Icons | 105 assets, CC0, vector | https://kenney.nl/assets/game-icons |
-| **Kenney** | UI Pack RPG Expansion | 85 assets, CC0, RPG | https://kenney.nl/assets/ui-pack-rpg-expansion |
-| **OpenGameArt** | CC0 Resources | Hearts, swords, shields | https://opengameart.org/content/cc0-resources |
-| **itch.io** | Soulbit Free 16x16 | Sword, shield, potion | Free on itch.io |
+### Technical Requirements
 
-### Recommended Approach
+**Display**: 24px visual size
+**Touch Target**: 48x48px minimum (use `custom_minimum_size`)
+**Format**: PNG with 1px dark outline for readability
+**Rendering**: Consider MSDF for HUD icons (infinite scaling)
 
-**Option A: Kenney Game Icons** (Recommended)
-- Clean, readable at small sizes
-- Works with color tinting (UIIcon system supports this)
-- CC0 = no attribution required
+### Grunge Processing Pipeline
 
-**Option B: Custom Wasteland Icons**
-- Take clean icons, apply grunge/rust treatment
-- Match game's post-apocalyptic theme
+To unify clean Kenney icons with wasteland aesthetic:
 
-### AI Prompt for Icon Research
-
-Use this prompt with another AI for deeper research:
-
+**Option A: ImageMagick Batch**
+```bash
+# Apply rust texture + edge roughening
+magick "$icon" \
+  \( "rust_overlay.png" -resize 24x24^ -gravity center -crop 24x24+0+0 \) \
+  -compose Multiply -composite \
+  -spread 1 \
+  "$OUTPUT_DIR/$filename"
 ```
-I'm developing a mobile roguelike survivor game called "Scrap Survivor" in Godot 4.5.1.
-The game has a POST-APOCALYPTIC WASTELAND theme - rusty metal, scavenged tech, irradiated wastelands.
 
-I need ~20 UI icons for stat displays (Health, Damage, Armor, Speed, etc.) and UI actions.
-Icons displayed at 20-24px on mobile, need to be readable at small sizes.
+**Option B: Python/Pillow**
+- Procedural "salt and pepper" decay
+- 5% pixel transparency (chips)
+- 10% rust tint overlay
 
-Color palette: Dark purples (#282747), danger red (#CC3737), toxic green (#76FF76), warning yellow (#EAC43D)
-
-Questions:
-1. What free asset packs fit this theme? Specific names and URLs.
-2. Visual motifs for each stat in wasteland theme? (e.g., Health = radiation symbol? blood bag?)
-3. Pixel art (16x16/32x32) vs vector for 20-24px mobile display?
-4. Tools for adding wasteland "grunge" effects to clean icons?
-5. Style references from games/media with good wasteland UI?
-```
+**Option C: Godot Shader** (runtime)
+- Glitch effect on damage feedback
+- Horizontal UV displacement + noise
 
 ---
 
@@ -110,8 +112,10 @@ Questions:
 
 ### 1. Source Icon Assets
 - [ ] Download Kenney Game Icons pack
-- [ ] Identify icons for each stat/action
-- [ ] Process icons (resize to 24x24, export as PNG)
+- [ ] Download 7Soul's RPG Graphics (optional depth)
+- [ ] Select icons matching wasteland motifs above
+- [ ] Process through grunge pipeline (or use clean with tint)
+- [ ] Export as 24x24 PNG with 1px outline
 - [ ] Place in `themes/icons/` folder
 - [ ] Update UIIcon system to load textures
 
@@ -159,6 +163,17 @@ After theme is applied everywhere:
 3. Icon textures load and display correctly
 4. Consistent look across all screens
 5. Tests still passing (647/671)
+
+---
+
+## Reference: Full Research Document
+
+See attached "Wasteland Survivor Game Iconography Guide.md" for:
+- Detailed semiotic analysis of each icon type
+- Case studies (Fallout, Metro, Vampire Survivors, Borderlands)
+- Godot 4.5.1 SVG/MSDF rendering pipeline details
+- Python/ImageMagick automation scripts
+- Mobile UX guidelines (portrait vs landscape, thumb zones)
 
 ---
 
