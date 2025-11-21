@@ -37,6 +37,7 @@ const ERROR_SOUND: String = "res://assets/audio/ui/error.ogg"
 ## Theme
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
 const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const HapticFeedback = preload("res://scripts/ui/theme/haptic_feedback.gd")
 
 
 func _ready() -> void:
@@ -716,7 +717,8 @@ Monthly: $2.99"""
 
 
 func _play_sound(sound_path: String) -> void:
-	"""Play UI sound"""
+	"""Play UI sound and haptic feedback"""
+	HapticFeedback.tap()
 	if audio_player and ResourceLoader.exists(sound_path):
 		var sound = load(sound_path)
 		if sound:

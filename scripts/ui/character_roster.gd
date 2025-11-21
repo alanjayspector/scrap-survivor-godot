@@ -20,6 +20,7 @@ const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
 )
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
 const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const HapticFeedback = preload("res://scripts/ui/theme/haptic_feedback.gd")
 
 @onready var character_list: VBoxContainer = $CharacterListContainer/ScrollContainer/CharacterList
 @onready var slot_label: Label = $HeaderContainer/SlotLabel
@@ -174,6 +175,7 @@ func _on_character_play_pressed(character_id: String) -> void:
 func _on_character_delete_pressed(character_id: String, character_name: String) -> void:
 	"""Handle Delete button - show confirmation dialog"""
 	_play_sound(BUTTON_CLICK_SOUND)
+	HapticFeedback.warning()  # Extra warning haptic for destructive action
 
 	GameLogger.info(
 		"[CharacterRoster] Delete button pressed",
@@ -289,7 +291,8 @@ func _on_back_pressed() -> void:
 
 
 func _play_sound(sound: AudioStream) -> void:
-	"""Play UI sound"""
+	"""Play UI sound and haptic feedback"""
+	HapticFeedback.tap()
 	if audio_player:
 		audio_player.stream = sound
 		audio_player.play()

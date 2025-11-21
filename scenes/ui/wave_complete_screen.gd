@@ -7,6 +7,7 @@ signal return_to_hub_pressed
 
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
 const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const HapticFeedback = preload("res://scripts/ui/theme/haptic_feedback.gd")
 
 @onready var victory_label: Label = $PaddingContainer/Content/VictoryLabel
 @onready var stats_display: VBoxContainer = $PaddingContainer/Content/StatsDisplay
@@ -80,10 +81,12 @@ func _add_stat_label(text: String) -> void:
 
 
 func _on_next_wave_pressed() -> void:
+	HapticFeedback.tap()
 	hide()
 	next_wave_pressed.emit()
 
 
 func _on_hub_button_pressed() -> void:
+	HapticFeedback.tap()
 	hide()
 	return_to_hub_pressed.emit()
