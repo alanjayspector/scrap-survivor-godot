@@ -2,7 +2,7 @@
 
 **Last Updated**: 2025-11-21
 **Current Branch**: `main`
-**Next Task**: Continue with Week16 independent phases (Haptic, ButtonAnimation, ScreenContainer)
+**Next Task**: Continue with Week16 independent phases (ButtonAnimation, ScreenContainer)
 
 ---
 
@@ -150,8 +150,13 @@ magick "$icon" \
 - [x] `scrapyard.tscn` (hub) - Theme + Primary/Secondary/Ghost buttons
 - [x] `hud.tscn` - Theme applied
 
-### 3. Continue with Independent Phases (Week16)
-- [ ] Haptic feedback system
+### 3. ~~Haptic Feedback System~~ (COMPLETED)
+- [x] Created `scripts/ui/theme/haptic_feedback.gd` with tap/select/warning/error/impact methods
+- [x] Integrated into hub, roster, creation, card, and wave complete screens
+- [x] Platform-aware (iOS/Android only, no-op on desktop)
+- [x] Commit: `26c8c19`
+
+### 4. Continue with Independent Phases (Week16)
 - [ ] ButtonAnimation component
 - [ ] ScreenContainer for safe areas
 
@@ -163,6 +168,7 @@ magick "$icon" \
 - `themes/game_theme.tres` - Main theme
 - `scripts/ui/theme/theme_helper.gd` - Programmatic button styling
 - `scripts/ui/theme/ui_icons.gd` - Icon loader (UIIcons class)
+- `scripts/ui/theme/haptic_feedback.gd` - Mobile haptic/vibration feedback
 - `scripts/ui/components/ui_icon.gd` - iOS-safe text fallbacks
 
 **Icons** (Kenney Game Icons - CC0):
@@ -205,5 +211,7 @@ See attached "Wasteland Survivor Game Iconography Guide.md" for:
 
 ---
 
-**Session Date**: 2025-11-20
-**Commits on feature/theme-system**: `72ae23b`, `21f4c24`
+**Session Date**: 2025-11-21
+**Recent Commits**:
+- `26c8c19` - feat: add haptic feedback system for mobile UI
+- `2414b13` - fix: apply DANGER style to delete confirmation OK button
