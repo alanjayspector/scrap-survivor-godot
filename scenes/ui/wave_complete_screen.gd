@@ -42,6 +42,10 @@ func _ready() -> void:
 	UIIcons.apply_button_icon(next_wave_button, UIIcons.Icon.PLAY)
 	UIIcons.apply_button_icon(hub_button, UIIcons.Icon.HOME)
 
+	# Add button animations (Week16: ButtonAnimation component)
+	ThemeHelper.add_button_animation(next_wave_button)
+	ThemeHelper.add_button_animation(hub_button)
+
 
 func show_stats(wave: int, stats: Dictionary) -> void:
 	victory_label.text = "Wave %d Complete!" % wave

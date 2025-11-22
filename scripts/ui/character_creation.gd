@@ -57,6 +57,10 @@ func _ready() -> void:
 	_update_create_button_state()
 	_setup_slot_usage_banner()
 
+	# Add button animations (Week16: ButtonAnimation component)
+	ThemeHelper.add_button_animation(create_button)
+	ThemeHelper.add_button_animation(back_button)
+
 	# Track analytics
 	Analytics.track_event("character_creation_opened", {})
 

@@ -81,12 +81,28 @@ static func style_collapsible_header(button: Button, is_expanded: bool) -> void:
 		button.text = button.text.substr(0, button.text.length() - 2) + arrow
 
 
-static func create_styled_button(text: String, style: ButtonStyle = ButtonStyle.PRIMARY) -> Button:
-	"""Create a new Button with the specified style applied"""
+static func create_styled_button(
+	text: String, style: ButtonStyle = ButtonStyle.PRIMARY, animated: bool = true
+) -> Button:
+	"""
+	Create a new Button with the specified style applied.
+
+	Args:
+		text: Button label text
+		style: Button style variant (PRIMARY, SECONDARY, DANGER, GHOST)
+		animated: Whether to add ButtonAnimation (default: true)
+
+	Returns:
+		The created Button node
+	"""
 	var button = Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(0, UIConstants.TOUCH_TARGET_STANDARD)
 	apply_button_style(button, style)
+
+	if animated:
+		add_button_animation(button)
+
 	return button
 
 
@@ -113,3 +129,25 @@ static func create_stat_label(
 	container.add_child(value)
 
 	return container
+
+
+static func add_button_animation(button: Button, press_scale: float = 0.90) -> ButtonAnimation:
+	"""
+	Add ButtonAnimation component to a button for press/release scale animation.
+
+	Args:
+		button: The Button node to animate
+		press_scale: Scale multiplier on press (default: 0.90 = 90% size, 10% reduction)
+
+	Returns:
+		The created ButtonAnimation node (for further configuration if needed)
+
+	Example:
+		ThemeHelper.add_button_animation(my_button)
+		# Or with custom scale:
+		ThemeHelper.add_button_animation(my_button, 0.85)  # Even more pronounced
+	"""
+	var animation = ButtonAnimation.new()
+	animation.press_scale = press_scale
+	button.add_child(animation)
+	return animation

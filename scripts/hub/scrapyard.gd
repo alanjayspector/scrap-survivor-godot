@@ -105,6 +105,13 @@ func _setup_buttons() -> void:
 	# Apply button icons
 	UIIcons.apply_button_icon(settings_button, UIIcons.Icon.SETTINGS)
 
+	# Add button animations (Week16: ButtonAnimation component)
+	ThemeHelper.add_button_animation(play_button)
+	ThemeHelper.add_button_animation(characters_button)
+	ThemeHelper.add_button_animation(settings_button)
+	ThemeHelper.add_button_animation(quit_button)
+	ThemeHelper.add_button_animation(debug_qa_button)
+
 	# Disable settings button (not implemented in Week 15)
 	settings_button.disabled = true
 	settings_button.tooltip_text = "Coming in Week 16"

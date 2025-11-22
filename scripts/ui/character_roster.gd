@@ -39,6 +39,10 @@ func _ready() -> void:
 	_update_slot_label()
 	_connect_signals()
 
+	# Add button animations (Week16: ButtonAnimation component)
+	ThemeHelper.add_button_animation(create_new_button)
+	ThemeHelper.add_button_animation(back_button)
+
 	GameLogger.info(
 		"[CharacterRoster] Initialized", {"character_count": CharacterService.get_character_count()}
 	)
