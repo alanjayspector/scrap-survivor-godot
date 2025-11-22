@@ -15,7 +15,6 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 ## Theme
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
 const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
-const HapticFeedback = preload("res://scripts/ui/theme/haptic_feedback.gd")
 
 @onready var play_button: Button = $MenuContainer/PlayButton
 @onready var characters_button: Button = $MenuContainer/CharactersButton
@@ -143,7 +142,7 @@ func _show_save_corruption_dialog() -> void:
 
 func _play_button_click_sound() -> void:
 	"""Play button click sound and haptic feedback"""
-	HapticFeedback.tap()
+	HapticManager.light()
 	if audio_player and BUTTON_CLICK_SOUND:
 		audio_player.stream = BUTTON_CLICK_SOUND
 		audio_player.play()

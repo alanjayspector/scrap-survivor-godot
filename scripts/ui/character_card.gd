@@ -15,7 +15,6 @@ signal details_pressed(character_id: String)
 
 const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
 const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
-const HapticFeedback = preload("res://scripts/ui/theme/haptic_feedback.gd")
 
 @onready var character_icon: ColorRect = $HBoxContainer/CharacterIcon
 @onready var name_label: Label = $HBoxContainer/InfoContainer/NameLabel
@@ -78,17 +77,17 @@ func setup(character: Dictionary) -> void:
 
 func _on_details_pressed() -> void:
 	"""Emit details signal"""
-	HapticFeedback.tap()
+	HapticManager.light()
 	details_pressed.emit(character_data.get("id", ""))
 
 
 func _on_play_pressed() -> void:
 	"""Emit play signal"""
-	HapticFeedback.tap()
+	HapticManager.light()
 	play_pressed.emit(character_data.get("id", ""))
 
 
 func _on_delete_pressed() -> void:
 	"""Emit delete signal"""
-	HapticFeedback.tap()
+	HapticManager.light()
 	delete_pressed.emit(character_data.get("id", ""), character_data.get("name", "Unknown"))

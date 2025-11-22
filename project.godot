@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://scripts/autoload/game_state.gd"
 Analytics="*res://scripts/autoload/analytics.gd"
+HapticManager="*res://scripts/autoload/haptic_manager.gd"
 ErrorService="*res://scripts/services/error_service.gd"
 SaveSystem="*res://scripts/systems/save_system.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
