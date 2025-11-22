@@ -62,21 +62,15 @@ func _check_platform_support() -> void:
 
 ## Load haptic preferences from SaveManager
 func _load_user_preferences() -> void:
-	# Check if SaveManager exists (might not be ready yet during early init)
-	if not has_node("/root/SaveManager"):
-		enabled = true  # Default enabled
-		return
-
-	enabled = SaveManager.get_setting("haptics_enabled", true)
+	# TODO (Week 17): Load from settings system when implemented
+	# For now, default to enabled
+	enabled = true
 
 
 ## Enable or disable haptic feedback (save to user preferences)
 func set_enabled(value: bool) -> void:
 	enabled = value
-
-	# Save preference if SaveManager is available
-	if has_node("/root/SaveManager"):
-		SaveManager.set_setting("haptics_enabled", value)
+	# TODO (Week 17): Persist to settings system when implemented
 
 
 ## Check if haptics are available and enabled

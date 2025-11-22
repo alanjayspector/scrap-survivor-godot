@@ -62,8 +62,8 @@ func _capture_scene_screenshot(scene_path: String, output_path: String) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 
-	# Capture screenshot
-	var img = get_viewport().get_texture().get_image()
+	# Capture screenshot from root viewport (where scene was added)
+	var img = get_tree().root.get_viewport().get_texture().get_image()
 	var error = img.save_png(output_path)
 
 	if error != OK:

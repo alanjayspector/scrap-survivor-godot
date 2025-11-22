@@ -22,6 +22,7 @@ class_name DebugMenu
 @onready var status_label: Label = %StatusLabel
 @onready var reset_options_container: VBoxContainer = %ResetOptionsContainer
 @onready var visual_regression_container: VBoxContainer = %VisualRegressionContainer
+@onready var ui_audit_container: VBoxContainer = %UIAuditContainer
 
 ## Tier buttons
 var free_button: Button
@@ -37,8 +38,13 @@ var nuclear_reset_button: Button
 var capture_baseline_button: Button
 var capture_current_button: Button
 
+## UI audit buttons
+var run_audit_button: Button
+var export_audit_button: Button
+
 ## Visual regression script (loaded once to avoid duplication)
 const VISUAL_REGRESSION_SCRIPT = preload("res://scripts/debug/visual_regression.gd")
+const UI_AUDIT_SCRIPT = preload("res://scripts/debug/ui_audit.gd")
 
 ## Current selections
 var selected_tier: CharacterService.UserTier = CharacterService.UserTier.FREE
@@ -86,6 +92,9 @@ func _ready() -> void:
 
 	GameLogger.info("[DEBUG MENU] Building visual regression tools...")
 	_setup_visual_regression()
+
+	GameLogger.info("[DEBUG MENU] Building UI audit tools...")
+	_setup_ui_audit()
 
 	GameLogger.info("[DEBUG MENU] Updating status display...")
 	_update_status_display()
@@ -283,6 +292,81 @@ func _on_capture_current() -> void:
 	_show_success_notification(
 		"Current screenshots captured!\nCheck: tests/visual_regression/current/"
 	)
+
+
+func _setup_ui_audit() -> void:
+	"""Setup UI audit tools section"""
+	GameLogger.info("[DEBUG MENU] _setup_ui_audit() called")
+
+	if not is_instance_valid(ui_audit_container):
+		push_error("[DEBUG MENU] UIAuditContainer not found!")
+		GameLogger.error("[DEBUG MENU] UIAuditContainer is null or invalid!")
+		return
+
+	GameLogger.info("[DEBUG MENU] UIAuditContainer found - creating buttons...")
+
+	# Create section label
+	var label = Label.new()
+	label.text = "UI Audit (Week 16 Phase 1):"
+	label.add_theme_font_size_override("font_size", 16)
+	ui_audit_container.add_child(label)
+
+	# Run audit button
+	run_audit_button = Button.new()
+	run_audit_button.text = "🔍 Run UI Audit (All Screens)"
+	run_audit_button.custom_minimum_size = Vector2(400, 60)
+	run_audit_button.pressed.connect(_on_run_audit)
+	ui_audit_container.add_child(run_audit_button)
+
+	# Export audit button
+	export_audit_button = Button.new()
+	export_audit_button.text = "📄 Export Audit Report (Markdown)"
+	export_audit_button.custom_minimum_size = Vector2(400, 60)
+	export_audit_button.pressed.connect(_on_export_audit)
+	ui_audit_container.add_child(export_audit_button)
+
+	GameLogger.info("[DEBUG MENU] UI audit buttons created")
+
+
+func _on_run_audit() -> void:
+	"""Run UI audit and print to console"""
+	GameLogger.info("[DEBUG] Running UI audit...")
+	var audit = UI_AUDIT_SCRIPT.new()
+	add_child(audit)
+
+	var all_results = await audit.audit_all_scenes()
+
+	# Print each scene's report to console
+	for results in all_results:
+		audit.print_audit_report(results)
+
+	audit.queue_free()
+
+	var total_issues = 0
+	for results in all_results:
+		total_issues += results.summary.total_issues
+
+	_show_success_notification(
+		(
+			"UI Audit complete!\n%d scenes audited, %d total issues found.\nCheck console for details."
+			% [all_results.size(), total_issues]
+		)
+	)
+
+
+func _on_export_audit() -> void:
+	"""Export UI audit to markdown file"""
+	GameLogger.info("[DEBUG] Exporting UI audit report...")
+	var audit = UI_AUDIT_SCRIPT.new()
+	add_child(audit)
+
+	var all_results = await audit.audit_all_scenes()
+	var output_path = "docs/ui-audit-report.md"
+	audit.export_to_markdown(all_results, output_path)
+
+	audit.queue_free()
+
+	_show_success_notification("UI Audit report exported!\nCheck: %s" % output_path)
 
 
 func _on_tier_selected(tier: CharacterService.UserTier) -> void:
