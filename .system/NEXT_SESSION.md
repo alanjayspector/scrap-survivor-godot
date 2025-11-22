@@ -103,6 +103,7 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - **Added**: Backdrop overlay with tap-to-dismiss
 - **Added**: Swipe-down gesture for sheets
 - **Added**: Entrance/exit animations (300ms/250ms)
+- **Fixed**: Invalid UID in mobile_modal.tscn (was breaking character roster buttons)
 
 **Key Features**:
 - 🎉 **Mobile-native dialogs** - ALERT, SHEET, and FULLSCREEN types
@@ -118,6 +119,10 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - Completion summary: [docs/week16-phase4-completion-summary.md](docs/week16-phase4-completion-summary.md)
 
 **Tests**: ✅ 647/671 passing
+
+**Commits**:
+- `f8eca69` - feat(ui): add mobile-native dialog and modal system (Week 16 Phase 4)
+- `c88d3c6` - fix(ui): correct mobile_modal.tscn UID format
 
 ---
 
@@ -392,6 +397,8 @@ python3 .system/validators/godot_test_runner.py
 ---
 
 **Session Date**: 2025-11-22
-**Last Updated**: 2025-11-22 (Phase 4 complete, ready for Phase 5)
+**Last Updated**: 2025-11-22 (Phase 4 complete + bug fix, ready for Phase 5)
 
 **Next Session Prompt**: "continue with Week 16 Phase 5"
+
+**Pending User Feedback**: Phase 4 manual QA on iPhone 15 Pro Max
