@@ -1,9 +1,9 @@
 # Next Session: Week 16 Mobile UI Standards Overhaul
 
-**Last Updated**: 2025-11-22 (QA Pass 7 - iOS crash fixed with evidence-based investigation)
+**Last Updated**: 2025-11-22 (QA Pass 7 FAILED → Expert investigation → Real root cause found)
 **Current Branch**: `main`
-**Current Phase**: Phase 4 Complete ✅ (pending QA Pass 7 verification)
-**Status**: Phase 0-4 complete, awaiting QA Pass 7, ready for Phase 5
+**Current Phase**: Phase 4 IN PROGRESS (7 QA failures, fix identified)
+**Status**: Ready for QA Pass 8 with dynamic node layout mode fixes
 
 ---
 
@@ -99,22 +99,51 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 **Lessons Learned**:
 - ❌ **Don't report work complete before it's tested on device**
 - ❌ **Don't use hybrid patterns (two-tap buttons) - use proper modals**
+- ❌ **Don't assume scene file fixes solve dynamic node bugs** - 7 passes to learn this
 - ✅ **Evidence-based engineering** - spawn expert agent to investigate crashes
 - ✅ **Mobile-first means iOS HIG, not gaming UI patterns**
 - ✅ **Layout mode matters** - anchor-based nodes can't be VBoxContainer children on iOS
-- ✅ **After 1 QA failure, spawn expert agent** - don't do 6 rounds of trial-and-error
-- ✅ **Fix ALL nodes in hierarchy** - not just root node (cb28f84 fixed parent, aeedc6c fixed child)
+- ✅ **After 1 QA failure, spawn expert agent** - not 6+ trial-and-error rounds
+- ✅ **Fix ALL nodes** - scenes (.tscn) AND dynamic code (.gd)
+- ✅ **VBoxContainer.new() defaults to layout_mode = 1** - ALWAYS set it explicitly
 
-**QA Pass 7 Fix** (After 6 failed passes):
-- **Root Cause**: CharacterDetailsPanel child MarginContainer still used `layout_mode = 1` (anchors)
-- **Investigation**: Expert panel with systematic debugging, community research
-- **Fix**: Convert MarginContainer to `layout_mode = 2` (container-compatible)
-- **QA Improvement**: Added "Create & Hub" button to character creation (skips wasteland, 2min → 10sec QA loop)
-- **Commit**: `aeedc6c` - fix(ui): resolve iOS SIGKILL crash in CharacterDetailsPanel
+**QA Pass 7** - ❌ FAILED (7th failure total)
+- **Attempted Fix**: CharacterDetailsPanel scene file MarginContainer layout_mode
+- **Result**: Still crashes at exact same point
+- **Real Discovery**: Bug is NOT in scene files - it's in DYNAMICALLY CREATED NODES
+
+**QA Pass 8 Investigation** (Expert panel - 3 parallel agents):
+- **CRITICAL FINDING**: `content_vbox = VBoxContainer.new()` at mobile_modal.gd:206
+- **Root Cause**: `.new()` defaults to `layout_mode = 1` (anchors), needs `layout_mode = 2`
+- **Scope**: 17 dynamically created Control nodes missing layout_mode across 2 files
+- **Files Affected**:
+  - mobile_modal.gd: 6 nodes (content_vbox, modal_container, labels, buttons)
+  - character_details_panel.gd: 11 nodes (sections, stat rows, labels)
+
+**Why This Took 7 Passes**:
+- Fixed scene files (.tscn) in passes 5-7
+- Missed dynamic node creation in scripts (.gd)
+- Scene instantiation tests pass (don't test dynamic content)
+- Crash happens when `content_vbox.add_child(panel)` executes
+
+**The Fix (QA Pass 8)**:
+Add `layout_mode = Control.LAYOUT_MODE_CONTAINER` after ALL `.new()` Control node creation
+
+**Priority 1 (Critical)**:
+```gdscript
+# mobile_modal.gd:206
+content_vbox = VBoxContainer.new()
+content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # ADD THIS
+```
+
+**Community Research**:
+- Godot Issue #104598: Exact same bug, fixed in 4.5 for scene editor
+- But `.new()` still defaults to layout_mode = 1 in GDScript
+- iOS Metal renderer kills on layout constraint conflicts (desktop doesn't)
 
 **Tests**: ✅ 647/671 passing
 
-**QA Status**: ⏭️ Ready for QA Pass 7 (Details + Delete verification with iOS crash fix)
+**QA Status**: 🔨 Ready for QA Pass 8 (dynamic node layout fixes pending)
 
 ---
 
@@ -294,13 +323,16 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 **Next Session Prompt**: "continue with Week 16 Phase 5"
 
 **Immediate Next Steps**:
-1. User builds and deploys latest code (commit aeedc6c)
-2. QA Pass 7: Test Details + Delete buttons on iPhone 15 Pro Max
-   - Use new "Create & Hub" button for fast testing (10 seconds vs 2 minutes)
-   - Verify Details button works (NO CRASH - layout mode fix applied)
-   - Verify Delete button works (should already work, but verify)
-3. If QA passes → Proceed to Phase 5 (Visual Feedback & Polish)
-4. If QA fails → Spawn expert agent immediately (learned: don't do 6+ trial-and-error passes)
+1. Apply dynamic node layout_mode fixes (17 nodes across 2 files):
+   - mobile_modal.gd: content_vbox, modal_container, title_label, message_label, button_container, buttons
+   - character_details_panel.gd: section containers, stat rows, labels
+2. Commit fixes (QA Pass 8 preparation)
+3. User builds and deploys
+4. QA Pass 8: Test Details button with "Create & Hub" shortcut
+5. If passes → Proceed to Phase 5
+6. If fails → Full diagnostic logging + Gemini research synthesis
+
+**Gemini Query Running**: iOS layout mode defaults, Godot 4.5.1 best practices
 
 **Mobile-First Principle Confirmed**:
 - ✅ No desktop patterns
