@@ -211,10 +211,7 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 
 func _on_character_details_pressed(character_id: String) -> void:
 	"""Handle Details button - show character details in mobile-native sheet (Week 16 Phase 4)"""
-	GameLogger.info("[CharacterRoster] ⭐ DETAILS SIGNAL RECEIVED ⭐", {"character_id": character_id})
 	_play_sound(BUTTON_CLICK_SOUND)
-
-	GameLogger.info("[CharacterRoster] Details button pressed", {"character_id": character_id})
 
 	# Get character data
 	var character = CharacterService.get_character(character_id)
@@ -238,7 +235,6 @@ func _on_character_details_pressed(character_id: String) -> void:
 
 	# Create and add CharacterDetailsPanel as custom content
 	var details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
-	details_panel.visible = true  # Ensure panel is visible
 	character_details_modal.add_custom_content(details_panel)
 
 	# Connect close signal

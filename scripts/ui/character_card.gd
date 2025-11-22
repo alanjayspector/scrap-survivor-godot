@@ -101,10 +101,8 @@ func setup(character: Dictionary) -> void:
 func _on_details_pressed() -> void:
 	"""Emit details signal"""
 	var char_id = character_data.get("id", "")
-	GameLogger.info("[CharacterCard] Details button pressed", {"character_id": char_id})
 	HapticManager.light()
 	details_pressed.emit(char_id)
-	GameLogger.info("[CharacterCard] Details signal emitted", {"character_id": char_id})
 
 
 func _on_play_pressed() -> void:
