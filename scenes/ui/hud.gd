@@ -14,7 +14,7 @@ extends Control
 ##
 ## Based on: docs/migration/week10-implementation-plan.md (lines 467-562)
 
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 ## Node references (set when nodes are available)
 @onready var hp_bar: ProgressBar = $HPBar if has_node("HPBar") else null
@@ -249,15 +249,15 @@ func _setup_currency_icons() -> void:
 	"""Load and apply currency icons (Week 16)"""
 	# Scrap uses gear icon (mechanical scrap)
 	if scrap_icon:
-		UIIcons.apply_icon(scrap_icon, UIIcons.Icon.SETTINGS)
+		UI_ICONS.apply_icon(scrap_icon, UI_ICONS.Icon.SETTINGS)
 
 	# Components uses target icon
 	if components_icon:
-		UIIcons.apply_icon(components_icon, UIIcons.Icon.TARGET)
+		UI_ICONS.apply_icon(components_icon, UI_ICONS.Icon.TARGET)
 
 	# Nanites uses star icon
 	if nanites_icon:
-		UIIcons.apply_icon(nanites_icon, UIIcons.Icon.STAR)
+		UI_ICONS.apply_icon(nanites_icon, UI_ICONS.Icon.STAR)
 
 
 func _update_currency_display() -> void:

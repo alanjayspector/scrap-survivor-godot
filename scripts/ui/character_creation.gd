@@ -32,11 +32,11 @@ const MAX_NAME_LENGTH = 20
 ## Audio preloads (iOS-compatible pattern)
 const BUTTON_CLICK_SOUND: String = "res://assets/audio/ui/button_click.ogg"
 const CHARACTER_SELECT_SOUND: String = "res://assets/audio/ui/character_select.ogg"
-const ERROR_SOUND: String = "res://assets/audio/ui/error.ogg"
+const ERROR_SOUND: String = "res://assets/audio/ui/ui_error.ogg"
 
 ## Theme
-const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 
 func _ready() -> void:
@@ -58,8 +58,8 @@ func _ready() -> void:
 	_setup_slot_usage_banner()
 
 	# Add button animations (Week16: ButtonAnimation component)
-	ThemeHelper.add_button_animation(create_button)
-	ThemeHelper.add_button_animation(back_button)
+	THEME_HELPER.add_button_animation(create_button)
+	THEME_HELPER.add_button_animation(back_button)
 
 	# Track analytics
 	Analytics.track_event("character_creation_opened", {})
@@ -255,11 +255,11 @@ func _connect_signals() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 
 	# Apply button styling
-	ThemeHelper.apply_button_style(create_button, ThemeHelper.ButtonStyle.PRIMARY)
-	ThemeHelper.apply_button_style(back_button, ThemeHelper.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(create_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(back_button, THEME_HELPER.ButtonStyle.SECONDARY)
 
 	# Apply button icons
-	UIIcons.apply_button_icon(back_button, UIIcons.Icon.BACK)
+	UI_ICONS.apply_button_icon(back_button, UI_ICONS.Icon.BACK)
 
 
 func _on_name_changed(new_text: String) -> void:

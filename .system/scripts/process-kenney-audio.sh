@@ -183,19 +183,19 @@ find_and_copy "$IMPACT_DIR" "impactMetal_light_000|impactMetal_medium_001" \
     "$AUDIO_DIR/weapons/steel_sword.ogg" "Steel Sword"
 
 find_and_copy "$IMPACT_DIR:$SCIFI_DIR" "impactPlate_heavy_004|explosionCrunch_000" \
-    "$AUDIO_DIR/weapons/shotgun.ogg" "Shotgun"
+    "$AUDIO_DIR/weapons/weapon_shotgun.ogg" "Shotgun"
 
 find_and_copy "$IMPACT_DIR" "impactMetal_light_004|impactPlate_light_004" \
     "$AUDIO_DIR/weapons/sniper_rifle.ogg" "Sniper Rifle"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "forceField_000|lowFrequency" \
-    "$AUDIO_DIR/weapons/flamethrower.ogg" "Flamethrower"
+    "$AUDIO_DIR/weapons/weapon_flamethrower.ogg" "Flamethrower"
 
 find_and_copy "$SCIFI_DIR:$DIGITAL_DIR" "laserLarge_000|laser2" \
     "$AUDIO_DIR/weapons/laser_rifle.ogg" "Laser Rifle"
 
 find_and_copy "$IMPACT_DIR:$DIGITAL_DIR" "impactPlate_light_000|zapThreeToneUp" \
-    "$AUDIO_DIR/weapons/minigun.ogg" "Minigun"
+    "$AUDIO_DIR/weapons/weapon_minigun.ogg" "Minigun"
 
 find_and_copy "$SCIFI_DIR:$IMPACT_DIR" "explosionCrunch_000|impactPlank_heavy_000" \
     "$AUDIO_DIR/weapons/rocket_launcher.ogg" "Rocket Launcher"
@@ -258,7 +258,7 @@ find_and_copy "$UI_DIR:$DIGITAL_DIR" "switch1|powerUp1" \
     "$AUDIO_DIR/ui/character_select.ogg" "Character Select"
 
 find_and_copy "$UI_DIR:$DIGITAL_DIR" "switch2|tone1" \
-    "$AUDIO_DIR/ui/error.ogg" "Error"
+    "$AUDIO_DIR/ui/ui_error.ogg" "Error"
 
 # Cleanup
 echo ""

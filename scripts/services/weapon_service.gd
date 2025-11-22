@@ -273,11 +273,11 @@ const WEAPON_AUDIO: Dictionary = {
 	"rusty_blade": preload("res://assets/audio/weapons/rusty_blade.ogg"),
 	"steel_sword": preload("res://assets/audio/weapons/steel_sword.ogg"),
 	"shock_rifle": preload("res://assets/audio/weapons/shock_rifle.ogg"),
-	"shotgun": preload("res://assets/audio/weapons/shotgun.ogg"),
+	"shotgun": preload("res://assets/audio/weapons/weapon_shotgun.ogg"),
 	"sniper_rifle": preload("res://assets/audio/weapons/sniper_rifle.ogg"),
-	"flamethrower": preload("res://assets/audio/weapons/flamethrower.ogg"),
+	"flamethrower": preload("res://assets/audio/weapons/weapon_flamethrower.ogg"),
 	"laser_rifle": preload("res://assets/audio/weapons/laser_rifle.ogg"),
-	"minigun": preload("res://assets/audio/weapons/minigun.ogg"),
+	"minigun": preload("res://assets/audio/weapons/weapon_minigun.ogg"),
 	"rocket_launcher": preload("res://assets/audio/weapons/rocket_launcher.ogg"),
 }
 

@@ -28,19 +28,18 @@ extends Node
 @export var press_duration_override: float = -1.0  # -1 = use UIConstants.ANIM_BUTTON_PRESS
 @export var release_duration_override: float = -1.0  # -1 = use UIConstants.ANIM_BUTTON_RELEASE
 
-var _button: Button = null
+@onready var _button: Button = get_parent()
 var _tween: Tween = null
 var _original_scale: Vector2 = Vector2.ONE
 
 
 func _ready() -> void:
-	# Get parent Button
-	if not get_parent() is Button:
+	# Validate parent is a Button
+	if not _button:
 		push_error("ButtonAnimation must be a child of a Button node")
 		queue_free()
 		return
 
-	_button = get_parent() as Button
 	_original_scale = _button.scale
 
 	# Connect button signals

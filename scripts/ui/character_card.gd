@@ -13,8 +13,8 @@ signal play_pressed(character_id: String)
 signal delete_pressed(character_id: String, character_name: String)
 signal details_pressed(character_id: String)
 
-const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var character_icon: ColorRect = $HBoxContainer/CharacterIcon
 @onready var name_label: Label = $HBoxContainer/InfoContainer/NameLabel
@@ -62,12 +62,12 @@ func setup(character: Dictionary) -> void:
 	add_theme_stylebox_override("panel", style)
 
 	# Apply button styling
-	ThemeHelper.apply_button_style(details_button, ThemeHelper.ButtonStyle.SECONDARY)
-	ThemeHelper.apply_button_style(play_button, ThemeHelper.ButtonStyle.PRIMARY)
-	ThemeHelper.apply_button_style(delete_button, ThemeHelper.ButtonStyle.DANGER)
+	THEME_HELPER.apply_button_style(details_button, THEME_HELPER.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(play_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(delete_button, THEME_HELPER.ButtonStyle.DANGER)
 
 	# Apply button icons
-	UIIcons.apply_button_icon(delete_button, UIIcons.Icon.DELETE)
+	UI_ICONS.apply_button_icon(delete_button, UI_ICONS.Icon.DELETE)
 
 	# Connect buttons
 	details_button.pressed.connect(_on_details_pressed)

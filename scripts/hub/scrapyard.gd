@@ -13,8 +13,8 @@ extends Control
 const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
 
 ## Theme
-const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var play_button: Button = $MenuContainer/PlayButton
 @onready var characters_button: Button = $MenuContainer/CharactersButton
@@ -97,20 +97,20 @@ func _connect_signals() -> void:
 func _setup_buttons() -> void:
 	"""Configure button states based on game state"""
 	# Apply button styling
-	ThemeHelper.apply_button_style(play_button, ThemeHelper.ButtonStyle.PRIMARY)
-	ThemeHelper.apply_button_style(characters_button, ThemeHelper.ButtonStyle.SECONDARY)
-	ThemeHelper.apply_button_style(settings_button, ThemeHelper.ButtonStyle.SECONDARY)
-	ThemeHelper.apply_button_style(quit_button, ThemeHelper.ButtonStyle.GHOST)
+	THEME_HELPER.apply_button_style(play_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(characters_button, THEME_HELPER.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(settings_button, THEME_HELPER.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(quit_button, THEME_HELPER.ButtonStyle.GHOST)
 
 	# Apply button icons
-	UIIcons.apply_button_icon(settings_button, UIIcons.Icon.SETTINGS)
+	UI_ICONS.apply_button_icon(settings_button, UI_ICONS.Icon.SETTINGS)
 
 	# Add button animations (Week16: ButtonAnimation component)
-	ThemeHelper.add_button_animation(play_button)
-	ThemeHelper.add_button_animation(characters_button)
-	ThemeHelper.add_button_animation(settings_button)
-	ThemeHelper.add_button_animation(quit_button)
-	ThemeHelper.add_button_animation(debug_qa_button)
+	THEME_HELPER.add_button_animation(play_button)
+	THEME_HELPER.add_button_animation(characters_button)
+	THEME_HELPER.add_button_animation(settings_button)
+	THEME_HELPER.add_button_animation(quit_button)
+	THEME_HELPER.add_button_animation(debug_qa_button)
 
 	# Disable settings button (not implemented in Week 15)
 	settings_button.disabled = true

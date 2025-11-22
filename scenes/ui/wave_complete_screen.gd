@@ -5,8 +5,8 @@ extends Panel
 signal next_wave_pressed
 signal return_to_hub_pressed
 
-const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var victory_label: Label = $PaddingContainer/Content/VictoryLabel
 @onready var stats_display: VBoxContainer = $PaddingContainer/Content/StatsDisplay
@@ -35,16 +35,16 @@ func _ready() -> void:
 	hub_button.pressed.connect(_on_hub_button_pressed)
 
 	# Apply button styling
-	ThemeHelper.apply_button_style(next_wave_button, ThemeHelper.ButtonStyle.PRIMARY)
-	ThemeHelper.apply_button_style(hub_button, ThemeHelper.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(next_wave_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(hub_button, THEME_HELPER.ButtonStyle.SECONDARY)
 
 	# Apply button icons
-	UIIcons.apply_button_icon(next_wave_button, UIIcons.Icon.PLAY)
-	UIIcons.apply_button_icon(hub_button, UIIcons.Icon.HOME)
+	UI_ICONS.apply_button_icon(next_wave_button, UI_ICONS.Icon.PLAY)
+	UI_ICONS.apply_button_icon(hub_button, UI_ICONS.Icon.HOME)
 
 	# Add button animations (Week16: ButtonAnimation component)
-	ThemeHelper.add_button_animation(next_wave_button)
-	ThemeHelper.add_button_animation(hub_button)
+	THEME_HELPER.add_button_animation(next_wave_button)
+	THEME_HELPER.add_button_animation(hub_button)
 
 
 func show_stats(wave: int, stats: Dictionary) -> void:

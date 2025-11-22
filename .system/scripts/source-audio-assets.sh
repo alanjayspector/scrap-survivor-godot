@@ -209,19 +209,19 @@ copy_sound "$(select_sound "$IMPACT_DIR" "metal|sword|sharp" "weapon")" \
     "$AUDIO_DIR/weapons/steel_sword.ogg" "Steel Sword"
 
 copy_sound "$(select_sound "$IMPACT_DIR" "explosion|boom|blast" "weapon")" \
-    "$AUDIO_DIR/weapons/shotgun.ogg" "Shotgun"
+    "$AUDIO_DIR/weapons/weapon_shotgun.ogg" "Shotgun"
 
 copy_sound "$(select_sound "$IMPACT_DIR" "crack|snap|shot" "weapon")" \
     "$AUDIO_DIR/weapons/sniper_rifle.ogg" "Sniper Rifle"
 
 copy_sound "$(select_sound "$SCIFI_DIR" "fire|flame|whoosh" "weapon")" \
-    "$AUDIO_DIR/weapons/flamethrower.ogg" "Flamethrower"
+    "$AUDIO_DIR/weapons/weapon_flamethrower.ogg" "Flamethrower"
 
 copy_sound "$(select_sound "$SCIFI_DIR" "laser|beam" "weapon")" \
     "$AUDIO_DIR/weapons/laser_rifle.ogg" "Laser Rifle"
 
 copy_sound "$(select_sound "$IMPACT_DIR" "rapid|machine|gun" "weapon")" \
-    "$AUDIO_DIR/weapons/minigun.ogg" "Minigun"
+    "$AUDIO_DIR/weapons/weapon_minigun.ogg" "Minigun"
 
 copy_sound "$(select_sound "$IMPACT_DIR" "explosion|rocket|missile" "weapon")" \
     "$AUDIO_DIR/weapons/rocket_launcher.ogg" "Rocket Launcher"
@@ -281,7 +281,7 @@ copy_sound "$(select_sound "$UI_DIR" "select|confirm|accept" "ui")" \
     "$AUDIO_DIR/ui/character_select.ogg" "Character Select"
 
 copy_sound "$(select_sound "$UI_DIR" "error|deny|reject" "ui")" \
-    "$AUDIO_DIR/ui/error.ogg" "Error"
+    "$AUDIO_DIR/ui/ui_error.ogg" "Error"
 
 # Cleanup
 echo ""

@@ -11,15 +11,15 @@ extends Control
 ## Audio
 const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
 const CHARACTER_SELECT_SOUND: AudioStream = preload("res://assets/audio/ui/character_select.ogg")
-const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/error.ogg")
+const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/ui_error.ogg")
 
 ## Components (QA Fix #2: Use CharacterCard component instead of manual UI generation)
 const CHARACTER_CARD_SCENE: PackedScene = preload("res://scenes/ui/character_card.tscn")
 const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
 	"res://scenes/ui/character_details_panel.tscn"
 )
-const ThemeHelper = preload("res://scripts/ui/theme/theme_helper.gd")
-const UIIcons = preload("res://scripts/ui/theme/ui_icons.gd")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready var character_list: VBoxContainer = $CharacterListContainer/ScrollContainer/CharacterList
 @onready var slot_label: Label = $HeaderContainer/SlotLabel
@@ -40,8 +40,8 @@ func _ready() -> void:
 	_connect_signals()
 
 	# Add button animations (Week16: ButtonAnimation component)
-	ThemeHelper.add_button_animation(create_new_button)
-	ThemeHelper.add_button_animation(back_button)
+	THEME_HELPER.add_button_animation(create_new_button)
+	THEME_HELPER.add_button_animation(back_button)
 
 	GameLogger.info(
 		"[CharacterRoster] Initialized", {"character_count": CharacterService.get_character_count()}
@@ -139,11 +139,11 @@ func _connect_signals() -> void:
 	delete_confirmation.canceled.connect(_on_delete_cancelled)  # Fixed: American spelling
 
 	# Apply button styling
-	ThemeHelper.apply_button_style(create_new_button, ThemeHelper.ButtonStyle.PRIMARY)
-	ThemeHelper.apply_button_style(back_button, ThemeHelper.ButtonStyle.SECONDARY)
+	THEME_HELPER.apply_button_style(create_new_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(back_button, THEME_HELPER.ButtonStyle.SECONDARY)
 
 	# Apply button icons
-	UIIcons.apply_button_icon(back_button, UIIcons.Icon.BACK)
+	UI_ICONS.apply_button_icon(back_button, UI_ICONS.Icon.BACK)
 
 
 func _on_character_play_pressed(character_id: String) -> void:
@@ -193,7 +193,7 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 	# iOS HIG: Apply red destructive styling to Delete button
 	var ok_button = delete_confirmation.get_ok_button()
 	if ok_button:
-		ThemeHelper.apply_button_style(ok_button, ThemeHelper.ButtonStyle.DANGER)
+		THEME_HELPER.apply_button_style(ok_button, THEME_HELPER.ButtonStyle.DANGER)
 
 	delete_confirmation.popup_centered()
 

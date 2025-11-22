@@ -18,7 +18,7 @@ signal free_trial_requested(character_type: String)
 ## Audio (Week 14 Phase 1.5 - iOS-compatible preload pattern)
 const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
 const CHARACTER_SELECT_SOUND: AudioStream = preload("res://assets/audio/ui/character_select.ogg")
-const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/error.ogg")
+const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/ui_error.ogg")
 
 ## UI References (cached from scene tree with @onready for performance)
 @onready var character_cards_container: GridContainer = get_node(
