@@ -278,6 +278,257 @@ All validators are in `.system/validators/` directory:
 - **Blocking**: Tests, test method validator, config validator - MUST pass for commit
 - **Non-blocking**: Test patterns, antipatterns, performance - warnings only, good to fix but won't block commit
 
+## Mobile-Native Development Standards
+
+**Effective**: 2025-11-22 (Week 16 learnings)
+
+### Definition of "Mobile-Native"
+
+**Mobile-native DOES NOT mean:**
+- ❌ Gaming UI patterns (two-tap confirmations, button state machines)
+- ❌ Hybrid workarounds (desktop + mobile mixed)
+- ❌ "Works on mobile" (just responsive to screen size)
+
+**Mobile-native MEANS:**
+- ✅ **iOS HIG compliance** - Follow Apple Human Interface Guidelines exactly
+- ✅ **Platform patterns** - Use ModalFactory.show_confirmation(), not button states
+- ✅ **Native controls** - Use ALERT, SHEET, FULLSCREEN modals
+- ✅ **Cite guidelines** - Reference specific HIG sections when claiming compliance
+
+### Before Claiming "iOS HIG Compliant"
+
+**Evidence Checklist:**
+```
+□ Can cite specific iOS HIG guideline(s)? [URL or section]
+□ Uses platform-native patterns? (modals, not button state machines)
+□ Tested on actual iOS device? (not just simulator/desktop)
+□ Uses ModalFactory or approved mobile components?
+```
+
+**If ANY checkbox unchecked → NOT iOS HIG compliant**
+
+### Mobile Pattern Examples
+
+**✅ CORRECT - iOS HIG Pattern:**
+```gdscript
+# Destructive confirmation using native modal
+ModalFactory.show_destructive_confirmation(
+    self,
+    "Delete Character?",
+    "This cannot be undone.",
+    func(): _delete_character()
+)
+```
+
+**❌ INCORRECT - Gaming UI Hack:**
+```gdscript
+# Two-tap button state machine (NOT iOS HIG)
+if delete_state == 0:
+    button.text = "Tap Again to Confirm"
+    delete_state = 1
+elif delete_state == 1:
+    _delete_character()
+```
+
+### Mobile-First Validation
+
+Before marking mobile work "COMPLETE":
+```
+□ Follows iOS HIG (not gaming UI patterns)
+□ Uses approved mobile components (MobileModal, ModalFactory)
+□ Tested on physical iOS device
+□ No desktop patterns mixed in
+□ Can defend every UI choice with HIG citation
+```
+
+---
+
+## Scene Layout Compatibility Rules
+
+**Effective**: 2025-11-22 (After iOS layout mode crash)
+
+### The Problem
+
+iOS strictly validates layout constraints. Incompatible layout modes crash with SIGKILL (no error message).
+
+**Common Conflict:**
+- Node with `anchors_preset` (standalone positioning)
+- Added to `VBoxContainer` or `HBoxContainer` (container layout)
+- **Result**: iOS detects unsolvable constraint → SIGKILL
+
+### Before Modifying .tscn Files
+
+**Layout Compatibility Checklist:**
+```
+□ Is this node going into a container (VBox/HBox)?
+□ Does it have anchors_preset set?
+□ Does it have layout_mode = 2 and size_flags?
+□ Will it work in BOTH contexts (standalone AND container)?
+```
+
+### Container-Compatible Node Requirements
+
+**If adding Control node to VBoxContainer/HBoxContainer:**
+
+**MUST have:**
+- `layout_mode = 2` (container layout mode)
+- `size_flags_horizontal` and/or `size_flags_vertical`
+- Optional: `custom_minimum_size`
+
+**MUST NOT have:**
+- `anchors_preset` (incompatible with containers)
+- `anchor_left`, `anchor_right`, `anchor_top`, `anchor_bottom`
+- `grow_horizontal`, `grow_vertical` (unless using anchors)
+
+### Validation Before Commit
+
+**After modifying any .tscn file:**
+
+1. **Read the scene file** - Check layout_mode and anchors
+2. **Test instantiation** - Run scene_instantiation_validator.py
+3. **Test on iOS device** - Desktop may not show the issue
+4. **Check parent context** - Where is this scene being used?
+
+### Red Flags
+
+- 🚩 Scene has `anchors_preset = 8` (CENTER) but is used in VBoxContainer
+- 🚩 Scene works on desktop but crashes on iOS (layout conflict)
+- 🚩 Modified .tscn without testing in actual usage context
+- 🚩 "It instantiates fine" but haven't tested where it's actually used
+
+---
+
+## Definition of "Complete"
+
+**Effective**: 2025-11-22 (After premature completion claims)
+
+### What "Complete" Actually Means
+
+**Code Complete ≠ Work Complete**
+
+**NOT ENOUGH to mark work "COMPLETE":**
+- ❌ Code written and committed
+- ❌ Automated tests pass (647/671 passing)
+- ❌ Validators pass
+- ❌ "It works on desktop"
+- ❌ Documentation written
+
+**REQUIRED to mark work "COMPLETE":**
+- ✅ Code written and committed
+- ✅ Automated tests pass
+- ✅ Validators pass
+- ✅ **Manual QA pass on target device** (iPhone for mobile work)
+- ✅ **All acceptance criteria met** (not just coded)
+- ✅ **No known bugs** in the feature
+- ✅ **Integration tested** (not just unit tested)
+
+### Phase Completion Checklist
+
+Before marking Phase X "COMPLETE":
+```
+□ All objectives coded and committed?
+□ All automated tests passing?
+□ Manual QA pass on device (not simulator)?
+□ Success criteria from plan ALL met?
+□ No known bugs or workarounds?
+□ User approved the work?
+□ Documentation updated?
+```
+
+**If ANY checkbox unchecked → Phase NOT complete**
+
+### Honest Status Reporting
+
+**Use these statuses accurately:**
+- ✅ **COMPLETE** - All criteria met, QA passed on device, zero known issues
+- 🔨 **CODE COMPLETE** - Coded but not QA tested yet
+- 🧪 **IN QA** - Coded, in testing, may have bugs
+- 🐛 **BROKEN** - Coded but has critical bugs
+- ⏭️ **PENDING** - Not started yet
+
+**NEVER report "COMPLETE" before device QA**
+
+---
+
+## QA & Investigation Protocol
+
+**Effective**: 2025-11-22 (After 5 QA passes doing trial-and-error)
+
+### When QA Fails: Investigation Tiers
+
+**Tier 1: Quick Fix (1 attempt)**
+- Obvious typo, syntax error, missing file
+- Fix immediately, retest
+
+**Tier 2: Stop and Investigate (After 1 failed QA pass)**
+- Read diagnostic logs
+- Check recent changes
+- Review code for obvious issues
+- **If unclear → Tier 3**
+
+**Tier 3: Systematic Investigation (Spawn Expert Agent)**
+- Use Task tool with subagent_type="general-purpose"
+- Evidence-based investigation
+- Root cause analysis
+- Technical debt identification
+
+### NEVER Do This
+
+❌ **Trial-and-error for 3+ QA passes**
+- Wastes user's time (rebuild, redeploy, retest)
+- Misses root cause
+- Creates technical debt
+
+✅ **Instead: Spawn investigation agent after Pass 1 failure**
+- Systematic analysis
+- Evidence-based fixes
+- One proper fix vs. five guesses
+
+### Investigation Agent Trigger
+
+**Spawn investigation agent if:**
+- QA pass 1 fails with unclear root cause
+- Error message doesn't make sense
+- "It should work but doesn't"
+- No error logs or crash with no message
+- iOS-specific issue (works on desktop, fails on device)
+
+**Agent Prompt Template:**
+```
+You are investigating [ISSUE].
+
+Evidence:
+- QA log: [path]
+- Error: [description or "no error, just killed"]
+- Platform: iOS/Desktop
+- Recent changes: [commits]
+
+Tasks:
+1. Read relevant code files
+2. Identify root cause with file:line evidence
+3. Explain why it fails (technical reason)
+4. Provide correct fix (not workaround)
+5. Identify why this wasn't caught earlier
+
+Return: Root cause analysis + correct fix + prevention recommendations
+```
+
+### Investigation > Guessing
+
+**After 1 QA failure:**
+- ✅ Read logs systematically
+- ✅ Spawn expert investigation agent
+- ✅ Find root cause with evidence
+- ✅ Apply correct fix once
+
+**Don't do:**
+- ❌ "Let me try adding this log..."
+- ❌ "Maybe it's this, let me change it..."
+- ❌ "Let's rebuild and see if it works now..."
+- ❌ 5 QA passes doing trial-and-error
+
+---
+
 ## Enforcement Mechanism
 
 **User's role**: Call me out when I violate these rules
@@ -387,5 +638,5 @@ Using --no-verify to bypass and move forward."
 
 ---
 
-**Last Updated**: 2025-11-18 by Claude Code (Session Continuity Protocol added)
+**Last Updated**: 2025-11-22 by Claude Code (Mobile-Native Standards, Scene Layout Rules, Definition of Complete, QA Investigation Protocol added)
 **Next Review**: When violations occur or user requests update
