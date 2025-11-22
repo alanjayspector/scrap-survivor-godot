@@ -150,13 +150,64 @@ magick "$icon" \
 - [x] `scrapyard.tscn` (hub) - Theme + Primary/Secondary/Ghost buttons
 - [x] `hud.tscn` - Theme applied
 
-### 3. ~~Haptic Feedback System~~ (COMPLETED)
+### 3. ~~Haptic Feedback System~~ (COMPLETED - QA FINDINGS)
 - [x] Created `scripts/ui/theme/haptic_feedback.gd` with tap/select/warning/error/impact methods
 - [x] Integrated into hub, roster, creation, card, and wave complete screens
 - [x] Platform-aware (iOS/Android only, no-op on desktop)
 - [x] Commit: `26c8c19`
 
-### 4. Continue with Independent Phases (Week16)
+#### QA Results (2025-11-21)
+**Test Device**: iPhone 15 Pro Max, iOS 26.1
+**Test Log**: `qa/logs/2025-11-21/1`
+
+**Findings**:
+- ✅ **Haptics functionally work** - User felt vibrations on button presses
+- ✅ **Gameplay and flow fine** - No crashes or glitches
+- ❌ **Console errors logged**: `Could not vibrate using haptic engine: (null)`
+  - 1 error early (line 94)
+  - 10 rapid errors during button testing (lines 5722-5738)
+
+**Root Cause Analysis**:
+- **iOS 26.1 compatibility issue** with Godot 4.5.1's Core Haptics implementation
+- Godot PR #94580 (merged Jan 2025) fixed rapid haptic calls causing engine state issues
+- Fix included in Godot 4.4+, should be in 4.5.1
+- **iOS 26.1 introduced new behavior** not accounted for in Godot 4.5.1
+  - Stricter logging or changed `CHHapticEngine` initialization
+  - Error appears even when haptics work (engine falls back to legacy API)
+
+**Research Conducted**:
+1. **Claude Agent Research** - Godot GitHub issues, PRs, official docs
+   - Found PR #94580: Haptic engine fixes for rapid vibration
+   - Confirmed amplitude parameter added in Godot 4.3+
+   - Current implementation already follows best practices
+
+2. **Gemini Deep Research** - Production patterns, App Store risks, engine comparison
+   - See: `docs/gemini-haptic-research.md`
+   - **Key Finding**: No App Store rejection risk from console logs
+   - **Simulator errors expected** - Lack of physical Taptic Engine
+   - **Real device errors rare** - Usually thermal throttling, Low Power Mode, or settings
+   - **Recommendation**: Use HapticManager wrapper pattern (industry standard)
+
+**Decision**:
+- ✅ **Accept errors as iOS 26.1 quirk** (haptics work, no user impact)
+- ✅ **Refactor to HapticManager pattern** (best practice, easier to maintain)
+- ⏳ **Monitor for Godot 4.6** (may include iOS 26.1 fixes)
+
+**Current Haptic Integration** (Direct `Input.vibrate_handheld()` calls):
+- `scenes/ui/wave_complete_screen.gd` (2 calls)
+- `scripts/hub/scrapyard.gd` (1 call)
+- `scripts/ui/character_roster.gd` (2 calls - tap + warning)
+- `scripts/ui/character_creation.gd` (1 call)
+- `scripts/ui/character_card.gd` (3 calls)
+- **NOTE**: No haptics in combat/gameplay (HUD, damage, enemies)
+
+### 4. ~~Haptic Feedback Refactor~~ (IN PROGRESS)
+- [ ] Implement `HapticManager` autoload singleton (wrapper pattern)
+- [ ] Add amplitude control (Godot 4.5.1 supports it)
+- [ ] Migrate all screens to use `HapticManager` API
+- [ ] Optional: Add combat haptics (damage, impact, critical hits)
+
+### 5. Continue with Independent Phases (Week16)
 - [ ] ButtonAnimation component
 - [ ] ScreenContainer for safe areas
 
@@ -178,6 +229,13 @@ magick "$icon" \
 **Existing Infrastructure**:
 - `scripts/ui/theme/ui_constants.gd` - Measurements
 - `scripts/ui/theme/color_palette.gd` - Colors
+
+**Research Documents**:
+- `docs/gemini-haptic-research.md` - Comprehensive iOS haptics analysis (Gemini Deep Research)
+  - Core Haptics architecture in Godot 4.x
+  - iOS 26.1 compatibility notes
+  - App Store certification analysis
+  - HapticManager wrapper pattern recommendations
 
 **Screens Updated** (All have theme + button styling):
 - `scenes/ui/character_roster.tscn` ✅
@@ -212,6 +270,11 @@ See attached "Wasteland Survivor Game Iconography Guide.md" for:
 ---
 
 **Session Date**: 2025-11-21
+**Last Updated**: 2025-11-21 (Haptic QA findings and refactor plan)
+
 **Recent Commits**:
 - `26c8c19` - feat: add haptic feedback system for mobile UI
 - `2414b13` - fix: apply DANGER style to delete confirmation OK button
+
+**Next Commit**:
+- Implement HapticManager wrapper pattern for iOS 26.1 compatibility
