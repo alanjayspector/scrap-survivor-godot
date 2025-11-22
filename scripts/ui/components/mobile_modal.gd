@@ -206,7 +206,7 @@ func _build_content() -> void:
 	content_vbox = VBoxContainer.new()
 	content_vbox.name = "ContentVBox"
 	modal_container.add_child(content_vbox)  # Parent FIRST
-	content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	content_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	content_vbox.add_theme_constant_override("separation", 16)
 
 	# Title label
@@ -214,7 +214,7 @@ func _build_content() -> void:
 		title_label = Label.new()
 		title_label.name = "TitleLabel"
 		content_vbox.add_child(title_label)  # Parent FIRST
-		title_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+		title_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		title_label.text = title_text
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		title_label.add_theme_font_size_override("font_size", 22)
@@ -226,7 +226,7 @@ func _build_content() -> void:
 		message_label = Label.new()
 		message_label.name = "MessageLabel"
 		content_vbox.add_child(message_label)  # Parent FIRST
-		message_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+		message_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		message_label.text = message_text
 		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		message_label.add_theme_font_size_override("font_size", 16)
@@ -237,7 +237,7 @@ func _build_content() -> void:
 	button_container = HBoxContainer.new()
 	button_container.name = "ButtonContainer"
 	content_vbox.add_child(button_container)  # Parent FIRST
-	button_container.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	button_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	button_container.add_theme_constant_override("separation", 16)
 	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
 
@@ -261,7 +261,7 @@ func _add_button(button_text: String, callback: Callable, style: int) -> Button:
 	"""Internal: Add a button with specified style"""
 	var button = Button.new()
 	button_container.add_child(button)  # Parent FIRST
-	button.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	button.text = button_text
 	button.custom_minimum_size = Vector2(0, 50)  # iOS HIG: 44pt + safety
 	button.add_theme_font_size_override("font_size", 18)
@@ -282,13 +282,17 @@ func _add_button(button_text: String, callback: Callable, style: int) -> Button:
 
 func show_modal() -> void:
 	"""Show modal with animation"""
+	GameLogger.debug("[MobileModal] show_modal() ENTRY", {"type": ModalType.keys()[modal_type]})
+
 	if _is_showing:
+		GameLogger.debug("[MobileModal] Already showing, skipping")
 		return
 
 	_is_showing = true
 	visible = true
 
 	# Play entrance animation
+	GameLogger.debug("[MobileModal] Starting entrance animation")
 	_animate_entrance()
 
 	# Emit signal
@@ -296,6 +300,8 @@ func show_modal() -> void:
 
 	# Haptic feedback
 	HapticManager.light()
+
+	GameLogger.debug("[MobileModal] show_modal() EXIT - Modal displayed successfully")
 
 
 func dismiss() -> void:

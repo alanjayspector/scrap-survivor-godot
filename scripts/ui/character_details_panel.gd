@@ -73,6 +73,11 @@ func _ready() -> void:
 
 func show_character(character: Dictionary) -> void:
 	"""Display full character details in tabbed layout"""
+	GameLogger.debug(
+		"[CharacterDetailsPanel] show_character() ENTRY",
+		{"character": character.get("name", "Unknown"), "id": character.get("id", "")}
+	)
+
 	var character_id = character.get("id", "")
 	var character_name = character.get("name", "Unknown")
 	var character_type = character.get("character_type", "scavenger")
@@ -121,6 +126,8 @@ func show_character(character: Dictionary) -> void:
 	tab_container.current_tab = 0
 	show()
 
+	GameLogger.debug("[CharacterDetailsPanel] show_character() EXIT - Panel displayed successfully")
+
 
 func _update_primary_stats(stats: Dictionary) -> void:
 	"""Update the 4 primary stats in the always-visible card"""
@@ -132,6 +139,8 @@ func _update_primary_stats(stats: Dictionary) -> void:
 
 func _populate_collapsible_stats(stats: Dictionary) -> void:
 	"""Create collapsible sections for secondary stats"""
+	GameLogger.debug("[CharacterDetailsPanel] _populate_collapsible_stats() ENTRY")
+
 	# Clear existing
 	for child in collapsible_stats.get_children():
 		child.queue_free()
@@ -172,20 +181,29 @@ func _populate_collapsible_stats(stats: Dictionary) -> void:
 
 	await get_tree().process_frame
 
+	GameLogger.debug(
+		"[CharacterDetailsPanel] _populate_collapsible_stats() EXIT - All sections created"
+	)
+
 
 func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 	"""Add a collapsible section with header button and stat rows"""
+	GameLogger.debug(
+		"[CharacterDetailsPanel] _add_collapsible_section() ENTRY",
+		{"section": section_name, "row_count": stat_rows.size()}
+	)
+
 	var section_container = VBoxContainer.new()
 	section_container.name = section_name + "Section"
 	collapsible_stats.add_child(section_container)  # Parent FIRST
-	section_container.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	section_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	section_container.add_theme_constant_override("separation", 4)
 
 	# Header button (tap to expand/collapse)
 	var header_btn = Button.new()
 	header_btn.name = section_name + "Header"
 	section_container.add_child(header_btn)  # Parent FIRST
-	header_btn.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	header_btn.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	header_btn.custom_minimum_size = Vector2(0, 44)  # Touch-friendly
 	header_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_update_section_header(header_btn, section_name, _expanded_sections.get(section_name, false))
@@ -196,34 +214,60 @@ func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 	var content = VBoxContainer.new()
 	content.name = section_name + "Content"
 	section_container.add_child(content)  # Parent FIRST
-	content.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	content.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	content.add_theme_constant_override("separation", 6)
 	content.visible = _expanded_sections.get(section_name, false)
 
 	for stat_data in stat_rows:
+		GameLogger.debug(
+			"[CharacterDetailsPanel] About to create stat row",
+			{"section": section_name, "stat": stat_data[0]}
+		)
 		var row = _create_stat_row(stat_data[0], stat_data[1])
 		content.add_child(row)
+		GameLogger.debug(
+			"[CharacterDetailsPanel] Stat row parented successfully",
+			{"section": section_name, "stat": stat_data[0]}
+		)
+
+	GameLogger.debug(
+		"[CharacterDetailsPanel] _add_collapsible_section() EXIT",
+		{"section": section_name, "rows_created": stat_rows.size()}
+	)
 
 
 func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
-	"""Create a single stat row with icon+name and value"""
+	"""Create a single stat row with icon+name and value
+
+	CRITICAL: This function follows Parent-First protocol to prevent iOS SIGKILL.
+	The hbox is created, children are parented to it, THEN custom_minimum_size is set
+	AFTER the hbox itself will be parented by the caller.
+	"""
+	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() ENTRY", {"name": stat_name})
+
 	var hbox = HBoxContainer.new()
-	hbox.custom_minimum_size = Vector2(0, 28)
+	# DO NOT configure custom_minimum_size here - violates Parent-First protocol!
+	# The hbox will be parented by caller AFTER this function returns.
 
 	var name_label = Label.new()
 	hbox.add_child(name_label)  # Parent FIRST
-	name_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	name_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	name_label.text = stat_name
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.add_theme_font_size_override("font_size", 18)
 
 	var value_label = Label.new()
 	hbox.add_child(value_label)  # Parent FIRST
-	value_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
+	value_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	value_label.text = stat_value
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value_label.add_theme_font_size_override("font_size", 18)
 
+	# NOW configure hbox AFTER children are parented
+	# (hbox itself will be parented by caller immediately after this returns)
+	hbox.custom_minimum_size = Vector2(0, 28)
+
+	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() EXIT", {"name": stat_name})
 	return hbox
 
 

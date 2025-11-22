@@ -225,6 +225,9 @@ func _execute_delete(character_id: String) -> void:
 
 func _on_character_details_pressed(character_id: String) -> void:
 	"""Handle Details button - show character details in mobile-native sheet (Week 16 Phase 4)"""
+	GameLogger.debug(
+		"[CharacterRoster] Details button pressed - ENTRY", {"character_id": character_id}
+	)
 	_play_sound(BUTTON_CLICK_SOUND)
 
 	# Get character data
@@ -256,10 +259,14 @@ func _on_character_details_pressed(character_id: String) -> void:
 	character_details_modal.dismissed.connect(_on_details_modal_dismissed)
 
 	# Show character data
+	GameLogger.debug("[CharacterRoster] About to call details_panel.show_character()")
 	details_panel.show_character(character)
+	GameLogger.debug("[CharacterRoster] details_panel.show_character() returned successfully")
 
 	# Show modal with animation
+	GameLogger.debug("[CharacterRoster] About to call modal.show_modal()")
 	character_details_modal.show_modal()
+	GameLogger.debug("[CharacterRoster] Details flow complete - modal displayed")
 
 
 func _on_details_panel_closed() -> void:
