@@ -201,11 +201,14 @@ magick "$icon" \
 - `scripts/ui/character_card.gd` (3 calls)
 - **NOTE**: No haptics in combat/gameplay (HUD, damage, enemies)
 
-### 4. ~~Haptic Feedback Refactor~~ (IN PROGRESS)
-- [ ] Implement `HapticManager` autoload singleton (wrapper pattern)
-- [ ] Add amplitude control (Godot 4.5.1 supports it)
-- [ ] Migrate all screens to use `HapticManager` API
-- [ ] Optional: Add combat haptics (damage, impact, critical hits)
+### 4. ~~Haptic Feedback Refactor~~ (COMPLETED)
+- [x] Implement `HapticManager` autoload singleton (wrapper pattern)
+- [x] Add amplitude control (Godot 4.5.1 supports it)
+- [x] Migrate all screens to use `HapticManager` API
+- [x] Remove deprecated `haptic_feedback.gd`
+- [x] Tests passing (647/671)
+- [x] Commit: `e6ae281`
+- [ ] Optional: Add combat haptics (damage, impact, critical hits) - Future enhancement
 
 ### 5. Continue with Independent Phases (Week16)
 - [ ] ButtonAnimation component
@@ -219,7 +222,7 @@ magick "$icon" \
 - `themes/game_theme.tres` - Main theme
 - `scripts/ui/theme/theme_helper.gd` - Programmatic button styling
 - `scripts/ui/theme/ui_icons.gd` - Icon loader (UIIcons class)
-- `scripts/ui/theme/haptic_feedback.gd` - Mobile haptic/vibration feedback
+- `scripts/autoload/haptic_manager.gd` - Centralized haptic feedback (iOS 26.1 compatible)
 - `scripts/ui/components/ui_icon.gd` - iOS-safe text fallbacks
 
 **Icons** (Kenney Game Icons - CC0):
@@ -270,11 +273,13 @@ See attached "Wasteland Survivor Game Iconography Guide.md" for:
 ---
 
 **Session Date**: 2025-11-21
-**Last Updated**: 2025-11-21 (Haptic QA findings and refactor plan)
+**Last Updated**: 2025-11-21 (HapticManager refactor completed)
 
 **Recent Commits**:
+- `e6ae281` - refactor: implement HapticManager wrapper for iOS 26.1 compatibility
+- `42fd1f3` - docs: update session handoff for haptic QA findings
 - `26c8c19` - feat: add haptic feedback system for mobile UI
 - `2414b13` - fix: apply DANGER style to delete confirmation OK button
 
-**Next Commit**:
-- Implement HapticManager wrapper pattern for iOS 26.1 compatibility
+**Next Task**:
+- Continue Week16 independent phases (ButtonAnimation, ScreenContainer)
