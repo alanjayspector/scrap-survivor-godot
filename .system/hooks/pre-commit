@@ -93,6 +93,19 @@ if [ "$IS_AMEND" = true ]; then
 fi
 
 # ============================================================================
+# Empty Commit Detection (Week 16 - Process Improvement)
+# ============================================================================
+# Prevent commits with no staged changes (except merges)
+if git diff --cached --quiet && [ "$IS_MERGE" = false ]; then
+    echo -e "${RED}❌ ERROR: Attempting to create empty commit${NC}"
+    echo "   No files staged for commit"
+    echo ""
+    echo "   This check prevents commits where work is claimed but no changes exist."
+    echo "   If you need an empty commit (rare), use: git commit --allow-empty"
+    exit 1
+fi
+
+# ============================================================================
 # Standard validation checks
 # ============================================================================
 echo "🔍 Running pre-commit checks..."

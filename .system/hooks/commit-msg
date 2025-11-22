@@ -13,3 +13,19 @@ if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
     echo "Example: feat: add enemy spawning"
     exit 1
 fi
+
+# Check for "fix" claims with no file changes (Week 16 - Process Improvement)
+# This prevents empty commits that claim to fix something
+if echo "$COMMIT_MSG" | grep -qiE "^fix"; then
+    # Check if there are staged changes
+    if git diff --cached --quiet; then
+        # Check if this is a merge commit (allowed to be empty)
+        if [ ! -f .git/MERGE_HEAD ]; then
+            echo "❌ Commit message claims 'fix' but no files are being changed"
+            echo ""
+            echo "   This prevents empty commits claiming to fix issues."
+            echo "   Either stage your changes or use a different commit type."
+            exit 1
+        fi
+    fi
+fi

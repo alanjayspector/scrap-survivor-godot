@@ -27,8 +27,11 @@ signal shown
 signal dismissed
 signal backdrop_tapped
 
-## Modal Types
-enum ModalType { ALERT, SHEET, FULLSCREEN }  ## Small centered dialog (confirmations, alerts)  ## Bottom sheet (character details, complex info)  ## Full-screen takeover (onboarding, tutorials)
+## Modal Types:
+## - ALERT: Small centered dialog (confirmations, alerts)
+## - SHEET: Bottom sheet (character details, complex info)
+## - FULLSCREEN: Full-screen takeover (onboarding, tutorials)
+enum ModalType { ALERT, SHEET, FULLSCREEN }
 
 ## Configuration (exported for easy scene configuration)
 @export var modal_type: ModalType = ModalType.ALERT
