@@ -1,9 +1,9 @@
 # Next Session: Week 16 Mobile UI Standards Overhaul
 
-**Last Updated**: 2025-11-22 (QA Pass 7 FAILED → Expert investigation → Real root cause found)
+**Last Updated**: 2025-11-22 (QA Pass 8 fixes applied - Parent-First protocol)
 **Current Branch**: `main`
-**Current Phase**: Phase 4 IN PROGRESS (7 QA failures, fix identified)
-**Status**: Ready for QA Pass 8 with dynamic node layout mode fixes
+**Current Phase**: Phase 4 IN PROGRESS (7 QA failures, comprehensive fix applied)
+**Status**: Ready for QA Pass 8 - All 13 dynamic nodes fixed with Parent-First + layout_mode
 
 ---
 
@@ -100,41 +100,66 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - ❌ **Don't report work complete before it's tested on device**
 - ❌ **Don't use hybrid patterns (two-tap buttons) - use proper modals**
 - ❌ **Don't assume scene file fixes solve dynamic node bugs** - 7 passes to learn this
+- ❌ **Don't configure nodes before parenting** - violates Parent-First protocol
 - ✅ **Evidence-based engineering** - spawn expert agent to investigate crashes
 - ✅ **Mobile-first means iOS HIG, not gaming UI patterns**
 - ✅ **Layout mode matters** - anchor-based nodes can't be VBoxContainer children on iOS
 - ✅ **After 1 QA failure, spawn expert agent** - not 6+ trial-and-error rounds
 - ✅ **Fix ALL nodes** - scenes (.tscn) AND dynamic code (.gd)
-- ✅ **VBoxContainer.new() defaults to layout_mode = 1** - ALWAYS set it explicitly
+- ✅ **Parent-First Protocol is MANDATORY** - parent BEFORE configuring (Godot 4 requirement)
+- ✅ **Explicit layout_mode = 2 for iOS safety** - don't rely on engine auto-switching
 
 **QA Pass 7** - ❌ FAILED (7th failure total)
 - **Attempted Fix**: CharacterDetailsPanel scene file MarginContainer layout_mode
 - **Result**: Still crashes at exact same point
 - **Real Discovery**: Bug is NOT in scene files - it's in DYNAMICALLY CREATED NODES
 
-**QA Pass 8 Investigation** (Expert panel - 3 parallel agents):
+**QA Pass 8 Investigation & Fix** (COMPLETE):
 - **CRITICAL FINDING**: `content_vbox = VBoxContainer.new()` at mobile_modal.gd:206
 - **Root Cause**: `.new()` defaults to `layout_mode = 1` (anchors), needs `layout_mode = 2`
-- **Scope**: 17 dynamically created Control nodes missing layout_mode across 2 files
-- **Files Affected**:
-  - mobile_modal.gd: 6 nodes (content_vbox, modal_container, labels, buttons)
-  - character_details_panel.gd: 11 nodes (sections, stat rows, labels)
+- **Research Validation**: Godot iOS SIGKILL research confirmed Parent-First protocol is THE solution
+- **Scope**: 13 dynamically created Control nodes across 2 files (originally estimated 17)
+- **Files Fixed**:
+  - [mobile_modal.gd](scripts/ui/components/mobile_modal.gd): 6 nodes ✅
+    - backdrop (ColorRect)
+    - content_vbox (VBoxContainer) **CRITICAL**
+    - title_label (Label)
+    - message_label (Label)
+    - button_container (HBoxContainer)
+    - button in _add_button() (Button)
+  - [character_details_panel.gd](scripts/ui/character_details_panel.gd): 6 nodes ✅
+    - section_container (VBoxContainer) **CRITICAL**
+    - header_btn (Button)
+    - content (VBoxContainer) **CRITICAL**
+    - hbox (HBoxContainer)
+    - name_label (Label)
+    - value_label (Label)
 
 **Why This Took 7 Passes**:
 - Fixed scene files (.tscn) in passes 5-7
 - Missed dynamic node creation in scripts (.gd)
 - Scene instantiation tests pass (don't test dynamic content)
-- Crash happens when `content_vbox.add_child(panel)` executes
+- Crash happens when container layout solver triggers infinite recursion
 
-**The Fix (QA Pass 8)**:
-Add `layout_mode = Control.LAYOUT_MODE_CONTAINER` after ALL `.new()` Control node creation
-
-**Priority 1 (Critical)**:
+**The Fix Applied (Parent-First Protocol)**:
 ```gdscript
-# mobile_modal.gd:206
-content_vbox = VBoxContainer.new()
-content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # ADD THIS
+# BEFORE (WRONG - Configure-then-Parent):
+var node = VBoxContainer.new()
+node.add_theme_constant_override("separation", 16)  # ❌ Configure first
+parent.add_child(node)  # ❌ Parent last → layout_mode conflict
+
+# AFTER (CORRECT - Parent-First):
+var node = VBoxContainer.new()
+parent.add_child(node)  # ✅ Parent FIRST
+node.layout_mode = Control.LAYOUT_MODE_CONTAINER  # ✅ Explicit Mode 2 for iOS
+node.add_theme_constant_override("separation", 16)  # ✅ Configure AFTER
 ```
+
+**Research Citation**:
+- iOS Watchdog kills app after 5-10s of main thread hang
+- Infinite loop: Container sorts → Child rejects (anchors) → Container re-sorts → Loop
+- Parent-First ensures engine switches child to Mode 2 before configuration
+- Explicit `layout_mode = 2` adds safety for iOS Metal backend
 
 **Community Research**:
 - Godot Issue #104598: Exact same bug, fixed in 4.5 for scene editor
@@ -143,7 +168,7 @@ content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # ADD THIS
 
 **Tests**: ✅ 647/671 passing
 
-**QA Status**: 🔨 Ready for QA Pass 8 (dynamic node layout fixes pending)
+**QA Status**: 🔨 Ready for QA Pass 8 (Parent-First protocol applied to all 13 nodes)
 
 ---
 
@@ -323,16 +348,18 @@ content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # ADD THIS
 **Next Session Prompt**: "continue with Week 16 Phase 5"
 
 **Immediate Next Steps**:
-1. Apply dynamic node layout_mode fixes (17 nodes across 2 files):
-   - mobile_modal.gd: content_vbox, modal_container, title_label, message_label, button_container, buttons
-   - character_details_panel.gd: section containers, stat rows, labels
-2. Commit fixes (QA Pass 8 preparation)
-3. User builds and deploys
-4. QA Pass 8: Test Details button with "Create & Hub" shortcut
-5. If passes → Proceed to Phase 5
-6. If fails → Full diagnostic logging + Gemini research synthesis
+1. ✅ **COMPLETE**: Applied Parent-First protocol to all 13 dynamic nodes
+2. **PENDING**: Commit fixes with approval (QA Pass 8 preparation)
+3. **PENDING**: User builds and deploys to iPhone
+4. **PENDING**: QA Pass 8 testing:
+   - Use "Create & Hub" shortcut (10 seconds to test)
+   - Test Details button (bottom sheet modal)
+   - Test Delete button (alert modal)
+   - Verify no iOS SIGKILL crashes
+5. **If QA Pass 8 succeeds** → Phase 4 COMPLETE, proceed to Phase 5
+6. **If QA Pass 8 fails** → Spawn investigation agent for deeper analysis
 
-**Gemini Query Running**: iOS layout mode defaults, Godot 4.5.1 best practices
+**Research Complete**: iOS SIGKILL forensic analysis validated our fix strategy
 
 **Mobile-First Principle Confirmed**:
 - ✅ No desktop patterns

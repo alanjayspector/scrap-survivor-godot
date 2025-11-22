@@ -92,11 +92,11 @@ func _build_backdrop() -> void:
 	"""Create backdrop overlay"""
 	backdrop = ColorRect.new()
 	backdrop.name = "ModalBackdrop"
+	add_child(backdrop)  # Parent FIRST
 	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	backdrop.color = backdrop_color
 	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks to content below
 	backdrop.modulate.a = 0.0  # Start invisible
-	add_child(backdrop)
 
 	# Connect tap-to-dismiss
 	backdrop.gui_input.connect(_on_backdrop_input)
@@ -205,37 +205,41 @@ func _build_content() -> void:
 	"""Build content structure (title, message, buttons)"""
 	content_vbox = VBoxContainer.new()
 	content_vbox.name = "ContentVBox"
+	modal_container.add_child(content_vbox)  # Parent FIRST
+	content_vbox.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	content_vbox.add_theme_constant_override("separation", 16)
-	modal_container.add_child(content_vbox)
 
 	# Title label
 	if not title_text.is_empty():
 		title_label = Label.new()
 		title_label.name = "TitleLabel"
+		content_vbox.add_child(title_label)  # Parent FIRST
+		title_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 		title_label.text = title_text
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		title_label.add_theme_font_size_override("font_size", 22)
 		title_label.add_theme_color_override("font_color", Color.WHITE)
 		title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		content_vbox.add_child(title_label)
 
 	# Message label
 	if not message_text.is_empty():
 		message_label = Label.new()
 		message_label.name = "MessageLabel"
+		content_vbox.add_child(message_label)  # Parent FIRST
+		message_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 		message_label.text = message_text
 		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		message_label.add_theme_font_size_override("font_size", 16)
 		message_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		content_vbox.add_child(message_label)
 
 	# Button container (added later via add_button methods)
 	button_container = HBoxContainer.new()
 	button_container.name = "ButtonContainer"
+	content_vbox.add_child(button_container)  # Parent FIRST
+	button_container.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	button_container.add_theme_constant_override("separation", 16)
 	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	content_vbox.add_child(button_container)
 
 
 func add_primary_button(button_text: String, callback: Callable) -> Button:
@@ -256,6 +260,8 @@ func add_danger_button(button_text: String, callback: Callable) -> Button:
 func _add_button(button_text: String, callback: Callable, style: int) -> Button:
 	"""Internal: Add a button with specified style"""
 	var button = Button.new()
+	button_container.add_child(button)  # Parent FIRST
+	button.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	button.text = button_text
 	button.custom_minimum_size = Vector2(0, 50)  # iOS HIG: 44pt + safety
 	button.add_theme_font_size_override("font_size", 18)
@@ -271,7 +277,6 @@ func _add_button(button_text: String, callback: Callable, style: int) -> Button:
 			callback.call()
 	)
 
-	button_container.add_child(button)
 	return button
 
 

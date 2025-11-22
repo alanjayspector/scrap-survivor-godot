@@ -177,30 +177,32 @@ func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 	"""Add a collapsible section with header button and stat rows"""
 	var section_container = VBoxContainer.new()
 	section_container.name = section_name + "Section"
+	collapsible_stats.add_child(section_container)  # Parent FIRST
+	section_container.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	section_container.add_theme_constant_override("separation", 4)
 
 	# Header button (tap to expand/collapse)
 	var header_btn = Button.new()
 	header_btn.name = section_name + "Header"
+	section_container.add_child(header_btn)  # Parent FIRST
+	header_btn.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	header_btn.custom_minimum_size = Vector2(0, 44)  # Touch-friendly
 	header_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_update_section_header(header_btn, section_name, _expanded_sections.get(section_name, false))
 	header_btn.add_theme_font_size_override("font_size", 18)
 	header_btn.pressed.connect(_on_section_toggled.bind(section_name, section_container))
-	section_container.add_child(header_btn)
 
 	# Content container (stats)
 	var content = VBoxContainer.new()
 	content.name = section_name + "Content"
+	section_container.add_child(content)  # Parent FIRST
+	content.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	content.add_theme_constant_override("separation", 6)
 	content.visible = _expanded_sections.get(section_name, false)
 
 	for stat_data in stat_rows:
 		var row = _create_stat_row(stat_data[0], stat_data[1])
 		content.add_child(row)
-
-	section_container.add_child(content)
-	collapsible_stats.add_child(section_container)
 
 
 func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
@@ -209,16 +211,18 @@ func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
 	hbox.custom_minimum_size = Vector2(0, 28)
 
 	var name_label = Label.new()
+	hbox.add_child(name_label)  # Parent FIRST
+	name_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	name_label.text = stat_name
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.add_theme_font_size_override("font_size", 18)
-	hbox.add_child(name_label)
 
 	var value_label = Label.new()
+	hbox.add_child(value_label)  # Parent FIRST
+	value_label.layout_mode = Control.LAYOUT_MODE_CONTAINER  # Explicit Mode 2 for iOS
 	value_label.text = stat_value
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value_label.add_theme_font_size_override("font_size", 18)
-	hbox.add_child(value_label)
 
 	return hbox
 
