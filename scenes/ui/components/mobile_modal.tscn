@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://mobile_modal_base"]
+[gd_scene load_steps=2 format=3 uid="uid://bx8m9n0p1q2r3s"]
 
 [ext_resource type="Script" path="res://scripts/ui/components/mobile_modal.gd" id="1_modal"]
 
