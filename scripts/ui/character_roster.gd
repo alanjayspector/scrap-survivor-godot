@@ -18,6 +18,7 @@ const CHARACTER_CARD_SCENE: PackedScene = preload("res://scenes/ui/character_car
 const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
 	"res://scenes/ui/character_details_panel.tscn"
 )
+const MOBILE_MODAL_SCENE: PackedScene = preload("res://scenes/ui/components/mobile_modal.tscn")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
@@ -29,7 +30,7 @@ const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
 var character_to_delete: String = ""  # Track character ID pending deletion
-var character_details_panel: Control = null  # Details panel instance (created on demand)
+var character_details_modal: MobileModal = null  # Details modal instance (Week 16 Phase 4)
 
 
 func _ready() -> void:
@@ -199,7 +200,7 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 
 
 func _on_character_details_pressed(character_id: String) -> void:
-	"""Handle Details button - show character details panel (QA Fix #2b)"""
+	"""Handle Details button - show character details in mobile-native sheet (Week 16 Phase 4)"""
 	_play_sound(BUTTON_CLICK_SOUND)
 
 	GameLogger.info("[CharacterRoster] Details button pressed", {"character_id": character_id})
@@ -212,21 +213,45 @@ func _on_character_details_pressed(character_id: String) -> void:
 		)
 		return
 
-	# Create details panel if it doesn't exist
-	if character_details_panel == null:
-		character_details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
-		add_child(character_details_panel)
-		character_details_panel.closed.connect(_on_details_panel_closed)
+	# Clean up existing modal if present
+	if character_details_modal:
+		character_details_modal.queue_free()
+		character_details_modal = null
 
-	# Show character details
-	character_details_panel.show_character(character)
-	character_details_panel.visible = true
+	# Create mobile-native sheet modal (Week 16 Phase 4)
+	character_details_modal = MOBILE_MODAL_SCENE.instantiate()
+	character_details_modal.modal_type = MobileModal.ModalType.SHEET
+	character_details_modal.allow_swipe_dismiss = true
+	character_details_modal.allow_tap_outside_dismiss = true
+	add_child(character_details_modal)
+
+	# Create and add CharacterDetailsPanel as custom content
+	var details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
+	details_panel.visible = true  # Ensure panel is visible
+	character_details_modal.add_custom_content(details_panel)
+
+	# Connect close signal
+	details_panel.closed.connect(_on_details_panel_closed)
+	character_details_modal.dismissed.connect(_on_details_modal_dismissed)
+
+	# Show character data
+	details_panel.show_character(character)
+
+	# Show modal with animation
+	character_details_modal.show_modal()
 
 
 func _on_details_panel_closed() -> void:
-	"""Handle details panel close"""
-	if character_details_panel:
-		character_details_panel.visible = false
+	"""Handle details panel close button"""
+	if character_details_modal:
+		character_details_modal.dismiss()
+
+
+func _on_details_modal_dismissed() -> void:
+	"""Handle modal dismissal (cleanup)"""
+	if character_details_modal:
+		character_details_modal.queue_free()
+		character_details_modal = null
 
 
 func _on_delete_confirmed() -> void:
