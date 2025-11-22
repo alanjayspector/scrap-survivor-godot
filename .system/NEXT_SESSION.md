@@ -128,13 +128,15 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - `1f3943e` - chore(debug): add diagnostic logging for character roster button flow
 - `9a4329e` - chore(hooks): add empty commit detection and fix claim validation
 - `1df15f5` - fix(lint): resolve gdformat/gdlint enum conflict permanently
+- `e7e00fc` - docs: add GameLogger refactor backlog and update session handoff
+- `c26f02f` - fix(utils): make GameLogger output to console in debug builds
 
 **QA Status**:
 - ❌ Manual QA failing on iPhone 15 Pro Max (buttons non-functional)
 - Pass 1: Buttons broken
 - Pass 2: Buttons still broken
 - Pass 3: Added diagnostic logging → logs invisible
-- Pass 4: Fixed GameLogger → PENDING commit + rebuild
+- Pass 4: Fixed GameLogger → ✅ COMMITTED, ready for rebuild
 
 ---
 
@@ -151,8 +153,8 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 1. ✅ Added diagnostic logging in commit `1f3943e` (button press, signal emission tracking)
 2. ❌ Discovered diagnostic logs were INVISIBLE in QA output
 3. ✅ Root cause: GameLogger writes to `user://logs/` file only, not console
-4. ✅ Fix: Modified GameLogger to also print to console in debug builds
-5. ⏭️ **NEXT**: Commit GameLogger fix, rebuild app, run QA with visible logs
+4. ✅ Fix: Modified GameLogger to also print to console in debug builds (commit `c26f02f`)
+5. ⏭️ **NEXT**: Rebuild app, run QA Pass 5 with visible logs, analyze signal chain
 
 **GameLogger Architecture Issue** (3rd Occurrence):
 - **Problem**: Monolithic `_write_log()` function tightly couples file I/O and console output
@@ -168,9 +170,10 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - ✅ Pre-push full lint (new hook)
 - ✅ gdformat/gdlint conflict resolution (enum comments above declaration)
 
-**Pending Commit**:
-- GameLogger workaround (add console output in debug builds)
-- Character roster/card diagnostic logging preserved (uses GameLogger properly)
+**Commits Complete** (Ready for QA Pass 5):
+- ✅ `c26f02f` - GameLogger workaround (console output in debug builds)
+- ✅ `e7e00fc` - Documentation updates (Week 17 backlog + session handoff)
+- Character roster/card diagnostic logging will now be visible in console
 
 **User Feedback**: "tired of red herrings" - wants to fix actual button bug, not architecture discussions
 
@@ -308,17 +311,15 @@ Redesign confirmation dialogs and modals for mobile-native experience:
 
 **Branch**: `main`
 **Last Commits**:
+- `c26f02f` - fix(utils): make GameLogger output to console in debug builds
+- `e7e00fc` - docs: add GameLogger refactor backlog and update session handoff
 - `9a4329e` - chore(hooks): add empty commit detection and fix claim validation
 - `1df15f5` - fix(lint): resolve gdformat/gdlint enum conflict permanently
 - `1f3943e` - chore(debug): add diagnostic logging for character roster button flow
-- `55de65e` - fix(lint): resolve mobile_modal.gd enum line length error
-- `fd18cc4` - chore: add missing UID files for mobile modal components
 
-**Working Directory**: ⚠️ Modified files (uncommitted):
-- `scripts/utils/logger.gd` - Added console output in debug builds
-- `docs/migration/week17-tentative.md` - Added GameLogger refactor backlog item
+**Working Directory**: ✅ Clean (only test_results.txt/xml from pre-commit hooks)
 
-**Pending Commit**: GameLogger workaround fix (ready to commit after approval)
+**Ready for**: QA Pass 5 (rebuild app with diagnostic logging enabled)
 
 ---
 
@@ -454,14 +455,22 @@ python3 .system/validators/godot_test_runner.py
 
 **Next Session Prompt**: "continue debugging Week 16 Phase 4 button issue"
 
-**Immediate Next Steps**:
-1. Commit GameLogger workaround fix (add console output)
-2. User rebuilds app with latest changes
-3. Run QA test (wasteland → roster → press details/delete)
-4. Analyze logs to find where button signal chain breaks
-5. Fix actual button bug
-6. Complete Phase 4 QA
-7. Resume Phase 5 (Visual Feedback & Polish)
+**Immediate Next Steps** (QA Pass 5):
+1. ✅ Commit GameLogger workaround fix (COMPLETE - commit c26f02f)
+2. ⏭️ User rebuilds app with latest changes (includes diagnostic logging)
+3. ⏭️ Run QA test: Launch → Wasteland → Hub → Roster → Press Details/Delete
+4. ⏭️ Analyze console logs to find where button signal chain breaks
+5. ⏭️ Fix actual button bug based on evidence
+6. ⏭️ Complete Phase 4 QA validation
+7. ⏭️ Resume Phase 5 (Visual Feedback & Polish)
+
+**Expected Logs in Console** (QA Pass 5):
+- `[CharacterRoster] Initializing`
+- `[CharacterCard] Setup starting` (for each character card)
+- `[CharacterCard] Details button pressed` ← When Details tapped
+- `[CharacterCard] Details signal emitted` ← After button press
+- `[CharacterRoster] ⭐ DETAILS SIGNAL RECEIVED ⭐` ← If signal reaches handler
+- If any log missing → indicates where signal chain breaks
 
 **Technical Debt Identified**:
 - GameLogger needs handler-based architecture refactor (added to Week 17 backlog)
