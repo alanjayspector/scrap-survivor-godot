@@ -15,6 +15,8 @@ extends Control
 @onready
 var character_type_cards: GridContainer = $MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards
 @onready var create_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/CreateButton
+@onready
+var create_hub_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/CreateHubButton
 @onready var back_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
@@ -59,6 +61,7 @@ func _ready() -> void:
 
 	# Add button animations (Week16: ButtonAnimation component)
 	THEME_HELPER.add_button_animation(create_button)
+	THEME_HELPER.add_button_animation(create_hub_button)
 	THEME_HELPER.add_button_animation(back_button)
 
 	# Track analytics
@@ -252,10 +255,12 @@ func _setup_slot_usage_banner() -> void:
 func _connect_signals() -> void:
 	"""Connect button signals"""
 	create_button.pressed.connect(_on_create_pressed)
+	create_hub_button.pressed.connect(_on_create_hub_pressed)
 	back_button.pressed.connect(_on_back_pressed)
 
 	# Apply button styling
 	THEME_HELPER.apply_button_style(create_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(create_hub_button, THEME_HELPER.ButtonStyle.PRIMARY)
 	THEME_HELPER.apply_button_style(back_button, THEME_HELPER.ButtonStyle.SECONDARY)
 
 	# Apply button icons
@@ -278,12 +283,16 @@ func _update_create_button_state() -> void:
 	var is_valid = name.length() >= MIN_NAME_LENGTH and name.length() <= MAX_NAME_LENGTH
 
 	create_button.disabled = not is_valid
+	create_hub_button.disabled = not is_valid
 
 	# Show helpful tooltip for invalid names
 	if name_input.text.length() > 0 and name.length() < MIN_NAME_LENGTH:
-		create_button.tooltip_text = "Name must be at least %d characters" % MIN_NAME_LENGTH
+		var tooltip = "Name must be at least %d characters" % MIN_NAME_LENGTH
+		create_button.tooltip_text = tooltip
+		create_hub_button.tooltip_text = tooltip
 	else:
 		create_button.tooltip_text = ""
+		create_hub_button.tooltip_text = ""
 
 
 func _on_type_card_pressed(character_type: String) -> void:
@@ -375,6 +384,92 @@ func _on_create_pressed() -> void:
 	else:
 		# Re-enable button on creation failure
 		create_button.disabled = false
+		_play_sound(ERROR_SOUND)
+		GameLogger.error(
+			"[CharacterCreation] Failed to create character",
+			{"name": name, "type": selected_character_type}
+		)
+
+		# Show error dialog to user
+		_show_creation_error_dialog()
+
+
+func _on_create_hub_pressed() -> void:
+	"""Handle Create & Hub button - create character and go to hub (QA shortcut)"""
+	# Debounce: Disable buttons immediately to prevent double-tap
+	create_button.disabled = true
+	create_hub_button.disabled = true
+
+	var name = name_input.text.strip_edges()
+
+	GameLogger.info(
+		"[CharacterCreation] Create & Hub button pressed (QA shortcut)",
+		{"name": name, "type": selected_character_type}
+	)
+
+	# Validate name
+	if name.length() < MIN_NAME_LENGTH:
+		# Re-enable buttons on validation failure
+		create_button.disabled = false
+		create_hub_button.disabled = false
+		_play_sound(ERROR_SOUND)
+		GameLogger.warning(
+			"[CharacterCreation] Name too short", {"name": name, "length": name.length()}
+		)
+		return
+
+	# Check slot limits
+	var character_count = CharacterService.get_character_count()
+	var slot_limit = CharacterService.get_character_slot_limit()
+
+	if character_count >= slot_limit:
+		# Re-enable buttons on slot limit error
+		create_button.disabled = false
+		create_hub_button.disabled = false
+		_play_sound(ERROR_SOUND)
+		_show_slot_limit_error(slot_limit, CharacterService.get_tier())
+		Analytics.track_event(
+			"slot_limit_reached",
+			{"tier": CharacterService.get_tier(), "count": character_count, "limit": slot_limit}
+		)
+		return
+
+	# Create character
+	_play_sound(CHARACTER_SELECT_SOUND)
+
+	var character_id = CharacterService.create_character(name, selected_character_type)
+
+	if not character_id.is_empty():
+		GameLogger.info(
+			"[CharacterCreation] Character created (hub route)",
+			{"character_id": character_id, "name": name, "type": selected_character_type}
+		)
+
+		# Track analytics
+		Analytics.character_created(selected_character_type)
+		Analytics.track_event("character_creation_hub_route", {"type": selected_character_type})
+
+		# Set as active character
+		GameState.set_active_character(character_id)
+
+		# Save immediately
+		var save_success = SaveManager.save_all_services()
+		if not save_success:
+			# Re-enable buttons on save failure
+			create_button.disabled = false
+			create_hub_button.disabled = false
+			GameLogger.error("[CharacterCreation] Failed to save character")
+			_show_save_error_dialog()
+			return
+
+		GameLogger.info("[CharacterCreation] Character saved, going to hub (QA shortcut)")
+
+		# Go to hub instead of wasteland (QA shortcut)
+		get_tree().change_scene_to_file("res://scenes/hub/scrapyard.tscn")
+	else:
+		# Re-enable buttons on creation failure
+		create_button.disabled = false
+		create_hub_button.disabled = false
 		_play_sound(ERROR_SOUND)
 		GameLogger.error(
 			"[CharacterCreation] Failed to create character",
