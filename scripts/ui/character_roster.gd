@@ -98,6 +98,11 @@ func _create_character_list_item(character: Dictionary) -> void:
 	card.delete_pressed.connect(_on_character_delete_pressed)
 	card.details_pressed.connect(_on_character_details_pressed)
 
+	GameLogger.info(
+		"[CharacterRoster] Card signals connected",
+		{"character_id": character.get("id", ""), "name": character.get("name", "")}
+	)
+
 
 func _show_empty_state() -> void:
 	"""Show message when no characters exist"""
@@ -149,6 +154,7 @@ func _connect_signals() -> void:
 
 func _on_character_play_pressed(character_id: String) -> void:
 	"""Handle Play button - select character and launch combat"""
+	GameLogger.info("[CharacterRoster] ⭐ PLAY SIGNAL RECEIVED ⭐", {"character_id": character_id})
 	_play_sound(CHARACTER_SELECT_SOUND)
 
 	GameLogger.info("[CharacterRoster] Character selected for play", {"character_id": character_id})
@@ -178,6 +184,10 @@ func _on_character_play_pressed(character_id: String) -> void:
 
 func _on_character_delete_pressed(character_id: String, character_name: String) -> void:
 	"""Handle Delete button - show confirmation dialog"""
+	GameLogger.info(
+		"[CharacterRoster] ⭐ DELETE SIGNAL RECEIVED ⭐",
+		{"character_id": character_id, "name": character_name}
+	)
 	_play_sound(BUTTON_CLICK_SOUND)
 	HapticManager.warning()  # Extra warning haptic for destructive action
 
@@ -201,6 +211,7 @@ func _on_character_delete_pressed(character_id: String, character_name: String) 
 
 func _on_character_details_pressed(character_id: String) -> void:
 	"""Handle Details button - show character details in mobile-native sheet (Week 16 Phase 4)"""
+	GameLogger.info("[CharacterRoster] ⭐ DETAILS SIGNAL RECEIVED ⭐", {"character_id": character_id})
 	_play_sound(BUTTON_CLICK_SOUND)
 
 	GameLogger.info("[CharacterRoster] Details button pressed", {"character_id": character_id})

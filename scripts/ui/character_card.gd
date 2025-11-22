@@ -42,6 +42,11 @@ func setup(character: Dictionary) -> void:
 	var character_level = character.get("level", 1)
 	var highest_wave = character.get("highest_wave", 0)
 
+	GameLogger.info(
+		"[CharacterCard] Setup starting",
+		{"id": character_id, "name": character_name, "buttons_exist": details_button != null}
+	)
+
 	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
 	var type_display_name = type_def.get("display_name", character_type.capitalize())
 	var type_color = type_def.get("color", Color.GRAY)
@@ -82,21 +87,41 @@ func setup(character: Dictionary) -> void:
 	play_button.pressed.connect(_on_play_pressed)
 	delete_button.pressed.connect(_on_delete_pressed)
 
+	GameLogger.info(
+		"[CharacterCard] Setup complete, buttons connected",
+		{
+			"id": character_id,
+			"details_disabled": details_button.disabled,
+			"play_disabled": play_button.disabled,
+			"delete_disabled": delete_button.disabled
+		}
+	)
+
 
 func _on_details_pressed() -> void:
 	"""Emit details signal"""
+	var char_id = character_data.get("id", "")
+	GameLogger.info("[CharacterCard] Details button pressed", {"character_id": char_id})
 	HapticManager.light()
-	details_pressed.emit(character_data.get("id", ""))
+	details_pressed.emit(char_id)
+	GameLogger.info("[CharacterCard] Details signal emitted", {"character_id": char_id})
 
 
 func _on_play_pressed() -> void:
 	"""Emit play signal"""
+	var char_id = character_data.get("id", "")
+	GameLogger.info("[CharacterCard] Play button pressed", {"character_id": char_id})
 	HapticManager.light()
-	play_pressed.emit(character_data.get("id", ""))
+	play_pressed.emit(char_id)
+	GameLogger.info("[CharacterCard] Play signal emitted", {"character_id": char_id})
 
 
 func _on_delete_pressed() -> void:
 	"""Progressive delete confirmation (Week 16 Phase 4 - prevent accidental deletions)"""
+	GameLogger.info(
+		"[CharacterCard] Delete button pressed",
+		{"character_id": character_data.get("id", ""), "state": _delete_confirm_state}
+	)
 	if _delete_confirm_state == 0:
 		# First tap - show warning state
 		_delete_confirm_state = 1
