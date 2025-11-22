@@ -2,8 +2,8 @@
 
 **Last Updated**: 2025-11-22
 **Current Branch**: `main`
-**Current Phase**: Phase 5 (Visual Feedback & Polish)
-**Status**: Phase 0-4 complete, ~5.5 hours remaining
+**Current Phase**: Phase 4 Bug Fixing (Critical)
+**Status**: Phase 0-3.5 complete, Phase 4 complete but BROKEN (buttons non-functional)
 
 ---
 
@@ -118,18 +118,68 @@ If continuing this work, say: **"continue with Week 16 Phase 5"**
 - Mobile dialog standards: [docs/ui-standards/mobile-dialog-standards.md](docs/ui-standards/mobile-dialog-standards.md)
 - Completion summary: [docs/week16-phase4-completion-summary.md](docs/week16-phase4-completion-summary.md)
 
-**Tests**: ✅ 647/671 passing
+**Tests**: ✅ 647/671 passing (automated tests pass, but manual QA fails)
 
 **Commits**:
 - `f8eca69` - feat(ui): add mobile-native dialog and modal system (Week 16 Phase 4)
 - `c88d3c6` - fix(ui): correct mobile_modal.tscn UID format
+- `fd18cc4` - chore: add missing UID files for mobile modal components
+- `55de65e` - fix(lint): resolve mobile_modal.gd enum line length error
+- `1f3943e` - chore(debug): add diagnostic logging for character roster button flow
+- `9a4329e` - chore(hooks): add empty commit detection and fix claim validation
+- `1df15f5` - fix(lint): resolve gdformat/gdlint enum conflict permanently
+
+**QA Status**:
+- ❌ Manual QA failing on iPhone 15 Pro Max (buttons non-functional)
+- Pass 1: Buttons broken
+- Pass 2: Buttons still broken
+- Pass 3: Added diagnostic logging → logs invisible
+- Pass 4: Fixed GameLogger → PENDING commit + rebuild
 
 ---
 
-### Current Phase: Phase 5 (Visual Feedback & Polish)
+### 🚨 CRITICAL ISSUE: Character Roster Buttons Non-Functional (QA Pass 4/5)
 
-**Status**: Ready to start
-**Estimated Time**: 2 hours
+**Problem**: After Week 16 Phase 4 implementation (MobileModal system), character roster buttons stopped working:
+- ❌ Details button pressed → no response
+- ❌ Delete button pressed → no response
+- ✅ User reached roster successfully (navigated from Wasteland → Hub → Roster)
+
+**QA Log**: [qa/logs/2025-11-22/4](qa/logs/2025-11-22/4)
+
+**Investigation Status**:
+1. ✅ Added diagnostic logging in commit `1f3943e` (button press, signal emission tracking)
+2. ❌ Discovered diagnostic logs were INVISIBLE in QA output
+3. ✅ Root cause: GameLogger writes to `user://logs/` file only, not console
+4. ✅ Fix: Modified GameLogger to also print to console in debug builds
+5. ⏭️ **NEXT**: Commit GameLogger fix, rebuild app, run QA with visible logs
+
+**GameLogger Architecture Issue** (3rd Occurrence):
+- **Problem**: Monolithic `_write_log()` function tightly couples file I/O and console output
+- **Root Cause**: No Handler/Appender pattern (industry standard)
+- **Impact**: Each time we need new behavior → modify core function (technical debt)
+- **Solution**: Proper handler-based architecture (2-4 hours)
+- **Decision**: Use workaround now to unblock QA, refactor in Week 17
+- **Backlog**: Added to [docs/migration/week17-tentative.md](docs/migration/week17-tentative.md) Priority 6
+
+**Process Improvements Implemented** (Commit `9a4329e`):
+- ✅ Empty commit detection (pre-commit hook)
+- ✅ Fix claim validation (commit-msg hook)
+- ✅ Pre-push full lint (new hook)
+- ✅ gdformat/gdlint conflict resolution (enum comments above declaration)
+
+**Pending Commit**:
+- GameLogger workaround (add console output in debug builds)
+- Character roster/card diagnostic logging preserved (uses GameLogger properly)
+
+**User Feedback**: "tired of red herrings" - wants to fix actual button bug, not architecture discussions
+
+---
+
+### Current Phase: Phase 5 (Visual Feedback & Polish) - BLOCKED
+
+**Status**: BLOCKED by Phase 4 button bug
+**Estimated Time**: 2 hours (after bug fix)
 
 #### Objectives
 
@@ -258,14 +308,17 @@ Redesign confirmation dialogs and modals for mobile-native experience:
 
 **Branch**: `main`
 **Last Commits**:
-- `7b2e897` - feat(ui): improve character card typography hierarchy (Week 16 Phase 2)
-- `b472dc4` - chore: add ui_audit.gd.uid file
-- `acdd887` - feat(ui): add Week 16 Phase 1 UI audit infrastructure
-- `1be7cf6` - docs: update session handoff with cleanup completion
+- `9a4329e` - chore(hooks): add empty commit detection and fix claim validation
+- `1df15f5` - fix(lint): resolve gdformat/gdlint enum conflict permanently
+- `1f3943e` - chore(debug): add diagnostic logging for character roster button flow
+- `55de65e` - fix(lint): resolve mobile_modal.gd enum line length error
+- `fd18cc4` - chore: add missing UID files for mobile modal components
 
-**Working Directory**: Clean (after Phase 3.5 commit) ✅
+**Working Directory**: ⚠️ Modified files (uncommitted):
+- `scripts/utils/logger.gd` - Added console output in debug builds
+- `docs/migration/week17-tentative.md` - Added GameLogger refactor backlog item
 
-**Pending Commit**: Phase 3.5 documentation (ready to commit)
+**Pending Commit**: GameLogger workaround fix (ready to commit after approval)
 
 ---
 
@@ -397,8 +450,20 @@ python3 .system/validators/godot_test_runner.py
 ---
 
 **Session Date**: 2025-11-22
-**Last Updated**: 2025-11-22 (Phase 4 complete + bug fix, ready for Phase 5)
+**Last Updated**: 2025-11-22 (Phase 4 complete but BROKEN, debugging button issue)
 
-**Next Session Prompt**: "continue with Week 16 Phase 5"
+**Next Session Prompt**: "continue debugging Week 16 Phase 4 button issue"
 
-**Pending User Feedback**: Phase 4 manual QA on iPhone 15 Pro Max
+**Immediate Next Steps**:
+1. Commit GameLogger workaround fix (add console output)
+2. User rebuilds app with latest changes
+3. Run QA test (wasteland → roster → press details/delete)
+4. Analyze logs to find where button signal chain breaks
+5. Fix actual button bug
+6. Complete Phase 4 QA
+7. Resume Phase 5 (Visual Feedback & Polish)
+
+**Technical Debt Identified**:
+- GameLogger needs handler-based architecture refactor (added to Week 17 backlog)
+- This is the 3rd time "hack with prints" workaround has occurred
+- Industry-standard pattern: Logger → Handlers (File, Console, Remote) → Formatters

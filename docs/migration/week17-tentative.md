@@ -220,6 +220,112 @@ com.scrapsurvival.slots_25         - $3.99 (consumable)
 
 ---
 
+## Priority 6: GameLogger Refactor (Technical Debt)
+
+**Context:** GameLogger is a monolithic static class that tightly couples file I/O and console output. The architecture has required repeated workarounds when adding new logging behaviors (this is the 3rd time "hack with prints" has occurred).
+
+**Current Architecture Problems:**
+1. **Monolithic Function**: `_write_log()` does file I/O, console output, and log rotation in one function
+2. **Tight Coupling**: Can't swap outputs without modifying core code
+3. **No Configuration**: Can't do level-based routing (e.g., "INFO+ to file, ERROR+ to console")
+4. **No Extensibility**: Adding remote logging (Sentry, analytics) requires editing core function
+5. **Hardcoded Logic**: `if OS.is_debug_build()` hardcoded - no flexibility for production error handling
+
+**Industry Standard Architecture (Log4j, Python logging, Serilog):**
+```
+Logger (entry point)
+  ↓
+Handlers (multiple, configurable)
+  ├─ FileLogHandler → writes to file
+  ├─ ConsoleLogHandler → prints to stdout
+  ├─ RemoteLogHandler → sends to analytics/Sentry
+  └─ Each handler has:
+      - Formatter (JSON, plain text, etc.)
+      - Filter (level-based routing)
+```
+
+**Proper Implementation (2-4 hours):**
+
+1. **Create Handler Base Class:**
+   ```gdscript
+   # scripts/utils/log_handler.gd
+   class_name LogHandler
+
+   func handle(level: GameLogger.Level, message: String, metadata: Dictionary) -> void:
+       pass  # Override in subclasses
+   ```
+
+2. **Create Concrete Handlers:**
+   ```gdscript
+   # scripts/utils/file_log_handler.gd
+   class_name FileLogHandler extends LogHandler
+
+   func handle(level, message, metadata):
+       # File I/O logic (from current GameLogger)
+
+   # scripts/utils/console_log_handler.gd
+   class_name ConsoleLogHandler extends LogHandler
+
+   func handle(level, message, metadata):
+       # Console output logic
+       if OS.is_debug_build():
+           print("[%s] %s: %s" % [timestamp, level_str, message])
+   ```
+
+3. **Refactor GameLogger to Use Handlers:**
+   ```gdscript
+   # scripts/utils/logger.gd
+   class_name GameLogger
+
+   static var handlers: Array[LogHandler] = []
+
+   static func _static_init() -> void:
+       # Register default handlers
+       handlers.append(FileLogHandler.new())
+       handlers.append(ConsoleLogHandler.new())
+
+   static func _write_log(level: Level, message: String, metadata: Dictionary = {}) -> void:
+       for handler in handlers:
+           handler.handle(level, message, metadata)
+   ```
+
+4. **Future Extensibility (Week 18+):**
+   - Add `RemoteLogHandler` for Sentry/analytics without touching core
+   - Add `JSONLogHandler` for structured logging
+   - Add level-based filtering per handler
+
+**Benefits:**
+- **Separation of Concerns**: Each handler does one thing
+- **Open/Closed Principle**: Add new handlers without modifying GameLogger
+- **Testability**: Mock handlers for testing
+- **Flexibility**: Different output formats/destinations configurable
+- **No More Workarounds**: Stop "hacking with prints"
+
+**Migration Plan:**
+1. Create handler classes (maintain compatibility with existing API)
+2. Move file I/O logic to FileLogHandler
+3. Move console logic to ConsoleLogHandler
+4. Update GameLogger to delegate to handlers
+5. Test that logs still appear in same locations
+6. No changes to call sites (GameLogger.info() still works)
+
+**Risk:** LOW (refactor internal implementation, public API unchanged)
+
+**Testing:**
+- Verify logs still written to `user://logs/scrap_survivor_YYYY-MM-DD.log`
+- Verify console output still appears in debug builds
+- Verify log rotation still works
+- Run full test suite (should be no failures)
+
+**When to Implement:**
+- **GOOD TIME**: After Week 16 Phase 4 QA passes (clean up technical debt)
+- **GOOD TIME**: During Week 17 polish sprint
+- **DEFER**: If Week 17 focuses on new features (meta progression, etc.)
+
+**Priority:** MEDIUM (technical debt cleanup, prevents future workarounds)
+
+---
+
 ## Testing Requirements
 
 **Manual QA with Debug Menu:**
