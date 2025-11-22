@@ -26,11 +26,6 @@ const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 var character_data: Dictionary = {}
 
-# Week 16 Phase 4: Progressive delete confirmation (prevent accidental taps)
-var _delete_confirm_state: int = 0  # 0 = normal, 1 = warning, 2 = executing
-var _confirm_timer: Timer = null
-var _original_delete_text: String = ""
-
 
 func setup(character: Dictionary) -> void:
 	"""Initialize card with character data"""
@@ -79,9 +74,6 @@ func setup(character: Dictionary) -> void:
 	# Apply button icons
 	UI_ICONS.apply_button_icon(delete_button, UI_ICONS.Icon.DELETE)
 
-	# Store original delete button text
-	_original_delete_text = delete_button.text
-
 	# Connect buttons
 	details_button.pressed.connect(_on_details_pressed)
 	play_button.pressed.connect(_on_play_pressed)
@@ -115,47 +107,8 @@ func _on_play_pressed() -> void:
 
 
 func _on_delete_pressed() -> void:
-	"""Progressive delete confirmation (Week 16 Phase 4 - prevent accidental deletions)"""
-	GameLogger.info(
-		"[CharacterCard] Delete button pressed",
-		{"character_id": character_data.get("id", ""), "state": _delete_confirm_state}
-	)
-	if _delete_confirm_state == 0:
-		# First tap - show warning state
-		_delete_confirm_state = 1
-		delete_button.text = "Tap Again to Confirm"
-		HapticManager.warning()  # Warning haptic
-
-		# Start 3-second reset timer
-		if _confirm_timer:
-			_confirm_timer.queue_free()
-
-		_confirm_timer = Timer.new()
-		_confirm_timer.wait_time = 3.0
-		_confirm_timer.one_shot = true
-		_confirm_timer.timeout.connect(_reset_delete_button)
-		add_child(_confirm_timer)
-		_confirm_timer.start()
-
-	elif _delete_confirm_state == 1:
-		# Second tap - execute deletion
-		_delete_confirm_state = 2
-		delete_button.text = "Deleting..."
-		delete_button.disabled = true
-		HapticManager.heavy()  # Heavy haptic for destructive action
-
-		# Emit delete signal
-		delete_pressed.emit(character_data.get("id", ""), character_data.get("name", "Unknown"))
-
-		# Note: Button will be reset when card is removed from scene
-
-
-func _reset_delete_button() -> void:
-	"""Reset delete button to normal state after timeout"""
-	_delete_confirm_state = 0
-	delete_button.text = _original_delete_text
-	delete_button.disabled = false
-
-	if _confirm_timer:
-		_confirm_timer.queue_free()
-		_confirm_timer = null
+	"""Emit delete signal - confirmation handled by CharacterRoster via MobileModal (Week 16 Phase 4)"""
+	var char_id = character_data.get("id", "")
+	var char_name = character_data.get("name", "Unknown")
+	HapticManager.light()
+	delete_pressed.emit(char_id, char_name)

@@ -19,6 +19,7 @@ const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
 	"res://scenes/ui/character_details_panel.tscn"
 )
 const MOBILE_MODAL_SCENE: PackedScene = preload("res://scenes/ui/components/mobile_modal.tscn")
+const MODAL_FACTORY = preload("res://scripts/ui/components/modal_factory.gd")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
@@ -178,14 +179,24 @@ func _on_character_play_pressed(character_id: String) -> void:
 		_play_sound(ERROR_SOUND)
 
 
-func _on_character_delete_pressed(character_id: String, _character_name: String) -> void:
-	"""Handle Delete button - delete character (Week 16 Phase 4 progressive confirmation)
+func _on_character_delete_pressed(character_id: String, character_name: String) -> void:
+	"""Handle Delete button - show mobile-native confirmation (Week 16 Phase 4)
 
-	Note: Progressive confirmation (two-tap pattern) is handled in CharacterCard.
-	By the time this signal is received, user has already confirmed twice.
+	Uses MobileModal ALERT with destructive button styling per iOS HIG.
 	"""
 	_play_sound(BUTTON_CLICK_SOUND)
 
+	# Show mobile-native destructive confirmation
+	MODAL_FACTORY.show_destructive_confirmation(
+		self,
+		"Delete Survivor?",
+		"Delete '%s'? This cannot be undone." % character_name,
+		func(): _execute_delete(character_id)
+	)
+
+
+func _execute_delete(character_id: String) -> void:
+	"""Execute character deletion after confirmation"""
 	# Get character data for analytics before deletion
 	var character = CharacterService.get_character(character_id)
 
