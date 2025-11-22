@@ -74,6 +74,10 @@ static func _write_log(level: Level, message: String, metadata: Dictionary = {})
 	file.store_line(entry)
 	file.close()
 
+	# ALSO print to console in debug builds for QA visibility
+	if OS.is_debug_build():
+		print(entry)
+
 	_rotate_logs()
 
 
