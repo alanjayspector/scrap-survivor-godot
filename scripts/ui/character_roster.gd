@@ -26,10 +26,8 @@ const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 @onready var slot_label: Label = $HeaderContainer/SlotLabel
 @onready var create_new_button: Button = $ButtonsContainer/CreateNewButton
 @onready var back_button: Button = $ButtonsContainer/BackButton
-@onready var delete_confirmation: ConfirmationDialog = $DeleteConfirmationDialog
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
-var character_to_delete: String = ""  # Track character ID pending deletion
 var character_details_modal: MobileModal = null  # Details modal instance (Week 16 Phase 4)
 
 
@@ -141,8 +139,6 @@ func _connect_signals() -> void:
 	"""Connect button signals"""
 	create_new_button.pressed.connect(_on_create_new_pressed)
 	back_button.pressed.connect(_on_back_pressed)
-	delete_confirmation.confirmed.connect(_on_delete_confirmed)
-	delete_confirmation.canceled.connect(_on_delete_cancelled)  # Fixed: American spelling
 
 	# Apply button styling
 	THEME_HELPER.apply_button_style(create_new_button, THEME_HELPER.ButtonStyle.PRIMARY)
@@ -182,31 +178,38 @@ func _on_character_play_pressed(character_id: String) -> void:
 		_play_sound(ERROR_SOUND)
 
 
-func _on_character_delete_pressed(character_id: String, character_name: String) -> void:
-	"""Handle Delete button - show confirmation dialog"""
-	GameLogger.info(
-		"[CharacterRoster] ⭐ DELETE SIGNAL RECEIVED ⭐",
-		{"character_id": character_id, "name": character_name}
-	)
+func _on_character_delete_pressed(character_id: String, _character_name: String) -> void:
+	"""Handle Delete button - delete character (Week 16 Phase 4 progressive confirmation)
+
+	Note: Progressive confirmation (two-tap pattern) is handled in CharacterCard.
+	By the time this signal is received, user has already confirmed twice.
+	"""
 	_play_sound(BUTTON_CLICK_SOUND)
-	HapticManager.warning()  # Extra warning haptic for destructive action
 
-	GameLogger.info(
-		"[CharacterRoster] Delete button pressed",
-		{"character_id": character_id, "name": character_name}
-	)
+	# Get character data for analytics before deletion
+	var character = CharacterService.get_character(character_id)
 
-	character_to_delete = character_id
-	delete_confirmation.dialog_text = (
-		"Delete survivor '%s'?\nThis cannot be undone." % character_name
-	)
+	# Delete character
+	var success = CharacterService.delete_character(character_id)
+	if success:
+		GameLogger.info("[CharacterRoster] Character deleted", {"character_id": character_id})
 
-	# iOS HIG: Apply red destructive styling to Delete button
-	var ok_button = delete_confirmation.get_ok_button()
-	if ok_button:
-		THEME_HELPER.apply_button_style(ok_button, THEME_HELPER.ButtonStyle.DANGER)
+		# Track deletion in analytics
+		Analytics.character_deleted(
+			character.get("character_type", "unknown"), character.get("level", 1)
+		)
 
-	delete_confirmation.popup_centered()
+		# Save changes
+		SaveManager.save_all_services()
+
+		# Refresh UI
+		_populate_character_list()
+		_update_slot_label()
+	else:
+		GameLogger.error(
+			"[CharacterRoster] Failed to delete character", {"character_id": character_id}
+		)
+		_play_sound(ERROR_SOUND)
 
 
 func _on_character_details_pressed(character_id: String) -> void:
@@ -259,42 +262,6 @@ func _on_details_modal_dismissed() -> void:
 	if character_details_modal:
 		character_details_modal.queue_free()
 		character_details_modal = null
-
-
-func _on_delete_confirmed() -> void:
-	"""Handle delete confirmation - actually delete character"""
-	if character_to_delete.is_empty():
-		return
-
-	var character = CharacterService.get_character(character_to_delete)
-	var success = CharacterService.delete_character(character_to_delete)
-
-	if success:
-		GameLogger.info(
-			"[CharacterRoster] Character deleted", {"character_id": character_to_delete}
-		)
-		Analytics.character_deleted(
-			character.get("character_type", "unknown"), character.get("level", 1)
-		)
-
-		SaveManager.save_all_services()
-
-		# Refresh list
-		_populate_character_list()
-		_update_slot_label()
-	else:
-		_play_sound(ERROR_SOUND)
-		GameLogger.error(
-			"[CharacterRoster] Failed to delete character", {"character_id": character_to_delete}
-		)
-
-	character_to_delete = ""
-
-
-func _on_delete_cancelled() -> void:
-	"""Handle delete dialog cancelled - clear pending deletion"""
-	GameLogger.info("[CharacterRoster] Delete cancelled")
-	character_to_delete = ""
 
 
 func _on_create_new_pressed() -> void:
