@@ -128,7 +128,7 @@ func _create_character_card(character_type: String) -> Control:
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 13)  # Larger for readability
+	desc_label.add_theme_font_size_override("font_size", 15)  # Flavor text - readable but de-emphasized (Week 16 Phase 2)
 	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	desc_label.add_theme_constant_override("outline_size", 1)
 	vbox.add_child(desc_label)
@@ -154,7 +154,7 @@ func _create_character_card(character_type: String) -> Control:
 		var stat_label = Label.new()
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
-		stat_label.add_theme_font_size_override("font_size", 12)  # Larger for readability
+		stat_label.add_theme_font_size_override("font_size", 16)  # Primary decision content - Label tier (Week 16 Phase 2)
 		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
 		stat_label.add_theme_constant_override("outline_size", 1)
 		stat_row.add_child(stat_label)
@@ -168,7 +168,7 @@ func _create_character_card(character_type: String) -> Control:
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	aura_label.add_theme_font_size_override("font_size", 12)  # Larger for readability
+	aura_label.add_theme_font_size_override("font_size", 14)  # Secondary metadata - Caption tier (Week 16 Phase 2)
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
 	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	aura_label.add_theme_constant_override("outline_size", 1)
