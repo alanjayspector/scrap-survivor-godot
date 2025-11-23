@@ -15,10 +15,6 @@ const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/ui_error.ogg")
 
 ## Components (QA Fix #2: Use CharacterCard component instead of manual UI generation)
 const CHARACTER_CARD_SCENE: PackedScene = preload("res://scenes/ui/character_card.tscn")
-const CHARACTER_DETAILS_PANEL_SCENE: PackedScene = preload(
-	"res://scenes/ui/character_details_panel.tscn"
-)
-const MOBILE_MODAL_SCENE: PackedScene = preload("res://scenes/ui/components/mobile_modal.tscn")
 const MODAL_FACTORY = preload("res://scripts/ui/components/modal_factory.gd")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
@@ -28,8 +24,6 @@ const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 @onready var create_new_button: Button = $ButtonsContainer/CreateNewButton
 @onready var back_button: Button = $ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
-
-var character_details_modal: MobileModal = null  # Details modal instance (Week 16 Phase 4)
 
 
 func _ready() -> void:
@@ -225,13 +219,13 @@ func _execute_delete(character_id: String) -> void:
 
 
 func _on_character_details_pressed(character_id: String) -> void:
-	"""Handle Details button - show character details in mobile-native sheet (Week 16 Phase 4)"""
+	"""Handle Details button - navigate to full-screen character details (QA Pass 10 Fix)"""
 	GameLogger.debug(
 		"[CharacterRoster] Details button pressed - ENTRY", {"character_id": character_id}
 	)
 	_play_sound(BUTTON_CLICK_SOUND)
 
-	# Get character data
+	# Get character data to verify it exists
 	var character = CharacterService.get_character(character_id)
 	if character.is_empty():
 		GameLogger.error(
@@ -239,48 +233,11 @@ func _on_character_details_pressed(character_id: String) -> void:
 		)
 		return
 
-	# Clean up existing modal if present
-	if character_details_modal:
-		character_details_modal.queue_free()
-		character_details_modal = null
+	# Set active character in GameState (for next screen to load)
+	GameState.set_active_character(character_id)
 
-	# Create mobile-native sheet modal (Week 16 Phase 4)
-	character_details_modal = MOBILE_MODAL_SCENE.instantiate()
-	character_details_modal.modal_type = MobileModal.ModalType.SHEET
-	character_details_modal.allow_swipe_dismiss = true
-	character_details_modal.allow_tap_outside_dismiss = true
-	add_child(character_details_modal)
-
-	# Create and add CharacterDetailsPanel as custom content
-	var details_panel = CHARACTER_DETAILS_PANEL_SCENE.instantiate()
-	character_details_modal.add_custom_content(details_panel)
-
-	# Connect close signal
-	details_panel.closed.connect(_on_details_panel_closed)
-	character_details_modal.dismissed.connect(_on_details_modal_dismissed)
-
-	# Show character data
-	GameLogger.debug("[CharacterRoster] About to call details_panel.show_character()")
-	details_panel.show_character(character)
-	GameLogger.debug("[CharacterRoster] details_panel.show_character() returned successfully")
-
-	# Show modal with animation
-	GameLogger.debug("[CharacterRoster] About to call modal.show_modal()")
-	character_details_modal.show_modal()
-	GameLogger.debug("[CharacterRoster] Details flow complete - modal displayed")
-
-
-func _on_details_panel_closed() -> void:
-	"""Handle details panel close button"""
-	if character_details_modal:
-		character_details_modal.dismiss()
-
-
-func _on_details_modal_dismissed() -> void:
-	"""Handle modal dismissal (cleanup)"""
-	if character_details_modal:
-		character_details_modal.queue_free()
-		character_details_modal = null
+	# Navigate to full-screen character details screen
+	get_tree().change_scene_to_file("res://scenes/ui/character_details_screen.tscn")
 
 
 func _on_create_new_pressed() -> void:

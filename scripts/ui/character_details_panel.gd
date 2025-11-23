@@ -194,16 +194,16 @@ func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 	)
 
 	var section_container = VBoxContainer.new()
-	section_container.name = section_name + "Section"
-	collapsible_stats.add_child(section_container)  # Parent FIRST
-	section_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	collapsible_stats.add_child(section_container)  # 1. Parent FIRST
+	section_container.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
+	section_container.name = section_name + "Section"  # 3. Configure name AFTER parenting
 	section_container.add_theme_constant_override("separation", 4)
 
 	# Header button (tap to expand/collapse)
 	var header_btn = Button.new()
-	header_btn.name = section_name + "Header"
-	section_container.add_child(header_btn)  # Parent FIRST
-	header_btn.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	section_container.add_child(header_btn)  # 1. Parent FIRST
+	header_btn.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
+	header_btn.name = section_name + "Header"  # 3. Configure name AFTER parenting
 	header_btn.custom_minimum_size = Vector2(0, 44)  # Touch-friendly
 	header_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_update_section_header(header_btn, section_name, _expanded_sections.get(section_name, false))
@@ -212,9 +212,9 @@ func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 
 	# Content container (stats)
 	var content = VBoxContainer.new()
-	content.name = section_name + "Content"
-	section_container.add_child(content)  # Parent FIRST
-	content.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	section_container.add_child(content)  # 1. Parent FIRST
+	content.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
+	content.name = section_name + "Content"  # 3. Configure name AFTER parenting
 	content.add_theme_constant_override("separation", 6)
 	content.visible = _expanded_sections.get(section_name, false)
 
@@ -224,7 +224,9 @@ func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
 			{"section": section_name, "stat": stat_data[0]}
 		)
 		var row = _create_stat_row(stat_data[0], stat_data[1])
-		content.add_child(row)
+		content.add_child(row)  # 1. Parent FIRST (Parent-First Protocol)
+		row.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
+		row.custom_minimum_size = Vector2(0, 28)  # 3. Configure AFTER parenting
 		GameLogger.debug(
 			"[CharacterDetailsPanel] Stat row parented successfully",
 			{"section": section_name, "stat": stat_data[0]}
@@ -240,13 +242,13 @@ func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
 	"""Create a single stat row with icon+name and value
 
 	CRITICAL: This function follows Parent-First protocol to prevent iOS SIGKILL.
-	The hbox is created, children are parented to it, THEN custom_minimum_size is set
-	AFTER the hbox itself will be parented by the caller.
+	The hbox is created with children, but NO configuration.
+	The CALLER must parent the hbox FIRST, then configure it.
 	"""
 	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() ENTRY", {"name": stat_name})
 
 	var hbox = HBoxContainer.new()
-	# DO NOT configure custom_minimum_size here - violates Parent-First protocol!
+	# DO NOT configure ANY properties here - violates Parent-First protocol!
 	# The hbox will be parented by caller AFTER this function returns.
 
 	var name_label = Label.new()
@@ -263,9 +265,7 @@ func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value_label.add_theme_font_size_override("font_size", 18)
 
-	# NOW configure hbox AFTER children are parented
-	# (hbox itself will be parented by caller immediately after this returns)
-	hbox.custom_minimum_size = Vector2(0, 28)
+	# DO NOT configure hbox here! Caller will configure AFTER parenting.
 
 	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() EXIT", {"name": stat_name})
 	return hbox

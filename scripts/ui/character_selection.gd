@@ -232,8 +232,9 @@ func _add_lock_overlay(card: Control, required_tier: int) -> void:
 
 	# Thumbnail lock indicator
 	var lock_content = VBoxContainer.new()
-	lock_content.position = Vector2(-65, -80)  # Set position BEFORE parenting (avoid physics overlap)
-	overlay.add_child(lock_content)  # Parent FIRST
+	overlay.add_child(lock_content)  # 1. Parent FIRST (Parent-First Protocol)
+	lock_content.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
+	lock_content.position = Vector2(-65, -80)  # 3. Set position AFTER parenting
 	lock_content.set_anchors_preset(Control.PRESET_CENTER)
 	lock_content.custom_minimum_size = Vector2(130, 160)
 	lock_content.add_theme_constant_override("separation", 12)
