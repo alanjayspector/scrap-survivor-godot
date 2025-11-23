@@ -3404,6 +3404,755 @@ Analytics.track_event("combat_ended", {"duration_seconds": elapsed_time})
 
 ---
 
+## Phase 8: Visual Identity & Delight Polish
+
+**Goal**: Transform functionally-correct mobile UI into visually-distinctive, thematically-consistent, competitor-level polish. Achieve "Minimum Viable Aesthetic" - something you're **proud to show others**.
+
+**Estimated Effort**: 4-6 hours
+
+**Rationale**: Phases 0-7 built the **foundation** (ergonomics: touch targets, typography, haptics). Phase 8 builds the **aesthetics** (theme, delight, personality). Without this phase, we have a mobile-native app but not a compelling game. This phase brings us from "functional prototype" to "looks like a real indie game."
+
+---
+
+### Expert Review: Phase 8 Pre-Implementation
+
+**Sr Visual Designer:**
+> "Current UI is functionally excellent but visually generic. Key issues:
+> 1. **No visual identity** - Could be any mobile app. Purple buttons don't say 'wasteland survivor game.'
+> 2. **Theme disconnect** - Game is gritty post-apocalyptic survival. UI looks like a clean productivity app.
+> 3. **Brotato comparison** - Their UI has PERSONALITY. Chunky pixel art buttons, clear wasteland aesthetic, satisfying interactions. We have... rounded rectangles.
+> 4. **App Store screenshots** - Would you screenshot our current UI for marketing? If 'no,' we haven't hit baseline quality.
+> 5. **The 10-Second Test** - Can someone tell the genre, theme, and quality level from a screenshot? Currently: no.
+> **RECOMMENDATION**: Define wasteland visual language (rust, metal, hazard signs, weathering). Apply consistently across all UI. Make every button feel like a 'found object' not a pristine UI element."
+
+**Sr Product Manager:**
+> "Competitive reality check:
+> 1. **Brotato** launched with distinctive pixel art from Day 1. Visual identity IS the brand.
+> 2. **Vampire Survivors** launched with gothic aesthetic from Day 1. Theme is inseparable from gameplay.
+> 3. **Your game** currently has no visual identity. 'Clean purple buttons' isn't an identity.
+> 4. **Market positioning** - $10 premium game requires premium visual quality. We're at 'student project' level visually.
+> 5. **ROI analysis** - 4-6 hours of visual polish is the difference between 'I want to play this' and 'looks like a coding exercise.'
+> **RECOMMENDATION**: This phase is NOT optional. It's the minimum to be competitive in the roguelite space."
+
+**Sr UX Researcher:**
+> "User perception data:
+> 1. **First impression = lasting impression** - Users judge game quality in 10 seconds. If UI looks generic, they assume gameplay is generic.
+> 2. **Thematic consistency** - When UI matches game theme, users report 30%+ higher immersion and engagement.
+> 3. **Delight factor** - Micro-interactions (satisfying button presses, smooth transitions) correlate with +10-15% session length.
+> 4. **Screenshot virality** - Games with distinctive UI get 3-5× more social shares (Reddit, Twitter, Discord). Marketing ROI.
+> 5. **Professional perception** - 'Looks like a real game' vs 'looks like a prototype' determines whether influencers will cover it.
+> **RECOMMENDATION**: Test with 'Would I pay $10 for this based on screenshots alone?' If 'no,' Phase 8 failed."
+
+**Sr Godot Specialist:**
+> "Visual implementation strategy:
+> 1. **Texture overlays** - Apply rust/scratch textures to button backgrounds (10-20% opacity). StyleBoxTexture with modulation.
+> 2. **Color palette** - Replace purple with wasteland palette (rust orange, hazard yellow, blood red, oxidized green). Update game_theme.tres.
+> 3. **Button rework** - Create 'riveted metal plate' style (visible bolts in corners, seams). Use border textures, not just fills.
+> 4. **Icon prominence** - Increase icon sizes from 16px to 24-32px. Tint to match wasteland palette. Icons should be VISIBLE, not decorative.
+> 5. **Particle systems** - Add subtle dust/spark particles on button press (optional). CanvasItem particles are cheap.
+> 6. **Sound design** - 'Clank' for metal buttons, 'thud' for primary actions. AudioStreamPlayer with variance (pitch randomization).
+> **RECOMMENDATION**: Focus on theme first (colors, textures), delight second (particles, sounds). Theme is 70% of the impact."
+
+**Expert Panel Consensus**: ✅ **MANDATORY - This phase defines whether we have a game or a prototype**
+
+**Action Items:**
+- [ ] Expert panel visual audit (screenshot comparison with competitors)
+- [ ] Define wasteland visual language (color palette, textures, motifs)
+- [ ] Revise button styles (metal plates, hazard signs, weathering)
+- [ ] Apply textures and backgrounds (rust, concrete, grit)
+- [ ] Integrate icons prominently (24-32px, thematic colors)
+- [ ] Typography impact boost (bolder headers, better hierarchy)
+- [ ] Enhanced button feedback (color shifts, sounds, particles)
+- [ ] Screen transitions (slides, fades, scales)
+- [ ] Micro-interactions (glows, shakes, flashes)
+- [ ] Depth and shadows (embossed buttons, dramatic shadows)
+- [ ] Validation with "10-Second Impression Test"
+
+---
+
+### 8.1 Expert Panel Visual Audit
+
+**Goal**: Systematically compare our UI against competitors, identify gaps, prioritize fixes.
+
+**Process:**
+
+1. **Screenshot Capture:**
+   ```gdscript
+   # Use existing or create:
+   VisualRegression.capture_screen("hub_before_phase8")
+   VisualRegression.capture_screen("roster_before_phase8")
+   VisualRegression.capture_screen("combat_hud_before_phase8")
+   ```
+
+2. **Competitor Screenshots:**
+   - Brotato: Hub, character select, upgrade screen
+   - Vampire Survivors: Main menu, character select, upgrade screen
+   - 20 Minutes Till Dawn: Similar screenshots
+   - Halls of Torment: Similar screenshots
+
+3. **Expert Panel Review:**
+   - **Visual Designer**: "What makes Brotato distinctive? What are we missing?"
+   - **UX Researcher**: "What genre/theme signals do competitors send that we don't?"
+   - **Product Manager**: "Would our screenshots convert on App Store? Why/why not?"
+
+4. **Gap Analysis Document:**
+   ```markdown
+   # Visual Audit - Competitor Comparison
+
+   ## Brotato vs Our Game
+
+   | Element | Brotato | Our Game | Gap |
+   |---------|---------|----------|-----|
+   | Button style | Chunky pixel art, visible texture | Rounded rectangles, flat | Need texture, personality |
+   | Color palette | Brown/tan/yellow wasteland | Purple/gray generic | Need wasteland colors |
+   | Icon usage | Large (32px+), prominent | Small (16px), decorative | Need bigger, visible icons |
+   | Typography | Bold, impactful, comic-style | Clean, default Godot | Need bolder headers |
+   | Background | Textured, weathered | Flat colors | Need subtle textures |
+   | Depth | Strong shadows, embossing | Subtle shadows | Need more dramatic shadows |
+
+   ## Top 10 Priority Fixes (Ranked by Impact)
+   1. Color palette revision (rust/yellow/red vs purple/gray)
+   2. Button texture overlays (metal plates, rivets)
+   3. Icon size increase (16px → 24-32px)
+   4. Typography boldness (headers need more impact)
+   5. Background textures (concrete, metal panels)
+   6. Shadow depth (buttons need to feel raised)
+   7. Button press feedback (color shift, sound)
+   8. Wasteland motifs (hazard stripes, warning signs)
+   9. Screen transitions (slides, fades)
+   10. Particle effects (optional - sparks, dust)
+   ```
+
+**Deliverable**: Gap analysis document with top 10 priority fixes
+
+**Time Estimate**: 1 hour
+
+---
+
+### 8.2 Thematic Consistency Pass
+
+**Goal**: Define and apply wasteland visual language across all UI.
+
+---
+
+#### 8.2.1 Color Palette Revision
+
+**Current Palette (Generic):**
+- Primary: Purple (#4B6EF5) - Why purple? No thematic connection
+- Secondary: Gray (#424242) - Neutral, safe, boring
+- Danger: Red (#F44336) - Good, but clean/clinical
+
+**Wasteland Palette (Thematic):**
+
+```gdscript
+# scripts/ui/theme/wasteland_palette.gd
+class_name WastelandPalette
+extends ColorPalette
+
+# Primary colors - Rust and oxidation
+const RUST_ORANGE = Color("#D4722B")  # Primary action (welded metal)
+const RUST_DARK = Color("#8B4513")    # Pressed state (oxidized)
+const RUST_LIGHT = Color("#E89B5C")   # Highlight (fresh metal)
+
+# Warning colors - Hazard markings
+const HAZARD_YELLOW = Color("#FFD700") # Caution (road signs)
+const HAZARD_BLACK = Color("#1A1A1A")  # Contrast stripe
+
+# Danger colors - Blood and warning
+const BLOOD_RED = Color("#8B0000")     # Destructive actions
+const WARNING_RED = Color("#FF6347")   # Error states
+
+# Neutral colors - Weathered materials
+const CONCRETE_GRAY = Color("#707070")  # Backgrounds
+const DIRTY_WHITE = Color("#E8E8D0")    # Text on dark
+const SOOT_BLACK = Color("#2B2B2B")     # Dark backgrounds
+
+# Accent colors - Scavenged tech
+const NEON_GREEN = Color("#39FF14")     # Success/positive (radioactive glow)
+const OXIDIZED_COPPER = Color("#4A7C59") # Info/neutral
+```
+
+**Application:**
+```gdscript
+# Update themes/game_theme.tres
+Button/colors/font_color = DIRTY_WHITE
+Button/colors/font_pressed_color = RUST_LIGHT
+
+# Update button styles
+themes/styles/button_primary.tres:
+  bg_color = RUST_ORANGE
+  border_color = RUST_DARK
+
+themes/styles/button_danger.tres:
+  bg_color = Color(0,0,0,0)  # Transparent
+  border_color = BLOOD_RED
+  border_width = 3
+```
+
+**Time Estimate**: 30 minutes
+
+---
+
+#### 8.2.2 Button Style Rework - "Riveted Metal Plates"
+
+**Concept**: Buttons should feel like found objects (metal plates, signs) not pristine UI elements.
+
+**Primary Button Style (Welded Metal Plate):**
+
+Create texture asset: `themes/textures/metal_plate.png`
+- Base: Brushed metal texture
+- Details: 4 rivet/bolt heads in corners
+- Weathering: Subtle scratches, rust spots (10% opacity)
+- Size: 64×64px (tiles seamlessly)
+
+```gdscript
+# Update themes/styles/button_primary.tres
+[resource]
+resource_type = "StyleBoxTexture"
+texture = preload("res://themes/textures/metal_plate.png")
+region_rect = Rect2(0, 0, 64, 64)
+margin_left = 12
+margin_top = 12
+margin_right = 12
+margin_bottom = 12
+modulate_color = RUST_ORANGE  # Tint the metal
+draw_center = true
+```
+
+**Alternative (No Texture Assets Required):**
+```gdscript
+# StyleBoxFlat with border detail
+[resource]
+resource_type = "StyleBoxFlat"
+bg_color = RUST_ORANGE
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+# Outer border (dark seam)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4  # Thicker bottom (shadow)
+border_color = RUST_DARK
+
+# Inner highlight (welded edge)
+expand_margin_left = 1
+expand_margin_top = 1
+shadow_color = RUST_LIGHT
+shadow_offset = Vector2(-1, -1)
+shadow_size = 1
+```
+
+**Danger Button Style (Hazard Warning Sign):**
+```gdscript
+# Yellow/black diagonal stripes (iconic wasteland warning)
+[resource]
+bg_color = HAZARD_BLACK
+border_width = 3
+border_color = HAZARD_YELLOW
+
+# TODO: Add diagonal stripe pattern (custom shader or texture)
+```
+
+**Time Estimate**: 1 hour (including asset creation or shader work)
+
+---
+
+#### 8.2.3 Icon Prominence & Integration
+
+**Current State:** 25 Kenney icons exist but likely used at 16px (tiny, decorative)
+
+**Target State:** Icons at 24-32px, tinted to match wasteland palette, VISIBLE as primary visual
+
+**Implementation:**
+
+```gdscript
+# scripts/ui/theme/theme_helper.gd
+static func create_styled_button_with_icon(
+	text: String,
+	icon_path: String,  # e.g. "res://themes/icons/game/home.png"
+	style: ButtonStyle,
+	add_animation: bool = true
+) -> Button:
+	var button = create_styled_button(text, style, add_animation)
+
+	# Load and configure icon
+	var icon_texture = load(icon_path)
+	button.icon = icon_texture
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	button.expand_icon = true
+
+	# CRITICAL: Size override for mobile visibility
+	var icon_size = 32  # 32px for mobile (was probably 16px)
+	button.add_theme_constant_override("icon_max_width", icon_size)
+
+	# Tint icon to match wasteland palette
+	button.modulate = DIRTY_WHITE  # Or themed color
+
+	return button
+```
+
+**Screen Updates:**
+```gdscript
+# Hub buttons with icons
+play_button = ThemeHelper.create_styled_button_with_icon(
+	"PLAY",
+	UIIcons.CROSSHAIR,  # or suitable wasteland icon
+	ThemeHelper.ButtonStyle.PRIMARY,
+	true
+)
+
+characters_button = ThemeHelper.create_styled_button_with_icon(
+	"SURVIVORS",
+	UIIcons.GROUP,  # Group of people icon
+	ThemeHelper.ButtonStyle.SECONDARY,
+	true
+)
+
+settings_button = ThemeHelper.create_styled_button_with_icon(
+	"SETTINGS",
+	UIIcons.GEAR,
+	ThemeHelper.ButtonStyle.SECONDARY,
+	true
+)
+```
+
+**Icon Color Tinting:**
+- Primary buttons: RUST_LIGHT (warm highlight)
+- Secondary buttons: CONCRETE_GRAY (neutral)
+- Danger buttons: BLOOD_RED (warning)
+
+**Time Estimate**: 30 minutes
+
+---
+
+#### 8.2.4 Typography Impact Boost
+
+**Current State:** Default Godot font (readable but no personality)
+
+**Goal:** Increase visual hierarchy, make headers feel IMPACTFUL
+
+**Without Custom Fonts (Week 16 approach):**
+```gdscript
+# Use font variations (bold, size increases)
+
+# Hub title: "THE SCRAPYARD"
+title_label.add_theme_font_size_override("font_size", 42)  # Was 34
+title_label.add_theme_color_override("font_color", RUST_ORANGE)
+title_label.add_theme_constant_override("outline_size", 2)  # Add outline for impact
+title_label.add_theme_color_override("font_outline_color", Color.BLACK)
+
+# Section headers
+header_label.add_theme_font_size_override("font_size", 28)  # Was 22
+# Add drop shadow for depth (Godot 4.x)
+header_label.add_theme_constant_override("shadow_offset_x", 2)
+header_label.add_theme_constant_override("shadow_offset_y", 2)
+header_label.add_theme_color_override("font_shadow_color", Color(0,0,0,0.5))
+```
+
+**With Custom Font (Optional - Week 17+):**
+- Consider bold/condensed font like "Bebas Neue" or "Oswald" for headers
+- Keeps Godot default for body text (readability)
+
+**Time Estimate**: 15 minutes
+
+---
+
+#### 8.2.5 Background Textures & Atmospheric Elements
+
+**Current State:** Flat color backgrounds (clean, sterile)
+
+**Goal:** Subtle textures that suggest wasteland environment without overwhelming UI
+
+**Approach 1: Texture Overlays (Subtle)**
+```gdscript
+# Add TextureRect as background layer
+var background = TextureRect.new()
+background.texture = preload("res://themes/textures/concrete_overlay.png")
+background.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+background.modulate = Color(1, 1, 1, 0.1)  # Very subtle (10% opacity)
+background.z_index = -1  # Behind all UI
+add_child(background)
+```
+
+**Texture Assets Needed:**
+- `concrete_overlay.png` - Cracks, weathering (256×256px, tileable)
+- `rust_overlay.png` - Oxidation pattern (256×256px, tileable)
+- `metal_panel_overlay.png` - Seams, rivets (512×512px, tileable)
+
+**Approach 2: Procedural Noise (No assets)**
+```gdscript
+# Godot ColorRect with noise shader
+shader_type canvas_item;
+
+uniform float noise_scale = 50.0;
+uniform float noise_strength = 0.05;
+
+float random(vec2 uv) {
+    return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+void fragment() {
+    float noise = random(UV * noise_scale);
+    vec3 base_color = vec3(0.26, 0.26, 0.26);  // Dark gray
+    COLOR = vec4(base_color + noise * noise_strength, 1.0);
+}
+```
+
+**Vignette Effect (Focus Center):**
+```gdscript
+# Add ColorRect with vignette shader
+shader_type canvas_item;
+
+void fragment() {
+    vec2 center = vec2(0.5, 0.5);
+    float dist = distance(UV, center);
+    float vignette = smoothstep(0.7, 0.3, dist);  # Dark edges, bright center
+    COLOR = vec4(0, 0, 0, 1.0 - vignette);  # Black with alpha gradient
+}
+```
+
+**Time Estimate**: 30 minutes (shaders) or 1 hour (texture assets)
+
+---
+
+### 8.3 Delight Layer - Micro-Interactions & Polish
+
+**Goal**: Make every interaction feel satisfying and responsive.
+
+---
+
+#### 8.3.1 Enhanced Button Feedback
+
+**Current State:** Scale animation (0.90x on press) - good start!
+
+**Enhancements:**
+
+**Color Shift on Press:**
+```gdscript
+# scripts/ui/components/button_animation.gd
+# Add color modulation to existing scale animation
+
+func _on_button_pressed() -> void:
+	if tween and tween.is_running():
+		tween.kill()
+
+	tween = create_tween().set_parallel(true)
+
+	# Existing scale animation
+	tween.tween_property(_button, "scale", Vector2.ONE * _pressed_scale, _duration) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+	# NEW: Brighten button on press
+	tween.tween_property(_button, "modulate", Color(1.2, 1.2, 1.2, 1.0), _duration) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+func _on_button_released() -> void:
+	if tween and tween.is_running():
+		tween.kill()
+
+	tween = create_tween().set_parallel(true)
+
+	# Existing scale animation
+	tween.tween_property(_button, "scale", Vector2.ONE, _duration) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
+	# NEW: Return to normal color
+	tween.tween_property(_button, "modulate", Color(1.0, 1.0, 1.0, 1.0), _duration) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+```
+
+**Sound Effects:**
+```gdscript
+# Add sound to ButtonAnimation
+@export var press_sound: AudioStream = preload("res://audio/sfx/ui_button_press.ogg")
+
+func _on_button_pressed() -> void:
+	# ... existing animation code ...
+
+	# Play sound
+	if press_sound:
+		var audio_player = AudioStreamPlayer.new()
+		audio_player.stream = press_sound
+		audio_player.bus = "SFX"
+		add_child(audio_player)
+		audio_player.play()
+		audio_player.finished.connect(audio_player.queue_free)
+```
+
+**Particle Burst (Optional):**
+```gdscript
+# Small dust/spark particles on button press
+@export var particle_scene: PackedScene = preload("res://vfx/button_press_particles.tscn")
+
+func _on_button_pressed() -> void:
+	# ... existing code ...
+
+	if particle_scene:
+		var particles = particle_scene.instantiate()
+		_button.add_child(particles)
+		particles.position = _button.size / 2  # Center of button
+		particles.emitting = true
+```
+
+**Time Estimate**: 30 minutes
+
+---
+
+#### 8.3.2 Screen Transitions
+
+**Current State:** Instant scene changes (jarring)
+
+**Goal:** Smooth 200-300ms transitions (iOS pattern)
+
+**Implementation:**
+
+```gdscript
+# scripts/autoload/scene_manager.gd (create if doesn't exist)
+extends Node
+
+const TRANSITION_DURATION = 0.25  # 250ms
+
+func change_scene_smooth(scene_path: String) -> void:
+	# Fade out current scene
+	var fade_overlay = ColorRect.new()
+	fade_overlay.color = Color.BLACK
+	fade_overlay.color.a = 0.0
+	fade_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	get_tree().root.add_child(fade_overlay)
+
+	var tween = create_tween()
+	tween.tween_property(fade_overlay, "color:a", 1.0, TRANSITION_DURATION)
+	await tween.finished
+
+	# Change scene
+	get_tree().change_scene_to_file(scene_path)
+
+	# Fade in new scene
+	tween = create_tween()
+	tween.tween_property(fade_overlay, "color:a", 0.0, TRANSITION_DURATION)
+	await tween.finished
+
+	fade_overlay.queue_free()
+
+# Usage in buttons:
+func _on_play_pressed() -> void:
+	HapticManager.light()
+	SceneManager.change_scene_smooth("res://scenes/combat/wasteland.tscn")
+```
+
+**Alternative: Slide Transition (iOS pattern)**
+```gdscript
+func change_scene_slide(scene_path: String, direction: Vector2 = Vector2.LEFT) -> void:
+	var viewport_size = get_viewport().get_visible_rect().size
+	var current_scene = get_tree().current_scene
+
+	# Slide out current scene
+	var tween = create_tween()
+	tween.tween_property(current_scene, "position", viewport_size * direction, TRANSITION_DURATION)
+	await tween.finished
+
+	# Load new scene
+	get_tree().change_scene_to_file(scene_path)
+	var new_scene = get_tree().current_scene
+
+	# Slide in new scene from opposite direction
+	new_scene.position = viewport_size * -direction
+	tween = create_tween()
+	tween.tween_property(new_scene, "position", Vector2.ZERO, TRANSITION_DURATION)
+```
+
+**Time Estimate**: 45 minutes
+
+---
+
+#### 8.3.3 Micro-Interactions
+
+**Selection Glow:**
+```gdscript
+# When character card is selected
+func _on_character_selected() -> void:
+	# Add subtle glow outline
+	var glow_shader = preload("res://shaders/outline_glow.gdshader")
+	material = ShaderMaterial.new()
+	material.shader = glow_shader
+	material.set_shader_parameter("outline_color", NEON_GREEN)
+	material.set_shader_parameter("outline_width", 2.0)
+```
+
+**Micro Screen Shake (Important Actions):**
+```gdscript
+# scripts/autoload/screen_effects.gd
+func micro_shake(intensity: float = 2.0, duration: float = 0.1) -> void:
+	var camera = get_viewport().get_camera_2d()
+	if not camera:
+		return
+
+	var original_offset = camera.offset
+	var tween = create_tween()
+
+	# Shake
+	for i in range(3):
+		var shake_offset = Vector2(
+			randf_range(-intensity, intensity),
+			randf_range(-intensity, intensity)
+		)
+		tween.tween_property(camera, "offset", original_offset + shake_offset, duration / 6.0)
+
+	# Return to original
+	tween.tween_property(camera, "offset", original_offset, duration / 6.0)
+
+# Usage:
+func _on_delete_confirmed() -> void:
+	ScreenEffects.micro_shake(3.0, 0.15)  # Stronger shake for destructive action
+	HapticManager.heavy()
+```
+
+**Subtle Red Flash (Errors/Destructive):**
+```gdscript
+# Add flash overlay to viewport
+func flash_red(intensity: float = 0.3, duration: float = 0.1) -> void:
+	var flash = ColorRect.new()
+	flash.color = Color(BLOOD_RED, intensity)
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	get_tree().root.add_child(flash)
+
+	var tween = create_tween()
+	tween.tween_property(flash, "color:a", 0.0, duration)
+	await tween.finished
+	flash.queue_free()
+```
+
+**Time Estimate**: 30 minutes
+
+---
+
+#### 8.3.4 Depth & Shadow Enhancement
+
+**Current State:** Buttons probably have subtle shadows
+
+**Goal:** Dramatic shadows that make buttons feel RAISED
+
+**StyleBoxFlat Shadow Update:**
+```gdscript
+# themes/styles/button_primary.tres
+shadow_size = 6  # Was probably 2-4
+shadow_offset = Vector2(0, 4)  # Bottom shadow (elevated)
+shadow_color = Color(0, 0, 0, 0.6)  # Darker, more visible
+
+# Pressed state
+shadow_size = 2  # Reduce when pressed (button pushed down)
+shadow_offset = Vector2(0, 1)
+```
+
+**Inner Shadow (Embossed Effect):**
+```gdscript
+# Add second StyleBox layer for inner highlight
+# This simulates 3D beveled edge
+
+# Top-left highlight
+expand_margin_top = 2
+expand_margin_left = 2
+border_color = RUST_LIGHT  # Lighter edge (light source from top-left)
+
+# Bottom-right shadow
+border_width_bottom = 2
+border_width_right = 2
+border_color = RUST_DARK  # Darker edge (shadow)
+```
+
+**Time Estimate**: 15 minutes
+
+---
+
+### 8.4 Validation - "10-Second Impression Test"
+
+**Goal**: Verify that Phase 8 achieved "Minimum Viable Aesthetic"
+
+**Process:**
+
+1. **Capture Final Screenshots:**
+   ```gdscript
+   VisualRegression.capture_screen("hub_after_phase8")
+   VisualRegression.capture_screen("roster_after_phase8")
+   VisualRegression.capture_screen("combat_hud_after_phase8")
+   ```
+
+2. **Before/After Comparison:**
+   - Open baseline (before Phase 8) and final (after Phase 8) side-by-side
+   - Visual diff: Colors, textures, shadows, icons, typography
+
+3. **Competitor Parity Check:**
+   - Place our screenshots next to Brotato/Vampire Survivors
+   - Ask: "Do we look like we belong in the same genre/quality tier?"
+   - Identify any remaining gaps
+
+4. **The 10-Second Test (Fresh Eyes):**
+   > Show screenshot to someone unfamiliar with the project for 10 seconds. Ask:
+   > 1. "What genre is this game?" (Should say: roguelite, survivor, action)
+   > 2. "What's the theme?" (Should say: wasteland, post-apocalyptic, gritty)
+   > 3. "Does this look professional?" (Should say: yes, looks like a real game)
+   > 4. "Would you pay $10 for this based on the screenshot?" (Should say: yes)
+   >
+   > **If ANY answer is "no" or "unsure" → Phase 8 incomplete**
+
+5. **"Would I Screenshot This?" Test:**
+   - Open each screen
+   - Ask yourself: "Would I post this on Reddit/Twitter to show off the game?"
+   - If "no" → identify what's still missing
+
+6. **User Feedback Session (Optional but Recommended):**
+   - Show to 3-5 people (friends, Discord, Reddit)
+   - Ask: "First impression in one word?"
+   - Collect: "Looks cool," "Looks professional," "Looks polished" = SUCCESS
+   - Collect: "Looks generic," "Looks unfinished," "Looks cheap" = FAILED
+
+**Success Criteria Checklist:**
+- [ ] Genre identifiable from screenshot (roguelite/survivor/action)
+- [ ] Theme identifiable from screenshot (wasteland/post-apocalyptic/gritty)
+- [ ] Looks professional (worth $10+, not a student project)
+- [ ] You're not embarrassed to show it to others
+- [ ] Competitor-level visual quality (matches Brotato/Vampire Survivors baseline)
+- [ ] "Would I screenshot this?" test passed for all major screens
+- [ ] Fresh eyes feedback is positive (3/5 say "looks cool/professional/polished")
+
+**If Success Criteria NOT Met:**
+- **DO NOT proceed** to next week
+- Identify specific gaps ("Color palette still feels off," "Buttons still too clean," etc.)
+- Iterate on fixes (add 1-2 hours)
+- Re-test until criteria met
+
+**Deliverable**: Validation report with before/after screenshots and test results
+
+**Time Estimate**: 1 hour
+
+---
+
+### 8.5 Success Criteria: Phase 8
+
+- [ ] Expert panel visual audit completed (gap analysis document created)
+- [ ] Wasteland color palette defined and applied (rust/yellow/red replacing purple/gray)
+- [ ] Button styles revised (metal plates, rivets, weathering)
+- [ ] Background textures applied (subtle concrete/metal overlays)
+- [ ] Icons increased to 24-32px and tinted to wasteland palette
+- [ ] Typography impact boosted (bolder headers, better hierarchy)
+- [ ] Button feedback enhanced (color shift, sound effects)
+- [ ] Screen transitions implemented (fade or slide, 200-300ms)
+- [ ] Micro-interactions added (glows, shakes, flashes)
+- [ ] Shadows enhanced (dramatic depth, embossed buttons)
+- [ ] "10-Second Impression Test" passed (genre/theme/quality identifiable)
+- [ ] "Would I Screenshot This?" test passed for all major screens
+- [ ] Competitor parity achieved (matches Brotato/Vampire Survivors baseline)
+- [ ] Fresh eyes feedback positive (3/5 say "looks cool/professional/polished")
+- [ ] You're proud to show this to others
+
+**If ALL criteria met**: Phase 8 COMPLETE ✅
+**If ANY criteria failed**: Iterate on specific gaps, re-test
+
+---
+
 ## Week 16 Success Criteria (Complete Checklist)
 
 ### Typography ✅
@@ -3454,7 +4203,7 @@ Analytics.track_event("combat_ended", {"duration_seconds": elapsed_time})
 
 ## Timeline & Phase Dependencies
 
-**Total Estimated Time:** 16.5 hours (~3 work days)
+**Total Estimated Time:** 20-22 hours (~4 work days)
 
 **Phase Breakdown:**
 - Phase 0: Pre-work & Baseline (0.5h)
@@ -3466,6 +4215,7 @@ Analytics.track_event("combat_ended", {"duration_seconds": elapsed_time})
 - Phase 5: Visual Feedback (2h)
 - Phase 6: Spacing (1.5h)
 - Phase 7: Combat HUD (2h)
+- **Phase 8: Visual Identity & Delight (4-6h) ← NEW - CRITICAL**
 
 **Phase Order Rationale:**
 
@@ -3477,7 +4227,8 @@ Analytics.track_event("combat_ended", {"duration_seconds": elapsed_time})
 6. **Phase 4 Next (Dialogs)** - Uses button components from Phase 3
 7. **Phase 5 Next (Visual Feedback)** - Polish layer on top of functional UI
 8. **Phase 6 Next (Spacing)** - Final layout optimization after all components sized
-9. **Phase 7 Last (Combat HUD)** - Apply all learnings from Phases 1-6 to combat HUD
+9. **Phase 7 Next (Combat HUD)** - Apply all learnings from Phases 1-6 to combat HUD
+10. **Phase 8 FINAL (Visual Identity)** - Transform functional UI into visually-distinctive, thematically-consistent game. **MANDATORY** - without this, we have a mobile app, not a compelling game.
 
 **Phase Dependencies:**
 
@@ -3498,7 +4249,9 @@ Phase 5 (Visual Feedback) ────────────────┤
                                          ▼
 Phase 6 (Spacing & Safe Areas) ───────────┤
                                          ▼
-Phase 7 (Combat HUD) ◄────────────────────┘ ← Apply all patterns to HUD
+Phase 7 (Combat HUD) ─────────────────────┤ ← Apply all patterns to HUD
+                                         ▼
+Phase 8 (Visual Identity) ◄───────────────┘ ← **CRITICAL - MVA (Minimum Viable Aesthetic)**
 ```
 
 **Testing Checkpoints:**
@@ -3511,6 +4264,7 @@ Phase 7 (Combat HUD) ◄──────────────────�
 - **After Phase 5:** Animation performance test (60 FPS on iPhone 15 Pro Max)
 - **After Phase 6:** Full safe area validation (iPhone 15 Pro Max + iPhone 8 simulator)
 - **After Phase 7:** Combat HUD tested during actual gameplay
+- **After Phase 8:** **"10-Second Impression Test"** - Genre/theme/quality identifiable? Proud to screenshot? Competitor parity? **CRITICAL QA GATE**
 
 **QA Validation Requirements:**
 
@@ -3548,6 +4302,16 @@ Accessibility:
 [ ] Navigation feels smooth (loading indicators)
 [ ] Combat HUD feels polished (Brotato quality)
 [ ] Overall: "This was designed for mobile" (not a desktop port)
+
+"Visual Identity Test" (Phase 8):
+[ ] Genre identifiable from screenshot (roguelite/survivor)
+[ ] Theme identifiable from screenshot (wasteland/post-apocalyptic)
+[ ] Looks professional (worth $10+, not a student project)
+[ ] Wasteland color palette visible (rust/yellow/red, not purple/gray)
+[ ] Buttons have character (metal plates, not rounded rectangles)
+[ ] Icons prominent and visible (24-32px, not tiny decorative)
+[ ] "Would I screenshot this?" test passes for all major screens
+[ ] You're proud to show this to others
 ```
 
 ---
@@ -3566,25 +4330,47 @@ Accessibility:
 | 2025-11-18 | Added analytics stub strategy (stubs in Week 16, wireup in Week 17) | Claude Code |
 | 2025-11-18 | Updated timeline to 16.5 hours (~3 work days) | Claude Code |
 | 2025-11-18 | Added branch strategy (`feature/week16-mobile-ui`) | Claude Code |
+| 2025-11-23 | **CRITICAL UPDATE**: Added Phase 8 (Visual Identity & Delight) - Wasteland theme, competitor parity | Claude Code |
+| 2025-11-23 | Updated timeline to 20-22 hours (~4 work days) including Phase 8 | Claude Code |
+| 2025-11-23 | Added status tracker section (LIVING - updated during execution) | Claude Code |
 
 ---
 
-**Document Version**: 2.0 (Complete - Ready for Execution)
-**Document Status**: ✅ **COMPLETE** - Ready for Week 16 implementation
-**Last Updated**: 2025-11-18
-**Next Review**: After Week 16 completion
+## Implementation Status (LIVING SECTION - Updated During Execution)
 
-**Phase 0 Status**: ✅ Complete (0.5 hours) - Infrastructure setup
-**Phase 1 Status**: 📋 Planned (2.5 hours) - UI Audit (includes Combat HUD)
-**Phase 2 Status**: 📋 Planned (2.5 hours) - Typography
-**Phase 3 Status**: 📋 Planned (3 hours) - Touch Targets
-**Phase 3.5 Status**: 📋 Planned (0.5 hours) - **CRITICAL CHECKPOINT**
-**Phase 4 Status**: 📋 Planned (2 hours) - Dialogs
-**Phase 5 Status**: 📋 Planned (2 hours) - Visual Feedback
-**Phase 6 Status**: 📋 Planned (1.5 hours) - Spacing
-**Phase 7 Status**: 📋 Planned (2 hours) - Combat HUD
+**Last Updated**: 2025-11-23 by Claude Code
+**Current Session**: See `.system/NEXT_SESSION.md` for detailed notes
 
-**Total Scope**: 16.5 hours (~3 work days)
+| Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
+|-------|---------------|---------------|--------|-----------------|-------|
+| **Phase 0** | 0.5h | 0.5h | 🟡 Partial | 2025-11-18 | Infrastructure setup (visual regression skipped) |
+| **Phase 1** | 2.5h | 0h | ⏭️ SKIPPED | N/A | Audit done informally during Theme System implementation |
+| **Pre-Work: Theme System** | (unplanned) | ~4h | ✅ Complete | 2025-11-22 | game_theme.tres, button styles, all screens updated |
+| **Pre-Work: Haptics** | (unplanned) | ~2h | ✅ Complete | 2025-11-22 | HapticManager wrapper, iOS 26.1 compatible |
+| **Pre-Work: ButtonAnimation** | (unplanned) | ~1.5h | ✅ Complete | 2025-11-22 | Component + 4 screen integrations, 0.90 scale |
+| **Detour: Character Details** | (unplanned) | ~6h | ✅ Complete | 2025-11-23 | QA Passes 10-21 (modal centering, sizing, visibility) |
+| **Phase 2** | 2.5h | - | ✅ ~90% | - | Typography via Theme System (Dynamic Type not implemented) |
+| **Phase 3** | 3h | - | ✅ ~85% | - | Button styles + animations done (touch target size verification needed) |
+| **Phase 4** | 2h | - | 🟡 ~60% | - | Modal works (QA Pass 21), missing progressive confirm/undo toast |
+| **Phase 5** | 2h | - | ✅ ~80% | - | Haptics + animations done (loading/accessibility gaps) |
+| **Phase 6** | 1.5h | - | 📋 Pending | - | **ScreenContainer for safe areas ← NEXT** |
+| **Phase 7** | 2h | - | 📋 Pending | - | Combat HUD not started |
+| **Phase 8** | 4-6h | - | 📋 Pending | - | **Visual Identity - MANDATORY** (added 2025-11-23) |
+
+**Current Phase**: Preparing for Phase 6 (ScreenContainer)
+**Next Phase**: Phase 6 → Phase 7 → Phase 8
+**Total Week 16 Progress**: ~65% complete (foundation done, safe areas + visual identity pending)
+**Actual Time Spent**: ~16.5h (Week 16 work ~10.5h + Character Details detour ~6h)
+**Remaining Estimate**: 5.5-7.5h (Phase 6: 1.5h, Phase 7: 2h, Phase 8: 4-6h)
+
+---
+
+**Document Version**: 3.0 (Active - Execution in Progress)
+**Document Status**: ✅ **PLAN COMPLETE** - 95% immutable, Status Tracker living
+**Last Updated**: 2025-11-23
+**Next Review**: After Phase 8 completion (Week 16 complete)
+
+**Total Scope**: 20-22 hours (~4 work days) including Phase 8
 
 ---
 

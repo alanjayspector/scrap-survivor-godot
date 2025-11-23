@@ -756,5 +756,354 @@ section.name = "Section"  # Configure AFTER
 
 ---
 
-**Last Updated**: 2025-11-22 by Claude Code (Godot 4 UI Protocol, Mobile-Native Standards, Scene Layout Rules, Definition of Complete, QA Investigation Protocol added)
+## Modal & Dialog Layout Protocol (CRITICAL)
+
+**Effective**: 2025-11-23 (After Character Details 21 QA passes)
+
+### The Order-of-Operations Rule
+
+**CRITICAL**: When positioning modals/dialogs dynamically, SIZE MUST be set FIRST, then position calculations.
+
+```gdscript
+# ❌ WRONG - Position calculated before size set
+modal_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)  # Offsets calculated with size = 0
+modal_container.size = Vector2(target_width, 300)  # Size set AFTER → wrong centering
+
+# ✅ CORRECT - Size first, then position
+modal_container.size = Vector2(target_width, 300)  # 1. Set size FIRST
+
+# 2. Set anchors manually
+modal_container.anchor_left = 0.5
+modal_container.anchor_top = 0.5
+modal_container.anchor_right = 0.5
+modal_container.anchor_bottom = 0.5
+
+# 3. Calculate offsets based on ACTUAL size
+var half_width = target_width / 2.0
+var half_height = 300.0 / 2.0
+modal_container.offset_left = -half_width
+modal_container.offset_top = -half_height
+modal_container.offset_right = half_width
+modal_container.offset_bottom = half_height
+```
+
+### Why This Matters
+
+**Problem**: Godot's `set_anchors_and_offsets_preset()` calculates offsets based on the control's CURRENT size.
+- If size = 0 when preset is called → offsets = 0
+- Control appears with upper-left at anchor point (not centered)
+- Changing size later doesn't update offsets automatically
+
+**Solution**: Manual calculation with correct order:
+1. **Set size** (gives actual dimensions)
+2. **Set anchors** (defines anchor point location in parent)
+3. **Calculate offsets** (positions control relative to anchor based on size)
+
+### Godot Control Positioning System
+
+**Anchors** (percentages of parent size):
+- `(0.5, 0.5, 0.5, 0.5)` = anchor point at parent's center
+- Range: 0.0 (left/top edge) to 1.0 (right/bottom edge)
+
+**Offsets** (pixel distances from anchor points):
+- For centered control with size (W, H):
+  - `offset_left = -W/2` (left edge W/2 pixels left of anchor)
+  - `offset_top = -H/2` (top edge H/2 pixels above anchor)
+  - `offset_right = W/2` (right edge W/2 pixels right of anchor)
+  - `offset_bottom = H/2` (bottom edge H/2 pixels below anchor)
+
+### When to Use Manual Calculation
+
+**Use `set_anchors_and_offsets_preset()`:**
+- Static controls in scene editor
+- Size is already set and won't change
+
+**Use Manual Calculation:**
+- Dynamic sizing (runtime calculation)
+- Size depends on screen dimensions
+- Responsive layouts that adapt to viewport
+
+### Red Flags
+
+- 🚩 Calling `set_anchors_and_offsets_preset()` before setting size
+- 🚩 Modal appears shifted from intended position
+- 🚩 "Centering API doesn't work" (probably order-of-operations issue)
+- 🚩 Different positioning on different screen sizes (offsets calculated wrong)
+
+### Lessons Learned Source
+
+From Character Details Polish (QA Passes 19-21):
+- QA Pass 19: Used wrong API (`set_anchors_preset` instead of `set_anchors_and_offsets_preset`)
+- QA Pass 20: Right API, wrong timing (called before size set) → modal shifted right/down
+- QA Pass 21: Manual calculation with correct order → TRUE centering achieved
+
+---
+
+## Destructive Operation UI Standards
+
+**Effective**: 2025-11-23 (After Character Details modal sizing lessons)
+
+### Prominence Principle
+
+**Rule**: Destructive operations MUST have visually prominent UI that conveys seriousness and reduces accidental taps.
+
+### Size Requirements for Destructive Confirmations
+
+**Minimum Standards** (iOS mobile):
+- **Modal height**: 300px minimum (not 220px)
+- **Modal width**: 90% of screen width, max 500px
+- **Title font**: 28pt (not 24pt)
+- **Message font**: 20pt (not 18pt)
+- **Button size**: 140×64px minimum (not 120×56px)
+- **Button font**: 20pt (not 18-19pt)
+- **Padding**: 36px (not 28px)
+- **Content spacing**: 24px between elements (not 20px)
+
+### Why Size Matters
+
+**Psychology**: Larger, more prominent UI signals importance
+- Small modal (220px) = "This is a minor decision"
+- Large modal (300px) = "This is a serious decision"
+- Users PAY ATTENTION to prominent UI
+- Reduces accidental taps (fat finger protection)
+
+**Comparison**:
+- 220px modal felt "not serious enough" for character deletion
+- 300px modal (+36% larger) felt appropriately serious
+- User feedback: "success current modal is sufficient for this polish pass"
+
+### Destructive Operation Checklist
+
+Before implementing delete/destructive confirmation:
+```
+□ Modal height ≥300px (prominence)
+□ Modal width 90% screen (up to 500px max)
+□ Title font ≥28pt (impact)
+□ Message font ≥20pt (readability)
+□ Buttons ≥140×64px (easy to tap, hard to mis-tap)
+□ Button font ≥20pt (clarity)
+□ Generous padding/spacing (visual breathing room)
+□ Properly centered (manual calculation if dynamic sizing)
+□ Tested on device (not just simulator)
+```
+
+### Additional Protections (Optional but Recommended)
+
+**Progressive Confirmation**:
+- First tap: Show "Are you sure?" modal
+- Second tap (within 3 seconds): Actually delete
+- Prevents single-tap accidents
+
+**Undo Toast**:
+- After deletion, show "Undo Delete" toast for 5 seconds
+- Industry standard pattern
+- Reduces user rage from accidents
+
+**Visual Signals**:
+- Red color for destructive actions
+- Warning icons (skull, trash, danger symbol)
+- Clear button labels ("Delete Character" not just "Delete")
+- Include consequences in message ("This cannot be undone")
+
+### Red Flags
+
+- 🚩 Delete confirmation modal < 300px tall (too small)
+- 🚩 Delete confirmation buttons < 140×64px (mis-tap risk)
+- 🚩 No visual distinction between "Cancel" and "Delete" buttons
+- 🚩 Can accidentally tap "Delete" when aiming for "Cancel" (too close)
+- 🚩 Modal feels "generic" not "serious"
+
+### Lessons Learned Source
+
+From Character Details Polish (QA Pass 20-21):
+- Initial modal: 220px tall, felt too small for serious action
+- Revised modal: 300px tall (+36%), buttons 140×64px (+17%), larger fonts
+- User feedback: "make the modal larger and more prominent" → we did → success
+
+---
+
+## Session & Week Plan Management Protocol
+
+**Effective**: 2025-11-23 (Established during Week 16 planning handoff)
+
+### Philosophy: Immutable Plans, Living Sessions
+
+**The System:**
+1. **Week Plans = 95% Immutable** - The master blueprint doesn't change (except status tracker)
+2. **NEXT_SESSION.md = Fully Dynamic** - Living document tracking actual progress
+
+### Week Plan Structure
+
+**Immutable Content** (never changes after creation):
+- Phase descriptions
+- Estimated effort
+- Task breakdowns
+- Acceptance criteria
+- Expert panel reviews
+- Code examples
+- Timeline diagrams
+- Phase dependencies
+
+**Living Content** (ONE section that updates):
+```markdown
+## Implementation Status (LIVING SECTION - Updated During Execution)
+
+**Last Updated**: YYYY-MM-DD by Claude Code
+**Current Session**: See `.system/NEXT_SESSION.md` for detailed notes
+
+| Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
+|-------|---------------|---------------|--------|-----------------|-------|
+| Phase 0 | 0.5h | 0.5h | ✅ Complete | 2025-11-18 | Infrastructure setup |
+| Phase 1 | 2.5h | 0h | ⏭️ SKIPPED | N/A | Audit done informally |
+| Pre-Work | (unplanned) | 4h | ✅ Complete | 2025-11-22 | Theme System |
+| Detour | (unplanned) | 6h | ✅ Complete | 2025-11-23 | Character Details |
+| Phase 2 | 2.5h | 3h | ✅ Complete | 2025-11-22 | Took longer than estimated |
+| Phase 3 | 3h | - | 🔨 IN PROGRESS | - | 60% complete |
+| ... | ... | ... | ... | ... | ... |
+
+**Current Phase**: Phase 3 - Touch Targets
+**Next Phase**: Phase 4 - Dialogs
+**Total Progress**: ~65% complete
+**Actual Time Spent**: 16.5h (vs 16h planned)
+**Remaining Estimate**: 5.5h
+```
+
+### Why This Approach Wins
+
+**Benefits of Immutable Week Plans:**
+1. **Post-Mortem Analysis** - Compare estimated vs actual time, learn for next planning
+2. **Accountability** - Can't retroactively change what we said we'd do
+3. **Historical Record** - See what we THOUGHT it would take
+4. **Multi-Session Reference** - Plan doesn't change, safe for parallel work
+5. **Change Tracking** - Deviations visible in status tracker (skipped phases, detours, overruns)
+
+**Benefits of Dynamic NEXT_SESSION.md:**
+1. **Reality Tracking** - Captures what ACTUALLY happened (detours, discoveries, bugs)
+2. **Session Handoff** - Next Claude session knows exactly where we are
+3. **Learnings Preserved** - "Order matters for modal centering" gets documented
+4. **Flexible** - Can add notes, findings, decisions without touching master plan
+5. **Archivable** - Gets archived at milestones, creating historical trail
+
+### NEXT_SESSION.md Content
+
+**What Belongs:**
+- ✅ Current status ("QA Pass 21 complete, ready for Phase 6")
+- ✅ Pointer to week plan ("Currently on Week 16, Phase 6 next")
+- ✅ Session accomplishments ("Fixed modal centering in 2 commits")
+- ✅ Lessons learned ("Size first, then calculate position")
+- ✅ Detours/discoveries ("Character Details took 6h, not planned")
+- ✅ Quick Start Prompt (for next session: "Read files X, Y, Z and continue with...")
+- ✅ Git status (branch, last commit, test status)
+- ✅ Decision log ("Decided manual centering instead of preset API, here's why...")
+
+**What Does NOT Belong** (goes in week plan status tracker):
+- ❌ Phase completion percentages
+- ❌ Overall week progress tracking
+- ❌ Planned vs actual time tracking (status tracker handles this)
+
+### Archive Naming Convention
+
+**Format:**
+```
+.system/archive/NEXT_SESSION_{YYYY-MM-DD}_week{N}-{milestone-slug}.md
+```
+
+**Examples:**
+```
+NEXT_SESSION_2025-11-23_week16-character-details-complete.md
+NEXT_SESSION_2025-11-22_week16-theme-haptics-complete.md
+NEXT_SESSION_2025-11-20_week15-hub-roster-complete.md
+NEXT_SESSION_2025-11-25_week16-typography-phase-complete.md
+```
+
+**Why This Format:**
+- ✅ **Chronological**: Date prefix sorts naturally
+- ✅ **Traceable**: Week number shows which plan was active
+- ✅ **Descriptive**: Milestone slug is human-readable and searchable
+- ✅ **Consistent**: Easy to script, easy to grep
+
+### Process Flow
+
+```
+Week Plan Created (immutable blueprint)
+    ↓
+NEXT_SESSION.md tracks daily work
+    ↓
+Major Milestone Reached (phase complete, feature shipped)
+    ↓
+Archive NEXT_SESSION.md with descriptive name
+    ↓
+Update Week Plan Status Tracker (1 line per phase)
+    ↓
+Create New NEXT_SESSION.md pointing to next phase
+    ↓
+Repeat
+```
+
+### When to Archive NEXT_SESSION.md
+
+**Archive Triggers:**
+- ✅ Phase complete (e.g., "Phase 2 Typography complete")
+- ✅ Major feature complete (e.g., "Character Details Polish complete")
+- ✅ Week plan complete (e.g., "Week 16 complete")
+- ✅ Significant milestone (e.g., "Theme System complete")
+- ✅ Before starting new week plan
+
+**Don't Archive For:**
+- ❌ Every commit (too granular)
+- ❌ Every QA pass (unless it's the final pass)
+- ❌ Daily sessions (unless major milestone reached)
+
+### Update Frequency
+
+**Week Plan Status Tracker:**
+- Update when phase status changes (started, completed, skipped)
+- Update when detours occur (unplanned work added)
+- Update when estimates change (phase took longer than planned)
+- **Frequency**: ~1-3 times per session, only when status changes
+
+**NEXT_SESSION.md:**
+- Update continuously during work
+- Update at end of every session (session handoff)
+- **Frequency**: Multiple times per session
+
+### Red Flags
+
+- 🚩 Changing week plan content (phases, criteria) after execution started
+- 🚩 NEXT_SESSION.md without pointer to week plan ("Which plan are we following?")
+- 🚩 Archive file without week number ("Which plan was this session for?")
+- 🚩 Archive file with generic name ("session-2025-11-23.md" - what was accomplished?)
+- 🚩 Status tracker not updated for >1 week (losing sync with reality)
+
+### Best Practices
+
+**Week Planning:**
+1. Create complete plan before execution starts
+2. Include status tracker section at end (initially all "Pending")
+3. Mark as "immutable" in header
+4. Commit to repo (plan is source of truth)
+
+**During Execution:**
+1. Update status tracker when phase status changes
+2. Add rows for unplanned work (detours, pre-work)
+3. Record actual time spent
+4. Note why estimates were wrong (learning)
+
+**Session Handoffs:**
+1. Update NEXT_SESSION.md at end of session
+2. Include "Quick Start Prompt" for next Claude
+3. Point to current phase in week plan
+4. Archive when major milestone reached
+5. Create new NEXT_SESSION.md for next phase
+
+**Archiving:**
+1. Use consistent naming: `NEXT_SESSION_{date}_week{N}-{milestone}.md`
+2. Archive to `.system/archive/`
+3. Update week plan status tracker
+4. Create new NEXT_SESSION.md pointing forward
+5. Don't delete old NEXT_SESSION.md, move it to archive
+
+---
+
+**Last Updated**: 2025-11-23 by Claude Code (Added Modal Layout Protocol, Destructive UI Standards, Session/Week Plan Management Protocol)
 **Next Review**: When violations occur or user requests update
