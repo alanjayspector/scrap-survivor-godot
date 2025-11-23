@@ -28,6 +28,32 @@ const GAME_GOLD: Color = Color(0.9, 0.7, 0.3, 1)  # Current title color
 const GAME_GRAY: Color = Color(0.7, 0.7, 0.7, 1)  # Current secondary text
 const GAME_BG: Color = Color(0.15, 0.12, 0.1, 1)  # Current background
 
+# ==== WASTELAND PALETTE (Week 16 Phase 8 - Visual Identity) ====
+# Post-apocalyptic aesthetic: rust, metal, hazard warnings, scavenged materials
+# Usage: Apply to all UI elements for thematic consistency
+
+# Primary Colors (rust and oxidation)
+const RUST_ORANGE: Color = Color("#D4722B")  # Primary action buttons (welded metal)
+const RUST_DARK: Color = Color("#8B4513")  # Pressed state, borders (oxidized)
+const RUST_LIGHT: Color = Color("#E89B5C")  # Highlights, hover state (fresh metal)
+
+# Hazard Warning Colors (road signs, caution tape)
+const HAZARD_YELLOW: Color = Color("#FFD700")  # Caution, warnings (bright yellow)
+const HAZARD_BLACK: Color = Color("#1A1A1A")  # Contrast stripe, dark base
+
+# Danger Colors (blood, emergency)
+const BLOOD_RED: Color = Color("#8B0000")  # Destructive actions (dark blood)
+const WARNING_RED: Color = Color("#FF6347")  # Error states (tomato red)
+
+# Neutral Colors (weathered materials)
+const CONCRETE_GRAY: Color = Color("#707070")  # Backgrounds, subtle borders
+const DIRTY_WHITE: Color = Color("#E8E8D0")  # Text on dark (cream, aged paper)
+const SOOT_BLACK: Color = Color("#2B2B2B")  # Panel backgrounds, dark UI
+
+# Accent Colors (scavenged tech)
+const NEON_GREEN: Color = Color("#39FF14")  # Success, health (radioactive glow)
+const OXIDIZED_COPPER: Color = Color("#4A7C59")  # Info, neutral (aged copper)
+
 # ==== PRE-CALCULATED CONTRAST RATIOS ====
 # PERFORMANCE: Cached at startup to avoid expensive pow() calls in hot paths
 static var _contrast_cache: Dictionary = {}
@@ -49,6 +75,29 @@ static func _static_init():
 	_cache_contrast_ratio(GAME_GOLD, GAME_BG)
 	_cache_contrast_ratio(GAME_GRAY, GAME_BG)
 	_cache_contrast_ratio(TEXT_PRIMARY, GAME_BG)
+
+	# Wasteland palette against common backgrounds (Phase 8)
+	# Against GAME_BG (current scrapyard background)
+	_cache_contrast_ratio(RUST_ORANGE, GAME_BG)
+	_cache_contrast_ratio(RUST_LIGHT, GAME_BG)
+	_cache_contrast_ratio(HAZARD_YELLOW, GAME_BG)
+	_cache_contrast_ratio(BLOOD_RED, GAME_BG)
+	_cache_contrast_ratio(WARNING_RED, GAME_BG)
+	_cache_contrast_ratio(NEON_GREEN, GAME_BG)
+	_cache_contrast_ratio(DIRTY_WHITE, GAME_BG)
+	_cache_contrast_ratio(CONCRETE_GRAY, GAME_BG)
+
+	# Against SOOT_BLACK (new panel backgrounds)
+	_cache_contrast_ratio(RUST_ORANGE, SOOT_BLACK)
+	_cache_contrast_ratio(RUST_LIGHT, SOOT_BLACK)
+	_cache_contrast_ratio(HAZARD_YELLOW, SOOT_BLACK)
+	_cache_contrast_ratio(DIRTY_WHITE, SOOT_BLACK)
+	_cache_contrast_ratio(TEXT_PRIMARY, SOOT_BLACK)
+
+	# Against RUST_ORANGE (button backgrounds need text contrast)
+	_cache_contrast_ratio(DIRTY_WHITE, RUST_ORANGE)
+	_cache_contrast_ratio(TEXT_PRIMARY, RUST_ORANGE)
+	_cache_contrast_ratio(HAZARD_BLACK, RUST_ORANGE)
 
 	GameLogger.info("[GameColorPalette] Pre-calculated %d contrast ratios" % _contrast_cache.size())
 
@@ -159,3 +208,134 @@ static func get_rarity_color(rarity: String) -> Color:
 			return WARNING  # Orange/Gold
 		_:
 			return TEXT_PRIMARY
+
+
+# ==== WASTELAND SEMANTIC HELPERS (Phase 8) ====
+static func get_wasteland_primary() -> Color:
+	"""Get primary wasteland button color (rust orange)"""
+	return RUST_ORANGE
+
+
+static func get_wasteland_primary_pressed() -> Color:
+	"""Get pressed state for primary buttons (darker rust)"""
+	return RUST_DARK
+
+
+static func get_wasteland_primary_highlight() -> Color:
+	"""Get highlight/hover state for primary buttons (lighter rust)"""
+	return RUST_LIGHT
+
+
+static func get_wasteland_danger() -> Color:
+	"""Get danger/destructive action color (blood red)"""
+	return BLOOD_RED
+
+
+static func get_wasteland_warning() -> Color:
+	"""Get warning/hazard color (bright yellow)"""
+	return HAZARD_YELLOW
+
+
+static func get_wasteland_success() -> Color:
+	"""Get success/positive color (radioactive green)"""
+	return NEON_GREEN
+
+
+static func get_wasteland_text_primary() -> Color:
+	"""Get primary text color for wasteland theme (dirty white/cream)"""
+	return DIRTY_WHITE
+
+
+static func get_wasteland_text_secondary() -> Color:
+	"""Get secondary text color for wasteland theme (concrete gray)"""
+	return CONCRETE_GRAY
+
+
+static func get_wasteland_background() -> Color:
+	"""Get panel/card background color (soot black)"""
+	return SOOT_BLACK
+
+
+static func get_icon_color_for_stat(stat_type: String) -> Color:
+	"""
+	Get semantic icon color for stat type (wasteland aesthetic).
+
+	Usage:
+		icon.modulate = GameColorPalette.get_icon_color_for_stat("health")
+	"""
+	match stat_type.to_lower():
+		"health", "hp", "healing":
+			return NEON_GREEN  # Radioactive glow = life force
+		"xp", "experience", "progression":
+			return WARNING  # Gold = achievement
+		"damage", "attack", "weapon":
+			return BLOOD_RED  # Red = danger
+		"armor", "defense", "shield":
+			return CONCRETE_GRAY  # Gray = metal plating
+		"speed", "movement":
+			return RUST_LIGHT  # Orange = motion
+		"warning", "caution", "wave":
+			return HAZARD_YELLOW  # Yellow = alert
+		"energy", "mana", "resource":
+			return OXIDIZED_COPPER  # Copper = scavenged tech
+		_:
+			return DIRTY_WHITE  # Default = neutral
+
+
+static func get_button_border_color(button_type: String) -> Color:
+	"""
+	Get border color for button type (wasteland aesthetic).
+
+	Usage:
+		style_box.border_color = GameColorPalette.get_button_border_color("primary")
+	"""
+	match button_type.to_lower():
+		"primary":
+			return RUST_DARK  # Darker seam/weld
+		"secondary":
+			return RUST_ORANGE  # Hollow frame
+		"danger":
+			return HAZARD_YELLOW  # Warning stripe
+		"success":
+			return NEON_GREEN  # Positive action
+		_:
+			return CONCRETE_GRAY  # Neutral border
+
+# ==== WASTELAND COLOR USAGE DOCUMENTATION ====
+## Color Selection Guide (Phase 8 patterns):
+##
+## PRIMARY BUTTONS:
+##   - Background: RUST_ORANGE
+##   - Border: RUST_DARK
+##   - Text: DIRTY_WHITE or TEXT_PRIMARY
+##   - Pressed: RUST_DARK background, RUST_LIGHT border
+##
+## SECONDARY BUTTONS (hollow):
+##   - Background: Transparent Color(0,0,0,0)
+##   - Border: RUST_ORANGE (3pt width)
+##   - Text: RUST_ORANGE or DIRTY_WHITE
+##   - Pressed: RUST_ORANGE background (10% alpha)
+##
+## DANGER BUTTONS (destructive):
+##   - Background: SOOT_BLACK or HAZARD_BLACK
+##   - Border: HAZARD_YELLOW (3pt width)
+##   - Text: DIRTY_WHITE
+##   - Pressed: HAZARD_BLACK background, WARNING_RED border
+##
+## PANEL BACKGROUNDS:
+##   - Default: SOOT_BLACK
+##   - Elevated: Color("#323232") - slightly lighter
+##   - Border: CONCRETE_GRAY at 50% alpha
+##
+## ICONS (semantic tinting):
+##   - Health: NEON_GREEN (radioactive glow)
+##   - XP: WARNING (gold progression)
+##   - Damage: BLOOD_RED (danger)
+##   - Armor: CONCRETE_GRAY (metal)
+##   - Warning: HAZARD_YELLOW (caution)
+##
+## TEXT:
+##   - Primary: DIRTY_WHITE (cream, aged paper)
+##   - Secondary: CONCRETE_GRAY (de-emphasized)
+##   - Headers: TEXT_PRIMARY (white, high contrast)
+##   - Disabled: DISABLED (intentionally low contrast)
