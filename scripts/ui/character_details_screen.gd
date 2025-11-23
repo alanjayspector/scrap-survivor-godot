@@ -127,9 +127,9 @@ func _populate_sidebar_roster() -> void:
 
 		# THEN configure (after parenting)
 		btn.layout_mode = 2
-		btn.custom_minimum_size = Vector2(0, 60)
+		btn.custom_minimum_size = Vector2(0, 70)
 		btn.text = char_name
-		btn.theme_override_font_sizes["font_size"] = 16
+		btn.add_theme_font_size_override("font_size", 20)
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 		# Highlight current character
