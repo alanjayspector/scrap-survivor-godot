@@ -37,6 +37,22 @@ func _apply_safe_area_insets() -> void:
 	var inset_bottom = viewport_size.y - (safe_area.position.y + safe_area.size.y)
 	var inset_right = viewport_size.x - (safe_area.position.x + safe_area.size.x)
 
+	# Clamp to non-negative (iOS API can return bad data in landscape)
+	inset_top = max(0, inset_top)
+	inset_left = max(0, inset_left)
+	inset_bottom = max(0, inset_bottom)
+	inset_right = max(0, inset_right)
+
+	# Landscape mode: Make left/right symmetric (no side notches in landscape)
+	var is_landscape = viewport_size.x > viewport_size.y
+	if is_landscape:
+		var side_margin = max(inset_left, inset_right)
+		inset_left = side_margin
+		inset_right = side_margin
+
+	# Enforce minimum bottom margin for home indicator (iOS HIG: ~34px)
+	inset_bottom = max(34, inset_bottom)
+
 	print("  Calculated insets:")
 	print("    top: ", inset_top)
 	print("    left: ", inset_left)

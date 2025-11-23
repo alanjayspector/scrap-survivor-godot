@@ -20,10 +20,11 @@ const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready
-var character_list: VBoxContainer = $ScreenContainer/CharacterListContainer/ScrollContainer/CharacterList
-@onready var slot_label: Label = $ScreenContainer/HeaderContainer/SlotLabel
-@onready var create_new_button: Button = $ScreenContainer/ButtonsContainer/CreateNewButton
-@onready var back_button: Button = $ScreenContainer/ButtonsContainer/BackButton
+var character_list: VBoxContainer = $ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer/CharacterList
+@onready var slot_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/SlotLabel
+@onready
+var create_new_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/CreateNewButton
+@onready var back_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
 
