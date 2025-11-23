@@ -382,6 +382,9 @@ func _animate_entrance() -> void:
 	match modal_type:
 		ModalType.ALERT:
 			# Fade + scale animation
+			# Set pivot to center so scale animation doesn't shift position
+			modal_container.pivot_offset = modal_container.size / 2.0
+
 			modal_container.modulate.a = 0.0
 			modal_container.scale = Vector2(0.9, 0.9)
 
