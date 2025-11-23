@@ -1,18 +1,35 @@
-[gd_scene load_steps=4 format=3 uid="uid://dqw5k3j8m9vxr"]
+[gd_scene load_steps=4 format=3 uid="uid://dqw5k3j8navxr"]
 
-[ext_resource type="Script" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
-[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
-[ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
+[ext_resource type="Script" uid="uid://da5opdddbfvsm" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
+[ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://k3o6w26cwvhk" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
 
 [node name="Scrapyard" type="Control"]
-theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_hub_script")
+
+[node name="DebugQAButton" type="Button" parent="."]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -80.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.5, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "[QA]"
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -32,15 +49,20 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_screen_container")
 
-[node name="TitleContainer" type="VBoxContainer" parent="ScreenContainer"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 100.0
-offset_bottom = 300.0
-grow_horizontal = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
 
-[node name="GameTitle" type="Label" parent="ScreenContainer/TitleContainer"]
+[node name="TopSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="TitleContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="GameTitle" type="Label" parent="ScreenContainer/VBoxContainer/TitleContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -49,29 +71,24 @@ theme_override_font_sizes/font_size = 48
 text = "SCRAP SURVIVOR"
 horizontal_alignment = 1
 
-[node name="VersionLabel" type="Label" parent="ScreenContainer/TitleContainer"]
+[node name="VersionLabel" type="Label" parent="ScreenContainer/VBoxContainer/TitleContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 theme_override_font_sizes/font_size = 18
 text = "v0.1.0 - Alpha"
 horizontal_alignment = 1
 
-[node name="MenuContainer" type="VBoxContainer" parent="ScreenContainer"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -120.0
-offset_right = 100.0
-offset_bottom = 120.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MiddleSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="MenuContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="PlayButton" type="Button" parent="ScreenContainer/MenuContainer"]
+[node name="PlayButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
 custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -80,7 +97,7 @@ theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 32
 text = "Play"
 
-[node name="CharactersButton" type="Button" parent="ScreenContainer/MenuContainer"]
+[node name="CharactersButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
 custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -89,7 +106,7 @@ theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 32
 text = "Characters"
 
-[node name="SettingsButton" type="Button" parent="ScreenContainer/MenuContainer"]
+[node name="SettingsButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
 custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -98,7 +115,7 @@ theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 32
 text = "Settings"
 
-[node name="QuitButton" type="Button" parent="ScreenContainer/MenuContainer"]
+[node name="QuitButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
 custom_minimum_size = Vector2(200, 60)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
@@ -107,22 +124,9 @@ theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 28
 text = "Quit"
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="BottomSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_vertical = 0
 
-[node name="DebugQAButton" type="Button" parent="ScreenContainer"]
-visible = false
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -120.0
-offset_top = -80.0
-offset_right = -20.0
-offset_bottom = -20.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.5, 0, 1)
-theme_override_font_sizes/font_size = 18
-text = "[QA]"
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
