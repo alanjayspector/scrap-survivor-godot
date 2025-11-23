@@ -54,8 +54,8 @@ const BACKDROP_FADE_IN: float = 0.2  # 200ms
 const BACKDROP_FADE_OUT: float = 0.15  # 150ms
 const SWIPE_THRESHOLD: float = 100.0  # 100pt downward swipe
 const MIN_ALERT_WIDTH: float = 300.0
-const MAX_ALERT_WIDTH: float = 400.0
-const ALERT_WIDTH_PERCENT: float = 0.85  # 85% of screen width
+const MAX_ALERT_WIDTH: float = 500.0  # Increased from 400 for more prominence
+const ALERT_WIDTH_PERCENT: float = 0.90  # Increased from 85% for larger modals
 
 ## Child nodes (created programmatically)
 var backdrop: ColorRect
@@ -131,23 +131,33 @@ func _build_modal_container() -> void:
 
 
 func _setup_alert_sizing() -> void:
-	"""Setup alert dialog sizing (centered, 85% width)"""
-	# Use set_anchors_and_offsets_preset() to properly center the control
-	# This sets both anchors AND offsets correctly (mirrors editor behavior)
-	# set_anchors_preset() alone only sets anchors, leaving offsets at 0, which
-	# positions the upper-left corner at center instead of centering the control
-	modal_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	modal_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	modal_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-
-	# Calculate width (85% of screen, clamped)
+	"""Setup alert dialog sizing (centered, 90% width)"""
+	# Calculate size FIRST (must set size before centering for correct offset calculation)
 	var screen_size = get_viewport().get_visible_rect().size
 	var target_width = clamp(screen_size.x * ALERT_WIDTH_PERCENT, MIN_ALERT_WIDTH, MAX_ALERT_WIDTH)
 
-	# Increased minimum height for better content visibility and touch targets
-	# Especially important for destructive operations (delete confirmations)
-	modal_container.custom_minimum_size = Vector2(target_width, 220)
-	modal_container.size = Vector2(target_width, 0)  # Auto height
+	# Set size explicitly for prominent display (destructive operations need prominence)
+	modal_container.custom_minimum_size = Vector2(target_width, 300)  # Increased from 220 to 300
+	modal_container.size = Vector2(target_width, 300)  # Set explicit height for centering calculation
+
+	# CRITICAL: Set anchors to center (0.5, 0.5) manually first
+	modal_container.anchor_left = 0.5
+	modal_container.anchor_top = 0.5
+	modal_container.anchor_right = 0.5
+	modal_container.anchor_bottom = 0.5
+
+	# Now manually set offsets based on size to achieve true centering
+	# For a centered control, offsets should be -size/2 to +size/2
+	var half_width = target_width / 2.0
+	var half_height = 300.0 / 2.0  # Use explicit height
+
+	modal_container.offset_left = -half_width
+	modal_container.offset_top = -half_height
+	modal_container.offset_right = half_width
+	modal_container.offset_bottom = half_height
+
+	modal_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	modal_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 
 
 func _setup_sheet_sizing() -> void:
@@ -203,7 +213,7 @@ func _style_modal_panel() -> void:
 		style.corner_radius_bottom_right = 0
 
 	# Padding - increased for ALERT modals to give more breathing room
-	var padding = 28 if modal_type == ModalType.ALERT else 20  # Increased from 24 for alerts
+	var padding = 36 if modal_type == ModalType.ALERT else 20  # Increased from 28 for alerts
 	style.content_margin_left = padding
 	style.content_margin_top = padding
 	style.content_margin_right = padding
@@ -218,7 +228,7 @@ func _build_content() -> void:
 	modal_container.add_child(content_vbox)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 	content_vbox.name = "ContentVBox"
 	content_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
-	content_vbox.add_theme_constant_override("separation", 20)  # Increased from 16 for more breathing room
+	content_vbox.add_theme_constant_override("separation", 24)  # Increased from 20 for more breathing room
 
 	# Labels will be created on-demand by property setters
 	# This allows ModalFactory to set title/message AFTER parenting
@@ -251,7 +261,7 @@ func _update_title_label() -> void:
 		title_label.name = "TitleLabel"
 		title_label.layout_mode = 2
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		title_label.add_theme_font_size_override("font_size", 24)  # Increased from 22 for better visibility
+		title_label.add_theme_font_size_override("font_size", 28)  # Increased from 24 for prominence
 		title_label.add_theme_color_override("font_color", Color.WHITE)
 		title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
@@ -281,7 +291,7 @@ func _update_message_label() -> void:
 		message_label.name = "MessageLabel"
 		message_label.layout_mode = 2
 		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		message_label.add_theme_font_size_override("font_size", 18)  # Increased from 16 for better readability
+		message_label.add_theme_font_size_override("font_size", 20)  # Increased from 18 for better readability
 		message_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
@@ -314,8 +324,8 @@ func _add_button(button_text: String, callback: Callable, style: int) -> Button:
 	button_container.add_child(button)  # Parent FIRST
 	button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	button.text = button_text
-	button.custom_minimum_size = Vector2(120, 56)  # Increased height (50→56) and min width for better touch targets
-	button.add_theme_font_size_override("font_size", 19)  # Increased from 18 for better button text visibility
+	button.custom_minimum_size = Vector2(140, 64)  # Increased from 120x56 for better touch targets and prominence
+	button.add_theme_font_size_override("font_size", 20)  # Increased from 19 for better button text visibility
 
 	# Apply theme styling
 	THEME_HELPER.apply_button_style(button, style)
