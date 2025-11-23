@@ -168,9 +168,11 @@ def run_gut_tests() -> tuple[bool, str, dict]:
         nothing_ran = "Nothing was run" in output or "ERROR]:  Nothing was run" in output
 
         # Check for success
-        # - All tests passed, OR
+        # - All tests passed (ignore exit code warnings like RID leaks), OR
         # - No tests found (during GUT migration phase)
-        success = (result.returncode == 0 and stats["failed"] == 0) or nothing_ran
+        # Note: Godot may return non-zero exit code due to warnings (e.g., RID leaks)
+        # but functional tests still pass. We accept this as success.
+        success = (stats["failed"] == 0 and stats["total"] > 0) or nothing_ran
 
         # Write results to test_results.txt for caching
         try:

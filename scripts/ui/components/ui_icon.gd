@@ -120,34 +120,43 @@ static func create_icon_label(icon: Icon, text: String, font_size: int = 18) -> 
 	"""
 	Create an HBoxContainer with icon (or fallback) + text label.
 	Use this instead of emoji + text patterns.
+
+	Note: Follows Parent-First protocol - children are parented BEFORE configuration.
+	The container itself will be parented by the caller.
 	"""
 	var container = HBoxContainer.new()
-	container.add_theme_constant_override("separation", 8)
+	# Don't configure container yet - caller will parent it
 
 	var icon_texture = get_icon_texture(icon)
 
 	if icon_texture:
 		# Use texture icon
 		var icon_rect = TextureRect.new()
+		container.add_child(icon_rect)  # Parent FIRST
+		icon_rect.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		icon_rect.texture = icon_texture
 		icon_rect.custom_minimum_size = Vector2(font_size + 4, font_size + 4)
 		icon_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.modulate = get_icon_color(icon)
-		container.add_child(icon_rect)
 	else:
 		# Use text fallback
 		var icon_label = Label.new()
+		container.add_child(icon_label)  # Parent FIRST
+		icon_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		icon_label.text = get_fallback_text(icon)
 		icon_label.add_theme_font_size_override("font_size", font_size)
 		icon_label.add_theme_color_override("font_color", get_icon_color(icon))
-		container.add_child(icon_label)
 
 	var text_label = Label.new()
+	container.add_child(text_label)  # Parent FIRST
+	text_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	text_label.text = text
 	text_label.add_theme_font_size_override("font_size", font_size)
 	text_label.add_theme_color_override("font_color", Color.WHITE)
-	container.add_child(text_label)
+
+	# Configure container AFTER children are parented
+	container.add_theme_constant_override("separation", 8)
 
 	return container
 
@@ -158,42 +167,52 @@ static func create_stat_row(
 	"""
 	Create a stat row with icon, label, and right-aligned value.
 	Example: [HP] Health         100
+
+	Note: Follows Parent-First protocol - children are parented BEFORE configuration.
+	The container itself will be parented by the caller.
 	"""
 	var container = HBoxContainer.new()
-	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	container.add_theme_constant_override("separation", 8)
+	# Don't configure container yet - caller will parent it
 
 	# Icon
 	var icon_texture = get_icon_texture(icon)
 	if icon_texture:
 		var icon_rect = TextureRect.new()
+		container.add_child(icon_rect)  # Parent FIRST
+		icon_rect.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		icon_rect.texture = icon_texture
 		icon_rect.custom_minimum_size = Vector2(font_size + 4, font_size + 4)
 		icon_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.modulate = get_icon_color(icon)
-		container.add_child(icon_rect)
 	else:
 		var icon_label = Label.new()
+		container.add_child(icon_label)  # Parent FIRST
+		icon_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		icon_label.text = get_fallback_text(icon)
 		icon_label.add_theme_font_size_override("font_size", font_size)
 		icon_label.add_theme_color_override("font_color", get_icon_color(icon))
-		container.add_child(icon_label)
 
 	# Label (expands to fill)
 	var label = Label.new()
+	container.add_child(label)  # Parent FIRST
+	label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	label.text = label_text
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", GameColorPalette.TEXT_SECONDARY)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	container.add_child(label)
 
 	# Value (right-aligned)
 	var value_label = Label.new()
+	container.add_child(value_label)  # Parent FIRST
+	value_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	value_label.text = value
 	value_label.add_theme_font_size_override("font_size", font_size)
 	value_label.add_theme_color_override("font_color", Color.WHITE)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	container.add_child(value_label)
+
+	# Configure container AFTER children are parented
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	container.add_theme_constant_override("separation", 8)
 
 	return container

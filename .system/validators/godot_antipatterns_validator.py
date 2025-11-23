@@ -306,8 +306,19 @@ def check_add_child_before_position(lines: List[str]) -> List[AntiPattern]:
         enemy.global_position = spawn_pos  # Set first
         add_child(enemy)  # Added at correct position, no overlap
 
+    NOTE: This check only applies to physics-enabled nodes (Node2D derivatives).
+    UI Control nodes don't have physics bodies and are exempt from this check.
+
     Reference: docs/migration/WEEK15-PHASE4-SESSION-SUMMARY.md Session 4 Part 2
     """
+    # UI Control nodes that don't participate in physics (exempt from position check)
+    UI_CONTROL_TYPES = [
+        'Control', 'VBoxContainer', 'HBoxContainer', 'Label', 'Button',
+        'Panel', 'PanelContainer', 'ScrollContainer', 'TextureRect',
+        'ColorRect', 'MarginContainer', 'CenterContainer', 'GridContainer',
+        'TabContainer', 'SplitContainer', 'AspectRatioContainer'
+    ]
+
     patterns = []
 
     for line_num, line in enumerate(lines, start=1):
@@ -316,6 +327,22 @@ def check_add_child_before_position(lines: List[str]) -> List[AntiPattern]:
 
         if add_child_match:
             node_var = add_child_match.group(1)
+
+            # Check if this is a UI Control node (look back up to 20 lines for var declaration)
+            is_ui_control = False
+            for i in range(max(1, line_num - 20), line_num):
+                prev_line = lines[i - 1]
+                # Match: var node_var = ControlType.new()
+                for control_type in UI_CONTROL_TYPES:
+                    if re.search(rf'var\s+{re.escape(node_var)}\s*=\s*{control_type}\.new\(\)', prev_line):
+                        is_ui_control = True
+                        break
+                if is_ui_control:
+                    break
+
+            # Skip position check for UI Control nodes (they don't have physics bodies)
+            if is_ui_control:
+                continue
 
             # Check if position was already set BEFORE this add_child (look back 20 lines)
             position_set_before = False

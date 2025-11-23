@@ -106,11 +106,12 @@ func _create_character_list_item(character: Dictionary) -> void:
 func _show_empty_state() -> void:
 	"""Show message when no characters exist"""
 	var empty_label = Label.new()
+	character_list.add_child(empty_label)  # Parent FIRST (Godot 4 Parent-First Protocol)
+	empty_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	empty_label.text = "No survivors yet.\nCreate your first character to begin!"
 	empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	empty_label.add_theme_font_size_override("font_size", 20)
 	empty_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-	character_list.add_child(empty_label)
 
 
 func _update_slot_label() -> void:

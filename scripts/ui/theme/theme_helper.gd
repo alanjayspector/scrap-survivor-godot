@@ -109,24 +109,32 @@ static func create_styled_button(
 static func create_stat_label(
 	label_text: String, value_text: String, color: Color = Color.WHITE
 ) -> HBoxContainer:
-	"""Create a styled stat row with label and value"""
+	"""Create a styled stat row with label and value
+
+	Note: Follows Parent-First protocol - children are parented BEFORE configuration.
+	The container itself will be parented by the caller.
+	"""
 	var container = HBoxContainer.new()
-	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Don't configure container yet - caller will parent it
 
 	var label = Label.new()
+	container.add_child(label)  # Parent FIRST
+	label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	label.text = label_text
 	label.add_theme_color_override("font_color", GameColorPalette.TEXT_SECONDARY)
 	label.add_theme_font_size_override("font_size", UIConstants.FONT_SIZE_BODY)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var value = Label.new()
+	container.add_child(value)  # Parent FIRST
+	value.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	value.text = value_text
 	value.add_theme_color_override("font_color", color)
 	value.add_theme_font_size_override("font_size", UIConstants.FONT_SIZE_BODY)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
-	container.add_child(label)
-	container.add_child(value)
+	# Configure container AFTER children are parented
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	return container
 

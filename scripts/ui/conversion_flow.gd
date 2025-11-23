@@ -203,40 +203,44 @@ func _show_post_trial_conversion_screen(run_stats: Dictionary) -> void:
 
 
 func _create_conversion_modal(run_stats: Dictionary) -> Control:
+	"""Create conversion modal following Parent-First protocol for iOS safety"""
 	var type_def = CharacterService.CHARACTER_TYPES[trial_character_type]
 
-	# Create modal container
+	# Create modal container (will be parented by caller)
 	var modal = PanelContainer.new()
-	modal.name = "ConversionModal"
-	modal.custom_minimum_size = Vector2(600, 400)
-	modal.position = Vector2((get_viewport().size.x - 600) / 2, (get_viewport().size.y - 400) / 2)
 
 	# Layout
 	var vbox = VBoxContainer.new()
-	modal.add_child(vbox)
+	modal.add_child(vbox)  # Parent FIRST
+	vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 
 	# Title
 	var title = Label.new()
+	vbox.add_child(title)  # Parent FIRST
+	title.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	title.text = "Trial Complete!"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 32)
-	vbox.add_child(title)
 
 	# Stats summary
 	var stats_label = Label.new()
+	vbox.add_child(stats_label)  # Parent FIRST
+	stats_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	stats_label.text = _format_run_stats(run_stats)
 	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(stats_label)
 
 	# Character type highlight
 	var char_type_label = Label.new()
+	vbox.add_child(char_type_label)  # Parent FIRST
+	char_type_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	char_type_label.text = "You played as: %s" % type_def.display_name
 	char_type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	char_type_label.add_theme_font_size_override("font_size", 24)
-	vbox.add_child(char_type_label)
 
 	# Benefits text
 	var benefits_label = Label.new()
+	vbox.add_child(benefits_label)  # Parent FIRST
+	benefits_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	benefits_label.text = (
 		"Unlock %s forever to:\n" % type_def.display_name
 		+ "• Keep all progress\n"
@@ -244,24 +248,31 @@ func _create_conversion_modal(run_stats: Dictionary) -> Control:
 		+ "• Access exclusive perks"
 	)
 	benefits_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(benefits_label)
 
 	# Buttons
 	var buttons_hbox = HBoxContainer.new()
+	vbox.add_child(buttons_hbox)  # Parent FIRST
+	buttons_hbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	buttons_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_child(buttons_hbox)
 
 	var unlock_btn = Button.new()
+	buttons_hbox.add_child(unlock_btn)  # Parent FIRST
+	unlock_btn.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	unlock_btn.text = "Unlock %s Forever" % _get_tier_name(type_def.tier_required)
 	unlock_btn.custom_minimum_size = Vector2(250, 60)
 	unlock_btn.pressed.connect(_on_unlock_forever_pressed.bind(type_def.tier_required))
-	buttons_hbox.add_child(unlock_btn)
 
 	var maybe_later_btn = Button.new()
+	buttons_hbox.add_child(maybe_later_btn)  # Parent FIRST
+	maybe_later_btn.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	maybe_later_btn.text = "Maybe Later"
 	maybe_later_btn.custom_minimum_size = Vector2(150, 60)
 	maybe_later_btn.pressed.connect(_on_maybe_later_pressed.bind(modal))
-	buttons_hbox.add_child(maybe_later_btn)
+
+	# Configure modal AFTER all children are parented
+	modal.name = "ConversionModal"
+	modal.custom_minimum_size = Vector2(600, 400)
+	modal.position = Vector2((get_viewport().size.x - 600) / 2, (get_viewport().size.y - 400) / 2)
 
 	return modal
 

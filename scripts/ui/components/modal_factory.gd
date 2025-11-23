@@ -29,7 +29,10 @@ static func show_alert(
 	modal.title_text = title
 	modal.message_text = message
 
-	# Add OK button
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Add OK button AFTER parenting (button_container exists after _ready())
 	modal.add_primary_button(
 		"OK",
 		func():
@@ -38,7 +41,6 @@ static func show_alert(
 				on_ok.call()
 	)
 
-	parent.add_child(modal)
 	modal.show_modal()
 	return modal
 
@@ -59,7 +61,10 @@ static func show_confirmation(
 	modal.title_text = title
 	modal.message_text = message
 
-	# Add Cancel button
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Add Cancel button AFTER parenting (button_container exists after _ready())
 	modal.add_secondary_button(
 		cancel_text,
 		func():
@@ -68,7 +73,7 @@ static func show_confirmation(
 				on_cancel.call()
 	)
 
-	# Add Confirm button
+	# Add Confirm button AFTER parenting
 	modal.add_primary_button(
 		confirm_text,
 		func():
@@ -77,7 +82,6 @@ static func show_confirmation(
 				on_confirm.call()
 	)
 
-	parent.add_child(modal)
 	modal.show_modal()
 	return modal
 
@@ -98,7 +102,10 @@ static func show_destructive_confirmation(
 	modal.title_text = title
 	modal.message_text = message
 
-	# Add Cancel button (secondary)
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Add Cancel button AFTER parenting (button_container exists after _ready())
 	modal.add_secondary_button(
 		cancel_text,
 		func():
@@ -107,7 +114,7 @@ static func show_destructive_confirmation(
 				on_cancel.call()
 	)
 
-	# Add Delete button (danger style)
+	# Add Delete button AFTER parenting (danger style)
 	modal.add_danger_button(
 		delete_text,
 		func():
@@ -117,7 +124,6 @@ static func show_destructive_confirmation(
 				on_delete.call()
 	)
 
-	parent.add_child(modal)
 	modal.show_modal()
 	return modal
 
@@ -138,7 +144,10 @@ static func show_error(
 	# Play error sound
 	HapticManager.warning()
 
-	# Add OK button
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Add OK button AFTER parenting (button_container exists after _ready())
 	modal.add_danger_button(
 		"OK",
 		func():
@@ -147,7 +156,6 @@ static func show_error(
 				on_ok.call()
 	)
 
-	parent.add_child(modal)
 	modal.show_modal()
 	return modal
 

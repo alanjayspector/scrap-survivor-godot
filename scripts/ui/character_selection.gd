@@ -70,16 +70,15 @@ func _create_character_type_cards() -> void:
 
 
 func _create_character_card(character_type: String) -> Control:
+	"""Create character card following Parent-First protocol for iOS safety"""
 	var type_def = CharacterService.CHARACTER_TYPES[character_type]
 
-	# Create card container with professional styling (Week 13 Phase 2: Grid layout)
+	# Create card container (will be parented by caller)
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(170, 330)  # 2×2 grid optimized, increased height for breathing room
-	card.name = "Card_%s" % character_type
 
 	# Apply StyleBoxFlat for professional mobile game look
 	var style_box = StyleBoxFlat.new()
-	style_box.bg_color = Color(0.15, 0.15, 0.15, 0.95)  # Dark semi-transparent background
+	style_box.bg_color = Color(0.15, 0.15, 0.15, 0.95)
 	style_box.corner_radius_top_left = 8
 	style_box.corner_radius_top_right = 8
 	style_box.corner_radius_bottom_left = 8
@@ -88,7 +87,7 @@ func _create_character_card(character_type: String) -> Control:
 	style_box.border_width_top = 2
 	style_box.border_width_right = 2
 	style_box.border_width_bottom = 2
-	style_box.border_color = type_def.color  # Character type color border
+	style_box.border_color = type_def.color
 	style_box.shadow_size = 4
 	style_box.shadow_color = Color(0, 0, 0, 0.5)
 	style_box.content_margin_left = 6
@@ -99,90 +98,99 @@ func _create_character_card(character_type: String) -> Control:
 
 	# Create card layout
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)  # Very tight for grid
-	card.add_child(vbox)
+	card.add_child(vbox)  # Parent FIRST
+	vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	vbox.add_theme_constant_override("separation", 4)
 
-	# Character type color header (compact for grid)
+	# Character type color header
 	var header_panel = PanelContainer.new()
-	header_panel.custom_minimum_size = Vector2(0, 36)  # Slightly larger header
+	vbox.add_child(header_panel)  # Parent FIRST
+	header_panel.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	header_panel.custom_minimum_size = Vector2(0, 36)
 	var header_style = StyleBoxFlat.new()
-	header_style.bg_color = type_def.color.lightened(0.2)  # Slightly brighter for visibility
+	header_style.bg_color = type_def.color.lightened(0.2)
 	header_style.corner_radius_top_left = 6
 	header_style.corner_radius_top_right = 6
 	header_panel.add_theme_stylebox_override("panel", header_style)
-	vbox.add_child(header_panel)
 
 	# Character type name on colored header
 	var name_label = Label.new()
+	header_panel.add_child(name_label)  # Parent FIRST
+	name_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	name_label.text = type_def.display_name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 22)  # Larger for readability
+	name_label.add_theme_font_size_override("font_size", 22)
 	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	name_label.add_theme_constant_override("outline_size", 2)
-	header_panel.add_child(name_label)
 
-	# Description (abbreviated for grid layout)
+	# Description
 	var desc_label = Label.new()
+	vbox.add_child(desc_label)  # Parent FIRST
+	desc_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 15)  # Flavor text - readable but de-emphasized (Week 16 Phase 2)
+	desc_label.add_theme_font_size_override("font_size", 15)
 	desc_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	desc_label.add_theme_constant_override("outline_size", 1)
-	vbox.add_child(desc_label)
 
-	# Stat modifiers display with visual icons (Week 13 Phase 2: Grid optimized)
+	# Stat modifiers display with visual icons
 	var stats_container = VBoxContainer.new()
-	stats_container.add_theme_constant_override("separation", 2)  # Very tight spacing
-	vbox.add_child(stats_container)
+	vbox.add_child(stats_container)  # Parent FIRST
+	stats_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+	stats_container.add_theme_constant_override("separation", 2)
 
 	# Add each stat with a colored icon
 	for stat_name in type_def.stat_modifiers.keys():
 		var value = type_def.stat_modifiers[stat_name]
 		var stat_row = HBoxContainer.new()
-		stat_row.add_theme_constant_override("separation", 4)  # Tight spacing
+		stats_container.add_child(stat_row)  # Parent FIRST
+		stat_row.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+		stat_row.add_theme_constant_override("separation", 4)
 
 		# Stat icon (color-coded by category)
 		var icon = ColorRect.new()
-		icon.custom_minimum_size = Vector2(6, 6)  # Tiny icons for grid
+		stat_row.add_child(icon)  # Parent FIRST
+		icon.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
+		icon.custom_minimum_size = Vector2(6, 6)
 		icon.color = _get_stat_color(stat_name)
-		stat_row.add_child(icon)
 
 		# Stat label
 		var stat_label = Label.new()
+		stat_row.add_child(stat_label)  # Parent FIRST
+		stat_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
-		stat_label.add_theme_font_size_override("font_size", 16)  # Primary decision content - Label tier (Week 16 Phase 2)
+		stat_label.add_theme_font_size_override("font_size", 16)
 		stat_label.add_theme_color_override("font_outline_color", Color.BLACK)
 		stat_label.add_theme_constant_override("outline_size", 1)
-		stat_row.add_child(stat_label)
 
-		stats_container.add_child(stat_row)
-
-	# Aura type display (compact)
+	# Aura type display
 	var aura_label = Label.new()
+	vbox.add_child(aura_label)  # Parent FIRST
+	aura_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	if type_def.aura_type:
 		aura_label.text = "Aura: %s" % type_def.aura_type.capitalize()
 	else:
 		aura_label.text = "Aura: None"
 	aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	aura_label.add_theme_font_size_override("font_size", 14)  # Secondary metadata - Caption tier (Week 16 Phase 2)
+	aura_label.add_theme_font_size_override("font_size", 14)
 	aura_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.2))
 	aura_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	aura_label.add_theme_constant_override("outline_size", 1)
-	vbox.add_child(aura_label)
 
-	# Add "Tap for details" hint (for unlocked cards too)
+	# Add "Tap for details" hint
 	var hint_label = Label.new()
+	vbox.add_child(hint_label)  # Parent FIRST
+	hint_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	hint_label.text = "Tap for details"
 	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_label.add_theme_font_size_override("font_size", 14)
 	hint_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 0.8))
 	hint_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	hint_label.add_theme_constant_override("outline_size", 1)
-	vbox.add_child(hint_label)
 
 	# Lock overlay (if user can't access this character)
 	var user_tier = CharacterService.get_tier()
@@ -192,52 +200,54 @@ func _create_character_card(character_type: String) -> Control:
 	# Make entire card tappable (tap → show detail panel)
 	card.gui_input.connect(_on_card_tapped.bind(character_type))
 
+	# Configure card AFTER all children are parented
+	card.custom_minimum_size = Vector2(170, 330)
+	card.name = "Card_%s" % character_type
+
 	return card
 
 
 func _add_lock_overlay(card: Control, required_tier: int) -> void:
-	# Professional lock overlay (Week 13 Phase 2: Grid optimized)
+	"""Add lock overlay following Parent-First protocol for iOS safety"""
+	# Professional lock overlay
 	var overlay = Panel.new()
+	card.add_child(overlay)  # Parent FIRST
 	overlay.mouse_filter = Control.MOUSE_FILTER_PASS
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 
-	# Semi-transparent dark overlay with rounded corners (50% opacity - lets stats show through)
+	# Semi-transparent dark overlay with rounded corners
 	var tier_color = _get_tier_color(required_tier)
 	var overlay_style = StyleBoxFlat.new()
-	overlay_style.bg_color = Color(0, 0, 0, 0.5)  # 50% opacity - visible but clearly locked
+	overlay_style.bg_color = Color(0, 0, 0, 0.5)
 	overlay_style.corner_radius_top_left = 8
 	overlay_style.corner_radius_top_right = 8
 	overlay_style.corner_radius_bottom_left = 8
 	overlay_style.corner_radius_bottom_right = 8
-
-	# Add tier-colored border to lock overlay for visual distinction
 	overlay_style.border_width_left = 3
 	overlay_style.border_width_top = 3
 	overlay_style.border_width_right = 3
 	overlay_style.border_width_bottom = 3
-	overlay_style.border_color = tier_color  # Tier-colored border makes tier instantly recognizable
-
+	overlay_style.border_color = tier_color
 	overlay.add_theme_stylebox_override("panel", overlay_style)
-	card.add_child(overlay)
 
-	# Thumbnail lock indicator (simplified - no buttons, just icon + tier badge)
-	# Buttons moved to detail panel for better UX
+	# Thumbnail lock indicator
 	var lock_content = VBoxContainer.new()
+	lock_content.position = Vector2(-65, -80)  # Set position BEFORE parenting (avoid physics overlap)
+	overlay.add_child(lock_content)  # Parent FIRST
 	lock_content.set_anchors_preset(Control.PRESET_CENTER)
-	lock_content.position = Vector2(-65, -80)  # Centered for thumbnail
 	lock_content.custom_minimum_size = Vector2(130, 160)
 	lock_content.add_theme_constant_override("separation", 12)
-	overlay.add_child(lock_content)
 
-	# Lock icon (larger, more prominent)
+	# Lock icon
 	var lock_label = Label.new()
+	lock_content.add_child(lock_label)  # Parent FIRST
 	lock_label.text = "🔒"
 	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.add_theme_font_size_override("font_size", 48)  # Larger for thumbnail visibility
-	lock_content.add_child(lock_label)
+	lock_label.add_theme_font_size_override("font_size", 48)
 
-	# Tier requirement badge with colored background panel (reuse tier_color from above)
+	# Tier requirement badge with colored background panel
 	var tier_badge_panel = PanelContainer.new()
+	lock_content.add_child(tier_badge_panel)  # Parent FIRST
 	var badge_style = StyleBoxFlat.new()
 	badge_style.bg_color = tier_color
 	badge_style.corner_radius_top_left = 6
@@ -248,30 +258,30 @@ func _add_lock_overlay(card: Control, required_tier: int) -> void:
 	badge_style.border_width_top = 2
 	badge_style.border_width_right = 2
 	badge_style.border_width_bottom = 2
-	badge_style.border_color = tier_color.lightened(0.3)  # Brighter border
+	badge_style.border_color = tier_color.lightened(0.3)
 	tier_badge_panel.add_theme_stylebox_override("panel", badge_style)
-	lock_content.add_child(tier_badge_panel)
 
 	var tier_badge = Label.new()
+	tier_badge_panel.add_child(tier_badge)  # Parent FIRST
+	tier_badge.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	tier_badge.text = _get_tier_name(required_tier)
 	tier_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tier_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	tier_badge.custom_minimum_size = Vector2(120, 40)  # Prominent badge
-	tier_badge.add_theme_font_size_override("font_size", 18)  # Readable
+	tier_badge.custom_minimum_size = Vector2(120, 40)
+	tier_badge.add_theme_font_size_override("font_size", 18)
 	tier_badge.add_theme_color_override("font_color", Color.WHITE)
 	tier_badge.add_theme_color_override("font_outline_color", Color.BLACK)
 	tier_badge.add_theme_constant_override("outline_size", 2)
-	tier_badge_panel.add_child(tier_badge)
 
 	# Add "Tap for details" hint
 	var hint_label = Label.new()
+	lock_content.add_child(hint_label)  # Parent FIRST
 	hint_label.text = "Tap for details"
 	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_label.add_theme_font_size_override("font_size", 14)
 	hint_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
 	hint_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	hint_label.add_theme_constant_override("outline_size", 1)
-	lock_content.add_child(hint_label)
 
 
 func _on_card_tapped(event: InputEvent, character_type: String) -> void:
@@ -284,7 +294,10 @@ func _on_card_tapped(event: InputEvent, character_type: String) -> void:
 
 
 func _show_character_detail_panel(character_type: String) -> void:
-	"""Show detail panel with full character information and Try/Unlock buttons"""
+	"""Show detail panel with full character information and Try/Unlock buttons
+
+	Follows Parent-First protocol for iOS safety.
+	"""
 	print("[CharacterSelection] Showing detail panel for: ", character_type)
 
 	# Close existing panel if any
@@ -297,37 +310,37 @@ func _show_character_detail_panel(character_type: String) -> void:
 
 	# Create full-screen container for backdrop + panel
 	var panel_root = Control.new()
+	add_child(panel_root)  # Parent FIRST
 	panel_root.name = "DetailPanelRoot"
 	panel_root.set_anchors_preset(Control.PRESET_FULL_RECT)
-	panel_root.mouse_filter = Control.MOUSE_FILTER_STOP  # Capture all input
-	add_child(panel_root)
+	panel_root.mouse_filter = Control.MOUSE_FILTER_STOP
 	current_detail_panel = panel_root
 
 	# Backdrop (semi-transparent black, tappable to dismiss)
 	var backdrop = Panel.new()
+	panel_root.add_child(backdrop)  # Parent FIRST
 	backdrop.name = "Backdrop"
 	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var backdrop_style = StyleBoxFlat.new()
-	backdrop_style.bg_color = Color(0, 0, 0, 0)  # Start transparent for fade-in
+	backdrop_style.bg_color = Color(0, 0, 0, 0)
 	backdrop.add_theme_stylebox_override("panel", backdrop_style)
 	backdrop.gui_input.connect(_on_backdrop_tapped)
-	panel_root.add_child(backdrop)
 
 	# Content panel (bottom 70% of screen, rounded corners)
 	var content_panel = PanelContainer.new()
+	panel_root.add_child(content_panel)  # Parent FIRST
 	content_panel.name = "ContentPanel"
-	# Position at bottom, 70% height
 	content_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	content_panel.anchor_top = 0.3
 	content_panel.anchor_bottom = 1.0
-	content_panel.offset_top = 20  # Start below screen for slide-up animation
+	content_panel.offset_top = 20
 
 	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.12, 0.12, 0.12, 0.98)  # Almost opaque dark background
+	panel_style.bg_color = Color(0.12, 0.12, 0.12, 0.98)
 	panel_style.corner_radius_top_left = 24
 	panel_style.corner_radius_top_right = 24
 	panel_style.border_width_top = 3
-	panel_style.border_color = type_def.color  # Character color border
+	panel_style.border_color = type_def.color
 	panel_style.shadow_size = 12
 	panel_style.shadow_color = Color(0, 0, 0, 0.6)
 	panel_style.content_margin_left = 24
@@ -335,17 +348,18 @@ func _show_character_detail_panel(character_type: String) -> void:
 	panel_style.content_margin_top = 16
 	panel_style.content_margin_bottom = 24
 	content_panel.add_theme_stylebox_override("panel", panel_style)
-	panel_root.add_child(content_panel)
 
-	# Scroll container for content (in case of overflow)
+	# Scroll container for content
 	var scroll = ScrollContainer.new()
+	content_panel.add_child(scroll)  # Parent FIRST
+	scroll.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
-	content_panel.add_child(scroll)
 
 	# Main content VBox
 	var content_vbox = VBoxContainer.new()
+	scroll.add_child(content_vbox)  # Parent FIRST
+	content_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	content_vbox.add_theme_constant_override("separation", 16)
-	scroll.add_child(content_vbox)
 
 	# === HEADER SECTION ===
 	_build_detail_header(content_vbox, type_def)
@@ -371,8 +385,10 @@ func _show_character_detail_panel(character_type: String) -> void:
 
 
 func _build_detail_header(parent: VBoxContainer, type_def: Dictionary) -> void:
-	"""Build header section with character name and close button"""
+	"""Build header section with character name and close button - Parent-First protocol"""
 	var header = PanelContainer.new()
+	parent.add_child(header)  # Parent FIRST
+	header.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	header.custom_minimum_size = Vector2(0, 60)
 
 	var header_style = StyleBoxFlat.new()
@@ -380,15 +396,17 @@ func _build_detail_header(parent: VBoxContainer, type_def: Dictionary) -> void:
 	header_style.corner_radius_top_left = 16
 	header_style.corner_radius_top_right = 16
 	header.add_theme_stylebox_override("panel", header_style)
-	parent.add_child(header)
 
 	# Header content (character name + close button)
 	var header_hbox = HBoxContainer.new()
+	header.add_child(header_hbox)  # Parent FIRST
+	header_hbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	header_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	header.add_child(header_hbox)
 
 	# Character name
 	var name_label = Label.new()
+	header_hbox.add_child(name_label)  # Parent FIRST
+	name_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	name_label.text = type_def.display_name.to_upper()
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -397,88 +415,97 @@ func _build_detail_header(parent: VBoxContainer, type_def: Dictionary) -> void:
 	name_label.add_theme_color_override("font_color", Color.WHITE)
 	name_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	name_label.add_theme_constant_override("outline_size", 3)
-	header_hbox.add_child(name_label)
 
 	# Close button (X)
 	var close_button = Button.new()
+	header_hbox.add_child(close_button)  # Parent FIRST
+	close_button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	close_button.text = "✕"
-	close_button.custom_minimum_size = Vector2(48, 48)  # iOS HIG touch target
+	close_button.custom_minimum_size = Vector2(48, 48)
 	close_button.add_theme_font_size_override("font_size", 32)
 	close_button.add_theme_color_override("font_color", Color.WHITE)
 	close_button.pressed.connect(_dismiss_detail_panel)
-	header_hbox.add_child(close_button)
 
 
 func _build_detail_description(parent: VBoxContainer, type_def: Dictionary) -> void:
-	"""Build description section with compelling copy"""
+	"""Build description section with compelling copy - Parent-First protocol"""
 	var desc_label = Label.new()
+	parent.add_child(desc_label)  # Parent FIRST
+	desc_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	desc_label.text = type_def.description
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc_label.add_theme_font_size_override("font_size", 18)
 	desc_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
-	parent.add_child(desc_label)
 
 
 func _build_detail_stats(parent: VBoxContainer, type_def: Dictionary) -> void:
-	"""Build stats section with large, color-coded stat display"""
+	"""Build stats section with large, color-coded stat display - Parent-First protocol"""
 	var stats_header = Label.new()
+	parent.add_child(stats_header)  # Parent FIRST
+	stats_header.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	stats_header.text = "STATS"
 	stats_header.add_theme_font_size_override("font_size", 20)
 	stats_header.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
-	parent.add_child(stats_header)
 
 	# Stats grid
 	var stats_vbox = VBoxContainer.new()
+	parent.add_child(stats_vbox)  # Parent FIRST
+	stats_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	stats_vbox.add_theme_constant_override("separation", 8)
-	parent.add_child(stats_vbox)
 
 	for stat_name in type_def.stat_modifiers.keys():
 		var value = type_def.stat_modifiers[stat_name]
 		var stat_row = HBoxContainer.new()
+		stats_vbox.add_child(stat_row)  # Parent FIRST
+		stat_row.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		stat_row.add_theme_constant_override("separation", 12)
 
 		# Stat icon (larger for detail view)
 		var icon = ColorRect.new()
+		stat_row.add_child(icon)  # Parent FIRST
+		icon.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		icon.custom_minimum_size = Vector2(12, 12)
 		icon.color = _get_stat_color(stat_name)
-		stat_row.add_child(icon)
 
 		# Stat label (larger, more readable)
 		var stat_label = Label.new()
+		stat_row.add_child(stat_label)  # Parent FIRST
+		stat_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		var sign = "+" if value >= 0 else ""
 		stat_label.text = "%s%s %s" % [sign, value, stat_name.capitalize()]
 		stat_label.add_theme_font_size_override("font_size", 18)
 		stat_label.add_theme_color_override("font_color", Color.WHITE)
-		stat_row.add_child(stat_label)
-
-		stats_vbox.add_child(stat_row)
 
 
 func _build_detail_aura(parent: VBoxContainer, type_def: Dictionary) -> void:
-	"""Build aura section"""
+	"""Build aura section - Parent-First protocol"""
 	var aura_header = Label.new()
+	parent.add_child(aura_header)  # Parent FIRST
+	aura_header.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	aura_header.text = "AURA"
 	aura_header.add_theme_font_size_override("font_size", 20)
 	aura_header.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
-	parent.add_child(aura_header)
 
 	var aura_label = Label.new()
+	parent.add_child(aura_label)  # Parent FIRST
+	aura_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	if type_def.aura_type:
 		aura_label.text = (
 			"%s\n%s" % [type_def.aura_type.capitalize(), "Provides defensive benefits"]
-		)  # Could be customized per aura type
+		)
 	else:
 		aura_label.text = "None\nNo defensive aura (trade-off for raw stats)"
 	aura_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	aura_label.add_theme_font_size_override("font_size", 16)
 	aura_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.2))
-	parent.add_child(aura_label)
 
 
 func _build_detail_tier_badge(parent: VBoxContainer, required_tier: int) -> void:
-	"""Build prominent tier badge for locked characters"""
+	"""Build prominent tier badge for locked characters - Parent-First protocol"""
 	var tier_panel = PanelContainer.new()
+	parent.add_child(tier_panel)  # Parent FIRST
+	tier_panel.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	tier_panel.custom_minimum_size = Vector2(0, 60)
 
 	var tier_color = _get_tier_color(required_tier)
@@ -494,9 +521,10 @@ func _build_detail_tier_badge(parent: VBoxContainer, required_tier: int) -> void
 	tier_style.border_width_bottom = 3
 	tier_style.border_color = tier_color.lightened(0.3)
 	tier_panel.add_theme_stylebox_override("panel", tier_style)
-	parent.add_child(tier_panel)
 
 	var tier_label = Label.new()
+	tier_panel.add_child(tier_label)  # Parent FIRST
+	tier_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	tier_label.text = _get_tier_name(required_tier)
 	tier_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tier_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -504,24 +532,26 @@ func _build_detail_tier_badge(parent: VBoxContainer, required_tier: int) -> void
 	tier_label.add_theme_color_override("font_color", Color.WHITE)
 	tier_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	tier_label.add_theme_constant_override("outline_size", 2)
-	tier_panel.add_child(tier_label)
 
 
 func _build_detail_buttons(
 	parent: VBoxContainer, character_type: String, is_locked: bool, required_tier: int
 ) -> void:
-	"""Build action buttons (Try/Unlock for locked, Select for unlocked)"""
+	"""Build action buttons (Try/Unlock for locked, Select for unlocked) - Parent-First protocol"""
 	if is_locked:
 		# Button container for Try + Unlock
 		var button_hbox = HBoxContainer.new()
+		parent.add_child(button_hbox)  # Parent FIRST
+		button_hbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		button_hbox.add_theme_constant_override("separation", 16)
 		button_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-		parent.add_child(button_hbox)
 
 		# Try button (grey)
 		var try_button = Button.new()
+		button_hbox.add_child(try_button)  # Parent FIRST
+		try_button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		try_button.text = "TRY"
-		try_button.custom_minimum_size = Vector2(140, 56)  # iOS HIG touch target
+		try_button.custom_minimum_size = Vector2(140, 56)
 		try_button.add_theme_font_size_override("font_size", 20)
 		var try_style = StyleBoxFlat.new()
 		try_style.bg_color = Color(0.4, 0.4, 0.4)
@@ -531,10 +561,11 @@ func _build_detail_buttons(
 		try_style.corner_radius_bottom_right = 8
 		try_button.add_theme_stylebox_override("normal", try_style)
 		try_button.pressed.connect(_on_detail_try_pressed.bind(character_type))
-		button_hbox.add_child(try_button)
 
 		# Unlock button (tier colored)
 		var unlock_button = Button.new()
+		button_hbox.add_child(unlock_button)  # Parent FIRST
+		unlock_button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		unlock_button.text = "UNLOCK"
 		unlock_button.custom_minimum_size = Vector2(140, 56)
 		unlock_button.add_theme_font_size_override("font_size", 20)
@@ -546,22 +577,22 @@ func _build_detail_buttons(
 		unlock_style.corner_radius_bottom_right = 8
 		unlock_button.add_theme_stylebox_override("normal", unlock_style)
 		unlock_button.pressed.connect(_on_detail_unlock_pressed.bind(required_tier))
-		button_hbox.add_child(unlock_button)
 	else:
 		# Select button (green, prominent)
 		var select_button = Button.new()
+		parent.add_child(select_button)  # Parent FIRST
+		select_button.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		select_button.text = "SELECT"
 		select_button.custom_minimum_size = Vector2(280, 56)
 		select_button.add_theme_font_size_override("font_size", 22)
 		var select_style = StyleBoxFlat.new()
-		select_style.bg_color = Color(0.1, 0.7, 0.3)  # Green
+		select_style.bg_color = Color(0.1, 0.7, 0.3)
 		select_style.corner_radius_top_left = 8
 		select_style.corner_radius_top_right = 8
 		select_style.corner_radius_bottom_left = 8
 		select_style.corner_radius_bottom_right = 8
 		select_button.add_theme_stylebox_override("normal", select_style)
 		select_button.pressed.connect(_on_detail_select_pressed.bind(character_type))
-		parent.add_child(select_button)
 
 
 func _animate_detail_panel_entrance(
@@ -845,6 +876,7 @@ func _play_ui_sound(sound: AudioStream, sound_name: String) -> void:
 		sound_name: Sound name for logging ("button_click", "character_select", "error")
 
 	iOS-compatible pattern: Uses preload() and programmatic AudioStreamPlayer
+	Parent-First protocol: Parent BEFORE configuration
 	"""
 	if not sound:
 		print("[CharacterSelection:Audio] ERROR: No sound provided for ", sound_name)
@@ -852,14 +884,14 @@ func _play_ui_sound(sound: AudioStream, sound_name: String) -> void:
 
 	# Create AudioStreamPlayer for non-positional audio
 	var audio_player = AudioStreamPlayer.new()
+	add_child(audio_player)  # Parent FIRST (Godot 4 Parent-First Protocol)
 	audio_player.stream = sound
 	audio_player.volume_db = -10.0 if sound_name == "button_click" else -5.0
 
 	# Auto-cleanup after playback
 	audio_player.finished.connect(audio_player.queue_free)
 
-	# Add to scene tree
-	add_child(audio_player)
+	# Play sound
 	audio_player.play()
 
 	# Diagnostic logging
