@@ -97,13 +97,15 @@ static func show_destructive_confirmation(
 	cancel_text: String = "Cancel"
 ) -> MobileModal:
 	var modal = MobileModal.new()
+
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Configure AFTER parenting (iOS SIGKILL prevention)
 	modal.modal_type = MobileModal.ModalType.ALERT
 	modal.allow_tap_outside_dismiss = false  # Prevent accidental dismissal
 	modal.title_text = title
 	modal.message_text = message
-
-	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
-	parent.add_child(modal)
 
 	# Add Cancel button AFTER parenting (button_container exists after _ready())
 	modal.add_secondary_button(
@@ -136,6 +138,11 @@ static func show_error(
 	on_ok: Callable = Callable()
 ) -> MobileModal:
 	var modal = MobileModal.new()
+
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Configure AFTER parenting (iOS SIGKILL prevention)
 	modal.modal_type = MobileModal.ModalType.ALERT
 	modal.allow_tap_outside_dismiss = true
 	modal.title_text = title
@@ -143,9 +150,6 @@ static func show_error(
 
 	# Play error sound
 	HapticManager.warning()
-
-	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
-	parent.add_child(modal)
 
 	# Add OK button AFTER parenting (button_container exists after _ready())
 	modal.add_danger_button(
@@ -168,12 +172,16 @@ static func create_sheet(
 	allow_tap_outside: bool = true
 ) -> MobileModal:
 	var modal = MobileModal.new()
+
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Configure AFTER parenting (iOS SIGKILL prevention)
 	modal.modal_type = MobileModal.ModalType.SHEET
 	modal.allow_swipe_dismiss = allow_swipe_dismiss
 	modal.allow_tap_outside_dismiss = allow_tap_outside
 	modal.title_text = title
 
-	parent.add_child(modal)
 	# Note: Caller must add custom content and call show_modal()
 	return modal
 
@@ -181,11 +189,15 @@ static func create_sheet(
 ## Create a full-screen modal (for onboarding, tutorials)
 static func create_fullscreen(parent: Node, title: String = "") -> MobileModal:
 	var modal = MobileModal.new()
+
+	# Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
+	parent.add_child(modal)
+
+	# Configure AFTER parenting (iOS SIGKILL prevention)
 	modal.modal_type = MobileModal.ModalType.FULLSCREEN
 	modal.allow_tap_outside_dismiss = false
 	modal.allow_swipe_dismiss = false
 	modal.title_text = title
 
-	parent.add_child(modal)
 	# Note: Caller must add custom content and call show_modal()
 	return modal
