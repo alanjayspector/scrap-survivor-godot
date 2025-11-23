@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7g8k9h1j2m3n4"]
+[gd_scene load_steps=4 format=3 uid="uid://c7g8k9h1j2m3n4"]
 
 [ext_resource type="Script" path="res://scripts/ui/character_roster.gd" id="1_roster"]
 [ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
 
 [node name="CharacterRoster" type="Control"]
 theme = ExtResource("2_theme")
@@ -22,7 +23,16 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.15, 0.12, 0.1, 1)
 
-[node name="HeaderContainer" type="VBoxContainer" parent="."]
+[node name="ScreenContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_screen_container")
+
+[node name="HeaderContainer" type="VBoxContainer" parent="ScreenContainer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -32,7 +42,7 @@ offset_right = -20.0
 offset_bottom = 120.0
 grow_horizontal = 2
 
-[node name="TitleLabel" type="Label" parent="HeaderContainer"]
+[node name="TitleLabel" type="Label" parent="ScreenContainer/HeaderContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -41,14 +51,14 @@ theme_override_font_sizes/font_size = 48
 text = "Your Survivors"
 horizontal_alignment = 1
 
-[node name="SlotLabel" type="Label" parent="HeaderContainer"]
+[node name="SlotLabel" type="Label" parent="ScreenContainer/HeaderContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 theme_override_font_sizes/font_size = 20
 text = "0/3 Survivors (Free Tier)"
 horizontal_alignment = 1
 
-[node name="CharacterListContainer" type="MarginContainer" parent="."]
+[node name="CharacterListContainer" type="MarginContainer" parent="ScreenContainer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,17 +70,17 @@ offset_bottom = -140.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CharacterListContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ScreenContainer/CharacterListContainer"]
 layout_mode = 2
 follow_focus = true
 
-[node name="CharacterList" type="VBoxContainer" parent="CharacterListContainer/ScrollContainer"]
+[node name="CharacterList" type="VBoxContainer" parent="ScreenContainer/CharacterListContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="ButtonsContainer" type="HBoxContainer" parent="."]
+[node name="ButtonsContainer" type="HBoxContainer" parent="ScreenContainer"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -85,13 +95,13 @@ grow_vertical = 0
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="CreateNewButton" type="Button" parent="ButtonsContainer"]
+[node name="CreateNewButton" type="Button" parent="ScreenContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(280, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Create New Survivor"
 
-[node name="BackButton" type="Button" parent="ButtonsContainer"]
+[node name="BackButton" type="Button" parent="ScreenContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24

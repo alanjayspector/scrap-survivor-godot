@@ -16,12 +16,12 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
-@onready var play_button: Button = $MenuContainer/PlayButton
-@onready var characters_button: Button = $MenuContainer/CharactersButton
-@onready var settings_button: Button = $MenuContainer/SettingsButton
-@onready var quit_button: Button = $MenuContainer/QuitButton
+@onready var play_button: Button = $ScreenContainer/MenuContainer/PlayButton
+@onready var characters_button: Button = $ScreenContainer/MenuContainer/CharactersButton
+@onready var settings_button: Button = $ScreenContainer/MenuContainer/SettingsButton
+@onready var quit_button: Button = $ScreenContainer/MenuContainer/QuitButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
-@onready var debug_qa_button: Button = $DebugQAButton
+@onready var debug_qa_button: Button = $ScreenContainer/DebugQAButton
 
 var is_first_run: bool = false
 

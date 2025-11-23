@@ -11,13 +11,16 @@ extends Control
 ## - Comprehensive diagnostic logging
 
 ## Node references
-@onready var name_input: LineEdit = $MarginContainer/VBoxContainer/CreationContainer/NameInput
 @onready
-var character_type_cards: GridContainer = $MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards
-@onready var create_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/CreateButton
+var name_input: LineEdit = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput
 @onready
-var create_hub_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/CreateHubButton
-@onready var back_button: Button = $MarginContainer/VBoxContainer/ButtonsContainer/BackButton
+var character_type_cards: GridContainer = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards
+@onready
+var create_button: Button = $ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton
+@onready
+var create_hub_button: Button = $ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateHubButton
+@onready
+var back_button: Button = $ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
 ## State
@@ -235,8 +238,8 @@ func _setup_slot_usage_banner() -> void:
 	)
 
 	# Insert banner after subtitle (before creation container)
-	var vbox = $MarginContainer/VBoxContainer
-	var header_container = $MarginContainer/VBoxContainer/HeaderContainer
+	var vbox = $ScreenContainer/MarginContainer/VBoxContainer
+	var header_container = $ScreenContainer/MarginContainer/VBoxContainer/HeaderContainer
 	vbox.add_child(_slot_usage_banner)
 	vbox.move_child(_slot_usage_banner, header_container.get_index() + 1)
 

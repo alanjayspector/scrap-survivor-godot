@@ -19,10 +19,11 @@ const MODAL_FACTORY = preload("res://scripts/ui/components/modal_factory.gd")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
-@onready var character_list: VBoxContainer = $CharacterListContainer/ScrollContainer/CharacterList
-@onready var slot_label: Label = $HeaderContainer/SlotLabel
-@onready var create_new_button: Button = $ButtonsContainer/CreateNewButton
-@onready var back_button: Button = $ButtonsContainer/BackButton
+@onready
+var character_list: VBoxContainer = $ScreenContainer/CharacterListContainer/ScrollContainer/CharacterList
+@onready var slot_label: Label = $ScreenContainer/HeaderContainer/SlotLabel
+@onready var create_new_button: Button = $ScreenContainer/ButtonsContainer/CreateNewButton
+@onready var back_button: Button = $ScreenContainer/ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 
 
