@@ -109,7 +109,7 @@ func _populate_sidebar_roster() -> void:
 	# Get all characters
 	var characters = CharacterService.get_all_characters()
 	if characters == null or characters.is_empty():
-		GameLogger.warn("[CharacterDetailsScreen] No characters to display in sidebar")
+		GameLogger.warning("[CharacterDetailsScreen] No characters to display in sidebar")
 		return
 
 	# Sort by last played (most recent first)
