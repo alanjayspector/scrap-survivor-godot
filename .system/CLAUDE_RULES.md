@@ -32,6 +32,51 @@ Before executing these actions, I MUST:
 4. ❌ **NEVER assume validation is wrong** - investigate first, prove with evidence
 5. ❌ **NEVER take shortcuts when frustrated** - stop and investigate systematically
 
+## Thinking Transparency at Decision Points
+
+**At critical decision points, Claude MUST output thinking before acting:**
+
+**Example - Scene Modification:**
+```
+I'm about to edit character_roster.tscn to add ScreenContainer.
+
+Let me verify I understand the hierarchy from the spec first:
+[reads spec, quotes pattern]
+
+Spec shows: ScreenContainer → VBoxContainer → children
+Current roster structure: [analyze current structure]
+
+Plan: Use Godot editor to add VBoxContainer wrapper, then move existing children inside.
+
+Proceeding with Godot editor (not manual edit).
+```
+
+**Example - Time Pressure Detection:**
+```
+I'm thinking "need to apply this to all 3 scenes quickly to hit the 1.5h estimate."
+
+🚨 TIME PRESSURE DETECTED 🚨
+
+This is the moment I usually rush and break things.
+
+User priority: "Quality over speed"
+Evidence: 99% QA failure when rushing vs one-shot when methodical
+
+Corrective action: Break into 3 sub-phases, one scene at a time with QA gates.
+```
+
+**Benefits:**
+- User sees decision points as they happen
+- User can intervene before mistakes are made
+- Builds trust through transparency
+- Forces Claude to catch own bad habits
+
+**Trigger**: Claude should proactively output thinking when:
+- About to modify scene files
+- About to commit multiple files
+- Feeling time pressure
+- About to skip a checklist step
+
 ## Evidence-Based Engineering Checklist
 
 Before modifying validators or bypassing any gate:
@@ -44,6 +89,48 @@ Before modifying validators or bypassing any gate:
 ```
 
 **If ANY checkbox is unchecked → STOP and ask user**
+
+## Pre-Implementation Spec Checkpoint (MANDATORY)
+
+**Before writing ANY code, Claude MUST:**
+
+### Step 1: Read Specification
+- [ ] Identify relevant spec section (file:lines)
+- [ ] Read entire section (no skimming)
+- [ ] Quote 2-3 key requirements from spec
+- [ ] Identify pattern/example from spec
+
+**Output to user:**
+```
+📋 **SPEC CHECKPOINT**
+Read: [file:lines]
+Key requirements:
+1. [quote from spec]
+2. [quote from spec]
+3. [quote from spec]
+
+Pattern identified: [describe or diagram]
+
+Does this match your understanding? (WAIT for 'yes')
+```
+
+**If spec doesn't exist:** Document that fact, ask user for requirements.
+**If Claude skips this step:** User should immediately stop and redirect.
+
+### Step 2: Scope Checkpoint
+- [ ] Breaking work into smallest testable increment?
+- [ ] One scene/file at a time (not bulk)?
+- [ ] QA validation after this piece?
+- [ ] Commit this piece before next piece?
+
+**If answer is "no" to any → TOO BIG, break it down further**
+
+### Step 3: Method Checkpoint
+- [ ] Using correct tools? (Godot editor for .tscn, NOT manual edit)
+- [ ] Following established pattern from spec?
+- [ ] Will run validators before commit?
+
+**If ANY checkbox unchecked → STOP and discuss with user**
 
 ## Commit Message Format
 
@@ -219,6 +306,34 @@ The following validators enforce these rules:
 - **refactor_verification_validator.py** - Validates refactor claims (BLOCKING on refactor commits)
 
 **These run automatically in pre-commit hooks.**
+
+### Scene Modification Protocol (AUTOMATIC WARNING)
+
+**BEFORE using Edit/Write tools on .tscn files, Claude MUST output:**
+
+```
+⚠️ **SCENE MODIFICATION DETECTED**
+
+About to modify: [filename]
+Method: [Godot editor / Manual edit]
+
+Checklist:
+□ Read spec for this scene's hierarchy? [yes/no + cite spec section]
+□ Using Godot editor (NOT manual edit)? [yes/no]
+□ Applying to ONE scene only (incremental)? [yes/no]
+□ Will test this scene before modifying next? [yes/no]
+
+If ANY checkbox is unchecked, this violates scene modification protocol.
+
+Proceed? (Requires user 'yes')
+```
+
+**Manual .tscn editing is ONLY allowed for:**
+- Minor text/property changes (1-2 lines)
+- Following an explicit example from spec
+- Emergency hotfixes (with user approval)
+
+**All structural changes (adding/removing nodes, changing hierarchy) MUST use Godot editor.**
 
 ---
 
@@ -541,6 +656,34 @@ Return: Root cause analysis + correct fix + prevention recommendations
 
 **If I violate**: User stops me, I acknowledge, we review what went wrong
 
+## Time Pressure Detection & Response
+
+**Symptoms of harmful time pressure:**
+- Thinking "need to do this quickly"
+- Thinking "just do all X at once to save time"
+- Skipping spec reading "because I already know"
+- Manual editing "because Godot editor is slower"
+- Bulk commits "to avoid multiple commit messages"
+
+**When Claude detects these thoughts:**
+
+1. **STOP immediately**
+2. **Output the thought:**
+   "🚨 TIME PRESSURE DETECTED: [describe the thought]"
+3. **Review user priority:**
+   User has stated: "I want to build a strong foundation and I'd rather take the time to do it right than to do it fast."
+4. **Check the data:**
+   - Evidence-based approach: One-shot success
+   - Rushing approach: 99% QA failure rate
+5. **Corrective action:**
+   "Slowing down to follow proper process: [describe what will do instead]"
+
+**Remember**: Rushing doesn't save time. It creates 5x more work through failed QA passes, debugging, and rework.
+
+**User will always prefer:**
+- 1 hour to do it right once
+- Over 5 hours to do it wrong 3 times and fix it twice
+
 ## Evidence-Based Engineering Examples
 
 ### ✅ CORRECT: Modifying test validator
@@ -561,6 +704,34 @@ Evidence complete. Modifying validator with documented reasoning."
 Using --no-verify to bypass and move forward."
 ← VIOLATION: Should have read .git/hooks/commit-msg instead
 ```
+
+## Multi-Scene Commit Warning (AUTOMATIC)
+
+**BEFORE committing changes to multiple scene files, Claude MUST output:**
+
+```
+⚠️ **BULK COMMIT DETECTED**
+
+About to commit changes to [N] scene files:
+- [list scene files]
+
+This violates incremental validation protocol.
+
+**Risk**: If one scene has issues, ALL scenes are affected.
+**Recommended**: Commit one scene at a time with device QA validation between.
+
+**Incremental Process:**
+1. Commit scene 1 → Device QA → Fix if needed
+2. Commit scene 2 → Device QA → Fix if needed
+3. Commit scene 3 → Device QA → Fix if needed
+
+Proceed with bulk commit anyway? (Requires user 'yes' + justification)
+```
+
+**Exceptions** (allowed bulk commits):
+- Renaming operations across multiple files
+- Global search/replace that's been tested
+- User explicitly requests bulk commit
 
 ---
 
@@ -1105,5 +1276,90 @@ Repeat
 
 ---
 
-**Last Updated**: 2025-11-23 by Claude Code (Added Modal Layout Protocol, Destructive UI Standards, Session/Week Plan Management Protocol)
+## Phase Breakdown for One-Shot Success
+
+**Problem**: Large phases (>1.5h) encourage rushing and bulk commits.
+**Solution**: Break phases into sub-phases with QA gates.
+
+### Phase Size Guidelines
+
+**Optimal phase size**: 0.25-0.5 hours
+- Small enough to one-shot
+- Large enough to be meaningful
+- Includes built-in QA gate
+
+**Example - WRONG (too big):**
+```
+Phase 6: Safe Area Implementation (1.5h)
+- Create component
+- Apply to 3 scenes
+- Test on device
+```
+**Result**: Rushed, bulk commit, 2/3 scenes broken
+
+**Example - RIGHT (incremental):**
+```
+Phase 6.1: Create ScreenContainer component (0.5h)
+→ Unit test component in isolation
+→ QA Gate: Component works correctly
+
+Phase 6.2: Apply to character_creation.tscn (0.25h)
+→ Use Godot editor, follow spec pattern
+→ QA Gate: Device test this scene (GO/NO-GO)
+
+Phase 6.3: Apply to character_roster.tscn (0.25h)
+→ Same pattern as 6.2
+→ QA Gate: Device test this scene (GO/NO-GO)
+
+Phase 6.4: Apply to scrapyard.tscn (0.25h)
+→ Same pattern as 6.2
+→ QA Gate: Device test this scene (GO/NO-GO)
+```
+**Result**: Each piece tested before next, failures caught early
+
+### QA Gate Rules
+
+**After each sub-phase:**
+1. Commit the change
+2. Deploy to device (if mobile feature)
+3. Run QA checklist for this piece
+4. **GO**: Continue to next sub-phase
+5. **NO-GO**: Fix this piece before moving forward
+
+**Benefits:**
+- Failures isolated to single piece
+- User can stop after first failure
+- No bulk rollbacks needed
+- Forces incremental validation (Claude's weakness)
+
+### Planning Template
+
+When creating week plans, use this template:
+
+```markdown
+## Phase [N]: [Feature Name]
+
+**Total Estimated Time**: [X]h
+
+**Breakdown:**
+- Phase [N].1: [First increment] ([time]h)
+  - QA Gate: [what to validate]
+- Phase [N].2: [Second increment] ([time]h)
+  - QA Gate: [what to validate]
+- Phase [N].3: [Third increment] ([time]h)
+  - QA Gate: [what to validate]
+
+**Each sub-phase includes:**
+- Spec reading checkpoint
+- Implementation
+- Local testing
+- Commit
+- Device QA (GO/NO-GO gate)
+```
+
+**Application**: Use this for all future week plans starting Week 17+
+
+---
+
+**Last Updated**: 2025-11-23 by Claude Code (Added Process Quality Gates: Pre-Implementation Spec Checkpoint, Scene Modification Protocol, Multi-Scene Commit Warning, Thinking Transparency, Time Pressure Detection, Phase Breakdown Strategy)
 **Next Review**: When violations occur or user requests update
