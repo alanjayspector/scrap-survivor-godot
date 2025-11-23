@@ -66,12 +66,13 @@ func _ready() -> void:
 
 	# Auto-navigate to character creation on first run (with small delay for UX)
 	# Week 15 Phase 4: Enabled (Phase 2/3 complete - character_creation.tscn exists)
-	if is_first_run:
-		if is_instance_valid(Analytics):
-			Analytics.first_launch()
-		GameLogger.info("[Hub] First run detected - auto-navigating to character creation")
-		await get_tree().create_timer(0.5).timeout
-		_launch_first_run_flow()
+	# Week 16 Phase 6: DISABLED per user request (annoying during QA, user can manually click Play)
+	# if is_first_run:
+	# 	if is_instance_valid(Analytics):
+	# 		Analytics.first_launch()
+	# 	GameLogger.info("[Hub] First run detected - auto-navigating to character creation")
+	# 	await get_tree().create_timer(0.5).timeout
+	# 	_launch_first_run_flow()
 
 
 func _exit_tree() -> void:
