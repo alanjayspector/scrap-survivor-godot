@@ -75,6 +75,9 @@ var timer_warning_tween: Tween = null
 
 
 func _ready() -> void:
+	# Apply safe area insets first (Week 16 Phase 7)
+	_apply_safe_area_insets()
+
 	# Connect to HudService signals
 	if HudService:
 		HudService.hp_changed.connect(_on_hp_changed)
@@ -112,6 +115,76 @@ func _ready() -> void:
 	_on_wave_changed(HudService.get_current_wave())
 
 	GameLogger.info("HUD initialized")
+
+
+func _apply_safe_area_insets() -> void:
+	"""Apply safe area insets to HUD elements (Week 16 Phase 7)
+
+	Adjusts positions of HUD elements to avoid overlap with:
+	- iPhone notches/Dynamic Island (top)
+	- Home indicator (bottom)
+	- Rounded corners (left/right)
+
+	Based on ScreenContainer pattern from screen_container.gd
+	"""
+	if not OS.has_feature("mobile"):
+		GameLogger.info("HUD: Desktop detected - no safe area adjustments needed")
+		return
+
+	# Get safe area from viewport
+	var safe_area = DisplayServer.get_display_safe_area()
+	var viewport_size = get_viewport().get_visible_rect().size
+
+	# Calculate insets
+	var inset_top = safe_area.position.y
+	var inset_left = safe_area.position.x
+	var inset_bottom = viewport_size.y - (safe_area.position.y + safe_area.size.y)
+	var inset_right = viewport_size.x - (safe_area.position.x + safe_area.size.x)
+
+	# Clamp to non-negative (iOS API can return bad data in landscape)
+	inset_top = max(0, inset_top)
+	inset_left = max(0, inset_left)
+	inset_bottom = max(0, inset_bottom)
+	inset_right = max(0, inset_right)
+
+	# Landscape mode: Make left/right symmetric (no side notches in landscape)
+	var is_landscape = viewport_size.x > viewport_size.y
+	if is_landscape:
+		var side_margin = max(inset_left, inset_right)
+		inset_left = side_margin
+		inset_right = side_margin
+
+	# Enforce minimum bottom margin for home indicator (iOS HIG: ~34px)
+	inset_bottom = max(34, inset_bottom)
+
+	GameLogger.info(
+		"HUD: Applying safe area insets",
+		{"top": inset_top, "left": inset_left, "bottom": inset_bottom, "right": inset_right}
+	)
+
+	# Adjust left-side elements (HP, XP, Wave)
+	if hp_bar:
+		hp_bar.position.x += inset_left
+		hp_bar.position.y += inset_top
+
+	if xp_bar:
+		xp_bar.position.x += inset_left
+		xp_bar.position.y += inset_top
+
+	if wave_label:
+		wave_label.position.x += inset_left
+		wave_label.position.y += inset_top
+
+	# Adjust top-center element (Wave Timer)
+	if wave_timer_label:
+		wave_timer_label.position.y += inset_top
+
+	# Adjust top-right element (Currency Display)
+	if currency_display:
+		currency_display.position.x -= inset_right
+		currency_display.position.y += inset_top
+
+	GameLogger.info("HUD: Safe area insets applied successfully")
 
 
 func _connect_to_wave_manager() -> void:
