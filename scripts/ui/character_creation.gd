@@ -13,6 +13,7 @@ extends Control
 ## Node references
 @onready
 var name_input: LineEdit = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput
+# gdlint: disable=max-line-length
 @onready
 var character_type_cards: GridContainer = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards
 @onready
