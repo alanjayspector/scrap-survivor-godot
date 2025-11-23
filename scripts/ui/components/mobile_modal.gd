@@ -91,8 +91,8 @@ func _ready() -> void:
 func _build_backdrop() -> void:
 	"""Create backdrop overlay"""
 	backdrop = ColorRect.new()
+	add_child(backdrop)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 	backdrop.name = "ModalBackdrop"
-	add_child(backdrop)  # Parent FIRST
 	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	backdrop.color = backdrop_color
 	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks to content below
@@ -105,8 +105,8 @@ func _build_backdrop() -> void:
 func _build_modal_container() -> void:
 	"""Create modal container with proper sizing based on type"""
 	modal_container = PanelContainer.new()
+	add_child(modal_container)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 	modal_container.name = "ModalContainer"
-	add_child(modal_container)
 
 	# Apply sizing based on modal type
 	match modal_type:
@@ -204,16 +204,16 @@ func _style_modal_panel() -> void:
 func _build_content() -> void:
 	"""Build content structure (title, message, buttons)"""
 	content_vbox = VBoxContainer.new()
+	modal_container.add_child(content_vbox)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 	content_vbox.name = "ContentVBox"
-	modal_container.add_child(content_vbox)  # Parent FIRST
 	content_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	content_vbox.add_theme_constant_override("separation", 16)
 
 	# Title label
 	if not title_text.is_empty():
 		title_label = Label.new()
+		content_vbox.add_child(title_label)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 		title_label.name = "TitleLabel"
-		content_vbox.add_child(title_label)  # Parent FIRST
 		title_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		title_label.text = title_text
 		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -224,8 +224,8 @@ func _build_content() -> void:
 	# Message label
 	if not message_text.is_empty():
 		message_label = Label.new()
+		content_vbox.add_child(message_label)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 		message_label.name = "MessageLabel"
-		content_vbox.add_child(message_label)  # Parent FIRST
 		message_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 		message_label.text = message_text
 		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -235,8 +235,8 @@ func _build_content() -> void:
 
 	# Button container (added later via add_button methods)
 	button_container = HBoxContainer.new()
+	content_vbox.add_child(button_container)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
 	button_container.name = "ButtonContainer"
-	content_vbox.add_child(button_container)  # Parent FIRST
 	button_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	button_container.add_theme_constant_override("separation", 16)
 	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
