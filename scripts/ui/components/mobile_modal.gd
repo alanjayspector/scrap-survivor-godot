@@ -89,9 +89,8 @@ func _ready() -> void:
 	_build_modal_container()
 	_build_content()
 
-	# Start hidden
+	# Start hidden (only use visible, not modulate - parent alpha affects all children)
 	visible = false
-	modulate.a = 0.0
 
 
 func _build_backdrop() -> void:
