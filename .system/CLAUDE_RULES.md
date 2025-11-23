@@ -638,5 +638,123 @@ Using --no-verify to bypass and move forward."
 
 ---
 
-**Last Updated**: 2025-11-22 by Claude Code (Mobile-Native Standards, Scene Layout Rules, Definition of Complete, QA Investigation Protocol added)
+## Godot 4 Dynamic UI Development (CRITICAL)
+
+**Effective**: 2025-11-22 (After Week 16 iOS SIGKILL crash investigation)
+
+### The Parent-First Protocol
+
+**MANDATORY for ALL dynamic Control node creation in Godot 4.x**
+
+```gdscript
+# ✅ CORRECT - Parent-First Protocol (ALWAYS use this)
+var node = VBoxContainer.new()
+parent_container.add_child(node)  # 1. Parent FIRST
+node.layout_mode = 2  # 2. Explicit Mode 2 (Container mode) for iOS safety
+node.add_theme_constant_override("separation", 16)  # 3. Configure AFTER
+
+# ❌ WRONG - Configure-Then-Parent (Godot 3.x pattern - DO NOT USE)
+var node = VBoxContainer.new()
+node.add_theme_constant_override("separation", 16)  # ❌ Configure first
+parent_container.add_child(node)  # ❌ Parent last → iOS SIGKILL
+```
+
+**Note**: Use `layout_mode = 2` (integer value). The enum constants (LAYOUT_MODE_CONTAINER, etc.) are not exposed in Godot 4.5.1's public GDScript API.
+
+### Why This Matters
+
+**Godot 4 Architecture Change:**
+- Control nodes have internal `layout_mode` property (values: 0, 1, 2)
+- `.new()` defaults to Mode 1 (Anchors)
+- Containers expect Mode 2 (Container-controlled layout)
+- **Configure-then-parent creates Mode 1 → Mode 2 conflict**
+
+**iOS Consequence:**
+- Container sorts layout → Child rejects (anchors) → Container re-sorts → **Infinite loop**
+- Main thread locked → iOS Watchdog timeout (5-10s) → **SIGKILL (0x8badf00d)**
+- **No error message** - app just disappears
+- Desktop more tolerant (masks the problem)
+
+### The Rules
+
+**NEVER:**
+1. ❌ Configure ANY properties before `add_child()`
+2. ❌ Set `name`, `text`, `size_flags`, etc. before parenting
+3. ❌ Use `set_anchors_preset()` on Container children
+4. ❌ Assume desktop behavior = iOS behavior
+
+**ALWAYS:**
+1. ✅ Parent immediately after `.new()`
+2. ✅ Set `layout_mode = 2` for Container children
+3. ✅ Configure ALL properties AFTER parenting
+4. ✅ Test on actual iOS device (simulator may not crash)
+
+### Code Review Checklist
+
+Before approving ANY code with dynamic UI:
+```
+□ All `.new()` calls followed immediately by `add_child()`
+□ All Container children have `layout_mode = 2`
+□ Zero lines of configuration between `.new()` and `add_child()`
+□ No `set_anchors_preset()` calls on Container children
+```
+
+### Common Violations
+
+**Labels, Buttons, Controls:**
+```gdscript
+# ❌ WRONG
+var label = Label.new()
+label.text = "Hello"  # ❌ Configure first
+hbox.add_child(label)
+
+# ✅ CORRECT
+var label = Label.new()
+hbox.add_child(label)  # Parent FIRST
+label.layout_mode = 2
+label.text = "Hello"  # Configure AFTER
+```
+
+**Containers (VBox, HBox, etc.):**
+```gdscript
+# ❌ WRONG
+var section = VBoxContainer.new()
+section.name = "Section"  # ❌ Even innocent properties are wrong
+parent.add_child(section)
+
+# ✅ CORRECT
+var section = VBoxContainer.new()
+parent.add_child(section)  # Parent FIRST
+section.layout_mode = 2
+section.name = "Section"  # Configure AFTER
+```
+
+### If This Is Violated
+
+**Symptoms:**
+- iOS app crashes with SIGKILL (no error)
+- App freezes when opening modals/dialogs
+- Desktop works fine, iOS fails
+- Device logs show 0x8badf00d
+
+**Response:**
+1. Read `docs/lessons-learned/44-godot4-parent-first-ui-protocol.md`
+2. Read `docs/godot-ios-sigkill-research.md`
+3. Fix ALL dynamic node creation (not just the crash site)
+4. Test on iOS device before claiming fix
+
+### Documentation
+
+**Primary Reference:**
+- `docs/lessons-learned/44-godot4-parent-first-ui-protocol.md` (examples, detection, prevention)
+
+**Research:**
+- `docs/godot-ios-sigkill-research.md` (forensic analysis, Watchdog mechanism, infinite loop details)
+
+**Related:**
+- Godot Issue #104598 (scene editor fix in 4.5, but `.new()` still defaults to Mode 1)
+
+---
+
+**Last Updated**: 2025-11-22 by Claude Code (Godot 4 UI Protocol, Mobile-Native Standards, Scene Layout Rules, Definition of Complete, QA Investigation Protocol added)
 **Next Review**: When violations occur or user requests update
