@@ -38,8 +38,14 @@ enum ModalType { ALERT, SHEET, FULLSCREEN }
 @export var allow_tap_outside_dismiss: bool = true
 @export var allow_swipe_dismiss: bool = false
 @export var backdrop_color: Color = Color(0, 0, 0, 0.6)
-@export var title_text: String = ""
-@export var message_text: String = ""
+@export var title_text: String = "":
+	set(value):
+		title_text = value
+		_update_title_label()
+@export var message_text: String = "":
+	set(value):
+		message_text = value
+		_update_message_label()
 
 ## Constants (iOS HIG specifications)
 const ANIMATION_ENTRANCE_DURATION: float = 0.3  # 300ms
@@ -209,29 +215,8 @@ func _build_content() -> void:
 	content_vbox.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	content_vbox.add_theme_constant_override("separation", 16)
 
-	# Title label
-	if not title_text.is_empty():
-		title_label = Label.new()
-		content_vbox.add_child(title_label)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
-		title_label.name = "TitleLabel"
-		title_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
-		title_label.text = title_text
-		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		title_label.add_theme_font_size_override("font_size", 22)
-		title_label.add_theme_color_override("font_color", Color.WHITE)
-		title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-	# Message label
-	if not message_text.is_empty():
-		message_label = Label.new()
-		content_vbox.add_child(message_label)  # Parent FIRST (Godot 4 Parent-First Protocol - iOS safety)
-		message_label.name = "MessageLabel"
-		message_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
-		message_label.text = message_text
-		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		message_label.add_theme_font_size_override("font_size", 16)
-		message_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
-		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# Labels will be created on-demand by property setters
+	# This allows ModalFactory to set title/message AFTER parenting
 
 	# Button container (added later via add_button methods)
 	button_container = HBoxContainer.new()
@@ -240,6 +225,67 @@ func _build_content() -> void:
 	button_container.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
 	button_container.add_theme_constant_override("separation", 16)
 	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
+
+
+func _update_title_label() -> void:
+	"""Create or update title label when title_text changes"""
+	if not is_node_ready() or not content_vbox:
+		return  # Not ready yet, property setter will be called again later
+
+	if title_text.is_empty():
+		# Remove title label if it exists
+		if title_label:
+			title_label.queue_free()
+			title_label = null
+		return
+
+	# Create label if it doesn't exist
+	if not title_label:
+		title_label = Label.new()
+		content_vbox.add_child(title_label)  # Parent FIRST
+		title_label.name = "TitleLabel"
+		title_label.layout_mode = 2
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title_label.add_theme_font_size_override("font_size", 22)
+		title_label.add_theme_color_override("font_color", Color.WHITE)
+		title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+		# Move before button container
+		content_vbox.move_child(title_label, 0)
+
+	# Update text
+	title_label.text = title_text
+
+
+func _update_message_label() -> void:
+	"""Create or update message label when message_text changes"""
+	if not is_node_ready() or not content_vbox:
+		return  # Not ready yet, property setter will be called again later
+
+	if message_text.is_empty():
+		# Remove message label if it exists
+		if message_label:
+			message_label.queue_free()
+			message_label = null
+		return
+
+	# Create label if it doesn't exist
+	if not message_label:
+		message_label = Label.new()
+		content_vbox.add_child(message_label)  # Parent FIRST
+		message_label.name = "MessageLabel"
+		message_label.layout_mode = 2
+		message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		message_label.add_theme_font_size_override("font_size", 16)
+		message_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
+		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+		# Move before button container (after title if it exists)
+		var target_index = 1 if title_label else 0
+		content_vbox.move_child(message_label, target_index)
+
+	# Update text
+	message_label.text = message_text
 
 
 func add_primary_button(button_text: String, callback: Callable) -> Button:
@@ -445,17 +491,13 @@ func _snap_back_to_position() -> void:
 
 
 func set_title(new_title: String) -> void:
-	"""Set modal title dynamically"""
-	title_text = new_title
-	if title_label:
-		title_label.text = new_title
+	"""Set modal title dynamically (property setter handles label creation)"""
+	title_text = new_title  # Triggers property setter → _update_title_label()
 
 
 func set_message(new_message: String) -> void:
-	"""Set modal message dynamically"""
-	message_text = new_message
-	if message_label:
-		message_label.text = new_message
+	"""Set modal message dynamically (property setter handles label creation)"""
+	message_text = new_message  # Triggers property setter → _update_message_label()
 
 
 func add_custom_content(content_node: Control) -> void:
