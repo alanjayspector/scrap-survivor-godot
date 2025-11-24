@@ -210,8 +210,10 @@ Based on expert panel recommendations:
 ## 📊 Current Session: Sub-Phase 8.2c - Hub Visual Transformation 🎨
 
 **Focus**: Transform entire scrapyard hub with icon buttons + wasteland environment + storytelling
-**Time Estimate**: 4-7 hours (NOT just icon implementation - full hub redesign)
-**Approach**: Expert panel design → Component creation → Environment → Integration → Device QA
+**Time Estimate**: 9.5 hours realistic (11-13 hours with buffer) across 4 sessions
+**Approach**: ✅ **APPROVED** - Iterative phases with feedback loops (NOT all-at-once)
+
+**COMPLETE DESIGN PLAN**: [docs/design/phase-8.2c-hub-transformation-plan.md](../docs/design/phase-8.2c-hub-transformation-plan.md) 📋
 
 ### 🏜️ Hub Narrative Foundation (User-Defined)
 
@@ -223,130 +225,180 @@ Based on expert panel recommendations:
 - **Last Bastion**: Safe haven, refuge (maybe the ONLY safe place)
 - **Sanctuary from Wasteland**: Inside = safe, outside = dangerous
 
-**Hub as Narrative Center** (from [hub-storytelling-research.md](../docs/hub-storytelling-research.md)):
-- Hub is emotional/narrative anchor, not just menu
-- Missions are departures FROM sanctuary INTO danger
-- Environmental storytelling > abstract UI
-- Physical space conveys narrative stakes (like Darkest Dungeon's degraded Hamlet)
+### 🎯 Approved Layout System: "Hybrid+ with Spatial Zones"
 
-### 8.2c Sub-Tasks (Expanded Scope)
+**3-Button State (TODAY)**:
+- **Start Run**: Center-top (120x120pt) - HERO ACTION
+- **Roster/Settings**: Lower-third flanking (80x80pt) - SUPPORTING ACTIONS
+- Environmental storytelling: Gate imagery, floor plate, spatial depth
 
-**IMPORTANT**: This is NOT just "replace text buttons with icon buttons". This is a full hub transformation.
+**7-10 Button Future (Weeks 17-20)** - SCALABLE:
+- **PRIMARY**: Start Run (unchanged position/size - LOCKED)
+- **OPERATIONS ZONE**: Shop, Armory, Tech, Loadout (70x70pt grid)
+- **COMMUNITY ZONE**: Roster, Leaderboards (70x70pt)
+- **UTILITY ROW**: Settings, Help, Achievements (50x50pt)
 
-#### **Task 1: Expert Panel - Hub Environment Design** (30-60 min)
+**Scalability Path**: Each new button joins a thematic ZONE, not arbitrary grid. No redesign needed.
 
-**What the panel must define**:
-1. **Scrapyard Background Design**
-   - What does the background look like? (rusted metal wall, concrete bunker, scrap piles?)
-   - Texture and materiality (not flat color)
-   - Conveys "fortified sanctuary" atmosphere
-   - Wasteland color palette applied
+### 📋 Implementation: 4 Sessions with QA Gates (APPROVED)
 
-2. **Button Spatial Composition**
-   - NOT just vertical stack - spatial arrangement that tells story
-   - Do buttons feel like physical objects IN the environment?
-   - **Start Run** near visible gate/exit?
-   - **Roster** near barracks/crew area visual?
-   - **Settings** in utility corner?
+**Why Iterative**:
+- ✅ 4 feedback loops (catch issues early, not after 8 hours)
+- ✅ Matches proven quality process (incremental validation = one-shot success)
+- ✅ Low risk (revert one session max, not entire 11-hour build)
+- ✅ Natural pause points (can handoff between sessions)
+- ✅ Fatigue protection (2-3 hour focused sessions vs 7-11 hour marathon)
 
-3. **Environmental Storytelling Elements**
-   - What visual cues show this is a "fortified sanctuary"?
-   - Defensive details (barbed wire, reinforced walls, lookout posts?)
-   - Scrapyard materials visible (salvaged signs, welded metal?)
-   - Inside looking out vs outside looking in?
+---
 
-**Deliverable**: Design requirements document with mockup/description
+#### **SESSION 1: Background Foundation** (2.5-3 hours) ⏭️ NEXT
 
-#### **Task 2: IconButton Component Creation** (1-2 hours)
+**Scope**:
+- Multi-layer background (metal plates, gradient, vignette)
+- Rivet details (8-12 rivets, consistent spacing)
+- Rust/weathering texture overlays
+- Performance optimization (texture atlasing)
 
-**Component Structure**:
-```gdscript
-# IconButton.tscn hierarchy:
-PanelContainer (metal plate background)
-├── StyleBoxFlat (riveted metal, RUST_DARK borders, SOOT_BLACK fill)
-├── VBoxContainer
-│   ├── TextureRect (icon, 70-80% of button area)
-│   └── Label (stencil font, DIRTY_WHITE, 20-30% of button area)
-└── Corner rivets (4x ColorRect or TextureRect)
-```
+**Build Order**:
+1. Base metal plate layer (solid color + gradient shader)
+2. Rivet placement (8-12 rivets, procedurally positioned)
+3. Rust texture overlay (procedural shader or sprite)
+4. Edge shadowing (depth illusion via gradient)
+5. Vignette (corner darkening for focus)
 
-**Component Features**:
-- Metal plate aesthetic with rivets
-- Depth effects (4px bottom border, 2px sides)
-- Pressed state (border inverts, shifts 2px down)
-- Hover state (subtle NEON_GREEN glow)
-- Accepts icon texture + label text parameters
+**QA Gate Checklist**:
+- [ ] Atmosphere Test: "Does this feel like fortified scrapyard?" (10-second impression)
+- [ ] Performance: 60 FPS on iPhone SE (profile in Godot)
+- [ ] Device QA: Test on 4.7" and 6.7" devices (scaling correct?)
+- [ ] Texture Budget: Background < 512KB total (mobile memory)
+- [ ] Accessibility: Background doesn't interfere with button contrast
 
-**Deliverable**: Reusable IconButton component scene + script
+**Deliverable**: Commit `feat(ui): add scrapyard background foundation for Phase 8.2c`
 
-#### **Task 3: Scrapyard Background Implementation** (1-2 hours)
+**User Feedback Checkpoint**: 📸 "Does the background atmosphere match your vision? Any adjustments before we build buttons on top?"
 
-**Background Options** (expert panel decides):
-- **Option A**: Textured ColorRect with rust/metal noise shader
-- **Option B**: Layered TextureRects (metal plate + weathering overlay)
-- **Option C**: Simple gradient with subtle texture
-- **Option D**: Gemini-generated scrapyard background image (simplified from detailed illustrations)
+**Rollback**: Low risk (background isolated, no dependencies yet)
 
-**Requirements**:
-- Conveys wasteland/fortified atmosphere
-- Doesn't compete with buttons (buttons must pop)
-- Uses wasteland color palette (SOOT_BLACK, CONCRETE_GRAY, RUST_DARK)
-- Works on mobile (not too detailed)
+---
 
-**Deliverable**: Hub background that feels like "inside a fortified scrapyard"
+#### **SESSION 2: IconButton Component** (2.5-3 hours) ⏭️ PENDING
 
-#### **Task 4: Hub Scene Composition** (1-2 hours)
+**Scope**:
+- IconButton.gd script (state machine: idle/pressed/disabled)
+- Metal plate visual (rounded rect with 4 corner rivets)
+- Depth/shadow (pressed state = recessed 2px + border invert)
+- Icon integration (SVG import, color theming)
+- Touch feedback (tactile press animation)
 
-**Replace in scenes/hub/scrapyard.tscn**:
-- Remove generic purple background
-- Add scrapyard background layer
-- Replace 3 text buttons with IconButton instances
-- Spatial arrangement per expert panel design
-- Apply wasteland color palette throughout
-- Ensure safe area compliance (Phase 6 work)
+**Build Order**:
+1. IconButton.gd base class (extends Control)
+2. State machine (idle/pressed states)
+3. Metal plate StyleBoxFlat (borders, background, depth)
+4. Rivet decoration (4 corner TextureRects)
+5. Pressed state animation (2px translate down, color swap)
+6. Icon/label slots
+7. Test in isolation (blank scene with 3 test icons)
 
-**Button Integration**:
-- Load final icon SVGs (`icon_start_run_final.svg`, etc.)
-- Set labels ("START RUN", "CHARACTER ROSTER", "SETTINGS")
-- Position spatially (not just vertical stack)
-- Test touch targets (minimum 56x56pt)
+**QA Gate Checklist**:
+- [ ] Tactile Feel: "Does pressing feel satisfying?" (instant 2px drop)
+- [ ] Visual Clarity: Icon legible at 120x120pt and 80x80pt sizes
+- [ ] Touch Target: Minimum 44x44pt (Apple HIG compliance)
+- [ ] Performance: No frame drops on button press
+- [ ] Accessibility: Sufficient contrast (icon vs plate background ≥ 3:1)
+- [ ] Reusability: Works with ANY icon (test with gate, roster, settings SVGs)
 
-**Deliverable**: Transformed scrapyard hub scene
+**Deliverable**: Commit `feat(ui): add IconButton component with metal plate aesthetic`
 
-#### **Task 5: Device Testing & 10-Second Impression** (30 min - 1 hour)
+**User Feedback Checkpoint**: 📸 "Does the button feel premium/tactile? Are rivets the right size? Adjust press depth?"
 
-**Device QA Checklist**:
-- [ ] Hub loads without errors on iPhone
-- [ ] All 3 icon buttons functional
-- [ ] Icons clear and recognizable at 80x80pt
-- [ ] Buttons feel premium (depth, tactile feedback)
-- [ ] Background conveys wasteland sanctuary atmosphere
-- [ ] Spatial composition tells story
-- [ ] No layout issues (safe area respected)
+**Rollback**: Medium risk (easy to tweak parameters, 30-60min refactor if state machine wrong)
 
-**10-Second Impression Test** (show to unfamiliar person):
-1. Can they identify the genre? (wasteland survival roguelite)
-2. Does it look like a $10 premium game?
-3. Can they identify the theme? (post-apocalyptic)
-4. Are button functions clear?
+---
 
-**Target**: At least 3/4 YES (partial success), 4/4 YES ideal
+#### **SESSION 3: Layout + Integration** (2.5-3 hours) ⏭️ PENDING
 
-**Deliverable**: Hub transformation validated on device, ready for Phase 8.3+
+**Scope**:
+- Implement approved scalable layout (Hybrid+ with Spatial Zones)
+- Position 3 buttons (Start Run 120x120pt, Roster/Settings 80x80pt)
+- Integrate final icon SVGs (gate, roster, tools from Phase 8.2b)
+- Spatial composition testing (hierarchy clear?)
+- Responsive scaling (iPhone SE to Pro Max)
+- Wire up button signals (navigation placeholder)
 
-### 8.2c Success Criteria
+**Build Order**:
+1. Update `scrapyard.tscn` with background (from Session 1)
+2. Instantiate 3 IconButton nodes (from Session 2)
+3. Position per approved layout (center-top + lower flanking)
+4. Assign final SVG icons + labels
+5. Connect signals to placeholder navigation
+6. Test responsive scaling (safe area margins, different screens)
 
-**NOT ENOUGH** to mark complete:
-- ❌ Icon buttons exist in code
-- ❌ Icons display correctly
+**QA Gate Checklist**:
+- [ ] Hierarchy Test: "Is Start Run obviously the primary action?" (10-second test)
+- [ ] Spatial Flow: "Does layout feel organized, not cluttered?"
+- [ ] Thumb Ergonomics: All buttons reachable one-handed on 6.7" device?
+- [ ] Icon Legibility: All 3 icons recognizable at current sizes?
+- [ ] Responsive Scaling: Layout adapts to 4.7" and 6.7" without overlap
+- [ ] Navigation Test: Buttons correctly trigger signals
 
-**REQUIRED** to mark complete:
-- ✅ IconButton component created and reusable
-- ✅ Scrapyard background conveys "fortified sanctuary" atmosphere
-- ✅ Button spatial composition tells environmental story
-- ✅ All buttons functional and tested on device
-- ✅ Passes partial 10-Second Impression Test (3/4 minimum)
-- ✅ Expert panel design requirements met
+**Deliverable**: Commit `feat(ui): integrate icon buttons into scrapyard hub layout`
+
+**User Feedback Checkpoint**: 📸 "Does the spatial layout feel right? Is Start Run clearly the hero? Any spacing adjustments?"
+
+**Rollback**: Low risk (pure positioning, buttons already work from Session 2)
+
+---
+
+#### **SESSION 4: Environmental Details + Polish** (2-3 hours) ⏭️ PENDING
+
+**Scope**:
+- Environmental storytelling (welding marks, support beam)
+- Easter eggs (1-2 hidden details: survivor tally marks, lucky rivet)
+- Button press SFX (metallic clang audio)
+- Final polish (shadows, lighting refinement)
+- 10-Second Impression Test (fresh eyes validation)
+- Performance profiling (ensure 60 FPS on iPhone SE)
+
+**Build Order**:
+1. Add support beam sprite/ColorRect (above gate, diagonal brace)
+2. Welding marks texture (RUST_ORANGE glow near beam joints)
+3. Easter egg #1: Survivor tally marks (scratched in lower-left corner)
+4. Easter egg #2: "Lucky" rivet (one rivet slightly bent) - OPTIONAL
+5. Button press SFX (import `metallic_clang.wav`, wire to IconButton)
+6. Shadow refinement (ambient occlusion under buttons)
+7. Final device QA pass (all devices, all buttons)
+8. 10-Second Impression Test with external observer or user
+
+**QA Gate Checklist**:
+- [ ] Storytelling: "Do environmental details add immersion without distraction?"
+- [ ] Easter Eggs: "Are they discoverable but not obvious?" (1-2 only)
+- [ ] Audio Feedback: SFX enhances tactile feel (not annoying on 10th press)
+- [ ] Performance: Still 60 FPS with all details added (profile on iPhone SE)
+- [ ] 10-Second Test: External observer gets "fortified scrapyard" vibe immediately
+- [ ] Accessibility: Details don't reduce button contrast or legibility
+
+**Deliverable**: Commit `feat(ui): complete Phase 8.2c hub with environmental storytelling`
+
+**User Feedback Checkpoint**: 📸 "Final validation: Does this pass the 10-Second Impression Test? Any last tweaks before Phase 8.3?"
+
+**Rollback**: Very low risk (polish layer, core functionality complete from Session 3)
+
+---
+
+### 8.2c Success Criteria (Overall)
+
+**✅ Phase 8.2c COMPLETE When**:
+- [ ] Background shows fortified scrap wall (metal plates, rivets, rust, vignette)
+- [ ] IconButton component works (normal/pressed states, rivets, 2px depth)
+- [ ] All 3 buttons positioned spatially (gate center-top 120pt, roster/settings flanking 80pt)
+- [ ] Icons integrated (gate, silhouettes, tools SVGs)
+- [ ] Buttons feel diegetic (physical objects on wall, not floating UI)
+- [ ] Environmental details add atmosphere (welding marks, 1-2 easter eggs)
+- [ ] Button press SFX enhances tactile feedback
+- [ ] Performance ≥ 55 FPS on iPhone SE
+- [ ] User approves: "This feels like fortified scrapyard sanctuary"
+- [ ] User approves: "This looks $10 premium"
+- [ ] 10-Second Impression Test passes (3/5 criteria minimum)
 
 ---
 
@@ -354,48 +406,60 @@ PanelContainer (metal plate background)
 
 ```
 ✅ Sub-Phase 8.2b COMPLETE (Icon Design - Commit: 9b9c27d)
+✅ Sub-Phase 8.2c DESIGN COMPLETE (Expert panel design plan committed)
 
-🔨 CURRENT: Sub-Phase 8.2c - Hub Visual Transformation (4-7h, NO RUSH)
+🔨 CURRENT: Sub-Phase 8.2c SESSION 1 - Background Foundation (2.5-3h)
 
-EXPANDED SCOPE - THIS IS CRITICAL:
-Original plan: Just replace text buttons with icon buttons
-User insight: "We should also make sure the background and arrangement meet our thematic requirements"
-Correct scope: Transform ENTIRE hub (buttons + environment + storytelling)
+APPROVED APPROACH: Iterative phases with feedback loops (4 sessions total)
+- Session 1: Background Foundation (⏭️ NEXT)
+- Session 2: IconButton Component (PENDING)
+- Session 3: Layout + Integration (PENDING)
+- Session 4: Environmental Details + Polish (PENDING)
 
-HUB NARRATIVE (User-Defined):
+WHY ITERATIVE:
+- 4 feedback checkpoints (catch issues early)
+- Matches proven quality process (incremental validation = success)
+- Natural pause points for session handoff
+- Low risk (revert one session max, not entire 11-hour build)
+
+COMPLETE DESIGN PLAN:
+READ FIRST: docs/design/phase-8.2c-hub-transformation-plan.md
+
+HUB NARRATIVE:
 "A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."
 
-This means:
-- Fortified walls (defenses, reinforced barriers)
-- Scrapyard materials (salvaged, repurposed)
-- Last refuge (safe haven before venturing into danger)
-- Inside = Safety vs Outside = Wasteland danger
+SESSION 1 OBJECTIVES (Background Foundation):
+1. Base metal plate layer (CONCRETE_GRAY gradient shader)
+2. Rivet placement (8-12 rivets, procedural positioning)
+3. Rust texture overlay (procedural shader or sprite)
+4. Edge shadowing (depth via gradient)
+5. Vignette (corner darkening for focus)
 
-TASKS FOR THIS SESSION:
-1. Expert Panel: Design hub environment (background, spatial composition, storytelling)
-2. Create IconButton component (metal plates, rivets, depth, reusable)
-3. Implement scrapyard background (conveys "fortified sanctuary")
-4. Replace hub scene composition (icons + environment + spatial arrangement)
-5. Device QA + 10-Second Impression Test
+SESSION 1 QA GATE:
+- [ ] Atmosphere: "Does this feel like fortified scrapyard?"
+- [ ] Performance: 60 FPS on iPhone SE
+- [ ] Device QA: Test 4.7" and 6.7" screens
+- [ ] Texture Budget: Background < 512KB
+- [ ] Accessibility: Background doesn't interfere with button contrast
 
 CRITICAL FILES TO READ:
-- docs/hub-storytelling-research.md (hub as narrative center)
-- docs/research/phase-8-icon-button-references.md (research findings)
-- assets/icons/hub/FINAL_ICONS_SUMMARY.md (icon design decisions)
+- docs/design/phase-8.2c-hub-transformation-plan.md (COMPLETE PLAN)
 - scripts/ui/theme/color_palette.gd (wasteland colors)
+- .system/NEXT_SESSION.md (this file - current status)
+- .system/CLAUDE_RULES.md (quality gates, process)
 
-ICON ASSETS READY:
+ICON ASSETS READY (for Sessions 2-3):
 - assets/icons/hub/icon_start_run_final.svg ✅
 - assets/icons/hub/icon_roster_final.svg ✅
 - assets/icons/hub/icon_settings_final.svg ✅
 
-SUCCESS CRITERIA:
-- IconButton component created and reusable ✅
-- Background conveys "fortified sanctuary" atmosphere ✅
-- Spatial composition tells environmental story ✅
-- Device tested, 10-Second Test passes (3/4 minimum) ✅
+SESSION 1 DELIVERABLE:
+Commit: "feat(ui): add scrapyard background foundation for Phase 8.2c"
 
-REMINDER: Quality over speed. This transformation sets visual identity for the entire game.
+USER FEEDBACK CHECKPOINT AFTER SESSION 1:
+📸 "Does the background atmosphere match your vision? Any adjustments before we build buttons on top?"
+
+REMINDER: Quality over speed. Extended feedback loops. Secure continuity.
 ```
 
 ---
@@ -633,9 +697,10 @@ REMINDER: No time pressure. Take as long as needed for thoroughness.
 
 ---
 
-**Last Updated**: 2025-11-23 (Sub-Phase 8.2b COMPLETE, 8.2c scope expanded)
-**Status**: 🔨 Sub-Phase 8.2c IN PROGRESS - Hub Visual Transformation
+**Last Updated**: 2025-11-23 (Sub-Phase 8.2c design plan complete, ready for Session 1)
+**Status**: 🔨 Sub-Phase 8.2c SESSION 1 NEXT - Background Foundation
 **Latest Commit**: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
-**Next Session**: Hub transformation (buttons + environment + storytelling)
-**Session Pattern**: One sub-phase at a time, full hub redesign (not just button swap)
-**Confidence**: HIGH - Icon assets ready, narrative foundation defined, expert panel will guide environment design
+**Design Plan**: docs/design/phase-8.2c-hub-transformation-plan.md (APPROVED)
+**Next Session**: Session 1 - Background Foundation (2.5-3h, iterative with feedback loops)
+**Session Pattern**: 4 sessions with QA gates, user feedback checkpoints, extended feedback loops
+**Confidence**: HIGH - Approved design plan, scalable layout system, iterative approach proven to work
