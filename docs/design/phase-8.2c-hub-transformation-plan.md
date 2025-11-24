@@ -42,6 +42,50 @@ Transform the scrapyard hub from generic purple prototype into an immersive fort
 
 ---
 
+### 1.5 Spatial Metaphor (CRITICAL - Approved 2025-11-23)
+
+**⚠️ MAJOR DESIGN CLARIFICATION - Read This First**
+
+**The Question:** What is the player actually looking at?
+
+**The Answer:** **Option A - Perimeter Wall with Passages**
+
+```
+Player Position: Inside scrapyard courtyard (safe zone)
+Looking At: Fortified perimeter wall (barrier between safety and wasteland)
+Buttons Are: Physical gates/hatches/access panels IN the wall
+```
+
+**Why This Matters:**
+
+This spatial metaphor fundamentally changes the background design:
+
+**CORRECT Understanding:**
+- **Background** = Exterior of fortified perimeter wall (rusty metal plates facing the courtyard)
+- **Start Run button** = THE GATE ITSELF (literal chain-link gate - the exit to wasteland)
+- **Roster button** = Side hatch to barracks (access panel in the wall)
+- **Settings button** = Maintenance access panel (smaller hatch)
+- **Rivets & seams** = Structural reinforcement (holding the wall panels together)
+- **Floor element** = Ground/courtyard floor (you're standing in the yard looking at the wall)
+
+**INCORRECT Understanding (Rejected):**
+- ❌ Interior command center with control panels (doesn't match gate icon)
+- ❌ Bulletin board metaphor (too abstract)
+- ❌ Floating UI on generic background (no spatial coherence)
+
+**Design Implications:**
+
+1. **Background must read as a WALL** - Not abstract texture, but actual metal plates bolted together
+2. **Seams must be visible** - Show where plates meet (2-3 large panels)
+3. **Rivets need context** - Must be positioned AT seam intersections (structural purpose)
+4. **Gate button is special** - It's not "on" the wall, it IS the wall's main gate opening
+5. **Perspective matters** - Horizontal seam at bottom = "wall meets ground" (you're standing here)
+
+**Expert Panel Verdict:**
+> "This isn't just a visual polish decision - it's the foundation for the entire hub's spatial logic. Get this right in SESSION 1, and everything else flows naturally. Get it wrong, and you're building on quicksand." - Sr Visual Designer
+
+---
+
 ### 2. Spatial Layout System: "Hybrid+ with Spatial Zones"
 
 **APPROVED LAYOUT**: Enhanced hybrid combining tiered hierarchy + spatial zones + scalable grid
@@ -471,26 +515,35 @@ func _ready():
 
 ---
 
-### Session 1: Background Foundation (2.5-3 hours)
+### Session 1: Wall Structure Foundation (2.5-3 hours) - REVISED
 
 **Scope**:
-- Multi-layer background (metal plates, gradient, vignette)
-- Rivet details (8-12 rivets, consistent spacing)
-- Rust/weathering texture overlays
-- Performance optimization (texture atlasing)
+- Metal plate base with visible seam structure
+- Rivets positioned at seam intersections (structural purpose)
+- Horizontal floor seam (wall meets ground perspective)
+- Subtle rust bleeding from seams only
+- Vignette (focus enhancement)
 
 **Build Order**:
-1. Base metal plate layer (solid color + gradient shader)
-2. Rivet placement (8-12 rivets, procedurally positioned)
-3. Rust texture overlay (procedural shader or sprite)
-4. Edge shadowing (depth illusion via gradient)
-5. Vignette (corner darkening for focus)
+1. **Base metal plate layer** - Solid CONCRETE_GRAY with minimal noise texture
+2. **Visible plate seams** - 2-3 vertical seams + 1 horizontal floor seam
+   - Thick dark lines (SOOT_BLACK, 4-6px wide)
+   - Slight shadow/depth (seams recessed into wall)
+3. **Rivets at seam intersections** - 8-12 rivets where seams cross
+   - Clear structural purpose (bolts holding plates together)
+   - Positioned strategically at T-junctions and corners
+4. **Subtle rust bleeding FROM seams** - Linear gradients from seam edges
+   - RUST_DARK at 0.15 opacity (NOT 0.4 - was way too much)
+   - 6-12px bleed outward from seams (weathering effect)
+5. **Vignette** - Corner darkening for visual focus (keep from original plan)
 
 **QA Gate Checklist**:
-- [ ] **Atmosphere Test**: "Does this feel like fortified scrapyard?" (10-second impression)
-- [ ] **Performance**: 60 FPS on iPhone SE (profile in Godot)
-- [ ] **Device QA**: Test on 4.7" and 6.7" devices (scaling correct?)
-- [ ] **Texture Budget**: Background < 512KB total (mobile memory constraint)
+- [ ] **Wall Structure Test**: "Does this read as a metal wall made of bolted plates?" (structural clarity)
+- [ ] **Seam Visibility**: Can you clearly see where the plates join? (2-3 vertical + 1 horizontal)
+- [ ] **Rivet Purpose**: Do rivets make sense structurally? (positioned at seam intersections)
+- [ ] **Perspective**: Does the horizontal floor seam establish "you're standing in a courtyard"?
+- [ ] **Rust Subtlety**: Is rust weathering (from seams) NOT camo pattern? (0.15 opacity max)
+- [ ] **Performance**: 60 FPS on iPhone SE
 - [ ] **Accessibility**: Background doesn't interfere with button contrast
 
 **Deliverable**:
@@ -506,39 +559,50 @@ func _ready():
 
 ---
 
-### Session 2: IconButton Component (2.5-3 hours)
+### Session 2: Gate Frame + IconButton Component (3-4 hours) - REVISED
+
+**CRITICAL CHANGE**: Gate button and gate frame are THE SAME THING - build together, not separately.
 
 **Scope**:
-- IconButton.gd script (state machine: idle/pressed/disabled)
-- Metal plate visual (rounded rect with 4 corner rivets)
-- Depth/shadow (pressed state = recessed 2px + border invert)
-- Icon integration (SVG import, color theming)
-- Touch feedback (tactile press animation with SFX placeholder)
+- Gate frame visual (integrated into background wall structure)
+- IconButton.gd base component (state machine: idle/pressed/disabled)
+- Metal plate button aesthetic (4 corner rivets, depth effects)
+- Gate-specific styling (hero button = the literal gate opening)
+- Icon integration (gate SVG) + touch feedback
 
 **Build Order**:
-1. IconButton.gd base class (extends Control)
-2. State machine (idle/pressed states, no hover on mobile)
-3. Metal plate StyleBoxFlat (borders, background, depth)
-4. Rivet decoration (4 corner TextureRects)
-5. Pressed state animation (2px translate down, shadow shrink, color swap)
-6. Icon slot (centered TextureRect, theme color support)
-7. Label slot (bottom-aligned Label, stencil font)
-8. Test button in isolation (blank scene with 3 test icons)
+1. **Add gate frame to background** (Session 1 wall structure)
+   - Two vertical "posts" on either side of center-top area (SOOT_BLACK ColorRects)
+   - Horizontal cross-beam above gate area (structural support)
+   - Rivets at frame corners (integrated with wall seams)
+2. **IconButton.gd base class** (extends Control, reusable for all 3 buttons)
+3. **Metal plate button visual** (StyleBoxFlat with borders, rivets, depth)
+4. **State machine** (idle/pressed states)
+   - Pressed state: 2px translate down, RUST_DARK background, border color invert
+5. **Icon + label slots** (centered icon, bottom-aligned label)
+6. **Gate button specialization** - Larger size (120x120pt), positioned in gate frame
+7. **Integrate gate SVG icon** from Phase 8.2b
+8. **Test in context** (gate button within gate frame on wall structure)
 
 **QA Gate Checklist**:
-- [ ] **Tactile Feel**: "Does pressing feel satisfying?" (instant 2px drop + color swap)
-- [ ] **Visual Clarity**: Icon legible at 120x120pt and 80x80pt sizes
-- [ ] **Touch Target**: Minimum 44x44pt (Apple HIG compliance)
-- [ ] **Performance**: No frame drops on button press (device test)
-- [ ] **Accessibility**: Sufficient contrast (icon vs plate background ≥ 3:1)
-- [ ] **Reusability**: Component works with ANY icon (test with gate, roster, settings SVGs)
+- [ ] **Gate Integration**: "Does the gate button look like it's IN the wall frame?" (spatial coherence)
+- [ ] **Frame Structure**: Gate frame reads as structural support? (posts + cross-beam obvious)
+- [ ] **Button Physicality**: Does pressing feel like activating a physical gate mechanism?
+- [ ] **Tactile Feedback**: Instant 2px drop + color swap (satisfying press)
+- [ ] **Icon Clarity**: Gate icon legible at 120x120pt
+- [ ] **Component Reusability**: Base IconButton works for roster/settings too (80x80pt test)
+- [ ] **Performance**: No frame drops on button press
+- [ ] **Accessibility**: Icon contrast ≥ 3:1 against button background
 
 **Deliverable**:
-- Commit: `feat(ui): add IconButton component with metal plate aesthetic`
-- Files: `scripts/ui/components/IconButton.gd`, `scenes/ui/components/icon_button.tscn`
+- Commit: `feat(ui): add gate frame and IconButton component for Phase 8.2c`
+- Files:
+  - `scripts/ui/components/IconButton.gd` (base component)
+  - `scenes/ui/components/icon_button.tscn` (component scene)
+  - `scenes/hub/scrapyard.tscn` (updated with gate frame visual)
 
 **User Feedback Checkpoint**:
-📸 "Does the button feel premium/tactile? Are rivets the right size? Should we adjust press depth (currently 2px)?"
+📸 "Does the gate button feel like a physical gate in the wall? Does the frame provide enough context? Is the button tactile/premium feeling?"
 
 **Rollback Strategy**:
 - If user wants changes: Easy to tweak parameters (rivet size, press depth, icon padding)

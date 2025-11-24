@@ -209,9 +209,11 @@ Based on expert panel recommendations:
 
 ## 📊 Current Session: Sub-Phase 8.2c - Hub Visual Transformation 🎨
 
-**Focus**: Transform entire scrapyard hub with icon buttons + wasteland environment + storytelling
-**Time Estimate**: 9.5 hours realistic (11-13 hours with buffer) across 4 sessions
+**Focus**: Transform scrapyard hub with fortified wall + icon-based gate/hatches
+**Time Estimate**: 9.5-11 hours across 4 sessions
 **Approach**: ✅ **APPROVED** - Iterative phases with feedback loops (NOT all-at-once)
+
+**⚠️ CRITICAL DESIGN BREAKTHROUGH** (2025-11-23): Spatial metaphor clarified - "Perimeter Wall with Passages"
 
 **COMPLETE DESIGN PLAN**: [docs/design/phase-8.2c-hub-transformation-plan.md](../docs/design/phase-8.2c-hub-transformation-plan.md) 📋
 
@@ -224,6 +226,46 @@ Based on expert panel recommendations:
 - **Scrapyard**: Salvaged materials, repurposed objects, makeshift construction
 - **Last Bastion**: Safe haven, refuge (maybe the ONLY safe place)
 - **Sanctuary from Wasteland**: Inside = safe, outside = dangerous
+
+---
+
+### 🎯 SPATIAL METAPHOR BREAKTHROUGH (2025-11-23 SESSION 1)
+
+**⚠️ READ THIS FIRST - Fundamental Design Clarity Achieved**
+
+**The Critical Question:** What is the player actually looking at?
+
+**The Answer:** **"Perimeter Wall with Passages"**
+
+```
+Player Position: Inside scrapyard courtyard (standing in the safe zone)
+Looking At: Fortified perimeter wall (barrier separating safety from wasteland)
+Buttons Are: Physical gates and access hatches IN the wall itself
+```
+
+**What This Changes:**
+
+❌ **WRONG** (Previous Understanding):
+- Abstract background texture with floating buttons
+- Random rivets scattered around
+- Rust as decorative camo pattern
+
+✅ **CORRECT** (Spatial Metaphor):
+- **Background = Actual metal wall** (2-3 large plates bolted together)
+- **Start Run button = THE GATE** (literal exit gate to wasteland)
+- **Roster button = Side hatch** (access to barracks)
+- **Settings button = Maintenance panel** (access hatch)
+- **Seams = Where plates join** (visible structure, not decoration)
+- **Rivets = Bolts at seam intersections** (holding plates together)
+- **Horizontal floor seam = Perspective** ("you're standing in courtyard looking at wall")
+
+**Design Impact:**
+- SESSION 1 builds **wall structure** (plates, seams, rivets with purpose)
+- SESSION 2 builds **gate frame + button** (integrated, not separate)
+- Every element has **spatial logic** (not random decoration)
+
+**Why This Matters:**
+> "This isn't just visual polish - it's the foundation for the entire hub's spatial coherence. Build the wall correctly in SESSION 1, and everything else flows naturally." - Expert Panel
 
 ### 🎯 Approved Layout System: "Hybrid+ with Spatial Zones"
 
@@ -240,7 +282,7 @@ Based on expert panel recommendations:
 
 **Scalability Path**: Each new button joins a thematic ZONE, not arbitrary grid. No redesign needed.
 
-### 📋 Implementation: 4 Sessions with QA Gates (APPROVED)
+### 📋 Implementation: 4 Sessions with QA Gates (REVISED - APPROVED)
 
 **Why Iterative**:
 - ✅ 4 feedback loops (catch issues early, not after 8 hours)
@@ -249,29 +291,46 @@ Based on expert panel recommendations:
 - ✅ Natural pause points (can handoff between sessions)
 - ✅ Fatigue protection (2-3 hour focused sessions vs 7-11 hour marathon)
 
+**CRITICAL REVISION** (2025-11-23):
+- SESSION 1 focus changed from "procedural textures" to "wall structure with seams"
+- SESSION 2 combines gate frame + button component (they're the same thing)
+- All sessions now aligned with "Perimeter Wall with Passages" spatial metaphor
+
 ---
 
-#### **SESSION 1: Background Foundation** (2.5-3 hours) ⏭️ NEXT
+#### **SESSION 1: Wall Structure Foundation** (2.5-3 hours) ⏭️ NEXT
+
+**Focus**: Build a metal wall made of bolted plates (NOT abstract texture)
 
 **Scope**:
-- Multi-layer background (metal plates, gradient, vignette)
-- Rivet details (8-12 rivets, consistent spacing)
-- Rust/weathering texture overlays
-- Performance optimization (texture atlasing)
+- Base metal plate layer (CONCRETE_GRAY, minimal noise)
+- **Visible plate seams** (2-3 vertical + 1 horizontal floor seam)
+- **Rivets at seam intersections** (structural bolts holding plates together)
+- Subtle rust bleeding FROM seams (weathering, not camo)
+- Vignette (focus enhancement)
 
 **Build Order**:
-1. Base metal plate layer (solid color + gradient shader)
-2. Rivet placement (8-12 rivets, procedurally positioned)
-3. Rust texture overlay (procedural shader or sprite)
-4. Edge shadowing (depth illusion via gradient)
-5. Vignette (corner darkening for focus)
+1. **Base metal plate layer** - Solid CONCRETE_GRAY with subtle noise texture
+2. **Visible plate seams** - Thick dark lines showing where plates meet
+   - 2-3 vertical seams (dividing background into panels)
+   - 1 horizontal seam at bottom third (wall meets ground - perspective)
+   - SOOT_BLACK color, 4-6px width, slight shadow for depth
+3. **Rivets at seam intersections** - 8-12 rivets positioned where seams cross
+   - Clear structural purpose (bolts holding plates together)
+   - NOT random dots scattered around
+4. **Subtle rust bleeding FROM seams** - Linear gradients from seam edges
+   - RUST_DARK at 0.15 opacity (NOT 0.4 - was too much)
+   - 6-12px bleed outward from seams only
+5. **Vignette** - Corner darkening for visual focus
 
 **QA Gate Checklist**:
-- [ ] Atmosphere Test: "Does this feel like fortified scrapyard?" (10-second impression)
-- [ ] Performance: 60 FPS on iPhone SE (profile in Godot)
-- [ ] Device QA: Test on 4.7" and 6.7" devices (scaling correct?)
-- [ ] Texture Budget: Background < 512KB total (mobile memory)
-- [ ] Accessibility: Background doesn't interfere with button contrast
+- [ ] **Wall Structure**: "Does this read as a metal wall made of bolted plates?" (not abstract texture)
+- [ ] **Seam Visibility**: Can you clearly see where plates join? (2-3 vertical + 1 horizontal)
+- [ ] **Rivet Purpose**: Do rivets make structural sense? (at seam intersections, not random)
+- [ ] **Perspective**: Does horizontal floor seam establish "standing in courtyard"?
+- [ ] **Rust Subtlety**: Is rust weathering (from seams) NOT camo? (0.15 opacity max)
+- [ ] **Performance**: 60 FPS on iPhone SE
+- [ ] **Accessibility**: Background contrast supports button legibility
 
 **Deliverable**: Commit `feat(ui): add scrapyard background foundation for Phase 8.2c`
 
@@ -281,37 +340,46 @@ Based on expert panel recommendations:
 
 ---
 
-#### **SESSION 2: IconButton Component** (2.5-3 hours) ⏭️ PENDING
+#### **SESSION 2: Gate Frame + IconButton Component** (3-4 hours) ⏭️ PENDING
+
+**CRITICAL**: Gate button and gate frame are THE SAME THING - build together
 
 **Scope**:
-- IconButton.gd script (state machine: idle/pressed/disabled)
-- Metal plate visual (rounded rect with 4 corner rivets)
-- Depth/shadow (pressed state = recessed 2px + border invert)
-- Icon integration (SVG import, color theming)
-- Touch feedback (tactile press animation)
+- Gate frame visual (integrated into background wall - posts + cross-beam)
+- IconButton.gd base component (reusable for all buttons)
+- Metal plate button aesthetic (4 corner rivets, depth effects)
+- Gate-specific styling (120x120pt hero button IN the gate frame)
+- Icon integration (gate SVG) + touch feedback
 
 **Build Order**:
-1. IconButton.gd base class (extends Control)
-2. State machine (idle/pressed states)
-3. Metal plate StyleBoxFlat (borders, background, depth)
-4. Rivet decoration (4 corner TextureRects)
-5. Pressed state animation (2px translate down, color swap)
-6. Icon/label slots
-7. Test in isolation (blank scene with 3 test icons)
+1. **Add gate frame to background** (extend SESSION 1 wall structure)
+   - Two vertical posts on either side of center-top (SOOT_BLACK ColorRects)
+   - Horizontal cross-beam above gate area (structural support)
+   - Rivets at frame corners (integrated with wall seams)
+2. **IconButton.gd base class** (extends Control, reusable component)
+3. **Metal plate button visual** (StyleBoxFlat with borders, rivets, depth)
+4. **State machine** (idle/pressed states, 2px translate, color swap)
+5. **Icon + label slots** (centered icon, bottom-aligned label)
+6. **Gate button specialization** - Larger (120x120pt), positioned IN gate frame
+7. **Integrate gate SVG icon** (from Phase 8.2b assets)
+8. **Test in context** (gate button within gate frame on wall)
 
 **QA Gate Checklist**:
-- [ ] Tactile Feel: "Does pressing feel satisfying?" (instant 2px drop)
-- [ ] Visual Clarity: Icon legible at 120x120pt and 80x80pt sizes
-- [ ] Touch Target: Minimum 44x44pt (Apple HIG compliance)
-- [ ] Performance: No frame drops on button press
-- [ ] Accessibility: Sufficient contrast (icon vs plate background ≥ 3:1)
-- [ ] Reusability: Works with ANY icon (test with gate, roster, settings SVGs)
+- [ ] **Gate Integration**: Does gate button look like it's IN the wall frame? (spatial coherence)
+- [ ] **Frame Structure**: Gate frame reads as structural support? (posts + cross-beam obvious)
+- [ ] **Button Physicality**: Does pressing feel like activating a gate mechanism?
+- [ ] **Tactile Feedback**: Instant 2px drop + color swap (satisfying)
+- [ ] **Icon Clarity**: Gate icon legible at 120x120pt
+- [ ] **Component Reusability**: Base IconButton works for roster/settings too (80x80pt test)
+- [ ] **Performance**: No frame drops on button press
+- [ ] **Accessibility**: Icon contrast ≥ 3:1 against button background
 
-**Deliverable**: Commit `feat(ui): add IconButton component with metal plate aesthetic`
+**Deliverable**: Commit `feat(ui): add gate frame and IconButton component for Phase 8.2c`
+- Files: IconButton.gd, icon_button.tscn, scrapyard.tscn (updated with gate frame)
 
-**User Feedback Checkpoint**: 📸 "Does the button feel premium/tactile? Are rivets the right size? Adjust press depth?"
+**User Feedback Checkpoint**: 📸 "Does the gate button feel like a physical gate in the wall? Does the frame provide enough context? Is it tactile/premium?"
 
-**Rollback**: Medium risk (easy to tweak parameters, 30-60min refactor if state machine wrong)
+**Rollback**: Medium risk (easy parameter tweaks, 30-60min refactor if state machine wrong)
 
 ---
 
@@ -406,60 +474,84 @@ Based on expert panel recommendations:
 
 ```
 ✅ Sub-Phase 8.2b COMPLETE (Icon Design - Commit: 9b9c27d)
-✅ Sub-Phase 8.2c DESIGN COMPLETE (Expert panel design plan committed)
+✅ Sub-Phase 8.2c DESIGN COMPLETE (Spatial metaphor breakthrough documented)
 
-🔨 CURRENT: Sub-Phase 8.2c SESSION 1 - Background Foundation (2.5-3h)
+⚠️ CRITICAL DESIGN BREAKTHROUGH (2025-11-23):
+Spatial metaphor clarified: "Perimeter Wall with Passages"
+- Player standing IN scrapyard courtyard
+- Looking AT fortified perimeter wall
+- Buttons ARE gates/hatches IN the wall
+READ SECTION 1.5 in design plan FIRST!
 
-APPROVED APPROACH: Iterative phases with feedback loops (4 sessions total)
-- Session 1: Background Foundation (⏭️ NEXT)
-- Session 2: IconButton Component (PENDING)
+🔨 CURRENT: Sub-Phase 8.2c SESSION 1 - Wall Structure Foundation (2.5-3h)
+
+REVISED 4-SESSION APPROACH (Post-Spatial Metaphor Clarity):
+- Session 1: Wall Structure (plates, seams, rivets at intersections) - ⏭️ NEXT
+- Session 2: Gate Frame + IconButton (built together, not separate) - PENDING
 - Session 3: Layout + Integration (PENDING)
-- Session 4: Environmental Details + Polish (PENDING)
+- Session 4: Environmental Polish (PENDING)
 
 WHY ITERATIVE:
-- 4 feedback checkpoints (catch issues early)
-- Matches proven quality process (incremental validation = success)
+- 4 feedback checkpoints (catch design issues early)
+- Matches proven quality process (incremental validation = one-shot success)
 - Natural pause points for session handoff
-- Low risk (revert one session max, not entire 11-hour build)
+- Low risk (revert one session max)
 
 COMPLETE DESIGN PLAN:
 READ FIRST: docs/design/phase-8.2c-hub-transformation-plan.md
+⚠️ SECTION 1.5 (Spatial Metaphor) is CRITICAL - read before implementation!
 
 HUB NARRATIVE:
 "A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."
 
-SESSION 1 OBJECTIVES (Background Foundation):
-1. Base metal plate layer (CONCRETE_GRAY gradient shader)
-2. Rivet placement (8-12 rivets, procedural positioning)
-3. Rust texture overlay (procedural shader or sprite)
-4. Edge shadowing (depth via gradient)
-5. Vignette (corner darkening for focus)
+SPATIAL METAPHOR (⚠️ FUNDAMENTAL):
+Background = Actual metal wall (2-3 large plates bolted together)
+Start Run button = THE GATE (literal exit gate to wasteland)
+Seams = Where plates join (visible structure)
+Rivets = Bolts at seam intersections (holding plates together)
+Horizontal floor seam = Perspective (you're standing in courtyard looking at wall)
+
+SESSION 1 OBJECTIVES (Wall Structure Foundation):
+1. Base metal plate layer (CONCRETE_GRAY, minimal noise - NOT gradient camo)
+2. Visible plate SEAMS (2-3 vertical + 1 horizontal floor seam, SOOT_BLACK 4-6px)
+3. Rivets AT SEAM INTERSECTIONS (8-12 rivets, structural purpose, NOT random)
+4. Subtle rust bleeding FROM SEAMS (RUST_DARK 0.15 opacity, NOT 0.4 camo)
+5. Vignette (corner darkening, focus)
 
 SESSION 1 QA GATE:
-- [ ] Atmosphere: "Does this feel like fortified scrapyard?"
+- [ ] Wall Structure: "Does this read as a metal wall made of bolted plates?"
+- [ ] Seam Visibility: Can you clearly see where plates join?
+- [ ] Rivet Purpose: Do rivets make structural sense? (at intersections)
+- [ ] Perspective: Does floor seam establish "standing in courtyard"?
+- [ ] Rust Subtlety: Is rust weathering (from seams) NOT camo?
 - [ ] Performance: 60 FPS on iPhone SE
-- [ ] Device QA: Test 4.7" and 6.7" screens
-- [ ] Texture Budget: Background < 512KB
-- [ ] Accessibility: Background doesn't interfere with button contrast
+- [ ] Accessibility: Background supports button contrast
+
+WHAT NOT TO DO (Based on Session 1 Learnings):
+❌ Don't use procedural noise shaders creating abstract camo
+❌ Don't scatter rivets randomly around background
+❌ Don't make rust overlay at 0.4 opacity (way too much)
+❌ Don't forget the horizontal floor seam (perspective)
+❌ Don't build without reading Section 1.5 first!
 
 CRITICAL FILES TO READ:
-- docs/design/phase-8.2c-hub-transformation-plan.md (COMPLETE PLAN)
-- scripts/ui/theme/color_palette.gd (wasteland colors)
-- .system/NEXT_SESSION.md (this file - current status)
-- .system/CLAUDE_RULES.md (quality gates, process)
+1. docs/design/phase-8.2c-hub-transformation-plan.md (SECTION 1.5 FIRST!)
+2. scripts/ui/theme/color_palette.gd (wasteland colors)
+3. .system/NEXT_SESSION.md (spatial metaphor section)
+4. .system/CLAUDE_RULES.md (quality gates)
 
-ICON ASSETS READY (for Sessions 2-3):
+ICON ASSETS READY (for SESSION 2):
 - assets/icons/hub/icon_start_run_final.svg ✅
 - assets/icons/hub/icon_roster_final.svg ✅
 - assets/icons/hub/icon_settings_final.svg ✅
 
 SESSION 1 DELIVERABLE:
-Commit: "feat(ui): add scrapyard background foundation for Phase 8.2c"
+Commit: "feat(ui): add scrapyard wall structure foundation for Phase 8.2c"
 
 USER FEEDBACK CHECKPOINT AFTER SESSION 1:
-📸 "Does the background atmosphere match your vision? Any adjustments before we build buttons on top?"
+📸 "Does this read as a fortified metal wall? Can you see the plate structure?"
 
-REMINDER: Quality over speed. Extended feedback loops. Secure continuity.
+REMINDER: Quality over speed. Spatial clarity first. Read Section 1.5 before coding!
 ```
 
 ---
