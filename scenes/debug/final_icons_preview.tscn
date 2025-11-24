@@ -1,0 +1,149 @@
+[gd_scene load_steps=4 format=3 uid="uid://final_icons_preview"]
+
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_start_run_final.svg" id="1"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_roster_final.svg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_settings_final.svg" id="3"]
+
+[node name="FinalIconsPreview" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.168627, 0.168627, 0.168627, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 36
+text = "✅ Final Hub Button Icons - Ready for Implementation"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 100.0
+offset_bottom = 140.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
+text = "80x80pt actual size (as they'll appear in-game)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -100.0
+offset_right = 360.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 60
+
+[node name="StartRun" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/StartRun"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/StartRun"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "START RUN"
+horizontal_alignment = 1
+
+[node name="Source" type="Label" parent="HBoxContainer/StartRun"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.831373, 0.447059, 0.168627, 1)
+theme_override_font_sizes/font_size = 14
+text = "Gemini (Gate)"
+horizontal_alignment = 1
+
+[node name="Roster" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Roster"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/Roster"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "CHARACTER ROSTER"
+horizontal_alignment = 1
+
+[node name="Source" type="Label" parent="HBoxContainer/Roster"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.831373, 0.447059, 0.168627, 1)
+theme_override_font_sizes/font_size = 14
+text = "Hybrid (Improved)"
+horizontal_alignment = 1
+
+[node name="Settings" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Settings"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/Settings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Source" type="Label" parent="HBoxContainer/Settings"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.831373, 0.447059, 0.168627, 1)
+theme_override_font_sizes/font_size = 14
+text = "Gemini (Tools)"
+horizontal_alignment = 1
+
+[node name="Footer" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -150.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "🎯 Clarity Test Results: ALL PASS ✅
+
+Icons are clear, thematic, and ready for Sub-Phase 8.2c implementation.
+Next: Create IconButton component with metal plate backgrounds + depth effects."
+horizontal_alignment = 1
+vertical_alignment = 1

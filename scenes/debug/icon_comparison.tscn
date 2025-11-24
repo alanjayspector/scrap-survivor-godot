@@ -1,0 +1,254 @@
+[gd_scene load_steps=7 format=3 uid="uid://comparison_icons"]
+
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_start_run_gate.svg" id="1"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_roster_silhouettes.svg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_settings_tools.svg" id="3"]
+[ext_resource type="Texture2D" path="res://docs/gemini-icons/start_run.svg" id="4"]
+[ext_resource type="Texture2D" path="res://docs/gemini-icons/icon_roster.svg" id="5"]
+[ext_resource type="Texture2D" path="res://docs/gemini-icons/icon_settings.svg" id="6"]
+
+[node name="IconComparison" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.168627, 0.168627, 0.168627, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "Icon Comparison: Claude SVG vs Gemini SVG (80x80pt actual size)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+
+[node name="StartRun" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 80
+
+[node name="Claude" type="VBoxContainer" parent="VBoxContainer/StartRun"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/StartRun/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Claude (Geometric)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/StartRun/Claude"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/StartRun/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "START RUN"
+horizontal_alignment = 1
+
+[node name="Gemini" type="VBoxContainer" parent="VBoxContainer/StartRun"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/StartRun/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Gemini (Detailed)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/StartRun/Gemini"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/StartRun/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "START RUN"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="Control" parent="VBoxContainer/StartRun"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+
+[node name="Question" type="Label" parent="VBoxContainer/StartRun"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "GATE icon
+Which is clearer?"
+vertical_alignment = 1
+
+[node name="Roster" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 80
+
+[node name="Claude" type="VBoxContainer" parent="VBoxContainer/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/Roster/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Claude (Geometric)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/Roster/Claude"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/Roster/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "CHARACTER ROSTER"
+horizontal_alignment = 1
+
+[node name="Gemini" type="VBoxContainer" parent="VBoxContainer/Roster"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/Roster/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Gemini (Detailed)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/Roster/Gemini"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/Roster/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "CHARACTER ROSTER"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="Control" parent="VBoxContainer/Roster"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+
+[node name="Question" type="Label" parent="VBoxContainer/Roster"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "ROSTER icon
+Which is clearer?"
+vertical_alignment = 1
+
+[node name="Settings" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 80
+
+[node name="Claude" type="VBoxContainer" parent="VBoxContainer/Settings"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/Settings/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Claude (Geometric)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/Settings/Claude"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/Settings/Claude"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Gemini" type="VBoxContainer" parent="VBoxContainer/Settings"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="VBoxContainer/Settings/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Gemini (Detailed)"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/Settings/Gemini"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonLabel" type="Label" parent="VBoxContainer/Settings/Gemini"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="Control" parent="VBoxContainer/Settings"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+
+[node name="Question" type="Label" parent="VBoxContainer/Settings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "TOOLS icon
+Which is clearer?"
+vertical_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "🎯 CLARITY TEST: Show to someone and ask 'What does each button do?'
+
+For each icon, which version is MORE instantly recognizable?
+(Don't worry about which looks prettier - focus on CLARITY)"
+horizontal_alignment = 1
+vertical_alignment = 1

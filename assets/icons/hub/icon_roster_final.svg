@@ -1,0 +1,68 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Three Survivor Silhouettes - Hybrid Version -->
+  <!-- My simple layout + Gemini's aesthetic -->
+
+  <!-- Left Survivor - Dark Metal -->
+  <g transform="translate(80, 180)">
+    <!-- Head -->
+    <circle cx="30" cy="40" r="28" fill="#2B2B2B"/>
+    <!-- Neck/shoulders -->
+    <path d="M10 68 Q30 60 50 68" fill="#2B2B2B"/>
+    <!-- Body -->
+    <rect x="10" y="70" width="40" height="90" rx="4" fill="#2B2B2B"/>
+    <!-- Arms -->
+    <rect x="2" y="80" width="14" height="70" rx="3" fill="#2B2B2B"/>
+    <rect x="44" y="80" width="14" height="70" rx="3" fill="#2B2B2B"/>
+    <!-- Legs -->
+    <rect x="14" y="160" width="14" height="90" rx="3" fill="#2B2B2B"/>
+    <rect x="32" y="160" width="14" height="90" rx="3" fill="#2B2B2B"/>
+    <!-- Gear detail (backpack strap) -->
+    <path d="M44 75 L50 85 L44 95" stroke="#707070" stroke-width="3" fill="none"/>
+    <!-- Weathering scratch -->
+    <line x1="20" y1="100" x2="25" y2="110" stroke="#707070" stroke-width="2"/>
+  </g>
+
+  <!-- Center Survivor - Rust Orange (Prominent Leader) -->
+  <g transform="translate(206, 150)">
+    <!-- Head (larger) -->
+    <circle cx="50" cy="50" r="36" fill="#D4722B"/>
+    <!-- Neck/shoulders -->
+    <path d="M20 86 Q50 76 80 86" fill="#D4722B"/>
+    <!-- Body (larger, prominent) -->
+    <rect x="20" y="88" width="60" height="110" rx="5" fill="#D4722B"/>
+    <!-- Arms -->
+    <rect x="8" y="100" width="16" height="85" rx="4" fill="#D4722B"/>
+    <rect x="76" y="100" width="16" height="85" rx="4" fill="#D4722B"/>
+    <!-- Legs -->
+    <rect x="28" y="198" width="16" height="110" rx="4" fill="#D4722B"/>
+    <rect x="56" y="198" width="16" height="110" rx="4" fill="#D4722B"/>
+    <!-- Weapon on back (rifle silhouette) -->
+    <rect x="76" y="95" width="8" height="60" rx="2" fill="#2B2B2B"/>
+    <rect x="80" y="90" width="4" height="10" fill="#2B2B2B"/>
+    <!-- Belt detail -->
+    <rect x="20" y="140" width="60" height="6" fill="#2B2B2B"/>
+  </g>
+
+  <!-- Right Survivor - Dark Metal -->
+  <g transform="translate(382, 180)">
+    <!-- Head -->
+    <circle cx="30" cy="40" r="28" fill="#2B2B2B"/>
+    <!-- Neck/shoulders -->
+    <path d="M10 68 Q30 60 50 68" fill="#2B2B2B"/>
+    <!-- Body -->
+    <rect x="10" y="70" width="40" height="90" rx="4" fill="#2B2B2B"/>
+    <!-- Arms -->
+    <rect x="2" y="80" width="14" height="70" rx="3" fill="#2B2B2B"/>
+    <rect x="44" y="80" width="14" height="70" rx="3" fill="#2B2B2B"/>
+    <!-- Legs -->
+    <rect x="14" y="160" width="14" height="90" rx="3" fill="#2B2B2B"/>
+    <rect x="32" y="160" width="14" height="90" rx="3" fill="#2B2B2B"/>
+    <!-- Tool on belt -->
+    <rect x="42" y="110" width="6" height="24" rx="1" fill="#707070"/>
+    <!-- Weathering detail -->
+    <path d="M15 85 L18 90" stroke="#707070" stroke-width="2"/>
+  </g>
+
+  <!-- Subtle ground line (wasteland dirt) -->
+  <path d="M60 460 Q256 450 452 460" stroke="#707070" stroke-width="4" opacity="0.5"/>
+</svg>

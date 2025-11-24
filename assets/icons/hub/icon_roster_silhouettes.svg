@@ -1,0 +1,51 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Three Survivor Silhouettes - Side by side -->
+
+  <!-- Left figure -->
+  <g transform="translate(0, 0)">
+    <!-- Head -->
+    <circle cx="15" cy="20" r="6" fill="#2B2B2B"/>
+    <!-- Body -->
+    <rect x="10" y="27" width="10" height="18" rx="1" fill="#2B2B2B"/>
+    <!-- Arms -->
+    <rect x="6" y="30" width="4" height="12" rx="1" fill="#2B2B2B"/>
+    <rect x="20" y="30" width="4" height="12" rx="1" fill="#2B2B2B"/>
+    <!-- Legs -->
+    <rect x="11" y="45" width="4" height="18" rx="1" fill="#2B2B2B"/>
+    <rect x="15" y="45" width="4" height="18" rx="1" fill="#2B2B2B"/>
+    <!-- Ragged edge detail (survivor wear) -->
+    <path d="M 10 27 L 8 29 L 10 31" fill="none" stroke="#2B2B2B" stroke-width="1"/>
+  </g>
+
+  <!-- Center figure (slightly taller/prominent) -->
+  <g transform="translate(27, -3)">
+    <!-- Head -->
+    <circle cx="15" cy="20" r="7" fill="#2B2B2B"/>
+    <!-- Body -->
+    <rect x="9" y="28" width="12" height="20" rx="1" fill="#2B2B2B"/>
+    <!-- Arms -->
+    <rect x="5" y="31" width="4" height="14" rx="1" fill="#2B2B2B"/>
+    <rect x="21" y="31" width="4" height="14" rx="1" fill="#2B2B2B"/>
+    <!-- Legs -->
+    <rect x="10" y="48" width="4" height="20" rx="1" fill="#2B2B2B"/>
+    <rect x="16" y="48" width="4" height="20" rx="1" fill="#2B2B2B"/>
+    <!-- Gear on back (survival pack) -->
+    <rect x="20" y="32" width="3" height="8" rx="1" fill="#2B2B2B"/>
+  </g>
+
+  <!-- Right figure -->
+  <g transform="translate(54, 0)">
+    <!-- Head -->
+    <circle cx="15" cy="20" r="6" fill="#2B2B2B"/>
+    <!-- Body -->
+    <rect x="10" y="27" width="10" height="18" rx="1" fill="#2B2B2B"/>
+    <!-- Arms -->
+    <rect x="6" y="30" width="4" height="12" rx="1" fill="#2B2B2B"/>
+    <rect x="20" y="30" width="4" height="12" rx="1" fill="#2B2B2B"/>
+    <!-- Legs -->
+    <rect x="11" y="45" width="4" height="18" rx="1" fill="#2B2B2B"/>
+    <rect x="15" y="45" width="4" height="18" rx="1" fill="#2B2B2B"/>
+    <!-- Tool on belt -->
+    <rect x="18" y="33" width="2" height="6" fill="#2B2B2B"/>
+  </g>
+</svg>

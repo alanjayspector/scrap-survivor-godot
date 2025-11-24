@@ -1,0 +1,140 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqwo6y3xyvnf1"]
+
+[ext_resource type="Texture2D" uid="uid://new_start_gate" path="res://assets/icons/hub/icon_start_run_gate.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://new_roster_silhouettes" path="res://assets/icons/hub/icon_roster_silhouettes.svg" id="2"]
+[ext_resource type="Texture2D" uid="uid://new_settings_tools" path="res://assets/icons/hub/icon_settings_tools.svg" id="3"]
+
+[node name="HubIconPreview" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.168627, 0.168627, 0.168627, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "Hub Button Icons - Preview (80x80pt)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -120.0
+offset_right = 280.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+
+[node name="StartRun" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/StartRun"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IconTinted" type="TextureRect" parent="HBoxContainer/StartRun"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/StartRun"]
+layout_mode = 2
+text = "Start Run
+(Gate)"
+horizontal_alignment = 1
+
+[node name="Roster" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Roster"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IconTinted" type="TextureRect" parent="HBoxContainer/Roster"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/Roster"]
+layout_mode = 2
+text = "Character Roster
+(Silhouettes)"
+horizontal_alignment = 1
+
+[node name="Settings" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Settings"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IconTinted" type="TextureRect" parent="HBoxContainer/Settings"]
+modulate = Color(0.831373, 0.447059, 0.168627, 1)
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HBoxContainer/Settings"]
+layout_mode = 2
+text = "Settings
+(Tools)"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 16
+text = "Top row: Original black
+Bottom row: RUST_ORANGE tint (#D4722B)
+
+CLARITY TEST: Show to someone and ask 'What does each button do?'"
+horizontal_alignment = 1
+vertical_alignment = 1
