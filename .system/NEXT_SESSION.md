@@ -3,7 +3,7 @@
 **Date**: 2025-11-23
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
 **Current Phase**: Phase 8 - Visual Identity & Delight Polish 🎨
-**Status**: 🔨 **IN PROGRESS - Multi-Session Sprint (Sub-Phase 8.2b - Icon Design)**
+**Status**: 🔨 **IN PROGRESS - Multi-Session Sprint (Sub-Phase 8.2c - Hub Visual Transformation)**
 
 ---
 
@@ -68,9 +68,9 @@ Convened expert panel for critical design analysis. **All 4 experts agreed**: Te
 **TO**: Sub-Phase 8.2 - Icon-based button design & implementation (8-10h)
 
 **New Breakdown**:
-- **8.2a**: Research & Reference Gathering (2h)
-- **8.2b**: Icon Design & Iteration (4-6h)
-- **8.2c**: Implementation & Integration (2-4h)
+- **8.2a**: Research & Reference Gathering (2h) ✅ COMPLETE
+- **8.2b**: Icon Design & Iteration (2h actual) ✅ COMPLETE
+- **8.2c**: Hub Visual Transformation (4-7h) - Icons + Environment + Storytelling
 
 **Rationale**: This isn't feature creep - it's correcting a fundamental design oversight. Icon-based buttons ARE the Phase 8 transformation. One-shotting each sub-sub-phase maintains quality standards.
 
@@ -84,8 +84,8 @@ Convened expert panel for critical design analysis. **All 4 experts agreed**: Te
 |-----------|-------|------|--------|---------|
 | **8.1** | Wasteland Color Palette Definition | 30 min | ✅ **COMPLETE** | Palette defined, WCAG validated |
 | **8.2a** | Icon Button Research & References | 2 hours | ✅ **COMPLETE** | Research doc created ✅ |
-| **8.2b** | Icon Design & Iteration | 4-6 hours | 🔨 **IN PROGRESS** | Icons pass "grandmother test" |
-| **8.2c** | Icon Button Implementation | 2-4 hours | ⏭️ Pending | Device test + premium feel |
+| **8.2b** | Icon Design & Iteration | 2 hours | ✅ **COMPLETE** | Icons designed ✅ (Commit: 9b9c27d) |
+| **8.2c** | Hub Visual Transformation | 4-7 hours | 🔨 **IN PROGRESS** | Environment + buttons + QA |
 | **8.3** | Settings Button → Corner Icon | 30 min | ⏭️ Pending | Corner icon functional |
 | **8.4** | Danger Button - Hazard Pattern | 30 min | ⏭️ Pending | Hazard aesthetic clear |
 | **8.5** | Icon Size Increase - HUD | 1 hour | ⏭️ Pending | Icons prominent on device |
@@ -93,7 +93,7 @@ Convened expert panel for critical design analysis. **All 4 experts agreed**: Te
 | **8.7** | Typography Impact Boost | 30 min | ⏭️ Pending | Header hierarchy clear |
 | **8.8** | Visual Validation & 10-Second Test | 1 hour | ⏭️ Pending | Test passes (5/6 YES) |
 
-**Total**: 13-16 hours (was 5.5h) | **Completed**: 0.5h (8.1 ✅) | **Remaining**: 12.5-15.5h
+**Total**: 15-19 hours (8.2c scope expanded) | **Completed**: 2.5h (8.1 + 8.2a + 8.2b ✅) | **Remaining**: 12.5-16.5h
 
 ---
 
@@ -182,36 +182,225 @@ Based on expert panel recommendations:
 
 ---
 
-## 📊 Current Session: Sub-Phase 8.2b - Icon Design & Iteration
+## 📊 Previous Session: Sub-Phase 8.2b - Icon Design & Iteration ✅ COMPLETE
 
-**Focus**: Design icon concepts, test clarity, create final assets
-**Time Estimate**: 4-6 hours (iteration until icons pass "grandmother test")
-**Approach**: Sketch → Test → Refine → Create assets
+**Completed**: 2025-11-23
+**Commit**: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
+**Deliverables**: 3 final hub button icons (gate, roster, settings) - [assets/icons/hub/](../assets/icons/hub/)
 
-### 8.2b Objectives (Preview)
+### 8.2b Accomplishments
 
-**Goal**: Create wasteland-themed icons that instantly communicate button function
+**Icons Created**:
+- **Start Run**: Gemini gate icon (chain-link fence, rust colors) - `icon_start_run_final.svg`
+- **Character Roster**: Hybrid icon (Claude layout + Gemini aesthetic) - `icon_roster_final.svg`
+- **Settings**: Gemini tools icon (crossed wrench + screwdriver) - `icon_settings_final.svg`
 
 **Process**:
-1. Sketch 3 concepts per button (9 total sketches)
-2. **Clarity Test**: Show sketches to someone unfamiliar - can they guess function?
-3. Select winners: clarity > aesthetic > technical feasibility
-4. Create icon assets (SVG/vector or simple textures)
-5. Add wasteland weathering (rust, scratches, wear)
+- User clarity testing via comparison scene ✅
+- All icons pass "grandmother test" (instant or quick recognition) ✅
+- Gemini AI validated as excellent tool for game icon generation ✅
 
-**"Grandmother Test"**: Icons must be instantly recognizable OR quick to learn with text label. No mystery meat navigation.
-
-**QA Gate**: Icons tested for clarity, assets created, ready for implementation
+**Documentation**:
+- Design rationale ([FINAL_ICONS_SUMMARY.md](../assets/icons/hub/FINAL_ICONS_SUMMARY.md))
+- Gemini prompts for future use ([GEMINI_PROMPTS.md](../assets/icons/hub/GEMINI_PROMPTS.md))
+- Preview scenes for QA ([final_icons_preview.tscn](../scenes/debug/final_icons_preview.tscn))
 
 ---
 
-## 📊 Next Session: Sub-Phase 8.2c - Implementation & Integration
+## 📊 Current Session: Sub-Phase 8.2c - Hub Visual Transformation 🎨
 
-**Focus**: Build IconButton component, integrate into hub, device testing
-**Time Estimate**: 2-4 hours
-**Approach**: Component creation → Hub integration → Visual polish → Device QA
+**Focus**: Transform entire scrapyard hub with icon buttons + wasteland environment + storytelling
+**Time Estimate**: 4-7 hours (NOT just icon implementation - full hub redesign)
+**Approach**: Expert panel design → Component creation → Environment → Integration → Device QA
 
-### 8.2c Objectives (Preview)
+### 🏜️ Hub Narrative Foundation (User-Defined)
+
+> **"A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."**
+
+**What This Means**:
+- **Fortified**: Defenses, reinforced walls, protection from outside threats
+- **Scrapyard**: Salvaged materials, repurposed objects, makeshift construction
+- **Last Bastion**: Safe haven, refuge (maybe the ONLY safe place)
+- **Sanctuary from Wasteland**: Inside = safe, outside = dangerous
+
+**Hub as Narrative Center** (from [hub-storytelling-research.md](../docs/hub-storytelling-research.md)):
+- Hub is emotional/narrative anchor, not just menu
+- Missions are departures FROM sanctuary INTO danger
+- Environmental storytelling > abstract UI
+- Physical space conveys narrative stakes (like Darkest Dungeon's degraded Hamlet)
+
+### 8.2c Sub-Tasks (Expanded Scope)
+
+**IMPORTANT**: This is NOT just "replace text buttons with icon buttons". This is a full hub transformation.
+
+#### **Task 1: Expert Panel - Hub Environment Design** (30-60 min)
+
+**What the panel must define**:
+1. **Scrapyard Background Design**
+   - What does the background look like? (rusted metal wall, concrete bunker, scrap piles?)
+   - Texture and materiality (not flat color)
+   - Conveys "fortified sanctuary" atmosphere
+   - Wasteland color palette applied
+
+2. **Button Spatial Composition**
+   - NOT just vertical stack - spatial arrangement that tells story
+   - Do buttons feel like physical objects IN the environment?
+   - **Start Run** near visible gate/exit?
+   - **Roster** near barracks/crew area visual?
+   - **Settings** in utility corner?
+
+3. **Environmental Storytelling Elements**
+   - What visual cues show this is a "fortified sanctuary"?
+   - Defensive details (barbed wire, reinforced walls, lookout posts?)
+   - Scrapyard materials visible (salvaged signs, welded metal?)
+   - Inside looking out vs outside looking in?
+
+**Deliverable**: Design requirements document with mockup/description
+
+#### **Task 2: IconButton Component Creation** (1-2 hours)
+
+**Component Structure**:
+```gdscript
+# IconButton.tscn hierarchy:
+PanelContainer (metal plate background)
+├── StyleBoxFlat (riveted metal, RUST_DARK borders, SOOT_BLACK fill)
+├── VBoxContainer
+│   ├── TextureRect (icon, 70-80% of button area)
+│   └── Label (stencil font, DIRTY_WHITE, 20-30% of button area)
+└── Corner rivets (4x ColorRect or TextureRect)
+```
+
+**Component Features**:
+- Metal plate aesthetic with rivets
+- Depth effects (4px bottom border, 2px sides)
+- Pressed state (border inverts, shifts 2px down)
+- Hover state (subtle NEON_GREEN glow)
+- Accepts icon texture + label text parameters
+
+**Deliverable**: Reusable IconButton component scene + script
+
+#### **Task 3: Scrapyard Background Implementation** (1-2 hours)
+
+**Background Options** (expert panel decides):
+- **Option A**: Textured ColorRect with rust/metal noise shader
+- **Option B**: Layered TextureRects (metal plate + weathering overlay)
+- **Option C**: Simple gradient with subtle texture
+- **Option D**: Gemini-generated scrapyard background image (simplified from detailed illustrations)
+
+**Requirements**:
+- Conveys wasteland/fortified atmosphere
+- Doesn't compete with buttons (buttons must pop)
+- Uses wasteland color palette (SOOT_BLACK, CONCRETE_GRAY, RUST_DARK)
+- Works on mobile (not too detailed)
+
+**Deliverable**: Hub background that feels like "inside a fortified scrapyard"
+
+#### **Task 4: Hub Scene Composition** (1-2 hours)
+
+**Replace in scenes/hub/scrapyard.tscn**:
+- Remove generic purple background
+- Add scrapyard background layer
+- Replace 3 text buttons with IconButton instances
+- Spatial arrangement per expert panel design
+- Apply wasteland color palette throughout
+- Ensure safe area compliance (Phase 6 work)
+
+**Button Integration**:
+- Load final icon SVGs (`icon_start_run_final.svg`, etc.)
+- Set labels ("START RUN", "CHARACTER ROSTER", "SETTINGS")
+- Position spatially (not just vertical stack)
+- Test touch targets (minimum 56x56pt)
+
+**Deliverable**: Transformed scrapyard hub scene
+
+#### **Task 5: Device Testing & 10-Second Impression** (30 min - 1 hour)
+
+**Device QA Checklist**:
+- [ ] Hub loads without errors on iPhone
+- [ ] All 3 icon buttons functional
+- [ ] Icons clear and recognizable at 80x80pt
+- [ ] Buttons feel premium (depth, tactile feedback)
+- [ ] Background conveys wasteland sanctuary atmosphere
+- [ ] Spatial composition tells story
+- [ ] No layout issues (safe area respected)
+
+**10-Second Impression Test** (show to unfamiliar person):
+1. Can they identify the genre? (wasteland survival roguelite)
+2. Does it look like a $10 premium game?
+3. Can they identify the theme? (post-apocalyptic)
+4. Are button functions clear?
+
+**Target**: At least 3/4 YES (partial success), 4/4 YES ideal
+
+**Deliverable**: Hub transformation validated on device, ready for Phase 8.3+
+
+### 8.2c Success Criteria
+
+**NOT ENOUGH** to mark complete:
+- ❌ Icon buttons exist in code
+- ❌ Icons display correctly
+
+**REQUIRED** to mark complete:
+- ✅ IconButton component created and reusable
+- ✅ Scrapyard background conveys "fortified sanctuary" atmosphere
+- ✅ Button spatial composition tells environmental story
+- ✅ All buttons functional and tested on device
+- ✅ Passes partial 10-Second Impression Test (3/4 minimum)
+- ✅ Expert panel design requirements met
+
+---
+
+## 🚀 Quick Start Prompt for Next Session
+
+```
+✅ Sub-Phase 8.2b COMPLETE (Icon Design - Commit: 9b9c27d)
+
+🔨 CURRENT: Sub-Phase 8.2c - Hub Visual Transformation (4-7h, NO RUSH)
+
+EXPANDED SCOPE - THIS IS CRITICAL:
+Original plan: Just replace text buttons with icon buttons
+User insight: "We should also make sure the background and arrangement meet our thematic requirements"
+Correct scope: Transform ENTIRE hub (buttons + environment + storytelling)
+
+HUB NARRATIVE (User-Defined):
+"A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."
+
+This means:
+- Fortified walls (defenses, reinforced barriers)
+- Scrapyard materials (salvaged, repurposed)
+- Last refuge (safe haven before venturing into danger)
+- Inside = Safety vs Outside = Wasteland danger
+
+TASKS FOR THIS SESSION:
+1. Expert Panel: Design hub environment (background, spatial composition, storytelling)
+2. Create IconButton component (metal plates, rivets, depth, reusable)
+3. Implement scrapyard background (conveys "fortified sanctuary")
+4. Replace hub scene composition (icons + environment + spatial arrangement)
+5. Device QA + 10-Second Impression Test
+
+CRITICAL FILES TO READ:
+- docs/hub-storytelling-research.md (hub as narrative center)
+- docs/research/phase-8-icon-button-references.md (research findings)
+- assets/icons/hub/FINAL_ICONS_SUMMARY.md (icon design decisions)
+- scripts/ui/theme/color_palette.gd (wasteland colors)
+
+ICON ASSETS READY:
+- assets/icons/hub/icon_start_run_final.svg ✅
+- assets/icons/hub/icon_roster_final.svg ✅
+- assets/icons/hub/icon_settings_final.svg ✅
+
+SUCCESS CRITERIA:
+- IconButton component created and reusable ✅
+- Background conveys "fortified sanctuary" atmosphere ✅
+- Spatial composition tells environmental story ✅
+- Device tested, 10-Second Test passes (3/4 minimum) ✅
+
+REMINDER: Quality over speed. This transformation sets visual identity for the entire game.
+```
+
+---
+
+## 📊 Archived: Sub-Phase 8.2c Original Scope (Before Expansion)
 
 **Goal**: Replace text buttons with icon-based buttons in scrapyard hub
 
@@ -422,14 +611,14 @@ REMINDER: No time pressure. Take as long as needed for thoroughness.
 - ✅ Phase 7: Combat HUD Mobile Optimization (1.5h → 1.5h actual)
 
 **In Progress**:
-- 🔨 **Phase 8: Visual Identity & Delight** (0.5h / 13-16h) - **CURRENT**
+- 🔨 **Phase 8: Visual Identity & Delight** (2.5h / 15-19h) - **CURRENT**
   - ✅ Sub-Phase 8.1 COMPLETE (0.5h)
   - ✅ Sub-Phase 8.2a COMPLETE (Research - 2h actual)
-  - 🔨 Sub-Phase 8.2b IN PROGRESS (Icon Design - 4-6h est)
+  - ✅ Sub-Phase 8.2b COMPLETE (Icon Design - 2h actual, Commit: 9b9c27d)
+  - 🔨 Sub-Phase 8.2c IN PROGRESS (Hub Transformation - 4-7h est)
 
 **Remaining**:
-- ⏭️ Phase 8.2b: Icon Design (4-6h)
-- ⏭️ Phase 8.2c: Icon Implementation (2-4h)
+- ⏭️ Phase 8.2c: Hub Transformation (4-7h) - **NEXT**
 - ⏭️ Phase 8.3-8.7: Additional visual polish (3h)
 - ⏭️ Phase 8.8: Visual validation (1h)
 - ⏭️ Phase 3: Touch Targets (2h)
@@ -437,15 +626,16 @@ REMINDER: No time pressure. Take as long as needed for thoroughness.
 - ⏭️ Phase 5: Character Roster (2h)
 - ⏭️ Phase 9: Performance & Polish (2-3h optional)
 
-**Total Time Spent**: ~17.5h
-**Estimated Remaining**: 12.5-15.5h (Phase 8) + 6-8h (Phases 3-5) = 18.5-23.5h
+**Total Time Spent**: ~19.5h (includes 6h detours)
+**Estimated Remaining**: 12.5-16.5h (Phase 8) + 6-8h (Phases 3-5) = 18.5-24.5h
 
 **Pivot Impact**: Phase 8 expanded from 5.5h → 13-16h (8.2 scope correction)
 
 ---
 
-**Last Updated**: 2025-11-23 (Sub-Phase 8.2 PIVOTED to icon-based buttons)
-**Status**: 🔨 Sub-Phase 8.2b IN PROGRESS - Icon Design & Iteration
-**Next Commit**: Research findings document + NEXT_SESSION.md update
-**Session Pattern**: One sub-sub-phase at a time, quality over speed
-**Confidence**: HIGH - Pivot validated by expert panel, following proven industry patterns
+**Last Updated**: 2025-11-23 (Sub-Phase 8.2b COMPLETE, 8.2c scope expanded)
+**Status**: 🔨 Sub-Phase 8.2c IN PROGRESS - Hub Visual Transformation
+**Latest Commit**: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
+**Next Session**: Hub transformation (buttons + environment + storytelling)
+**Session Pattern**: One sub-phase at a time, full hub redesign (not just button swap)
+**Confidence**: HIGH - Icon assets ready, narrative foundation defined, expert panel will guide environment design
