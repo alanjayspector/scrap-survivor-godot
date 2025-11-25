@@ -1,941 +1,240 @@
-# Next Session: Week 16 Phase 8 - Visual Identity & Delight Polish
+# Next Session: Phase 8.2c - Art Bible Hub Transformation
 
-**Date**: 2025-11-23
+**Date**: 2025-11-25
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
-**Current Phase**: Phase 8 - Visual Identity & Delight Polish 🎨
-**Status**: 🔨 **IN PROGRESS - Multi-Session Sprint (Sub-Phase 8.2c - Hub Visual Transformation)**
+**Revised Plan**: [docs/design/phase-8-revised-plan.md](../docs/design/phase-8-revised-plan.md)
+**Current Phase**: Phase 8.2c - Hub Visual Transformation
+**Status**: 🔄 **ORIENTATION CORRECTED** - Ready for Implementation
 
 ---
 
-## 🎯 Phase 8 Overview
+## 🔄 CRITICAL CORRECTION (2025-11-25)
 
-**Goal**: Transform from "functional prototype" to "visually distinctive wasteland roguelite"
+### Previous Error: Portrait Orientation
+- Plan incorrectly specified portrait (9:16) orientation
+- Would have required phone rotation between hub and combat
+- **Root cause**: Planning error, not original intent
 
-**Total Estimated Time**: 5.5-6 hours → **13-16 hours** (8.2 pivot expanded scope)
-**Approach**: Multi-session sprint with QA gates (like Phase 6)
-**Success Criteria**: Pass "10-Second Impression Test" (5/6 YES minimum)
+### Corrected Approach: Landscape Throughout
+- **All scenes = Landscape** (consistent with combat/wasteland)
+- **Controller support** requires landscape
+- **Matches Brotato/Vampire Survivors** conventions
+- **Uses existing concept art** directly (already landscape)
 
-### The Transformation
+### Key Discovery
+The existing `scrap-town-sancturary.png` (2752×1536) is:
+- Already landscape orientation ✅
+- Higher resolution than needed (exceeds 1920×1080 base) ✅
+- Perfect Art Bible style (no generation needed) ✅
 
-**FROM** (Current State):
-- Purple/gray generic mobile app aesthetic
-- **Text-only buttons that look like horizontal lines**
-- 16px decorative icons
-- Settings as full menu button
-- No thematic connection to wasteland survival
-
-**TO** (Target State):
-- Rust/metal wasteland visual identity
-- **Icon-based buttons with wasteland materiality (riveted metal plates)**
-- 24-32px prominent functional icons
-- Settings as compact corner icon (user request ✅)
-- Passes "10-Second Impression Test" (genre identifiable, $10 premium quality)
+**Massive scope reduction: Skip art generation entirely.**
 
 ---
 
-## 🚨 PIVOT DECISION (2025-11-23)
+## 📱 Mobile Screen Standards (2024-2025 Research)
 
-### What Happened
+### Target Aspect Ratios (Landscape)
 
-**Original Sub-Phase 8.2**: "Button Style Rework - Apply rust colors to text buttons" (1 hour)
+| Aspect | Devices | Priority |
+|--------|---------|----------|
+| 16:9 | Baseline, older devices | Must support |
+| 18:9 / 18.5:9 | Modern Android | Must support |
+| 19.5:9 | iPhone 12-15 series | Must support |
+| 20:9 | Flagship Android 2023-2025 | Must support |
+| 21:9 | Gaming phones (ROG, etc.) | Nice to have |
 
-**User Feedback After Implementation**:
-> "The buttons turned orange but they don't look different. They look like horizontal lines. To me what would make the hub pop is if the buttons themselves visually expressed what they were for (with maybe text under them to describe them). All I see here is the same thing we've had from the start just orange."
-
-**User was 100% correct.** Just recoloring text buttons doesn't achieve Phase 8 goals.
-
-### Expert Panel Verdict (UNANIMOUS)
-
-Convened expert panel for critical design analysis. **All 4 experts agreed**: Text-only buttons cannot achieve Phase 8 transformation goals.
-
-**Key Findings**:
-1. **Genre Standard**: Brotato, Vampire Survivors, Dead Cells, Slay the Spire - ZERO use text-only hub navigation buttons
-2. **Premium Positioning**: Text buttons read as "prototype" or "asset flip" - fail $10 quality bar
-3. **Wasteland Theme**: Theme demands materiality (salvaged objects, physical buttons), not clean typography
-4. **Mobile UX**: Icon buttons provide better tap targets, 60,000x faster cognitive recognition
-
-**Panel Recommendation**: Icon-based buttons with text labels underneath (industry standard for premium mobile roguelites)
-
-**Examples to Study**:
-- Brotato: Large iconic buttons, character portraits, gear icons (text 40% of icon size)
-- Vampire Survivors: Character portraits AS buttons, universal icons for settings
-- Dead Cells: Environmental navigation or iconic weapons/items
-- Fallout UI: Pip-Boy uses physical switches/dials, not text buttons
-
-### The Pivot
-
-**FROM**: Sub-Phase 8.2 - Text button styling (1h)
-**TO**: Sub-Phase 8.2 - Icon-based button design & implementation (8-10h)
-
-**New Breakdown**:
-- **8.2a**: Research & Reference Gathering (2h) ✅ COMPLETE
-- **8.2b**: Icon Design & Iteration (2h actual) ✅ COMPLETE
-- **8.2c**: Hub Visual Transformation (4-7h) - Icons + Environment + Storytelling
-
-**Rationale**: This isn't feature creep - it's correcting a fundamental design oversight. Icon-based buttons ARE the Phase 8 transformation. One-shotting each sub-sub-phase maintains quality standards.
-
-**User Priority**: "I don't want to rush any of this work. Do it the right way, even if it spans multiple sessions."
-
----
-
-## 📋 Sub-Phase Breakdown (UPDATED)
-
-| Sub-Phase | Focus | Time | Status | QA Gate |
-|-----------|-------|------|--------|---------|
-| **8.1** | Wasteland Color Palette Definition | 30 min | ✅ **COMPLETE** | Palette defined, WCAG validated |
-| **8.2a** | Icon Button Research & References | 2 hours | ✅ **COMPLETE** | Research doc created ✅ |
-| **8.2b** | Icon Design & Iteration | 2 hours | ✅ **COMPLETE** | Icons designed ✅ (Commit: 9b9c27d) |
-| **8.2c** | Hub Visual Transformation | 4-7 hours | 🔨 **IN PROGRESS** | Environment + buttons + QA |
-| **8.3** | Settings Button → Corner Icon | 30 min | ⏭️ Pending | Corner icon functional |
-| **8.4** | Danger Button - Hazard Pattern | 30 min | ⏭️ Pending | Hazard aesthetic clear |
-| **8.5** | Icon Size Increase - HUD | 1 hour | ⏭️ Pending | Icons prominent on device |
-| **8.6** | Panel/Card Background Rework | 30 min | ⏭️ Pending | Purple tint removed |
-| **8.7** | Typography Impact Boost | 30 min | ⏭️ Pending | Header hierarchy clear |
-| **8.8** | Visual Validation & 10-Second Test | 1 hour | ⏭️ Pending | Test passes (5/6 YES) |
-
-**Total**: 15-19 hours (8.2c scope expanded) | **Completed**: 2.5h (8.1 + 8.2a + 8.2b ✅) | **Remaining**: 12.5-16.5h
-
----
-
-## 📊 Previous Session: Sub-Phase 8.1 ✅ COMPLETE
-
-**Completed**: 2025-11-23
-**Commit**: `081bd61` - feat(ui): add wasteland color palette for Phase 8 visual identity
-
-### 8.1 Deliverables ✅
-
-**12 Wasteland Colors Added** ([color_palette.gd:31-55](../scripts/ui/theme/color_palette.gd#L31-L55)):
-- RUST_ORANGE, RUST_DARK, RUST_LIGHT (metal/oxidation)
-- HAZARD_YELLOW, HAZARD_BLACK (caution tape)
-- BLOOD_RED, WARNING_RED (danger/destructive)
-- CONCRETE_GRAY, DIRTY_WHITE, SOOT_BLACK (weathered materials)
-- NEON_GREEN, OXIDIZED_COPPER (scavenged tech)
-
-**Performance**: 27 pre-calculated contrast ratios (WCAG AA compliant)
-**Developer Experience**: 10 semantic helper functions + comprehensive usage docs
-
-**Preview**: Run `scenes/debug/wasteland_color_preview.tscn` to see all colors
-
----
-
-## 📊 Previous Session: Sub-Phase 8.2a - Research & Reference Gathering ✅ COMPLETE
-
-**Completed**: 2025-11-23
-**Deliverable**: [docs/research/phase-8-icon-button-references.md](../docs/research/phase-8-icon-button-references.md) ✅
-
-### 8.2a Objectives
-
-**Goal**: Understand industry patterns for icon-based navigation and wasteland UI aesthetics
-
-**Games to Study**:
-1. **Brotato** (mobile) - Hub button layout, icon style, text label placement
-2. **Vampire Survivors** - Character portraits as buttons, depth/shadow effects
-3. **Slay the Spire** - Map node icons (campfire, monster, merchant), instant clarity
-4. **Dead Cells** (mobile) - Wasteland/grimdark aesthetic in UI, physical button textures
-5. **Fallout Shelter** - Wasteland UI language, Vault-Tec aesthetic, post-apocalyptic icons
-
-**Patterns to Document**:
-- Icon-to-label size ratios (typically 70-80% icon, 20-30% label)
-- Button depth techniques (shadows, borders, pressed states)
-- Icon clarity standards (can user guess function without label?)
-- Wasteland materiality (how do buttons look "physical"?)
-- Touch target sizes (mobile-first considerations)
-
-**Research Deliverables**:
-1. `docs/research/phase-8-icon-button-references.md` - Annotated screenshots and pattern analysis
-2. Design requirements document - Size, style, clarity criteria for our icons
-3. Icon concept direction - Which wasteland objects map to our hub functions?
-
-### 8.2a Icon Concept Directions (Starting Point)
-
-Based on expert panel recommendations:
-
-**"Start Run" Button**:
-- PRIMARY: Rusty combat knife + ammo clip crossed (action + combat metaphor)
-- ALT: Wasteland road/path icon with horizon (journey metaphor)
-- ALT: Backpack or survival gear (preparation metaphor)
-- AVOID: Abstract "play" triangle (too generic, not thematic)
-
-**"Character Roster" Button**:
-- PRIMARY: 3 wasteland survivor silhouettes side-by-side (literal representation)
-- ALT: Dog tags or ID badges hung on hooks (militia/survivor vibes)
-- ALT: Lineup of character portraits (direct visual representation)
-- AVOID: Single person icon (doesn't convey "multiple characters")
-
-**"Settings" Button**:
-- PRIMARY: Wrench + screwdriver crossed (universal + wasteland appropriate)
-- ALT: Analog gauge dial (mechanical + wasteland tech)
-- ALT: Gear cog made from scrap metal parts
-- AVOID: Modern iOS-style gear alone (too clean/corporate)
-
-### 8.2a QA Gate Checklist
-
-- [ ] Studied 5+ games for icon-based navigation patterns
-- [ ] Documented icon-to-label size ratios (with screenshots/measurements)
-- [ ] Documented button depth techniques (shadows, borders, materials)
-- [ ] Identified 3 icon concepts per hub button (9 total concepts)
-- [ ] Created design requirements doc (size, clarity, style criteria)
-- [ ] Research findings committed to `docs/research/phase-8-icon-button-references.md`
-- [ ] Ready to begin design phase (8.2b) with clear direction
-
-**Pass Criteria**: Have enough reference material and understanding to design clear, thematic icons without guessing.
-
----
-
-## 📊 Previous Session: Sub-Phase 8.2b - Icon Design & Iteration ✅ COMPLETE
-
-**Completed**: 2025-11-23
-**Commit**: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
-**Deliverables**: 3 final hub button icons (gate, roster, settings) - [assets/icons/hub/](../assets/icons/hub/)
-
-### 8.2b Accomplishments
-
-**Icons Created**:
-- **Start Run**: Gemini gate icon (chain-link fence, rust colors) - `icon_start_run_final.svg`
-- **Character Roster**: Hybrid icon (Claude layout + Gemini aesthetic) - `icon_roster_final.svg`
-- **Settings**: Gemini tools icon (crossed wrench + screwdriver) - `icon_settings_final.svg`
-
-**Process**:
-- User clarity testing via comparison scene ✅
-- All icons pass "grandmother test" (instant or quick recognition) ✅
-- Gemini AI validated as excellent tool for game icon generation ✅
-
-**Documentation**:
-- Design rationale ([FINAL_ICONS_SUMMARY.md](../assets/icons/hub/FINAL_ICONS_SUMMARY.md))
-- Gemini prompts for future use ([GEMINI_PROMPTS.md](../assets/icons/hub/GEMINI_PROMPTS.md))
-- Preview scenes for QA ([final_icons_preview.tscn](../scenes/debug/final_icons_preview.tscn))
-
----
-
-## 📊 Current Session: Sub-Phase 8.2c - Hub Visual Transformation 🎨
-
-**Focus**: Transform scrapyard hub with fortified wall + icon-based gate/hatches
-**Time Estimate**: 9.5-11 hours across 4 sessions
-**Approach**: ✅ **APPROVED** - Iterative phases with feedback loops (NOT all-at-once)
-
-**⚠️ CRITICAL DESIGN BREAKTHROUGH** (2025-11-23): Spatial metaphor clarified - "Perimeter Wall with Passages"
-
-**COMPLETE DESIGN PLAN**: [docs/design/phase-8.2c-hub-transformation-plan.md](../docs/design/phase-8.2c-hub-transformation-plan.md) 📋
-
-### 🏜️ Hub Narrative Foundation (User-Defined)
-
-> **"A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."**
-
-**What This Means**:
-- **Fortified**: Defenses, reinforced walls, protection from outside threats
-- **Scrapyard**: Salvaged materials, repurposed objects, makeshift construction
-- **Last Bastion**: Safe haven, refuge (maybe the ONLY safe place)
-- **Sanctuary from Wasteland**: Inside = safe, outside = dangerous
-
----
-
-### 🎯 SPATIAL METAPHOR BREAKTHROUGH (2025-11-23 SESSION 1)
-
-**⚠️ READ THIS FIRST - Fundamental Design Clarity Achieved**
-
-**The Critical Question:** What is the player actually looking at?
-
-**The Answer:** **"Perimeter Wall with Passages"**
+### Godot 4 Project Settings
 
 ```
-Player Position: Inside scrapyard courtyard (standing in the safe zone)
-Looking At: Fortified perimeter wall (barrier separating safety from wasteland)
-Buttons Are: Physical gates and access hatches IN the wall itself
+[display]
+window/size/viewport_width = 1920
+window/size/viewport_height = 1080
+window/stretch/mode = "canvas_items"
+window/stretch/aspect = "expand"
 ```
 
-**What This Changes:**
+**Rationale**:
+- `canvas_items` mode: Best for non-pixel-art games, smooth scaling
+- `expand` aspect: No black bars, reveals more content on wider screens
+- 1920×1080 base: Industry standard, good design target
 
-❌ **WRONG** (Previous Understanding):
-- Abstract background texture with floating buttons
-- Random rivets scattered around
-- Rust as decorative camo pattern
-
-✅ **CORRECT** (Spatial Metaphor):
-- **Background = Actual metal wall** (2-3 large plates bolted together)
-- **Start Run button = THE GATE** (literal exit gate to wasteland)
-- **Roster button = Side hatch** (access to barracks)
-- **Settings button = Maintenance panel** (access hatch)
-- **Seams = Where plates join** (visible structure, not decoration)
-- **Rivets = Bolts at seam intersections** (holding plates together)
-- **Horizontal floor seam = Perspective** ("you're standing in courtyard looking at wall")
-
-**Design Impact:**
-- SESSION 1 builds **wall structure** (plates, seams, rivets with purpose)
-- SESSION 2 builds **gate frame + button** (integrated, not separate)
-- Every element has **spatial logic** (not random decoration)
-
-**Why This Matters:**
-> "This isn't just visual polish - it's the foundation for the entire hub's spatial coherence. Build the wall correctly in SESSION 1, and everything else flows naturally." - Expert Panel
-
-### 🎯 Approved Layout System: "Hybrid+ with Spatial Zones"
-
-**3-Button State (TODAY)**:
-- **Start Run**: Center-top (120x120pt) - HERO ACTION
-- **Roster/Settings**: Lower-third flanking (80x80pt) - SUPPORTING ACTIONS
-- Environmental storytelling: Gate imagery, floor plate, spatial depth
-
-**7-10 Button Future (Weeks 17-20)** - SCALABLE:
-- **PRIMARY**: Start Run (unchanged position/size - LOCKED)
-- **OPERATIONS ZONE**: Shop, Armory, Tech, Loadout (70x70pt grid)
-- **COMMUNITY ZONE**: Roster, Leaderboards (70x70pt)
-- **UTILITY ROW**: Settings, Help, Achievements (50x50pt)
-
-**Scalability Path**: Each new button joins a thematic ZONE, not arbitrary grid. No redesign needed.
-
-### 📋 Implementation: 4 Sessions with QA Gates (REVISED - APPROVED)
-
-**Why Iterative**:
-- ✅ 4 feedback loops (catch issues early, not after 8 hours)
-- ✅ Matches proven quality process (incremental validation = one-shot success)
-- ✅ Low risk (revert one session max, not entire 11-hour build)
-- ✅ Natural pause points (can handoff between sessions)
-- ✅ Fatigue protection (2-3 hour focused sessions vs 7-11 hour marathon)
-
-**CRITICAL REVISION** (2025-11-23):
-- SESSION 1 focus changed from "procedural textures" to "wall structure with seams"
-- SESSION 2 combines gate frame + button component (they're the same thing)
-- All sessions now aligned with "Perimeter Wall with Passages" spatial metaphor
+### Safe Area Handling
+- iPhone notch: ~44pt top, ~34pt bottom (home indicator)
+- Android punch-hole: Varies, typically corner
+- **Already implemented** in Phase 6 ✅
 
 ---
 
-#### **SESSION 1 (Take 2): Wall Structure Foundation - ColorRect Approach** ❌ **FAILED QA GATE**
+## 📋 Revised Session Plan (LANDSCAPE)
 
-**Date**: 2025-11-23
-**Status**: ATTEMPTED - QA Gate Failed - Approach Rejected
-**Time Spent**: ~1.5 hours
+| Session | Focus | Time | Status |
+|---------|-------|------|--------|
+| **Session 1** | Background Integration + Settings | 1h | ⏭️ **NOW** |
+| **Session 2** | Button Integration (IconButton component) | 1.5-2h | Pending |
+| **Session 3** | Polish & 10-Second Test | 1h | Pending |
 
-**What We Built**:
-- Multi-layer ColorRect structure (BaseLayer, SeamLayer, RivetLayer, RustLayer, VignetteLayer)
-- 2 vertical seams (35%, 65%) + 1 horizontal floor seam (67%)
-- 8 rivets positioned at seam intersections
-- Subtle rust bleeding (RUST_DARK 0.15 opacity)
-- Edge vignette (top/bottom/left/right darkening)
-
-**QA Gate Results** (User Feedback):
-- ❌ **Wall Structure**: "if i squint i guess it looks like a wall? it just looks very flat"
-- ✅ **Seam Visibility**: Seams visible
-- ❌ **Rivet Purpose**: "i dont see rivets or at least it is subtle to me"
-- ❌ **Perspective**: "i dont get the sense of a floor. it feels more like i'm looking at a grid"
-- ❌ **Rust Subtlety**: "it is VERY subtle" (correct but insufficient impact)
-- ❌ **Overall Feel**: "being perfectly honest no it doesn't it looks flat and doesn't convey armed fortress or sanctuary to me"
-
-**Root Cause Analysis**:
-1. **Too minimalist** - ColorRects are inherently 2D flat shapes
-2. **No depth/dimension** - Seams lack shadows, plates lack variation, rivets blend in
-3. **No texture** - Perfectly smooth = doesn't feel like weathered metal
-4. **Reads as grid pattern** - Not as physical wall structure
-5. **ColorRect limitations** - Hard to achieve photorealistic depth without complex shaders
-
-**What We Learned**:
-- Multi-layer ColorRect approach insufficient for realistic metal wall appearance
-- Need actual depth cues (lighting, shadows, texture grain) to convey "fortified wall"
-- Rivets at 12px too small to be visible on device
-- Flat seams without dimensional quality don't establish spatial structure
-- "Geometric clean" ≠ "Fortified scrapyard" aesthetic
-
-**Files Modified** (Not Committed):
-- `scenes/hub/scrapyard.tscn` - Background node replaced with multi-layer structure (WILL BE REVERTED)
+**Total Remaining**: 3-4 hours (reduced from 5-6)
 
 ---
 
-#### **🔄 PIVOT DECISION: Generated Texture Image Approach**
+## 🚀 SESSION 1: Background Integration
 
-**Decision Made**: 2025-11-23
-**Rationale**: ColorRect approach cannot achieve required photorealism/depth within reasonable effort
+**Objective**: Set up hub with existing concept art as background
 
-**New Approach - Hybrid Model**:
-1. **Generated Texture Background** (Gemini AI)
-   - Create photorealistic fortified scrapyard wall image
-   - Baked-in lighting, shadows, texture, depth, weathering
-   - Single TextureRect node replaces multi-layer ColorRect structure
-   - Proven success: Gemini worked great for Phase 8.2b icons
+### Tasks
 
-2. **ColorRect UI Layer** (SESSION 2+)
-   - Keep programmatic approach for interactive elements (buttons, gate frame)
-   - Advantages: Tweakable, animated, responsive
+1. **Verify/Update Godot Project Settings**
+   - Confirm stretch mode = `canvas_items`
+   - Confirm stretch aspect = `expand`
+   - Base resolution = 1920×1080
 
-**Advantages Over ColorRect Approach**:
-- ✅ Photorealistic detail (proper lighting, shadows, texture)
-- ✅ Instant visual complexity (weathering, scratches, rust baked in)
-- ✅ Achieves "fortress" aesthetic more easily
-- ✅ Faster iteration (15 min AI generation vs. hours tweaking ColorRects)
-- ✅ Proven tool (Gemini validated in Phase 8.2b)
+2. **Import Background Asset**
+   - Source: `art-docs/scrap-town-sancturary.png` (2752×1536)
+   - Destination: `assets/hub/backgrounds/scrapyard_hub.png`
+   - Import settings: Lossy compression for mobile performance
 
-**Trade-offs Accepted**:
-- Fixed resolution (mitigated: generate high-res, scales well)
-- Slightly larger file size (~200-400KB vs. ~1KB scene data)
-- Harder to tweak details (mitigated: can regenerate with adjusted prompts)
+3. **Update Scrapyard Scene**
+   - Add TextureRect as background layer
+   - Stretch mode: "Keep Aspect Covered" (fills screen, may crop edges)
+   - Anchor: Full Rect
+   - Ensure it's behind all UI elements
 
----
+4. **Test Multiple Aspect Ratios**
+   - 16:9 (1920×1080) - baseline
+   - 19.5:9 (2340×1080) - iPhone
+   - 20:9 (2400×1080) - modern Android
 
-#### **SESSION 1 (Take 3): Generated Texture Wall Background** ⏭️ **NEXT**
+5. **Device QA**
+   - Visual quality on iPhone
+   - No banding or compression artifacts
+   - Performance check (texture load time)
 
-**Estimated Time**: 1-2 hours (generation + integration + QA)
-**Approach**: AI-generated texture + TextureRect integration
+### QA Gate Checklist
 
-**Objectives**:
-1. Generate fortified scrapyard wall texture using Gemini AI
-2. Replace multi-layer ColorRect Background with single TextureRect
-3. Integrate texture with proper scaling/positioning
-4. Pass QA gate (fortress aesthetic, depth, visual interest)
-
-**Gemini Prompt Strategy** (Draft):
-```
-Create a weathered metal wall for a post-apocalyptic mobile game hub screen.
-
-STRUCTURE:
-- 2-3 large vertical metal plates bolted together
-- Heavy rivets at plate seams (visible bolts holding structure)
-- Horizontal seam at bottom third showing where wall meets ground
-
-MATERIALS & WEATHERING:
-- Industrial sheet metal (gray, oxidized)
-- Orange/brown rust bleeding from seams and bolt holes
-- Scratches, dents, bullet holes (history of attacks)
-- Weathered, salvaged aesthetic (not pristine)
-
-LIGHTING:
-- Viewed straight-on (no dramatic angle)
-- Subtle directional lighting from top-left
-- Shadow at seams (recessed depth)
-- Slight vignette darkening at edges
-
-ATMOSPHERE:
-- Fortified sanctuary wall (last bastion vibe)
-- Industrial, tactile, post-apocalyptic
-- Safe side of barrier (interior view)
-- Practical construction, not decorative
-
-TECHNICAL:
-- Portrait orientation (1080x1920px for mobile)
-- Leave center area relatively clean (UI buttons will overlay)
-- Avoid extreme contrasts (must support white text legibility)
-```
-
-**Integration Steps**:
-1. Generate 2-3 texture variations with Gemini
-2. Import best candidate to `assets/hub/backgrounds/scrapyard_wall.png`
-3. Replace Background node structure:
-   - Remove multi-layer ColorRect children
-   - Add single TextureRect child
-   - Set texture, configure stretch mode (keep aspect / cover)
-4. Test on device (visual + performance)
-5. User QA approval
-
-**QA Gate Checklist (Revised)**:
-- [ ] **Fortress Aesthetic**: "Does this convey 'fortified sanctuary wall'?"
-- [ ] **Depth & Dimension**: "Does this read as a physical 3D structure?"
-- [ ] **Weathering & Texture**: "Does this feel like salvaged, weathered metal?"
-- [ ] **Spatial Clarity**: "Can you see the plate structure and bolts?"
-- [ ] **Legibility**: Background supports UI button contrast (white text readable)
-- [ ] **Performance**: 60 FPS on iPhone SE (texture load test)
-- [ ] **User Approval**: "This matches the fortified scrapyard vision"
-
-**Success Criteria**:
-- User feedback: "YES, this feels like a fortified wall" (not "if I squint")
-- Clear visual depth and texture (not flat/geometric)
-- Supports UI overlay without competing
-- Performance ≥ 55 FPS on iPhone SE
-
-**Rollback Plan**:
-- If texture approach fails: Document findings, explore alternative (photo compositing, hand-painted, shader-based)
-- Low risk: Can revert to simple ColorRect background, try different texture
+- [ ] Background displays correctly at 16:9
+- [ ] Background handles 19.5:9 without breaking
+- [ ] Background handles 20:9 without breaking
+- [ ] Safe areas still work correctly
+- [ ] No performance regression
+- [ ] User approval: "This looks like our Art Bible"
 
 ---
 
-#### **WHY THIS PIVOT IS CORRECT**
+## 📁 Reference Files
 
-**Evidence-Based Decision**:
-1. **User Feedback Clear**: ColorRect approach "looks flat", "doesn't convey fortress"
-2. **Tool Validation**: Gemini proven successful (Phase 8.2b icons) - "excellent tool for game icon generation"
-3. **Time vs. Quality**: 15 min AI generation likely to succeed vs. hours refining ColorRects with uncertain outcome
-4. **Design Goals**: "Photorealistic metal wall" inherently difficult with flat 2D primitives
-5. **Iterative Process**: Failed attempt documented, learning captured, pivot is informed not reactive
+**Art Assets**:
+- `art-docs/scrap-town-sancturary.png` - Hub background (USE THIS)
+- `art-docs/buttons-signs.png` - UI kit for Session 2
 
-**Not Feature Creep**:
-- Still building SESSION 1 deliverable (wall background)
-- Same success criteria (fortress aesthetic, depth, texture)
-- Different implementation method (texture vs. ColorRects)
-- Maintains schedule (1-2h for take 3 vs. 2.5-3h original estimate)
+**Icon Assets** (Ready for Session 2):
+- `assets/icons/hub/icon_start_run_final.svg` ✅
+- `assets/icons/hub/icon_roster_final.svg` ✅
+- `assets/icons/hub/icon_settings_final.svg` ✅
 
 ---
 
----
+## 🎯 Button Placement Strategy (Session 2)
 
-#### **SESSION 2: Gate Frame + IconButton Component** (3-4 hours) ⏭️ PENDING
+**"Hybrid Diegetic Floating"** - Buttons float over scene but positions suggest world geography:
 
-**CRITICAL**: Gate button and gate frame are THE SAME THING - build together
+| Button | Position | Size | Rationale |
+|--------|----------|------|-----------|
+| **Start Run** | Center-right (toward gate) | 120×120pt | Primary action |
+| **Roster** | Left side (toward barracks) | 80×80pt | Secondary action |
+| **Settings** | Top-right corner | 50×50pt | Utility, universal convention |
 
-**Scope**:
-- Gate frame visual (integrated into background wall - posts + cross-beam)
-- IconButton.gd base component (reusable for all buttons)
-- Metal plate button aesthetic (4 corner rivets, depth effects)
-- Gate-specific styling (120x120pt hero button IN the gate frame)
-- Icon integration (gate SVG) + touch feedback
-
-**Build Order**:
-1. **Add gate frame to background** (extend SESSION 1 wall structure)
-   - Two vertical posts on either side of center-top (SOOT_BLACK ColorRects)
-   - Horizontal cross-beam above gate area (structural support)
-   - Rivets at frame corners (integrated with wall seams)
-2. **IconButton.gd base class** (extends Control, reusable component)
-3. **Metal plate button visual** (StyleBoxFlat with borders, rivets, depth)
-4. **State machine** (idle/pressed states, 2px translate, color swap)
-5. **Icon + label slots** (centered icon, bottom-aligned label)
-6. **Gate button specialization** - Larger (120x120pt), positioned IN gate frame
-7. **Integrate gate SVG icon** (from Phase 8.2b assets)
-8. **Test in context** (gate button within gate frame on wall)
-
-**QA Gate Checklist**:
-- [ ] **Gate Integration**: Does gate button look like it's IN the wall frame? (spatial coherence)
-- [ ] **Frame Structure**: Gate frame reads as structural support? (posts + cross-beam obvious)
-- [ ] **Button Physicality**: Does pressing feel like activating a gate mechanism?
-- [ ] **Tactile Feedback**: Instant 2px drop + color swap (satisfying)
-- [ ] **Icon Clarity**: Gate icon legible at 120x120pt
-- [ ] **Component Reusability**: Base IconButton works for roster/settings too (80x80pt test)
-- [ ] **Performance**: No frame drops on button press
-- [ ] **Accessibility**: Icon contrast ≥ 3:1 against button background
-
-**Deliverable**: Commit `feat(ui): add gate frame and IconButton component for Phase 8.2c`
-- Files: IconButton.gd, icon_button.tscn, scrapyard.tscn (updated with gate frame)
-
-**User Feedback Checkpoint**: 📸 "Does the gate button feel like a physical gate in the wall? Does the frame provide enough context? Is it tactile/premium?"
-
-**Rollback**: Medium risk (easy parameter tweaks, 30-60min refactor if state machine wrong)
+**Button Style**: Metal plate from `buttons-signs.png` (orange primary, weathered edges)
 
 ---
 
-#### **SESSION 3: Layout + Integration** (2.5-3 hours) ⏭️ PENDING
+## ✅ What's Already Complete
 
-**Scope**:
-- Implement approved scalable layout (Hybrid+ with Spatial Zones)
-- Position 3 buttons (Start Run 120x120pt, Roster/Settings 80x80pt)
-- Integrate final icon SVGs (gate, roster, tools from Phase 8.2b)
-- Spatial composition testing (hierarchy clear?)
-- Responsive scaling (iPhone SE to Pro Max)
-- Wire up button signals (navigation placeholder)
-
-**Build Order**:
-1. Update `scrapyard.tscn` with background (from Session 1)
-2. Instantiate 3 IconButton nodes (from Session 2)
-3. Position per approved layout (center-top + lower flanking)
-4. Assign final SVG icons + labels
-5. Connect signals to placeholder navigation
-6. Test responsive scaling (safe area margins, different screens)
-
-**QA Gate Checklist**:
-- [ ] Hierarchy Test: "Is Start Run obviously the primary action?" (10-second test)
-- [ ] Spatial Flow: "Does layout feel organized, not cluttered?"
-- [ ] Thumb Ergonomics: All buttons reachable one-handed on 6.7" device?
-- [ ] Icon Legibility: All 3 icons recognizable at current sizes?
-- [ ] Responsive Scaling: Layout adapts to 4.7" and 6.7" without overlap
-- [ ] Navigation Test: Buttons correctly trigger signals
-
-**Deliverable**: Commit `feat(ui): integrate icon buttons into scrapyard hub layout`
-
-**User Feedback Checkpoint**: 📸 "Does the spatial layout feel right? Is Start Run clearly the hero? Any spacing adjustments?"
-
-**Rollback**: Low risk (pure positioning, buttons already work from Session 2)
+**From Previous Sessions**:
+- ✅ Phase 8.1: Wasteland color palette defined
+- ✅ Phase 8.2a: Research & reference gathering
+- ✅ Phase 8.2b: Icon design complete (3 SVG icons)
+- ✅ Expert panel review of existing art assets
+- ✅ Orientation correction (portrait → landscape)
 
 ---
 
-#### **SESSION 4: Environmental Details + Polish** (2-3 hours) ⏭️ PENDING
+## 📊 Week 16 Progress
 
-**Scope**:
-- Environmental storytelling (welding marks, support beam)
-- Easter eggs (1-2 hidden details: survivor tally marks, lucky rivet)
-- Button press SFX (metallic clang audio)
-- Final polish (shadows, lighting refinement)
-- 10-Second Impression Test (fresh eyes validation)
-- Performance profiling (ensure 60 FPS on iPhone SE)
+| Phase | Status | Notes |
+|-------|--------|-------|
+| Phase 0-1 | ✅ Done | Infrastructure, audit |
+| Phase 2 | ✅ ~90% | Typography via Theme System |
+| Phase 3 | ✅ ~85% | Button styles + animations |
+| Phase 4 | 🟡 ~60% | Modal works, missing progressive confirm |
+| Phase 5 | ✅ ~80% | Haptics + animations done |
+| Phase 6 | ✅ Done | Safe area implementation |
+| Phase 7 | ✅ Done | Combat HUD optimized |
+| **Phase 8** | 🔨 **IN PROGRESS** | Visual Identity - 8.1, 8.2a, 8.2b done |
 
-**Build Order**:
-1. Add support beam sprite/ColorRect (above gate, diagonal brace)
-2. Welding marks texture (RUST_ORANGE glow near beam joints)
-3. Easter egg #1: Survivor tally marks (scratched in lower-left corner)
-4. Easter egg #2: "Lucky" rivet (one rivet slightly bent) - OPTIONAL
-5. Button press SFX (import `metallic_clang.wav`, wire to IconButton)
-6. Shadow refinement (ambient occlusion under buttons)
-7. Final device QA pass (all devices, all buttons)
-8. 10-Second Impression Test with external observer or user
-
-**QA Gate Checklist**:
-- [ ] Storytelling: "Do environmental details add immersion without distraction?"
-- [ ] Easter Eggs: "Are they discoverable but not obvious?" (1-2 only)
-- [ ] Audio Feedback: SFX enhances tactile feel (not annoying on 10th press)
-- [ ] Performance: Still 60 FPS with all details added (profile on iPhone SE)
-- [ ] 10-Second Test: External observer gets "fortified scrapyard" vibe immediately
-- [ ] Accessibility: Details don't reduce button contrast or legibility
-
-**Deliverable**: Commit `feat(ui): complete Phase 8.2c hub with environmental storytelling`
-
-**User Feedback Checkpoint**: 📸 "Final validation: Does this pass the 10-Second Impression Test? Any last tweaks before Phase 8.3?"
-
-**Rollback**: Very low risk (polish layer, core functionality complete from Session 3)
+**Overall**: ~85% complete, only Phase 8.2c remains
 
 ---
 
-### 8.2c Success Criteria (Overall)
+## 🔧 Development Environment
 
-**✅ Phase 8.2c COMPLETE When**:
-- [ ] Background shows fortified scrap wall (metal plates, rivets, rust, vignette)
-- [ ] IconButton component works (normal/pressed states, rivets, 2px depth)
-- [ ] All 3 buttons positioned spatially (gate center-top 120pt, roster/settings flanking 80pt)
-- [ ] Icons integrated (gate, silhouettes, tools SVGs)
-- [ ] Buttons feel diegetic (physical objects on wall, not floating UI)
-- [ ] Environmental details add atmosphere (welding marks, 1-2 easter eggs)
-- [ ] Button press SFX enhances tactile feedback
-- [ ] Performance ≥ 55 FPS on iPhone SE
-- [ ] User approves: "This feels like fortified scrapyard sanctuary"
-- [ ] User approves: "This looks $10 premium"
-- [ ] 10-Second Impression Test passes (3/5 criteria minimum)
+**Platform**: macOS (MacBook Pro)
+**Project Path**: `/Users/alan/Developer/scrap-survivor-godot`
+**Engine**: Godot 4, GDScript
+
+**Git Status**:
+- Branch: main
+- Latest Commit: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
 
 ---
 
-## 🚀 Quick Start Prompt for Next Session
+## 📝 Session Handoff Notes
+
+### Lessons Learned
+1. **Always confirm orientation** before generating art
+2. **Check existing assets** before building from scratch
+3. **Portrait mode was a planning error** - game was always intended landscape
+4. Controller support requires landscape orientation
+
+### Key Decisions Made (2025-11-25)
+1. **Orientation**: Landscape throughout (corrected from portrait error)
+2. **Art approach**: Use existing concept art (no generation needed)
+3. **Stretch settings**: `canvas_items` + `expand` (industry standard)
+4. **Base resolution**: 1920×1080 (covers 16:9 to 21:9 range)
+
+### What NOT to Do
+- ❌ Don't generate portrait art (wrong orientation)
+- ❌ Don't use black bars (expand handles aspect ratios)
+- ❌ Don't assume planning docs are correct without verification
+
+---
+
+## 🚀 Quick Start Command
 
 ```
-✅ Sub-Phase 8.2b COMPLETE (Icon Design - Commit: 9b9c27d)
-❌ Sub-Phase 8.2c SESSION 1 (Take 2) FAILED (ColorRect approach - QA gate rejected)
-🔄 PIVOT DECISION MADE: Switch to generated texture image approach
+SESSION 1 READY (Background Integration)
 
-⚠️ CRITICAL LEARNING (2025-11-23 SESSION 1 Take 2):
-ColorRect multi-layer approach CANNOT achieve required depth/realism:
-- User feedback: "looks flat", "doesn't convey fortress", "reads as grid"
-- Root cause: 2D primitives insufficient for photorealistic metal wall
-- Rivets at 12px invisible, seams lack depth, no texture grain
-- Lesson: Need baked lighting/shadows/texture for "fortified wall" aesthetic
+ORIENTATION: LANDSCAPE (corrected from portrait error)
+ART GENERATION: NOT NEEDED (use existing concept art)
 
-🔄 NEW APPROACH (SESSION 1 Take 3): Generated Texture Image (Gemini AI)
-- Hybrid model: AI-generated background + ColorRect UI layer
-- Proven tool: Gemini validated in Phase 8.2b icon generation
-- Advantages: Photorealistic depth, faster iteration, fortress aesthetic achievable
-- Time estimate: 1-2h (vs. 2.5-3h original, and likely to succeed)
+TASKS:
+1. Verify Godot project settings (stretch mode/aspect)
+2. Import art-docs/scrap-town-sancturary.png to assets/hub/backgrounds/
+3. Update scrapyard.tscn with TextureRect background
+4. Test at multiple aspect ratios (16:9, 19.5:9, 20:9)
+5. Device QA
+6. Get user approval
 
-🔨 CURRENT: Sub-Phase 8.2c SESSION 1 (Take 3) - Generated Texture Wall ⏭️ NEXT
+SETTINGS TO VERIFY:
+- window/stretch/mode = "canvas_items"
+- window/stretch/aspect = "expand"
+- Base resolution = 1920×1080
 
-OBJECTIVES:
-1. Generate fortified scrapyard wall texture using Gemini AI
-2. Replace multi-layer ColorRect Background with TextureRect + image
-3. Pass QA gate: "YES, this feels like a fortified wall" (not "if I squint")
-4. Performance ≥ 55 FPS on iPhone SE
-
-GEMINI PROMPT (Ready to use - see NEXT_SESSION.md lines 382-413):
-- 2-3 large vertical metal plates bolted together
-- Heavy rivets at seams, rust bleeding from bolts
-- Weathered/salvaged aesthetic (scratches, dents, bullet holes)
-- Portrait 1080x1920px, center area clean for UI overlay
-- Subtle lighting, shadow at seams, slight vignette
-
-INTEGRATION STEPS:
-1. Generate 2-3 texture variations with Gemini
-2. Import best to assets/hub/backgrounds/scrapyard_wall.png
-3. Replace Background node children with single TextureRect
-4. Test on device (visual + performance)
-5. User QA approval
-
-QA GATE (Revised for texture approach):
-- [ ] Fortress Aesthetic: "Does this convey fortified sanctuary wall?"
-- [ ] Depth & Dimension: "Does this read as physical 3D structure?"
-- [ ] Weathering & Texture: "Does this feel like salvaged metal?"
-- [ ] Legibility: Background supports white text contrast
-- [ ] Performance: 60 FPS on iPhone SE
-- [ ] User Approval: "This matches fortified scrapyard vision"
-
-REVISED 4-SESSION APPROACH:
-- Session 1 (Take 3): Generated Texture Wall Background - ⏭️ NEXT (1-2h)
-- Session 2: Gate Frame + IconButton Component - PENDING (3-4h)
-- Session 3: Layout + Integration - PENDING (2.5-3h)
-- Session 4: Environmental Polish + SFX - PENDING (2-3h)
-- Low risk (revert one session max)
-
-COMPLETE DESIGN PLAN:
-READ FIRST: docs/design/phase-8.2c-hub-transformation-plan.md
-⚠️ SECTION 1.5 (Spatial Metaphor) is CRITICAL - read before implementation!
-
-HUB NARRATIVE:
-"A fortified scrapyard - a last bastion for survivors to find sanctuary from the wasteland."
-
-SPATIAL METAPHOR (⚠️ FUNDAMENTAL):
-Background = Actual metal wall (2-3 large plates bolted together)
-Start Run button = THE GATE (literal exit gate to wasteland)
-Seams = Where plates join (visible structure)
-Rivets = Bolts at seam intersections (holding plates together)
-Horizontal floor seam = Perspective (you're standing in courtyard looking at wall)
-
-SESSION 1 (Take 3) OBJECTIVES (Generated Texture Approach):
-1. Generate fortified scrapyard wall texture with Gemini AI
-2. Import texture to assets/hub/backgrounds/scrapyard_wall.png
-3. Replace Background multi-layer ColorRect with single TextureRect
-4. Configure stretch mode and test on multiple screen sizes
-5. Pass user QA gate (fortress aesthetic achieved)
-
-WHAT NOT TO DO (Based on Take 2 Failure):
-❌ Don't use multi-layer ColorRects (insufficient depth/realism)
-❌ Don't make rivets <20px (invisible on device)
-❌ Don't forget baked lighting/shadows (critical for depth perception)
-❌ Don't create flat geometric patterns (reads as grid, not wall)
-❌ Don't skip user QA before committing!
-
-CRITICAL FILES TO READ:
-1. docs/design/phase-8.2c-hub-transformation-plan.md (SECTION 1.5 FIRST!)
-2. scripts/ui/theme/color_palette.gd (wasteland colors)
-3. .system/NEXT_SESSION.md (spatial metaphor section)
-4. .system/CLAUDE_RULES.md (quality gates)
-
-ICON ASSETS READY (for SESSION 2):
-- assets/icons/hub/icon_start_run_final.svg ✅
-- assets/icons/hub/icon_roster_final.svg ✅
-- assets/icons/hub/icon_settings_final.svg ✅
-
-SESSION 1 DELIVERABLE:
-Commit: "feat(ui): add scrapyard wall structure foundation for Phase 8.2c"
-
-USER FEEDBACK CHECKPOINT AFTER SESSION 1:
-📸 "Does this read as a fortified metal wall? Can you see the plate structure?"
-
-REMINDER: Quality over speed. Spatial clarity first. Read Section 1.5 before coding!
+ESTIMATED TIME: 1 hour
 ```
 
 ---
 
-## 📊 Archived: Sub-Phase 8.2c Original Scope (Before Expansion)
-
-**Goal**: Replace text buttons with icon-based buttons in scrapyard hub
-
-**Implementation**:
-1. Create IconButton component (metal plate base + icon + label structure)
-2. Add depth effects (shadow, rivets, pressed state)
-3. Replace hub buttons in `scenes/hub/scrapyard.tscn`
-4. Apply wasteland color palette
-5. Test on device
-
-**Button Structure**:
-```gdscript
-# IconButton component hierarchy:
-- TextureButton or PanelContainer (metal plate base with rivets)
-  - TextureRect or Control (icon layer, centered, 70-80% of button)
-  - Label (text below icon, stencil font, 20-30% of button)
-  - Shadow/depth effects (StyleBoxFlat or shader)
-```
-
-**QA Gate**: Buttons look premium, icons clear, pass device test, 10-Second Impression Test score improves
-
----
-
-## 🎨 Expert Panel Summary
-
-**Unanimous Verdict**: Icon-based buttons with text labels (no dissent)
-
-**Sr Mobile Game Designer**:
-> "You're 100% solving the wrong problem. Premium mobile roguelites have ZERO text-only navigation buttons. Not one. This is table stakes for the genre."
-
-**Sr Visual Designer**:
-> "A 'wasteland themed text button' is a contradiction. Wasteland doesn't do clean typography—it does salvaged objects with identity. Buttons should look like physical objects you could touch—metal plates, salvaged signs, repurposed gauges."
-
-**Sr Product Manager**:
-> "Text buttons = prototype vibes, period. This isn't a 'nice to have'—it's a critical path item for Phase 8. Hub buttons are the first thing users see and the last thing they see before every run. They're your storefront."
-
-**Sr UX Designer**:
-> "Icon buttons are objectively superior for mobile UX. Brain processes images 60,000x faster than text. Icon recognition is pre-conscious; text requires reading. Icons with text labels serve both visual learners and those who need confirmation."
-
-**Panel Consensus**: This single change will do more for "premium $10 feel" than any amount of text button styling. Not feature creep - correcting a fundamental design oversight.
-
----
-
-## ✅ Success Criteria: "10-Second Impression Test"
-
-Show screenshots to someone unfamiliar with project (10 seconds each):
-
-1. ❓ Can they identify the genre? (wasteland survival roguelite)
-2. ❓ Does it look like a $10 premium game?
-3. ❓ Can they identify the theme? (post-apocalyptic)
-4. ❓ Are icons functionally clear?
-5. ❓ Would they share screenshots with friends?
-6. ❓ Would they pay $10 based on screenshots alone?
-
-**PASS**: 5-6 YES (83%+ success rate)
-**PARTIAL**: 3-4 YES (needs targeted adjustments)
-**FAIL**: 0-2 YES (major revisions needed)
-
-**Current State**: Likely 0-2 YES (text buttons read as prototype)
-**Target After 8.2**: 4-5 YES (icon buttons show premium intent)
-**Target After Phase 8 Complete**: 5-6 YES (full transformation)
-
----
-
-## 🏗️ Foundational Work - Reusable Patterns
-
-Phase 8 establishes patterns for ALL future UI work:
-
-1. **Wasteland Color System**: Rust/hazard/blood palette (semantic meaning) ✅
-2. **Icon-Based Navigation**: Physical buttons with icons + labels (8.2 establishes this)
-3. **Button Materiality Pattern**: Metal plates, rivets, depth, weathering
-4. **Icon Integration Pattern**: 24-32px sizing, color tinting, clarity standards
-5. **Panel Background Pattern**: Neutral dark, subtle borders
-6. **Typography Hierarchy**: Outline scaling based on font size
-7. **Visual Regression Testing**: Before/after documentation
-
-These patterns will be used for:
-- Remaining Week 16 phases (Touch Targets, Dialogs)
-- Week 17+ features (Shop, Settings, End-game)
-- All future UI development
-
----
-
-## 📝 Session Handoff Pattern
-
-**After Each Sub-Phase**:
-1. ✅ Complete implementation
-2. ✅ Run QA gate checklist
-3. ✅ Commit deliverables (research docs, icon assets, implementation)
-4. ✅ Update NEXT_SESSION.md status
-5. ✅ Device test (if visual change)
-6. ✅ Capture screenshots (visual regression)
-
-**Session Boundaries**:
-- Natural breaks between sub-phases
-- Can pause after any sub-phase completion
-- Next session picks up with next pending sub-phase
-- **No time pressure** - work is done when it's done RIGHT
-
-**Quality Over Speed**:
-- Research takes as long as it takes to be thorough
-- Design iteration continues until clarity is achieved
-- Implementation is careful, not rushed
-- Session boundaries are artificial, work quality is real
-
----
-
-## 📊 Git Status
-
-**Branch**: main
-**Latest Commit**: `081bd61` - feat(ui): add wasteland color palette for Phase 8 visual identity
-
-**Test Status**: 647/671 passing
-**Validators**: All passing
-
-**Uncommitted Changes**:
-- 4 button .tres files modified (attempted text button color change - will revert or replace with icon buttons)
-
----
-
-## 🔮 After Phase 8 - What's Next
-
-**Remaining Week 16 Phases**:
-- Phase 3: Touch Targets (2h) - Apply wasteland theme to touch UI
-- Phase 4: Dialogs (2h) - Modal/dialog visual consistency
-- Phase 5: Character Roster (2h) - Roster screen polish
-- Phase 9: Performance & Polish (2-3h) - Optional final sweep
-
-**Visual Identity Application**:
-- Once Phase 8 patterns established (icon buttons, wasteland colors, materiality), apply to all screens
-- Consistent wasteland aesthetic across entire game
-- Professional polish comparable to Brotato/Vampire Survivors
-
----
-
-## 🛡️ Mandatory Process Quality Gates
-
-**For Each Sub-Phase** (from CLAUDE_RULES.md):
-1. ✅ **Pre-Implementation Spec Checkpoint** - Read spec section before work
-2. ✅ **Incremental Validation** - QA gate after each sub-phase
-3. ✅ **Visual Regression Testing** - Before/after screenshots
-4. ✅ **Device Testing** - Test on iPhone (not just desktop)
-5. ✅ **One Sub-Phase = One Commit** - No bulk commits
-6. ✅ **No Time Pressure** - Quality over speed (work done when done RIGHT)
-
-**Pivot-Specific Quality Gates**:
-- Icon clarity testing (show to unfamiliar person, can they guess function?)
-- Wasteland theme authenticity (does it feel like salvaged objects?)
-- Premium quality bar (would someone pay $10 based on screenshots?)
-- Mobile-first validation (test on actual device, not simulator)
-
----
-
-## 🚀 Quick Start Prompt for Next Session
-
-```
-✅ Sub-Phase 8.1 COMPLETE (Wasteland Color Palette - Commit: 081bd61)
-
-✅ Sub-Phase 8.2a COMPLETE (Research - docs/research/phase-8-icon-button-references.md)
-
-🔨 CURRENT: Sub-Phase 8.2b - Icon Design & Iteration (4-6h, NO RUSH)
-
-CONTEXT - WHY WE PIVOTED:
-- Original plan: Just recolor text buttons purple → rust
-- User feedback: "They look like horizontal lines, not buttons. Just changing color isn't enough."
-- Expert panel (unanimous): Text-only buttons cannot achieve Phase 8 goals (premium $10 quality bar)
-- Pivot: Icon-based buttons with wasteland materiality (industry standard for premium roguelites)
-
-OBJECTIVES (8.2a):
-- Study icon-based navigation patterns in Brotato, Vampire Survivors, Dead Cells, Slay the Spire
-- Document icon-to-label ratios, button depth techniques, clarity standards
-- Identify 3 icon concepts per hub button (Start Run, Character Roster, Settings)
-- Create design requirements document
-
-PROCESS:
-1. Research games (screenshots, pattern analysis)
-2. Document findings in docs/research/phase-8-icon-button-references.md
-3. Define icon concepts (which wasteland objects map to button functions?)
-4. Define design requirements (size, clarity, style criteria)
-5. Commit research deliverables
-6. Update NEXT_SESSION.md → 8.2a complete, 8.2b ready
-
-QA GATE:
-- [ ] 5+ games studied
-- [ ] Icon-to-label ratios documented
-- [ ] Button depth techniques documented
-- [ ] 3 icon concepts per button identified (9 total)
-- [ ] Design requirements doc created
-- [ ] Research committed
-
-DELIVERABLE:
-Comprehensive research foundation for icon design phase (8.2b)
-
-REMINDER: No time pressure. Take as long as needed for thoroughness.
-```
-
----
-
-## 📝 Week 16 Progress Tracker
-
-**Completed Phases**:
-- ✅ Phase 0: Planning & Setup (0.5h)
-- ⏭️ Phase 1: Typography Audit (SKIPPED - done informally)
-- ✅ Pre-Work: Theme System (4h unplanned)
-- ✅ Character Details Detour (6h unplanned)
-- ✅ Phase 2: Typography Implementation (2.5h → 3h actual)
-- ✅ Phase 6: Safe Area Implementation (2h → sessions 1-2)
-- ✅ Phase 7: Combat HUD Mobile Optimization (1.5h → 1.5h actual)
-
-**In Progress**:
-- 🔨 **Phase 8: Visual Identity & Delight** (2.5h / 15-19h) - **CURRENT**
-  - ✅ Sub-Phase 8.1 COMPLETE (0.5h)
-  - ✅ Sub-Phase 8.2a COMPLETE (Research - 2h actual)
-  - ✅ Sub-Phase 8.2b COMPLETE (Icon Design - 2h actual, Commit: 9b9c27d)
-  - 🔨 Sub-Phase 8.2c IN PROGRESS (Hub Transformation - 4-7h est)
-
-**Remaining**:
-- ⏭️ Phase 8.2c: Hub Transformation (4-7h) - **NEXT**
-- ⏭️ Phase 8.3-8.7: Additional visual polish (3h)
-- ⏭️ Phase 8.8: Visual validation (1h)
-- ⏭️ Phase 3: Touch Targets (2h)
-- ⏭️ Phase 4: Dialogs (2h)
-- ⏭️ Phase 5: Character Roster (2h)
-- ⏭️ Phase 9: Performance & Polish (2-3h optional)
-
-**Total Time Spent**: ~19.5h (includes 6h detours)
-**Estimated Remaining**: 12.5-16.5h (Phase 8) + 6-8h (Phases 3-5) = 18.5-24.5h
-
-**Pivot Impact**: Phase 8 expanded from 5.5h → 13-16h (8.2 scope correction)
-
----
-
-**Last Updated**: 2025-11-23 (Sub-Phase 8.2c design plan complete, ready for Session 1)
-**Status**: 🔨 Sub-Phase 8.2c SESSION 1 NEXT - Background Foundation
-**Latest Commit**: `9b9c27d` - feat(ui): complete Phase 8.2b icon design
-**Design Plan**: docs/design/phase-8.2c-hub-transformation-plan.md (APPROVED)
-**Next Session**: Session 1 - Background Foundation (2.5-3h, iterative with feedback loops)
-**Session Pattern**: 4 sessions with QA gates, user feedback checkpoints, extended feedback loops
-**Confidence**: HIGH - Approved design plan, scalable layout system, iterative approach proven to work
+**Last Updated**: 2025-11-25
+**Status**: Session 1 Ready (Background Integration)
+**Next Action**: Verify project settings, import background
+**Estimated Time**: 1 hour
