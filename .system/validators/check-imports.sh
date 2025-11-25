@@ -68,13 +68,22 @@ check_png_import() {
         WARNINGS=$((WARNINGS + 1))
     fi
 
-    # Check file size (warn if >2MB for sprites)
+    # Check file size (warn if >2MB for sprites, >8MB for backgrounds)
     if [ -f "$source_file" ]; then
         local file_size=$(stat -f%z "$source_file" 2>/dev/null || stat -c%s "$source_file" 2>/dev/null)
         local size_mb=$((file_size / 1024 / 1024))
 
+        # Background images can be larger (up to 8MB)
+        if [[ "$source_file" == *"backgrounds"* ]]; then
+            if [ "$size_mb" -gt 8 ]; then
+                echo -e "${RED}❌ ERROR: Background exceeds 8MB limit${NC}"
+                echo "   File: $source_file"
+                echo "   Size: ${size_mb}MB (max 8MB for backgrounds)"
+                echo "   Fix: Compress image or reduce dimensions"
+                ERRORS=$((ERRORS + 1))
+            fi
         # Sprite sheets should be ≤2MB
-        if [ "$size_mb" -gt 2 ]; then
+        elif [ "$size_mb" -gt 2 ]; then
             echo -e "${RED}❌ ERROR: Sprite sheet exceeds 2MB limit${NC}"
             echo "   File: $source_file"
             echo "   Size: ${size_mb}MB (max 2MB)"

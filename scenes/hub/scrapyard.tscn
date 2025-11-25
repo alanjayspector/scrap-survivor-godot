@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://dqw5k3j8navxr"]
+[gd_scene load_steps=9 format=3 uid="uid://dqw5k3j8navxr"]
 
-[ext_resource type="Script" uid="uid://da5opdddbfvsm" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
+[ext_resource type="Script" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
-[ext_resource type="Script" uid="uid://k3o6w26cwvhk" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
-[ext_resource type="Texture2D" path="res://assets/hub/backgrounds/scrapyard_hub.png" id="4_hub_background"]
+[ext_resource type="Texture2D" path="res://assets/hub/backgrounds/scrapyard_hub.png" id="3_hub_background"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/icon_button.tscn" id="4_icon_button"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_start_run_final.svg" id="5_icon_start"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_roster_final.svg" id="6_icon_roster"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_settings_final.svg" id="7_icon_settings"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="8_screen_container"]
 
 [node name="Scrapyard" type="Control"]
 layout_mode = 3
@@ -22,98 +26,87 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("4_hub_background")
+texture = ExtResource("3_hub_background")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="ScreenContainer" type="MarginContainer" parent="."]
+[node name="SafeAreaContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("3_screen_container")
+theme_override_constants/margin_left = 44
+theme_override_constants/margin_top = 59
+theme_override_constants/margin_right = 44
+theme_override_constants/margin_bottom = 34
+script = ExtResource("8_screen_container")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer"]
+[node name="TitleContainer" type="VBoxContainer" parent="SafeAreaContainer"]
 layout_mode = 2
-theme_override_constants/separation = 32
-
-[node name="TopSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 0
 
-[node name="TitleContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer"]
+[node name="GameTitle" type="Label" parent="SafeAreaContainer/TitleContainer"]
 layout_mode = 2
-size_flags_vertical = 0
-
-[node name="GameTitle" type="Label" parent="ScreenContainer/VBoxContainer/TitleContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.3, 1)
+theme_override_colors/font_color = Color(0.918, 0.773, 0.239, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 48
 text = "SCRAP SURVIVOR"
 horizontal_alignment = 1
 
-[node name="VersionLabel" type="Label" parent="ScreenContainer/VBoxContainer/TitleContainer"]
+[node name="VersionLabel" type="Label" parent="SafeAreaContainer/TitleContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 theme_override_font_sizes/font_size = 18
 text = "v0.1.0 - Alpha"
 horizontal_alignment = 1
 
-[node name="MiddleSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 24)
-layout_mode = 2
-size_flags_vertical = 0
+[node name="StartRunButton" parent="." instance=ExtResource("4_icon_button")]
+layout_mode = 1
+anchor_left = 0.85
+anchor_top = 0.5
+anchor_right = 0.85
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+icon_texture = ExtResource("5_icon_start")
+button_size = 2
 
-[node name="MenuContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 20
+[node name="RosterButton" parent="." instance=ExtResource("4_icon_button")]
+layout_mode = 1
+anchor_left = 0.15
+anchor_top = 0.5
+anchor_right = 0.15
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+icon_texture = ExtResource("6_icon_roster")
+button_size = 1
+button_variant = 1
 
-[node name="PlayButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
-custom_minimum_size = Vector2(280, 60)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 32
-text = "Play"
-
-[node name="CharactersButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
-custom_minimum_size = Vector2(280, 60)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 32
-text = "Characters"
-
-[node name="SettingsButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
-custom_minimum_size = Vector2(280, 60)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 32
-text = "Settings"
-
-[node name="QuitButton" type="Button" parent="ScreenContainer/VBoxContainer/MenuContainer"]
-custom_minimum_size = Vector2(200, 60)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-theme_override_colors/font_pressed_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_colors/font_hover_color = Color(0.9, 0.7, 0.3, 1)
-theme_override_font_sizes/font_size = 28
-text = "Quit"
-
-[node name="BottomSpacer" type="Control" parent="ScreenContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-size_flags_vertical = 0
+[node name="SettingsButton" parent="." instance=ExtResource("4_icon_button")]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -94.0
+offset_top = 59.0
+offset_right = -44.0
+offset_bottom = 109.0
+grow_horizontal = 0
+icon_texture = ExtResource("7_icon_settings")
+button_size = 0
+button_variant = 1
 
 [node name="DebugQAButton" type="Button" parent="."]
 visible = false
