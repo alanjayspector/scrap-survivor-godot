@@ -4333,13 +4333,18 @@ Accessibility:
 | 2025-11-23 | **CRITICAL UPDATE**: Added Phase 8 (Visual Identity & Delight) - Wasteland theme, competitor parity | Claude Code |
 | 2025-11-23 | Updated timeline to 20-22 hours (~4 work days) including Phase 8 | Claude Code |
 | 2025-11-23 | Added status tracker section (LIVING - updated during execution) | Claude Code |
+| 2025-11-24 | **PIVOT**: Phase 8.2c ColorRect approach FAILED QA - Expert panel approved Art Bible direction | Claude Code |
+| 2025-11-24 | Created revised Phase 8 plan: `docs/design/phase-8-revised-plan.md` | Claude Code |
+| 2025-11-24 | Reduced Phase 8.2c scope from 9-11h to 3-5h (using existing art assets) | Claude Code |
+| 2025-11-24 | Expert panel decisions: Portrait generation (Option A), Hybrid diegetic floating buttons, Banana Nano | Claude Code |
 
 ---
 
 ## Implementation Status (LIVING SECTION - Updated During Execution)
 
-**Last Updated**: 2025-11-23 17:00 by Claude Code (Phase 7 Complete)
+**Last Updated**: 2025-11-24 by Claude Code (Phase 8 PIVOT - Art Bible Direction)
 **Current Session**: See `.system/NEXT_SESSION.md` for detailed notes
+**Revised Phase 8 Plan**: See `docs/design/phase-8-revised-plan.md` ⭐ **NEW**
 
 | Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
 |-------|---------------|---------------|--------|-----------------|-------|
@@ -4355,13 +4360,19 @@ Accessibility:
 | **Phase 5** | 2h | - | ✅ ~80% | - | Haptics + animations done (loading/accessibility gaps) |
 | **Phase 6** | 1.5h | 2h | ✅ Complete | 2025-11-23 | Sessions 1-2: character_roster + scrapyard fixed, device QA passed |
 | **Phase 7** | 2h | 1.5h | ✅ Complete | 2025-11-23 | HP/XP bar fixes + safe area support, QA Pass 7, one-shot success |
-| **Phase 8** | 4-6h | - | 📋 Pending | - | **Visual Identity - MANDATORY ← NEXT** |
+| **Phase 8.1** | 0.5h | 0.5h | ✅ Complete | 2025-11-23 | Wasteland color palette defined |
+| **Phase 8.2a** | 2h | 2h | ✅ Complete | 2025-11-23 | Research & reference gathering |
+| **Phase 8.2b** | 2h | 2h | ✅ Complete | 2025-11-23 | Icon design (3 SVG icons) - Commit: 9b9c27d |
+| **Phase 8.2c** | 9-11h | 1.5h | 🔄 **PIVOTED** | - | ColorRect approach FAILED QA → Art Bible approach |
+| **Phase 8.2c (REVISED)** | 3-5h | - | 🔨 **IN PROGRESS** | - | Art Bible hub + icon buttons (see revised plan) |
 
-**Current Phase**: Phase 8 (Visual Identity & Delight) - **CRITICAL POLISH PHASE**
-**Next Phase**: Phase 8 completion → Week 16 Complete
-**Total Week 16 Progress**: ~85% complete (Phases 0-7 done, only visual identity pending)
-**Actual Time Spent**: ~20.5h (Week 16 core ~14.5h + Character Details detour ~6h)
-**Remaining Estimate**: 4-6h (Phase 8 only - final polish to professional quality)
+**🔄 PIVOT NOTICE (2025-11-24)**: Phase 8.2c original approach (ColorRect metal wall) failed QA. Expert panel unanimously approved pivot to Art Bible "Illustrated Junkpunk" direction using existing concept art assets and Banana Nano generation. Scope reduced from 9-11h to 3-5h.
+
+**Current Phase**: Phase 8.2c Session 1 (Portrait Hub Generation) - **ART BIBLE DIRECTION**
+**Next Phase**: Phase 8.2c Sessions 2-3 → Phase 8 Complete → Week 16 Complete
+**Total Week 16 Progress**: ~85% complete (Phase 8.2c remaining)
+**Actual Time Spent**: ~22h (Week 16 core ~16h + detours ~6h)
+**Remaining Estimate**: 3-5h (Phase 8.2c revised scope)
 
 ---
 
