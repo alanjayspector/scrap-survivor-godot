@@ -37,11 +37,61 @@ var difficulty: String = "normal"
 var is_paused: bool = false
 
 ## Week 15: Active character ID (persists across scenes)
+## Phase 9: Now synced from CharacterService (which persists to save file)
 var active_character_id: String = ""
 
 ## Week 15: Run tracking
 var current_run_active: bool = false
 var run_start_time: float = 0.0
+
+
+func _ready() -> void:
+	# Phase 9: Sync active_character_id from CharacterService
+	# CharacterService is the source of truth (persists to save file)
+	_connect_to_character_service()
+
+
+func _connect_to_character_service() -> void:
+	"""Connect to CharacterService signals to stay synced"""
+	if not is_instance_valid(CharacterService):
+		GameLogger.warning("[GameState] CharacterService not available for sync")
+		return
+
+	# Sync when CharacterService's active character changes (including on load)
+	if not CharacterService.active_character_changed.is_connected(
+		_on_character_service_active_changed
+	):
+		CharacterService.active_character_changed.connect(_on_character_service_active_changed)
+
+	# Also sync on state load (in case active_character_id is empty)
+	if not CharacterService.state_loaded.is_connected(_on_character_service_state_loaded):
+		CharacterService.state_loaded.connect(_on_character_service_state_loaded)
+
+	GameLogger.info("[GameState] Connected to CharacterService for active character sync")
+
+
+func _on_character_service_active_changed(character_id: String) -> void:
+	"""Sync active_character_id when CharacterService changes it"""
+	if active_character_id != character_id:
+		active_character_id = character_id
+		character_activated.emit(character_id)
+		GameLogger.info(
+			"[GameState] Synced active_character_id from CharacterService",
+			{"character_id": character_id}
+		)
+
+
+func _on_character_service_state_loaded() -> void:
+	"""Sync active_character_id when CharacterService loads from save"""
+	var char_service_id = CharacterService.get_active_character_id()
+	if active_character_id != char_service_id:
+		active_character_id = char_service_id
+		if not char_service_id.is_empty():
+			character_activated.emit(char_service_id)
+		GameLogger.info(
+			"[GameState] Synced active_character_id on state load",
+			{"character_id": char_service_id}
+		)
 
 
 func set_current_wave(wave: int) -> void:
@@ -97,11 +147,29 @@ func reset_game_state() -> void:
 
 
 ## Week 15: Set the active character for the next run
+## Phase 9: Now also updates CharacterService (source of truth for persistence)
 func set_active_character(character_id: String) -> void:
 	"""Set the active character for the next run"""
+	# Phase 9: Try to update CharacterService first (it's the source of truth)
+	# If the character exists in CharacterService, it will emit active_character_changed
+	# which we listen to for sync. If not, we fall back to direct set (for tests, etc.)
+	var updated_via_service := false
+
+	if is_instance_valid(CharacterService) and not character_id.is_empty():
+		# CharacterService.set_active_character() returns true only if character exists
+		updated_via_service = CharacterService.set_active_character(character_id)
+		if updated_via_service:
+			# Signal handler will update active_character_id
+			GameLogger.info(
+				"[GameState] Active character set via CharacterService",
+				{"character_id": character_id}
+			)
+			return
+
+	# Direct set (for clearing, test IDs, or when character doesn't exist in CharacterService)
 	active_character_id = character_id
 	character_activated.emit(character_id)
-	GameLogger.info("[GameState] Active character set", {"character_id": character_id})
+	GameLogger.info("[GameState] Active character set directly", {"character_id": character_id})
 
 
 ## Week 15: Start a new combat run

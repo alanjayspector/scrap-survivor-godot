@@ -1,7 +1,81 @@
-# Week 16 - IAP Integration + Debug Tooling (Skeleton Plan)
+# Week 17 - UI Polish, IAP Integration & Debug Tooling (Skeleton Plan)
 
 **Status:** Planning
-**Estimated Effort:** 10-12 hours
+**Estimated Effort:** 14-18 hours
+**Last Updated:** 2025-11-26
+
+---
+
+## 🎨 NEW: UI Visual Overhaul (NEEDS DESIGN SESSION)
+
+**Added:** 2025-11-26 (Post-Phase 9 planning)
+**Prerequisite:** Phase 9 Complete (Survivor Selection Model)
+
+### What Needs Design Planning
+
+These items require design decisions BEFORE implementation:
+
+#### 1. Barracks (Roster) Art Bible Transformation
+- **Current:** MVP character cards, basic list view
+- **Target:** Art Bible "Illustrated Junkpunk" aesthetic matching Hub
+- **Needs Design:**
+  - Character card visual design (layout, styling, icons)
+  - List view background (concept art or generated)
+  - Empty state design
+  - Selected character visual indicator
+
+#### 2. Recruitment (Character Creation) Revamp
+- **Current:** Basic name input + type dropdown
+- **Target:** Thematic "recruitment" experience
+- **Needs Design:**
+  - Step-by-step flow or single screen?
+  - Character type selection UI (cards? carousel? grid?)
+  - Type preview with stats/aura visualization
+  - Name input styling (themed keyboard? suggestions?)
+  - Art Bible background
+
+#### 3. Character Types Visual Identity
+- **Current:** 4 types defined (Scavenger, Tank, Commando, Mutant)
+- **Implemented:** Type stat modifiers, tier gating
+- **Needs Design:**
+  - Visual differentiation beyond color (sprites? icons? badges?)
+  - Type selection cards with clear visual identity
+  - Type-specific backgrounds or themes?
+
+**Reference:** [CHARACTER-SYSTEM.md](../game-design/systems/CHARACTER-SYSTEM.md)
+
+#### 4. Aura System Visual Polish
+- **Current:** Foundation complete, 6 aura types defined in code
+- **Implemented:** `aura_types.gd` with calculations, collect aura active
+- **Needs Design:**
+  - Visual representation in character cards (icon? badge?)
+  - Aura preview in Recruitment flow
+  - In-game aura visuals (currently ColorRect stubs → particles?)
+
+**Reference:** [AURA-SYSTEM.md](../game-design/systems/AURA-SYSTEM.md)
+
+### Design Session Outputs Needed
+
+Before implementing UI visual overhaul:
+
+```
+□ Barracks card mockup or reference
+□ Recruitment flow wireframe
+□ Character type visual assets (icons, colors, badges)
+□ Aura icon set (6 auras)
+□ Art Bible background for Barracks & Recruitment
+□ Decision: Generate assets or use existing?
+```
+
+### Estimated Effort (After Design)
+
+| Task | Effort | Notes |
+|------|--------|-------|
+| Barracks Art Bible | 2-3h | Cards, background, polish |
+| Recruitment Revamp | 3-4h | Full flow redesign |
+| Character Type Visuals | 1-2h | Icons, badges, differentiation |
+| Aura Visuals | 1-2h | Icons, particles |
+| **Total** | **7-11h** | After design decisions made |
 
 ---
 
@@ -346,21 +420,36 @@ Handlers (multiple, configurable)
 
 ## Notes
 
-**Week 15 Completion Status (UPDATED 2025-11-16):**
+**Week 16 Status (UPDATED 2025-11-26):**
+- ✅ Week 16 Mobile UI Standards: ~95% complete
+- ✅ Phase 8.2c: Hub Art Bible transformation complete
+- ✅ Phase 9: Survivor Selection Model (READY TO START)
+
+**Week 15 Completion Status:**
 - ✅ Phase 1: Hub/Scrapyard (complete)
 - ✅ Phase 2: Character Creation (complete + QA fixes)
 - ✅ Phase 3: Character Roster (complete - reusable components, details panel, expert review)
 - ⏸️ Phase 4: First-Run Flow (deferred to Week 17)
 - ⏸️ Phase 5: Post-Run Flow (deferred to Week 17)
 
-**Week 16 Focus:**
-1. Debug tooling (enable QA testing) - Priority 1 (MUST HAVE)
-2. IAP integration (monetization live) - Priority 2 (MUST HAVE)
-3. Meta Progression (decide: Week 16 or defer to Week 17) - Priority 3 (TBD)
-4. Virtual Scrolling (if subscription tier launches) - Priority 4 (technical debt, conditional)
-5. Projectile Unit Tests (close test coverage gap) - Priority 5 (technical debt, 30min quick win)
+**Week 17 Focus (Proposed Order):**
+1. **UI Visual Overhaul** (NEEDS DESIGN SESSION FIRST) - Priority 0 (design before code)
+   - Barracks Art Bible
+   - Recruitment revamp
+   - Character type visuals
+   - Aura visuals
+2. Debug tooling (enable QA testing) - Priority 1 (MUST HAVE)
+3. IAP integration (monetization live) - Priority 2 (MUST HAVE)
+4. Meta Progression - Priority 3 (TBD)
+5. Technical debt items - Priority 4-6 (as time permits)
+
+**Key References:**
+- [CHARACTER-SYSTEM.md](../game-design/systems/CHARACTER-SYSTEM.md) - 4 character types, tier gating
+- [AURA-SYSTEM.md](../game-design/systems/AURA-SYSTEM.md) - 6 aura types, collect aura active
+- `scripts/systems/aura_types.gd` - Aura implementation (foundation complete)
 
 ---
 
 **Created:** 2025-11-16
-**Next Review:** Week 16 planning session
+**Last Updated:** 2025-11-26 (Added UI Visual Overhaul section)
+**Next Review:** After Phase 9 complete

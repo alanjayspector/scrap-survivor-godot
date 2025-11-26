@@ -223,21 +223,24 @@ func test_game_state_reset_clears_active_character() -> void:
 	assert_eq(GameState.active_character_id, "", "Active character should be cleared after reset")
 
 
-func test_game_state_active_character_not_persisted_in_save_file() -> void:
+func test_game_state_active_character_persisted_in_save_file() -> void:
+	# Phase 9: active_character_id is NOW persisted via CharacterService
+	# GameState syncs from CharacterService when state is loaded
+
 	# Arrange - Create character, set as active, and save
-	var character_id = CharacterService.create_character("NotPersisted", "scavenger")
+	var character_id = CharacterService.create_character("PersistedChar", "scavenger")
 	GameState.set_active_character(character_id)
 	SaveManager.save_all_services()
 
 	# Act - Reset GameState and reload
 	GameState.reset_game_state()
-	assert_eq(GameState.active_character_id, "", "Active character should be cleared")
+	assert_eq(GameState.active_character_id, "", "Active character should be cleared after reset")
 
 	SaveManager.load_all_services()
 
-	# Assert - Active character NOT restored (user must select character again)
+	# Assert - Active character IS restored (Phase 9 behavior change)
 	assert_eq(
-		GameState.active_character_id, "", "Active character should not be auto-restored from save"
+		GameState.active_character_id, character_id, "Active character should be restored from save"
 	)
 
 

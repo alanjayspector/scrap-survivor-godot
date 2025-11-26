@@ -95,8 +95,11 @@ func test_multiple_characters_persist_correctly() -> void:
 
 	# Assert - All characters restored
 	assert_eq(CharacterService.get_character_count(), 3, "Should have 3 characters")
-	# Note: active_character_id is NOT persisted - must be set by scene after load
-	assert_eq(GameState.active_character_id, "", "Active character should be cleared after reset")
+	# Phase 9: active_character_id IS now persisted via CharacterService
+	# GameState syncs from CharacterService when state is loaded
+	assert_eq(
+		GameState.active_character_id, char2_id, "Active character should be restored from save"
+	)
 
 
 ## ============================================================================

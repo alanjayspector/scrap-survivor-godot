@@ -4,8 +4,53 @@
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
 **Phase 8.2c Plan**: [docs/design/phase-8-revised-plan.md](../docs/design/phase-8-revised-plan.md) ✅ COMPLETE
 **Phase 9 Plan**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
-**Current Phase**: Phase 9 - Survivor Selection Model & Barracks Polish
-**Status**: ⏭️ **READY TO START**
+**Current Phase**: Phase 9.1 - Selection Persistence + Hub State
+**Status**: 🔨 **IN PROGRESS**
+
+---
+
+## 🔨 PHASE 9.1 IN PROGRESS
+
+### Session Summary (2025-11-26)
+
+**What Was Done**:
+1. ✅ **Selection Persistence** - `active_character_id` now persists across app restarts
+   - CharacterService ALREADY persisted it (discovered during analysis)
+   - Added GameState sync from CharacterService via signals
+   - GameState._ready() connects to CharacterService.active_character_changed
+   - GameState.set_active_character() now updates CharacterService first
+2. ✅ **Hub State Checking** - Already implemented in Phase 8.2c
+   - "No Survivors" → "Recruit a survivor at the Barracks first"
+   - "No Selection" → "Select a survivor at the Barracks first"
+   - Selection exists → Launch wasteland
+3. ✅ **Auto-select** - Already implemented in CharacterService (line 214)
+   - First character created is auto-selected
+4. ✅ **Clear on delete** - Already implemented in CharacterService (lines 284-293)
+5. ✅ **Tests updated** - 2 tests changed to reflect new persistence behavior
+6. ✅ **All 671 tests passing**
+
+**Files Modified**:
+- `scripts/autoload/game_state.gd` - Added CharacterService sync
+- `scripts/tests/ui/character_creation_integration_test.gd` - Updated test expectation
+- `scripts/tests/ui/first_run_flow_integration_test.gd` - Renamed + updated test
+
+**Key Discovery**:
+CharacterService already persisted `active_character_id` in its serialize/deserialize! The issue was GameState had a separate copy that wasn't synced. Fixed by making GameState listen to CharacterService signals.
+
+---
+
+## ⏭️ REMAINING PHASE 9 TASKS
+
+### Session 9.2: Barracks Selection Flow + Detail View Polish (1.5h)
+- [ ] Add "Select" button to Character Details screen
+- [ ] Tap "Select" → sets active survivor → returns to Hub
+- [ ] Update character card tap behavior (tap → detail view)
+- [ ] Polish detail view with Art Bible styling
+
+### Session 9.3: Hub Visual Indicator + Barracks Background (1h)
+- [ ] Create Survivor Status Panel component (bottom-left of Hub)
+- [ ] Add Art Bible background to Barracks
+- [ ] Full terminology update: Roster → Barracks (file rename)
 
 ---
 
@@ -24,18 +69,6 @@
 8. ✅ 10-Second Impression Test passed
 9. ✅ Device QA passed
 
-**QA Issues Found & Fixed**:
-| Issue | Root Cause | Fix |
-|-------|-----------|-----|
-| Barracks button disabled | `is_first_run` logic backwards | Removed - always enabled |
-| Empty modal popups | `title_text`/`message_text` set before `_ready()` | Call update methods in `_ready()` |
-| Button visibility | Secondary hollow variant, small size | PRIMARY for Barracks, MEDIUM for Settings |
-
-**Commits (Phase 8.2c)**:
-- `48a792c` - feat(hub): replace ColorRect background with Art Bible concept art
-- `7316009` - feat(ui): add IconButton component with Art Bible styling
-- (pending) - feat(hub): Phase 8.2c Session 3 - entry point, stubs, and QA fixes
-
 ---
 
 ## 📋 PHASE 9: Survivor Selection Model & Barracks Polish
@@ -45,12 +78,12 @@
 **Estimated Time**: 3-4 hours (across 2-3 sessions)
 
 **Key Objectives**:
-1. **Persist Selection**: Save/load `active_character_id` in save data
-2. **Hub State Awareness**: Full button state checking (disabled states, visual feedback)
-3. **Barracks Selection Flow**: Tap → Detail → Select → Return to Hub
-4. **Hub Survivor Status Panel**: Visual indicator showing selected survivor
-5. **Barracks Art Bible**: Background + detail view polish
-6. **Terminology**: Full rename Roster → Barracks throughout codebase
+1. ✅ **Persist Selection**: Save/load `active_character_id` in save data - DONE
+2. ✅ **Hub State Awareness**: Full button state checking - DONE (Phase 8.2c)
+3. ⏭️ **Barracks Selection Flow**: Tap → Detail → Select → Return to Hub
+4. ⏭️ **Hub Survivor Status Panel**: Visual indicator showing selected survivor
+5. ⏭️ **Barracks Art Bible**: Background + detail view polish
+6. ⏭️ **Terminology**: Full rename Roster → Barracks throughout codebase
 
 ---
 
@@ -62,7 +95,9 @@
 | Phase 8.2c Session 2 | ✅ Complete | IconButton component |
 | Phase 8.2c Session 3 | ✅ Complete | Entry point, stubs, QA fixes |
 | **Phase 8.2c** | ✅ **COMPLETE** | Hub visual transformation done |
-| Phase 9 | ⏭️ Ready | Survivor selection & Barracks |
+| Phase 9.1 | ✅ **COMPLETE** | Selection persistence + Hub state |
+| Phase 9.2 | ⏭️ Next | Barracks selection flow |
+| Phase 9.3 | ⏭️ Pending | Hub status panel + background |
 
 ---
 
@@ -83,33 +118,32 @@
 ## 🚀 Quick Start Command (Next Session)
 
 ```
-PHASE 9 READY - Survivor Selection Model & Barracks Polish
+PHASE 9.1 COMPLETE - Selection Persistence
 
-PHASE 8.2c COMPLETE:
-✅ Hub launches as entry point
-✅ Art Bible background integrated
-✅ IconButton components working
-✅ Modals displaying correctly
-✅ 10-Second Impression Test passed
+COMPLETED:
+✅ active_character_id persists across app restart
+✅ GameState syncs from CharacterService
+✅ Hub state checking (no survivors, no selection)
+✅ Auto-select first character
+✅ Clear selection on delete
+✅ 671/695 tests passing
 
-PHASE 9 OBJECTIVES:
-1. Persist active_character_id in save data
-2. Hub state awareness (button states based on game state)
-3. Barracks selection flow (Tap → Detail → Select → Return)
-4. Hub Survivor Status Panel
-5. Barracks Art Bible transformation
-6. Full terminology update: Roster → Barracks
+NEXT UP - PHASE 9.2:
+1. Add "Select" button to Character Details screen
+2. Tap "Select" → sets survivor → returns to Hub
+3. Update card tap behavior (tap → detail view)
+4. Polish detail view with Art Bible styling
 
 READ FIRST:
-- docs/design/phase-9-survivor-selection.md (full plan)
-- scripts/services/character_service.gd (current selection logic)
-- scripts/services/save_manager.gd (persistence layer)
+- docs/design/phase-9-survivor-selection.md (Session 9.2 section)
+- scripts/ui/character_details_screen.gd
+- scripts/ui/character_roster.gd
 
-ESTIMATED TIME: 3-4 hours (across 2-3 sessions)
+REMAINING TIME: ~2.5h (Sessions 9.2 + 9.3)
 ```
 
 ---
 
-**Last Updated**: 2025-11-26 (Phase 8.2c Complete)
-**Status**: Phase 8.2c Complete - Phase 9 Ready
-**Next Action**: Begin Phase 9 or take a break
+**Last Updated**: 2025-11-26 (Phase 9.1 Complete)
+**Status**: Phase 9.1 Complete - Ready for Phase 9.2
+**Next Action**: Continue with Phase 9.2 (Barracks Selection Flow)
