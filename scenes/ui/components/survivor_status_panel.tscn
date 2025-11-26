@@ -1,0 +1,86 @@
+[gd_scene load_steps=3 format=3 uid="uid://survivor_status_panel_9_3"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/survivor_status_panel.gd" id="1_panel"]
+[ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
+
+[node name="SurvivorStatusPanel" type="Button"]
+theme = ExtResource("2_theme")
+custom_minimum_size = Vector2(200, 80)
+focus_mode = 0
+script = ExtResource("1_panel")
+
+[node name="PanelBg" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ContentContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ContentContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="PortraitRect" type="ColorRect" parent="ContentContainer/HBoxContainer"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.361, 0.361, 0.361, 1)
+
+[node name="PortraitLabel" type="Label" parent="ContentContainer/HBoxContainer/PortraitRect"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InfoContainer" type="VBoxContainer" parent="ContentContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="NameLabel" type="Label" parent="ContentContainer/HBoxContainer/InfoContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.769, 0.655, 0.49, 1)
+theme_override_font_sizes/font_size = 18
+text = "No Survivor"
+
+[node name="TypeLevelLabel" type="Label" parent="ContentContainer/HBoxContainer/InfoContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.361, 0.361, 0.361, 1)
+theme_override_font_sizes/font_size = 14
+text = "Tap to choose"
+
+[node name="StatsLabel" type="Label" parent="ContentContainer/HBoxContainer/InfoContainer"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.361, 0.361, 0.361, 1)
+theme_override_font_sizes/font_size = 14
+text = "Wave 0 • 100 HP"

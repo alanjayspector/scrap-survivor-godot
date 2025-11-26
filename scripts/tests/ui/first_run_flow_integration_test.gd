@@ -156,15 +156,15 @@ func test_character_creation_scene_exists() -> void:
 	assert_true(scene_exists, "Character creation scene must exist for first-run flow")
 
 
-func test_character_roster_scene_exists_for_returning_users() -> void:
-	# Verify character roster exists for non-first-run users
-	var scene_path = "res://scenes/ui/character_roster.tscn"
+func test_barracks_scene_exists_for_returning_users() -> void:
+	# Verify barracks exists for non-first-run users
+	var scene_path = "res://scenes/ui/barracks.tscn"
 
 	# Act
 	var scene_exists = ResourceLoader.exists(scene_path)
 
 	# Assert
-	assert_true(scene_exists, "Character roster scene must exist for returning users")
+	assert_true(scene_exists, "Barracks scene must exist for returning users")
 
 
 ## ============================================================================

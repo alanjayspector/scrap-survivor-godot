@@ -172,10 +172,10 @@ func _on_roster_pressed() -> void:
 
 	GameLogger.info("[Hub] Roster button pressed")
 
-	if ResourceLoader.exists("res://scenes/ui/character_roster.tscn"):
-		get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")
+	if ResourceLoader.exists("res://scenes/ui/barracks.tscn"):
+		get_tree().change_scene_to_file("res://scenes/ui/barracks.tscn")
 	else:
-		GameLogger.warning("[Hub] character_roster.tscn not yet implemented")
+		GameLogger.warning("[Hub] barracks.tscn not yet implemented")
 		get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
 
 

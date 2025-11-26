@@ -86,52 +86,81 @@ scripts/hub/scrapyard.gd               # Full button state logic
 
 ---
 
-### Session 9.2: Barracks Selection Flow + Detail View Polish (1.5h)
+### Session 9.2: 2-Column Grid + Selection Flow (1.5h)
 
-**Objective**: Implement explicit "Select" action in Barracks and polish detail view
+**Objective**: Replace list layout with 2-column card grid + add Select button
 
-**Selection Flow** (Option B - Expert Panel Approved):
+**UPDATED 2025-11-26**: Based on Expert Panel competitive analysis (Darkest Dungeon, AFK Arena, Marvel Snap), the single-row list layout is being replaced with a 2-column portrait card grid. Visual polish deferred to Week 17.
+
+**Selection Flow**:
 ```
-Barracks List
+Barracks Grid (2-column cards)
     ↓ Tap character card
 Character Detail View (Full Screen)
-    ↓ Tap "Select" button
-Return to Hub (with survivor now selected)
+    ↓ Tap "Select Survivor" button
+Return to Barracks (with selection border visible)
 ```
 
 **Tasks**:
 
-1. **Add "Select" Button to Character Details**
-   - Primary action button in detail view
-   - Sets `GameState.active_character_id`
-   - Returns to Hub after selection
-   - Visual feedback (toast: "Survivor Selected!")
+1. **Convert List to 2-Column Grid** (~30min)
+   - Replace VBoxContainer with GridContainer (2 columns)
+   - Card size: 180×240pt (portrait 3:4 ratio)
+   - Gaps: 16pt horizontal, 16pt vertical
+   - Test scrolling with 10+ characters
 
-2. **Update Character Card Actions**
-   - Remove direct "Play" → Wasteland launch
-   - Tap card → Opens detail view
-   - Detail view has "Select" and "Start Run" options
+2. **Simplify Character Card Component** (~30min)
+   - Portrait area: 148×148pt ColorRect (character type color)
+   - Name: 20pt bold
+   - Type/Level: 14pt muted
+   - Stats row: HP + Best Wave (14pt)
+   - Remove inline action buttons (Details/Play/Delete)
+   - Entire card tappable → Opens detail screen
 
-3. **Polish Character Detail View**
-   - Apply Art Bible styling
-   - Proper button hierarchy (Select = Primary, Delete = Danger)
-   - Better stats presentation
-   - Mobile-optimized touch targets
+3. **Add Selection State to Cards** (~15min)
+   - Unselected: 2pt border in `#5C5C5C`
+   - Selected: 4pt border in `#FF6600` (Primary Orange)
+   - Corner badge: 32pt circle with checkmark
+
+4. **Update Detail Screen Actions** (~30min)
+   - Add fixed bottom action bar (60pt height)
+   - "Select Survivor" button: 180pt wide, PRIMARY orange
+   - "Start Run" button: 120pt wide, SECONDARY style
+   - Overflow menu: Delete action
+   - Show "CURRENTLY SELECTED" (disabled gray) if already selected
+
+5. **No Toast Confirmation**
+   - Visual state change IS the confirmation
+   - Selection border change when returning to grid
+   - Badge pulse animation (defer to Week 17)
 
 **Files to Modify**:
 ```
-scripts/ui/character_details_screen.gd   # Add Select button
-scenes/ui/character_details_screen.tscn  # UI layout updates
-scripts/ui/character_roster.gd           # Update card tap behavior
-scripts/ui/components/character_card.gd  # Simplify actions
+scenes/ui/character_roster.tscn          # Grid layout conversion
+scripts/ui/character_roster.gd           # Grid population logic
+scenes/ui/components/character_card.tscn # Simplified card layout
+scripts/ui/components/character_card.gd  # Remove inline buttons
+scenes/ui/character_details_screen.tscn  # Bottom action bar
+scripts/ui/character_details_screen.gd   # Select button logic
 ```
 
 **QA Gate**:
-- [ ] Tap card → Opens detail view
-- [ ] "Select" button sets active survivor
-- [ ] Returns to Hub after selection
-- [ ] Detail view matches Art Bible styling
-- [ ] Touch targets ≥ 44pt
+- [ ] Grid displays 2 columns of cards
+- [ ] Scroll works smoothly with 10+ characters
+- [ ] Tap card → Opens detail screen
+- [ ] "Select Survivor" button sets active character
+- [ ] Returns to Barracks after selection
+- [ ] Selected card shows orange border + badge
+- [ ] All touch targets ≥ 44pt (cards are 180×240pt ✓)
+
+**DEFERRED TO WEEK 17** (Visual Polish):
+- Card shadows and glow effects
+- Card entrance animations
+- Badge pulse animation
+- Barracks exterior background image
+- Character portrait artwork
+- Stats panel redesign
+- Hero portrait section in details
 
 ---
 
@@ -139,20 +168,23 @@ scripts/ui/components/character_card.gd  # Simplify actions
 
 **Objective**: Add survivor status panel to Hub, apply Art Bible background to Barracks
 
+**UPDATED 2025-11-26**: Expert Panel convened with competitive analysis of Darkest Dungeon, Marvel Snap, AFK Arena, Zenless Zone Zero, Brotato, Vampire Survivors, Hades, and Slay the Spire. Detailed specifications below.
+
 **Tasks**:
 
-1. **Hub Survivor Status Panel**
-   - Position: Bottom-left (doesn't conflict with buttons)
-   - Shows: Character portrait/icon, name, level
-   - Tap panel → Opens Barracks
-   - Empty state when no survivor selected
+1. **Hub Survivor Status Panel** (~30min)
+   - Create `survivor_status_panel.tscn/gd` component
+   - Position: Bottom-left, INSIDE SafeAreaContainer (iOS HIG requirement)
+   - Size: 200×80pt (exceeds 44pt touch target minimum)
+   - Tap entire panel → Opens Barracks
+   - Subscribe to `GameState.active_character_changed` for reactive updates
 
-2. **Barracks Art Bible Background**
-   - Import/create appropriate background
-   - Apply consistent styling with Hub
-   - Ensure readability of character cards
+2. **Barracks Art Bible Background** (~15min)
+   - Copy `art-docs/barracks-exterior.png` to `assets/ui/backgrounds/`
+   - Apply as full-bleed background (same pattern as Hub)
+   - Add gradient overlay for card readability (Marvel Snap principle)
 
-3. **Full Terminology Update**
+3. **Full Terminology Update** (~15min, defer if needed)
    - Rename `character_roster.tscn` → `barracks.tscn`
    - Rename `character_roster.gd` → `barracks.gd`
    - Update all references in codebase
@@ -163,43 +195,154 @@ scripts/ui/components/character_card.gd  # Simplify actions
 scenes/ui/components/survivor_status_panel.tscn  # NEW
 scripts/ui/components/survivor_status_panel.gd   # NEW
 scenes/hub/scrapyard.tscn                        # Add status panel
-scenes/ui/barracks.tscn                          # Renamed + background
-scripts/ui/barracks.gd                           # Renamed
+assets/ui/backgrounds/barracks_background.png    # NEW (copy from art-docs)
+scenes/ui/character_roster.tscn                  # Add background + overlay
 ```
 
 **QA Gate**:
-- [ ] Hub shows selected survivor panel
-- [ ] Panel updates when selection changes
-- [ ] Barracks has Art Bible background
-- [ ] All terminology updated (Roster → Barracks)
-- [ ] No broken scene references
+- [ ] Hub shows selected survivor panel (bottom-left)
+- [ ] Panel updates when selection changes (reactive)
+- [ ] Empty state shows "No Survivor Selected" + "Tap to choose"
+- [ ] Tap panel navigates to Barracks
+- [ ] Barracks has Art Bible background with gradient overlay
+- [ ] Character cards readable over background (solid card backgrounds)
+- [ ] All touch targets ≥ 44pt
 
 ---
 
-## 🎨 Visual Indicator Design (Expert Panel Recommendation)
+## 🎨 Session 9.3 Expert Panel Specifications
 
-### Survivor Status Panel
+### Competitive Analysis Summary
 
-**Position**: Bottom-left corner of Hub
-**Size**: ~200×80pt (flexible based on content)
-**Contents**:
+| Game | Hub Character Display | Key Pattern |
+|------|----------------------|-------------|
+| **Marvel Snap** | Dark backgrounds, cards are BRIGHTEST | "Cards are heroes, UI serves cards" |
+| **Darkest Dungeon** | Roster in separate building, dark silhouettes | Rim lighting, high contrast |
+| **AFK Arena** | Bottom nav, hero portraits with rarity frames | Bottom-left for secondary actions |
+| **Zenless Zone Zero** | Minimal hub, dedicated "Agent" section | Clean touch-optimized menus |
+
+**Key Design Principle (Marvel Snap Law)**:
+> Cards/portraits are ALWAYS the brightest elements. UI serves cards, never competes.
+
+### Survivor Status Panel - Detailed Spec
+
+**Position**: Bottom-left corner of Hub, INSIDE SafeAreaContainer
 ```
-┌─────────────────────────────┐
-│ [Portrait] │ Rusty McBlade  │
-│    60×60   │ Level 5        │
-│            │ ⚔️ Scrapper    │
-└─────────────────────────────┘
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 0      # SafeAreaContainer already has 44pt margin
+offset_top = -80     # Panel height
+offset_right = 200   # Panel width
+offset_bottom = 0
 ```
 
-**States**:
-- **Selected**: Shows survivor info
-- **None Selected**: "No Survivor Selected" with subtle prompt
-- **Tapped**: Navigates to Barracks
+**Size**: 200×80pt (fixed)
+- 200pt width = portrait (60×60pt) + info column (124pt) + padding (16pt)
+- 80pt height = 3 text lines + padding
+- Touch target exceeds iOS HIG 44pt minimum
 
-**Styling**:
-- Semi-transparent dark background
-- Art Bible border treatment
-- Readable text over hub background
+**Layout - Filled State**:
+```
+┌─────────────────────────────────────┐
+│  ┌────────┐  Rusty McBlade          │
+│  │ 60×60  │  Lv.5 Scavenger         │
+│  │(color) │  Wave 12 • 100 HP       │
+│  └────────┘                          │
+└─────────────────────────────────────┘
+```
+
+**Content Breakdown**:
+1. **Portrait**: 60×60pt ColorRect with character type color (from CharacterService.CHARACTER_TYPES)
+   - Scavenger: Color(0.6, 0.6, 0.6) - Gray
+   - Tank: Color(0.3, 0.5, 0.3) - Olive Green
+   - Commando: Color(0.8, 0.2, 0.2) - Red
+   - Mutant: Color(0.5, 0.2, 0.7) - Purple
+2. **Name**: 18pt bold, Corrugated Tan (#C4A77D), truncate at 15 chars
+3. **Type/Level Row**: 14pt, Scrap Gray (#5C5C5C), format "Lv.X Type"
+4. **Stats Row**: 14pt, Scrap Gray (#5C5C5C), format "Wave X • Y HP"
+
+**Background Styling**:
+- Color: #1A1A1A at 85% opacity
+- Border: 2pt Rust Orange (#B85C38)
+- Corner radius: 4pt
+- Drop shadow: 4pt (subtle)
+
+**Layout - Empty State**:
+```
+┌─────────────────────────────────────┐
+│  ┌────────┐  No Survivor Selected   │
+│  │   ?    │  Tap to choose          │
+│  │ 60×60  │                          │
+│  └────────┘                          │
+└─────────────────────────────────────┘
+```
+
+- Portrait: 60×60pt Scrap Gray (#5C5C5C) with "?" in Window Yellow (#FFC857)
+- Line 1: "No Survivor Selected" (18pt bold, Scrap Gray)
+- Line 2: "Tap to choose" (14pt, Scrap Gray at 80% opacity)
+
+**Interaction**:
+- Tap entire panel → `get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")`
+- Haptic feedback: `HapticManager.light()`
+- NO separate "Change" button needed (entire panel is touch target)
+
+**Reactive Updates**:
+```gdscript
+func _ready() -> void:
+    # Signal is on CharacterService, not GameState
+    CharacterService.active_character_changed.connect(_on_active_character_changed)
+    _refresh_display()
+
+func _on_active_character_changed(_character_id: String) -> void:
+    _refresh_display()
+```
+
+### Barracks Background - Detailed Spec
+
+**Background Image**: `barracks-exterior.png` (from art-docs/)
+- Copy to: `assets/ui/backgrounds/barracks_background.png`
+- Stretch mode: KEEP_ASPECT_COVERED (fills screen, crops edges)
+
+**Gradient Overlay** (Critical for readability):
+```
+Top:    #000000 at 50% opacity
+        ↓ (transition at 30% from top)
+Bottom: #000000 at 75% opacity
+```
+
+**Why Gradient**:
+- Lets "BARRACKS" sign show through at top
+- Darkens bottom where cards live
+- Marvel Snap principle: cards must be brightest elements
+
+**Card Background Treatment**:
+- Cards have SOLID backgrounds (not transparent)
+- Unselected: #2A2A2A
+- Selected: #3D2817 (with orange border)
+- 4pt drop shadow ensures cards "float"
+
+### Safe Area Compliance (iOS HIG)
+
+**Requirement**: Interactive elements MUST respect safe area margins
+**Current Hub Safe Area Margins**:
+- Left: 44pt
+- Top: 59pt
+- Right: 44pt
+- Bottom: 34pt
+
+**Implementation**: Add panel as child of SafeAreaContainer, NOT root Control
+
+**Exception**: Background images CAN bleed to edges (non-interactive)
+
+### Deferred to Week 17 (Polish)
+
+- Panel tap scale animation (0.97 over 50ms)
+- Panel idle pulse animation (1s cycle)
+- Card entrance animations (200ms stagger)
+- Selection badge pulse animation
+- Header title styling ("BARRACKS" 36pt Window Yellow)
 
 ---
 
@@ -271,7 +414,8 @@ scripts/ui/barracks.gd                           # Renamed
 
 ---
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2025-11-26
+**Updated**: 2025-11-26 (Session 9.3 Expert Panel specifications added)
 **Author**: Expert Panel (Claude)
-**Status**: PLANNED
+**Status**: IN PROGRESS (Sessions 9.1, 9.2 Complete)

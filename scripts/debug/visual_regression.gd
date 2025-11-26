@@ -7,7 +7,7 @@ const CURRENT_PATH = "tests/visual_regression/current/"
 
 var scenes_to_capture = [
 	"res://scenes/hub/scrapyard.tscn",
-	"res://scenes/ui/character_roster.tscn",
+	"res://scenes/ui/barracks.tscn",
 	"res://scenes/ui/character_creation.tscn",
 	"res://scenes/ui/character_selection.tscn",
 	"res://scenes/game/wasteland.tscn",  # For HUD capture

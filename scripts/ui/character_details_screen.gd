@@ -334,8 +334,8 @@ func _on_back_pressed() -> void:
 
 
 func _navigate_to_roster() -> void:
-	"""Navigate back to character roster screen"""
-	get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")
+	"""Navigate back to Barracks screen"""
+	get_tree().change_scene_to_file("res://scenes/ui/barracks.tscn")
 
 
 func _play_sound(sound: AudioStream) -> void:

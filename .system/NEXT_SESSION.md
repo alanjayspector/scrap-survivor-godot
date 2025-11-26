@@ -1,10 +1,49 @@
-# Next Session: Phase 9.3 - Hub Status Panel
+# Next Session: Phase 9 Complete - Ready for QA
 
 **Date**: 2025-11-26
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
 **Phase 9 Plan**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
-**Current Phase**: Phase 9.3 - Hub Visual Indicator + Barracks Background
-**Status**: ⏭️ **READY TO START**
+**Current Phase**: Phase 9 COMPLETE
+**Status**: ✅ **READY FOR DEVICE QA**
+
+---
+
+## ✅ PHASE 9.3 COMPLETE
+
+### Session Summary (2025-11-26)
+
+**What Was Done**:
+
+1. **Expert Panel Convened**
+   - Competitive analysis: Darkest Dungeon, Marvel Snap, AFK Arena, ZZZ, Brotato, Vampire Survivors
+   - Key insight: "Marvel Snap Law" - Cards are brightest, UI serves cards
+   - Detailed specifications documented in phase-9-survivor-selection.md
+
+2. **Survivor Status Panel Created**
+   - `scenes/ui/components/survivor_status_panel.tscn`
+   - `scripts/ui/components/survivor_status_panel.gd`
+   - 200×80pt panel, bottom-left of Hub
+   - Shows: Portrait (60×60), Name, Level/Type, Stats
+   - Empty state: "No Survivor Selected" / "Tap to choose"
+   - Tap → Opens Barracks
+   - Reactive updates via `CharacterService.active_character_changed`
+
+3. **Hub Integration**
+   - Panel added to `scenes/hub/scrapyard.tscn`
+   - Positioned with safe area compliance (iOS HIG)
+
+4. **Barracks Background**
+   - Copied `barracks-exterior.png` to `assets/ui/backgrounds/`
+   - Applied to Barracks with 60% black overlay
+   - Cards remain readable (Marvel Snap principle)
+
+5. **File Renames Complete**
+   - `character_roster.tscn` → `barracks.tscn`
+   - `character_roster.gd` → `barracks.gd`
+   - All code references updated (7 files)
+
+**Tests**: 671/695 passing
+**GDLint**: Clean
 
 ---
 
@@ -21,7 +60,6 @@
 6. ✅ "Select Survivor" sets active character and returns to Barracks
 7. ✅ Shows "✓ Selected" (disabled) when character already selected
 8. ✅ Device QA passed on iPhone 15 Pro Max
-9. ✅ 671/695 tests passing
 
 **Commit**: `5bca147` - feat(barracks): Phase 9.2 - 2-column grid + selection flow
 
@@ -36,46 +74,29 @@
 2. ✅ Hub state checking (no survivors, no selection)
 3. ✅ Auto-select first character
 4. ✅ Clear selection on delete
-5. ✅ 671 tests passing
 
 ---
 
-## ⏭️ PHASE 9.3 TASKS
+## 🧪 QA CHECKLIST (Device Testing)
 
-### Session 9.3: Hub Visual Indicator + Barracks Background (~1h)
+**Hub (Scrapyard)**:
+- [ ] Survivor Status Panel visible in bottom-left
+- [ ] Panel shows correct character info when survivor selected
+- [ ] Panel shows "No Survivor Selected" when none selected
+- [ ] Tap panel → Opens Barracks
+- [ ] Panel updates when selection changes in Barracks
 
-**Task 1: Hub Survivor Status Panel** (~30min)
-- Create `survivor_status_panel.tscn` component
-- Position: Bottom-left of Hub (doesn't conflict with buttons)
-- Shows: Character portrait/icon, name, level, type
-- Tap panel → Opens Barracks
-- Empty state: "No Survivor Selected"
+**Barracks (formerly Character Roster)**:
+- [ ] Background image visible (barracks exterior)
+- [ ] Character cards readable over background
+- [ ] 2-column grid layout correct
+- [ ] Tap card → Opens detail screen
+- [ ] Selection flow: Detail → "Select Survivor" → Return to grid with border
 
-**Task 2: Barracks Art Bible Background** (~15min)
-- Apply background image or consistent styling
-- Ensure readability of character cards over background
-
-**Task 3: Full Terminology Update** (~15min)
-- Rename `character_roster.tscn` → `barracks.tscn`
-- Rename `character_roster.gd` → `barracks.gd`
-- Update all references in codebase
-- Update scene titles and labels
-
-**Files to Create/Modify**:
-```
-scenes/ui/components/survivor_status_panel.tscn  # NEW
-scripts/ui/components/survivor_status_panel.gd   # NEW
-scenes/hub/scrapyard.tscn                        # Add status panel
-scenes/ui/barracks.tscn                          # Renamed from character_roster
-scripts/ui/barracks.gd                           # Renamed from character_roster
-```
-
-**QA Gate**:
-- [ ] Hub shows selected survivor panel
-- [ ] Panel updates when selection changes
-- [ ] Barracks has consistent styling
-- [ ] All terminology updated (Roster → Barracks)
-- [ ] No broken scene references
+**Selection Flow**:
+- [ ] Selection persists after app close/reopen
+- [ ] Start Run blocked without selection
+- [ ] Auto-select works when only 1 survivor
 
 ---
 
@@ -86,8 +107,8 @@ scripts/ui/barracks.gd                           # Renamed from character_roster
 | Phase 8.2c | ✅ Complete | Hub visual transformation |
 | Phase 9.1 | ✅ Complete | Selection persistence |
 | Phase 9.2 | ✅ Complete | 2-column grid + selection flow |
-| Phase 9.3 | ⏭️ Ready | Hub status panel + rename |
-| Week 17 Barracks Polish | 📋 Planned | Visual "trophy case" upgrade |
+| Phase 9.3 | ✅ Complete | Hub status panel + barracks rename |
+| Week 17 | 📋 Planned | Visual polish, animations |
 
 ---
 
@@ -100,41 +121,24 @@ scripts/ui/barracks.gd                           # Renamed from character_roster
 
 **Git Status**:
 - Branch: main
-- Latest Commit: `5bca147` - Phase 9.2 complete
 - Test Status: 671/695 passing
 - GDLint: Clean
 
 ---
 
-## 🚀 Quick Start Command (Next Session)
+## 🚀 Next Steps (After QA)
 
-```
-PHASE 9.3: Hub Status Panel + Barracks Rename
+If QA passes:
+1. Archive this session
+2. Update week plan status tracker
+3. Begin Week 17 planning (visual polish)
 
-READ FIRST:
-- docs/design/phase-9-survivor-selection.md (Session 9.3 section)
-- scenes/hub/scrapyard.tscn (current Hub layout)
-
-CREATE:
-- scenes/ui/components/survivor_status_panel.tscn
-- scripts/ui/components/survivor_status_panel.gd
-
-RENAME:
-- character_roster.tscn → barracks.tscn
-- character_roster.gd → barracks.gd
-- Update all references (grep for "character_roster")
-
-SPECS:
-- Status panel: ~200×80pt, bottom-left of Hub
-- Shows: Portrait (60×60), Name, Level, Type
-- Tap → Opens Barracks
-- Empty state: "No Survivor Selected"
-
-START WITH: Create survivor_status_panel component first, then integrate into Hub, then do file renames last.
-```
+If QA fails:
+1. Document issues
+2. Start new session with findings
+3. Fix and retest
 
 ---
 
-**Last Updated**: 2025-11-26 (Phase 9.2 Complete - Device QA Passed)
-**Status**: Phase 9.2 Complete - Ready for Phase 9.3
-**Recommendation**: Start fresh session for Phase 9.3 (file renames benefit from full token budget)
+**Last Updated**: 2025-11-26 (Phase 9.3 Complete)
+**Status**: Ready for Device QA

@@ -38,7 +38,7 @@ func audit_all_scenes() -> Array[Dictionary]:
 	"""Audit all UI scenes in the game"""
 	var scenes = [
 		"res://scenes/hub/scrapyard.tscn",
-		"res://scenes/ui/character_roster.tscn",
+		"res://scenes/ui/barracks.tscn",
 		"res://scenes/ui/character_creation.tscn",
 		"res://scenes/ui/character_selection.tscn",
 		"res://scenes/ui/character_card.tscn",

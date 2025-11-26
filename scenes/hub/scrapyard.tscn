@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dqw5k3j8navxr"]
+[gd_scene load_steps=10 format=3 uid="uid://dqw5k3j8navxr"]
 
 [ext_resource type="Script" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/hub/icon_roster_final.svg" id="6_icon_roster"]
 [ext_resource type="Texture2D" path="res://assets/icons/hub/icon_settings_final.svg" id="7_icon_settings"]
 [ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="8_screen_container"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/survivor_status_panel.tscn" id="9_survivor_panel"]
 
 [node name="Scrapyard" type="Control"]
 layout_mode = 3
@@ -125,5 +126,15 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.5, 0, 1)
 theme_override_font_sizes/font_size = 18
 text = "[QA]"
+
+[node name="SurvivorStatusPanel" parent="." instance=ExtResource("9_survivor_panel")]
+layout_mode = 1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 44.0
+offset_top = -114.0
+offset_right = 244.0
+offset_bottom = -34.0
+grow_vertical = 0
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
