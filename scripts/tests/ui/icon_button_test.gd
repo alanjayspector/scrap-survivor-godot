@@ -232,7 +232,7 @@ func test_setup_is_chainable() -> void:
 
 func test_chainable_setters() -> void:
 	"""Individual setters should be chainable"""
-	var result = _button.set_icon(_test_texture).set_label("Test").set_size(
+	var result = _button.set_icon(_test_texture).set_label("Test").set_button_size(
 		IconButton.ButtonSize.SMALL
 	)
 	assert_eq(result, _button, "Setters should return self for chaining")

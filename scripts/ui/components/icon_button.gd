@@ -423,7 +423,7 @@ func set_label(text: String) -> IconButton:
 	return self
 
 
-func set_size(size: ButtonSize) -> IconButton:
+func set_button_size(size: ButtonSize) -> IconButton:
 	"""Set button size (chainable)"""
 	button_size = size
 	return self
