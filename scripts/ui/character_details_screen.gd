@@ -74,20 +74,21 @@ func _ready() -> void:
 	THEME_HELPER.add_button_animation(delete_button)
 	THEME_HELPER.add_button_animation(back_button)
 
-	# Load character from GameState (set by previous screen)
-	var selected_id = GameState.active_character_id
-	if selected_id.is_empty():
-		GameLogger.error("[CharacterDetailsScreen] No character selected, returning to roster")
+	# Phase 9.2 Fix: Load character from viewing_character_id (set by card tap)
+	# This is the character user wants to VIEW (not necessarily the selected one)
+	var viewing_id = GameState.viewing_character_id
+	if viewing_id.is_empty():
+		GameLogger.error("[CharacterDetailsScreen] No character to view, returning to roster")
 		_navigate_to_roster()
 		return
 
-	# Show the selected character
-	_show_character(selected_id)
+	# Show the character being viewed
+	_show_character(viewing_id)
 
 	# Populate sidebar roster
 	_populate_sidebar_roster()
 
-	GameLogger.info("[CharacterDetailsScreen] Initialized", {"character_id": selected_id})
+	GameLogger.info("[CharacterDetailsScreen] Initialized", {"character_id": viewing_id})
 
 
 func _show_character(character_id: String) -> void:

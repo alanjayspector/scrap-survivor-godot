@@ -157,8 +157,10 @@ func _on_character_card_pressed(character_id: String) -> void:
 		)
 		return
 
-	# Set active character in GameState (for next screen to load)
-	GameState.set_active_character(character_id)
+	# Phase 9.2 Fix: Set viewing_character_id (NOT active_character_id)
+	# Tapping a card opens details for VIEWING, not SELECTING
+	# Selection only happens when user taps "Select Survivor" button
+	GameState.viewing_character_id = character_id
 
 	# Navigate to full-screen character details screen
 	get_tree().change_scene_to_file("res://scenes/ui/character_details_screen.tscn")

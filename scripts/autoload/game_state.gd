@@ -40,6 +40,10 @@ var is_paused: bool = false
 ## Phase 9: Now synced from CharacterService (which persists to save file)
 var active_character_id: String = ""
 
+## Phase 9.2 Fix: Character being viewed (NOT selected, just for navigation)
+## This is temporary and NOT persisted - used to pass character ID to details screen
+var viewing_character_id: String = ""
+
 ## Week 15: Run tracking
 var current_run_active: bool = false
 var run_start_time: float = 0.0
