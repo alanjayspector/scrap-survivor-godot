@@ -246,14 +246,14 @@ func test_chainable_setters() -> void:
 
 func test_pressed_emits_icon_button_pressed_signal() -> void:
 	"""Pressing button should emit icon_button_pressed signal"""
-	var signal_received = false
-	_button.icon_button_pressed.connect(func(): signal_received = true)
+	# Use GUT's built-in signal watching
+	watch_signals(_button)
 
-	# Simulate press
-	_button.emit_signal("pressed")
+	# Simulate press by calling IconButton's _on_pressed handler directly
+	_button._on_pressed()
 	await get_tree().process_frame
 
-	assert_true(signal_received, "icon_button_pressed signal should be emitted")
+	assert_signal_emitted(_button, "icon_button_pressed")
 
 
 # ==== SHADOW TESTS ====

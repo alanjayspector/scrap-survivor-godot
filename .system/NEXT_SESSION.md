@@ -1,9 +1,9 @@
-# Next Session: Phase 8.2c - Art Bible Hub Transformation
+# Next Session: Phase 8.2c - Session 3 (Final Polish)
 
-**Date**: 2025-11-25
+**Date**: 2025-11-26
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
 **Revised Plan**: [docs/design/phase-8-revised-plan.md](../docs/design/phase-8-revised-plan.md)
-**Current Phase**: Phase 8.2c - Hub Visual Transformation
+**Current Phase**: Phase 8.2c - Hub Visual Transformation (Session 3)
 **Status**: ✅ **SESSIONS 1 & 2 COMPLETE** - Session 3 Ready
 
 ---
@@ -50,35 +50,67 @@
 | Roster | Left-center (0.15, 0.5) | MEDIUM (80pt) | SECONDARY |
 | Settings | Top-right (1.0, 0.0) | SMALL (50pt) | SECONDARY |
 
-**Pre-commit Hook Findings Fixed**:
-- 60+ trailing whitespace occurrences (auto-fixed by gdformat)
-- Max line length exceeded (auto-fixed)
-- Detect 3D enabled on 2D sprite (fixed import settings)
-- Background > 2MB limit (updated validator for backgrounds)
-
 ---
 
-## 📋 SESSION 3: Polish & 10-Second Test (NEXT)
+## 📋 SESSION 3: Entry Point + Polish + 10-Second Test (CURRENT)
 
-**Estimated Time**: 1 hour
+**Estimated Time**: ~65 minutes
 
-**Objective**: Final polish and validation
+**Objective**: Change app entry point to Hub, add stub messages for character selection, polish, validate
 
-### Tasks
+### Refined Scope (Expert Panel Approved)
 
-1. **Button Press Feedback Refinement**
-   - Verify scale animation (0.92) feels responsive
-   - Confirm haptic feedback works on device
-   - Test focus/hover states for controller support
+| Task | Time | Priority |
+|------|------|----------|
+| Change entry point → Hub | 15 min | 🔴 HIGH |
+| Rename button label "Roster" → "Barracks" | 5 min | 🔴 HIGH |
+| Settings button "Coming Soon" toast | 10 min | 🔴 HIGH |
+| Start Run stub check (if no characters → toast) | 15 min | 🔴 HIGH |
+| Haptic feedback validation on device | 10 min | 🔴 HIGH |
+| 10-Second Impression Test | 10 min | 🔴 HIGH |
+| **Total** | **~65 min** | |
 
-2. **Transition Animations**
-   - Add fade/slide transition when leaving hub
-   - Smooth scene change to character selection/roster
+### Terminology Changes (This Session)
+- **Roster** → **Barracks** (button label only, scene rename in Phase 9)
+- **Characters** → **Survivors** (messaging only, full update in Phase 9)
+- **Create Character** → **Recruit** (messaging only)
 
-3. **10-Second Impression Test**
-   - Show hub screenshot to someone unfamiliar with project
-   - Ask 5 questions (see below)
-   - Pass criteria: 4/5 positive responses
+### Stub Message Logic
+
+**Start Run Button** (scrapyard.gd):
+```
+IF no characters exist:
+    → Toast: "Recruit a survivor at the Barracks first"
+    → Do NOT launch wasteland
+ELSE IF no character selected (active_character_id empty):
+    → Toast: "Select a survivor at the Barracks first"  
+    → Do NOT launch wasteland
+ELSE:
+    → Launch wasteland with selected survivor
+```
+
+**Note**: Full selection persistence is Phase 9 work. For now, use runtime `GameState.active_character_id`.
+
+### Explicitly Deferred to Phase 9
+
+- ⏭️ Persist `active_character_id` in save data
+- ⏭️ Add "Select" button to Barracks detail view
+- ⏭️ Add Survivor Status Panel to Hub (visual indicator)
+- ⏭️ Barracks Art Bible transformation (background + polish)
+- ⏭️ Full scene/file rename: character_roster → barracks
+- ⏭️ Controller focus states
+
+### QA Gate Checklist (Session 3)
+
+- [ ] App launches to Hub (not Character Roster)
+- [ ] Button label shows "Barracks" (not "Roster")
+- [ ] Settings button shows "Coming Soon" toast
+- [ ] Start Run with no characters → "Recruit a survivor" toast
+- [ ] Start Run with characters but none selected → "Select a survivor" toast
+- [ ] Haptic feedback works on device
+- [ ] Button press animations smooth
+- [ ] 10-Second Impression Test passed (4/5)
+- [ ] User declares: "This looks like a real indie game"
 
 ### 10-Second Impression Test Questions
 
@@ -88,14 +120,21 @@
 4. "Would you pay $10?" → Target: "Yes" or "Probably"
 5. "Which button starts the game?" → Target: Points to Start Run
 
-### QA Gate Checklist
+---
 
-- [ ] Button press animation smooth and responsive
-- [ ] Haptic feedback works on device
-- [ ] Controller focus states visible
-- [ ] Scene transitions feel polished
-- [ ] 10-Second Impression Test passed (4/5)
-- [ ] User declares: "This looks like a real indie game"
+## 📋 PHASE 9: Survivor Selection Model & Barracks Polish (NEXT PHASE)
+
+**See**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
+
+**Estimated Time**: 3-4 hours (across 2-3 sessions)
+
+**Objectives**:
+1. Persist `active_character_id` in save data
+2. Hub state awareness (full button state checking)
+3. Barracks selection flow (Tap → Detail → Select → Return to Hub)
+4. Hub Survivor Status Panel (visual indicator)
+5. Barracks Art Bible transformation (background, detail view polish)
+6. Full terminology update: Roster → Barracks, Characters → Survivors
 
 ---
 
@@ -116,6 +155,13 @@ scripts/hub/scrapyard.gd                     # Button logic (211 lines)
 .system/validators/check-imports.sh          # Background size limit fix
 ```
 
+### Session 3 Will Modify
+```
+project.godot                                # Entry point → Hub
+scripts/hub/scrapyard.gd                     # Stub messages, button rename
+scenes/hub/scrapyard.tscn                    # Button label "Barracks"
+```
+
 ---
 
 ## 🧩 IconButton Component Reference
@@ -133,11 +179,6 @@ enum ButtonSize { SMALL, MEDIUM, LARGE }  # 50pt, 80pt, 120pt
 enum ButtonVariant { PRIMARY, SECONDARY, DANGER }
 ```
 
-### Chainable API
-```gdscript
-btn.set_icon(tex).set_size(ButtonSize.LARGE).set_variant(ButtonVariant.PRIMARY)
-```
-
 ---
 
 ## 📊 Phase 8.2c Progress
@@ -146,7 +187,7 @@ btn.set_icon(tex).set_size(ButtonSize.LARGE).set_variant(ButtonVariant.PRIMARY)
 |---------|-------|--------|
 | Session 1 | Background Integration | ✅ Complete |
 | Session 2 | IconButton Component | ✅ Complete |
-| Session 3 | Polish & 10-Second Test | ⏭️ **NEXT** |
+| Session 3 | Entry Point + Polish + 10-Second Test | ⏭️ **CURRENT** |
 
 **Overall Phase 8.2c**: ~80% complete (2/3 sessions done)
 
@@ -157,6 +198,7 @@ btn.set_icon(tex).set_size(ButtonSize.LARGE).set_variant(ButtonVariant.PRIMARY)
 **Platform**: macOS (MacBook Pro)
 **Project Path**: `/Users/alan/Developer/scrap-survivor-godot`
 **Engine**: Godot 4, GDScript
+**Test Device**: iPhone 15 Pro Max
 
 **Git Status**:
 - Branch: main
@@ -169,28 +211,36 @@ btn.set_icon(tex).set_size(ButtonSize.LARGE).set_variant(ButtonVariant.PRIMARY)
 ## 🚀 Quick Start Command (Session 3)
 
 ```
-SESSION 3 READY (Polish & 10-Second Test)
+SESSION 3 READY (Entry Point + Polish + 10-Second Test)
 
 WHAT'S ALREADY DONE:
 ✅ Background integrated with Art Bible concept art
 ✅ IconButton component created with Art Bible styling
-✅ Three buttons positioned (Start Run, Roster, Settings)
+✅ Three buttons positioned (Start Run, Barracks, Settings)
 ✅ All validations passing (647/671 tests)
 
-TASKS:
-1. Test button press animation on device
-2. Verify haptic feedback
-3. Add controller focus states (if needed)
-4. Add scene transition animation
-5. Run 10-Second Impression Test
-6. Get user approval
+CODEBASE FINDINGS:
+✅ GameState.active_character_id EXISTS (runtime variable)
+✅ GameState.set_active_character() EXISTS
+✅ CharacterService.set_active_character() EXISTS
+⚠️ Selection NOT persisted between sessions (Phase 9 work)
+⚠️ Current entry point: character_roster.tscn (needs change)
 
-ESTIMATED TIME: 1 hour
+TASKS:
+1. Change entry point: project.godot → scrapyard.tscn
+2. Rename button label: "Roster" → "Barracks"
+3. Settings button: Show "Coming Soon" toast
+4. Start Run: Add stub check for characters/selection
+5. Test haptic feedback on iPhone 15 Pro Max
+6. Run 10-Second Impression Test with participant
+7. Get user approval
+
+ESTIMATED TIME: ~65 minutes
 ```
 
 ---
 
-**Last Updated**: 2025-11-25 (Post Session 2)
-**Status**: Session 3 Ready (Polish & 10-Second Test)
-**Next Action**: Button feedback polish, transition animations, 10-Second Test
-**Estimated Time**: 1 hour
+**Last Updated**: 2025-11-26 (Pre-Session 3 Planning)
+**Status**: Session 3 Ready
+**Next Action**: Entry point change, button rename, stub messages, polish, 10-Second Test
+**Estimated Time**: ~65 minutes

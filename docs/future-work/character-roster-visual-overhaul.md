@@ -181,7 +181,35 @@ The **Character Roster** screen ([scenes/ui/character_roster.tscn](../scenes/ui/
 
 ---
 
+---
+
+## 🔗 Phase 9 Integration (2025-11-26 Update)
+
+**Related Work**: [Phase 9: Survivor Selection Model & Barracks Polish](../design/phase-9-survivor-selection.md)
+
+Phase 9 (Session 9.3) includes:
+- Barracks Art Bible background transformation
+- Terminology update: Roster → Barracks
+- File rename: character_roster → barracks
+
+**What Phase 9 Covers**:
+- ✅ Art Bible background (consistent with Hub)
+- ✅ Terminology alignment (Barracks, Survivors)
+- ✅ Basic polish for selection flow
+
+**What Remains for Future Visual Overhaul**:
+- Card elevation & depth effects
+- Dynamic per-character backgrounds
+- Entrance animations
+- Unlock celebrations
+- Premium "trophy case" treatment
+
+**Recommendation**: Complete Phase 9 first for foundation, then schedule dedicated visual polish phase.
+
+---
+
 **Created**: 2025-11-22
+**Updated**: 2025-11-26 (Added Phase 9 cross-reference)
 **Source**: User feedback during Week 16 Phase 3.5 validation
-**Status**: Noted for future work (not blocking Week 16 progress)
-**Next Step**: Schedule expert panel consultation when ready
+**Status**: Partially addressed in Phase 9, full visual overhaul remains future work
+**Next Step**: Complete Phase 9, then schedule visual polish phase

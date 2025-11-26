@@ -127,14 +127,61 @@ def check_get_node_in_process(content: str, lines: List[str]) -> List[AntiPatter
     return patterns
 
 
+def _find_ready_function_lines(lines: List[str]) -> set:
+    """
+    Return set of line numbers (1-indexed) that are inside _ready() function.
+
+    This allows us to detect if a variable assignment happens within _ready(),
+    which is equally safe as using @onready.
+    """
+    ready_lines = set()
+    in_ready = False
+    ready_indent = 0
+
+    for line_num, line in enumerate(lines, start=1):
+        # Check for _ready() function definition
+        if re.match(r'^\s*func\s+_ready\s*\(', line):
+            in_ready = True
+            ready_indent = len(line) - len(line.lstrip())
+            continue
+
+        if in_ready:
+            # Skip empty lines and comments
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
+                ready_lines.add(line_num)
+                continue
+
+            current_indent = len(line) - len(line.lstrip())
+
+            # If we hit same or lower indentation with content, function ended
+            if current_indent <= ready_indent:
+                # Check if this is a new function/class/etc definition
+                if re.match(r'^\s*(func|class|signal|@)', line):
+                    in_ready = False
+                    continue
+
+            # Still inside _ready()
+            if in_ready:
+                ready_lines.add(line_num)
+
+    return ready_lines
+
+
 def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
     """
     Detect node references assigned from scene tree that should use @onready.
 
     Only flags variables assigned with scene tree methods (get_node, $, get_tree, etc.),
     not dynamically created nodes (.new()).
+
+    ENHANCEMENT (2025-11-26): Now detects if assignment is inside _ready() function.
+    Assignments in _ready() are safe and equivalent to @onready, so we don't flag them.
     """
     patterns = []
+
+    # Find _ready() function line boundaries
+    ready_lines = _find_ready_function_lines(lines)
 
     # Find var declarations without @onready that look like node references
     var_pattern = r'^\s*var\s+(\w+)\s*:\s*(Node|Node2D|Node3D|Control|CanvasItem|Sprite2D|AnimatedSprite2D|CollisionShape2D|Area2D|CharacterBody2D|Label|Button|Panel|Timer|AudioStreamPlayer\w*|Camera2D|Camera3D|TileMap|RigidBody2D|StaticBody2D|GPUParticles2D|CPUParticles2D|Line2D|Polygon2D|ColorRect|TextureRect|NinePatchRect|RichTextLabel|ItemList|Tree|TabContainer|ScrollContainer|VBoxContainer|HBoxContainer|GridContainer|MarginContainer|CenterContainer)'
@@ -158,8 +205,8 @@ def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
             # Check if this variable is assigned from scene tree anywhere in the file
             # Look for assignments using scene tree methods (get_node, $, get_tree, etc.)
             # but NOT dynamic creation (.new())
-            is_scene_tree_assignment = False
-            for search_line in lines:
+            is_unsafe_scene_tree_assignment = False
+            for search_line_num, search_line in enumerate(lines, start=1):
                 # Check for assignment to this variable
                 if f'{var_name} =' in search_line:
                     # Check if it's a scene tree method
@@ -176,11 +223,17 @@ def check_missing_onready(lines: List[str]) -> List[AntiPattern]:
 
                     # Skip if it's dynamic creation with .new()
                     if has_scene_tree_method and '.new()' not in search_line:
-                        is_scene_tree_assignment = True
+                        # NEW: Check if assignment is inside _ready() - if so, it's safe
+                        if search_line_num in ready_lines:
+                            # Assignment is in _ready(), which is safe (equivalent to @onready)
+                            continue
+
+                        # Assignment is OUTSIDE _ready() - this is the real anti-pattern
+                        is_unsafe_scene_tree_assignment = True
                         break
 
-            # Only flag if it's actually assigned from scene tree
-            if is_scene_tree_assignment:
+            # Only flag if it's assigned from scene tree OUTSIDE _ready()
+            if is_unsafe_scene_tree_assignment:
                 patterns.append(AntiPattern(
                     line_num=line_num,
                     pattern_type="missing_onready",

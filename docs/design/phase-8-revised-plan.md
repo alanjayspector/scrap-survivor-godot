@@ -1,13 +1,29 @@
 # Phase 8 REVISED Plan - Art Bible Visual Identity
 
 **Document Created**: 2025-11-24
-**Last Updated**: 2025-11-25 (Orientation Correction)
-**Status**: APPROVED - LANDSCAPE ORIENTATION CONFIRMED
+**Last Updated**: 2025-11-26 (Session 3 Scope Refinement)
+**Status**: IN PROGRESS - Session 3 Ready
 **Replaces**: Original Phase 8 "Metal Wall" approach (FAILED QA)
 
 ---
 
 ## 🔄 CRITICAL UPDATES
+
+### Update 3 (2025-11-26): Session 3 Scope Refinement
+
+**Planning Session Outcomes**:
+1. **Entry Point Change**: App will launch to Hub (not Character Roster)
+2. **Terminology**: Roster → Barracks, Characters → Survivors, Create → Recruit
+3. **Stub Messages**: Start Run button checks for characters/selection, shows appropriate feedback
+4. **Settings Button**: Shows "Coming Soon" toast (Option B selected)
+5. **Phase 9 Created**: Survivor Selection Model & Barracks Polish (3-4 hours)
+
+**Deferred to Phase 9**:
+- Persist `active_character_id` in save data
+- "Select" button in Barracks detail view
+- Hub Survivor Status Panel (visual indicator)
+- Barracks Art Bible transformation
+- Full scene/file rename: character_roster → barracks
 
 ### Update 2 (2025-11-25): Orientation Correction
 
@@ -20,11 +36,6 @@
 - Rotating phone between scenes = poor UX
 
 **Correction**: All scenes are **LANDSCAPE**. Existing concept art is already landscape and can be used directly.
-
-**Impact**: 
-- Skip art generation entirely (existing art is perfect)
-- Session 1 reduced from 1.5-2h to ~1h
-- No Banana Nano needed
 
 ### Update 1 (2025-11-24): Metal Wall → Art Bible
 
@@ -62,25 +73,6 @@ window/stretch/mode = "canvas_items"
 window/stretch/aspect = "expand"
 ```
 
-**Setting Rationale**:
-
-| Setting | Value | Why |
-|---------|-------|-----|
-| `viewport_width` | 1920 | Industry standard base width |
-| `viewport_height` | 1080 | 16:9 baseline, most compatible |
-| `stretch/mode` | `canvas_items` | Best for non-pixel-art, smooth scaling |
-| `stretch/aspect` | `expand` | No black bars, reveals more on wider screens |
-
-### How "expand" Handles Different Aspects
-
-```
-16:9 device:  [========GAME========]     (full art visible)
-19.5:9 device: [====GAME====|+extra+]    (reveals more width)
-20:9 device:  [===GAME===|++extra++]     (reveals even more)
-```
-
-**Key insight**: With `expand`, we don't crop - we reveal MORE content on wider screens. This means our 2752×1536 art (which is wider than 16:9) will show more of the scene on modern phones.
-
 ---
 
 ## 🎨 Art Asset Analysis
@@ -89,25 +81,9 @@ window/stretch/aspect = "expand"
 
 | Asset | Resolution | Aspect | Usability |
 |-------|-----------|--------|-----------|
-| `scrap-town-sancturary.png` | 2752×1536 | ~16:9 | ✅ **USE DIRECTLY** |
+| `scrap-town-sancturary.png` | 2752×1536 | ~16:9 | ✅ **USED** |
 | `buttons-signs.png` | - | - | ✅ UI kit reference |
 | `wasteland-gate.png` | - | - | Future: Start Run visual |
-
-### Why Existing Art Works
-
-1. **Resolution**: 2752×1536 exceeds our 1920×1080 base (1.43x larger)
-2. **Aspect**: ~16:9, compatible with all target devices
-3. **Style**: Already matches Art Bible perfectly (it IS the Art Bible reference)
-4. **Quality**: High-detail painterly style, visible brushwork
-
-### Import Strategy
-
-```
-Source: art-docs/scrap-town-sancturary.png (2752×1536, 6MB)
-Destination: assets/hub/backgrounds/scrapyard_hub.png
-Compression: Lossy (mobile performance)
-Filter: Linear (smooth scaling)
-```
 
 ---
 
@@ -115,135 +91,109 @@ Filter: Linear (smooth scaling)
 
 ### Overview
 
-**Total Estimated Time**: 3-4 hours (down from original 9-11 hours)
+**Total Estimated Time**: 3-4 hours
 **Approach**: Asset-driven (use existing art directly)
 
 ### Session Breakdown
 
 | Session | Focus | Time | Status |
 |---------|-------|------|--------|
-| **Session 1** | Background Integration + Settings | 1h | ✅ **COMPLETE** |
+| **Session 1** | Background Integration | 1h | ✅ **COMPLETE** |
 | **Session 2** | Button Integration (IconButton) | 1.5-2h | ✅ **COMPLETE** |
-| **Session 3** | Polish & 10-Second Test | 1h | ⏭️ **NEXT** |
+| **Session 3** | Entry Point + Polish + 10-Second Test | ~65 min | ⏭️ **CURRENT** |
 
-### Completed Session Details (2025-11-25)
+---
 
-**Session 1 Commit**: `48a792c` - feat(hub): replace ColorRect background with Art Bible concept art
+### SESSION 1: Background Integration ✅ COMPLETE
+
+**Commit**: `48a792c` - feat(hub): replace ColorRect background with Art Bible concept art
+
+**What Was Done**:
 - Background integrated with -90° rotation fix for landscape display
 - All aspect ratio tests passed
+- User approval obtained
 
-**Session 2 Commit**: `7316009` - feat(ui): add IconButton component with Art Bible styling
+---
+
+### SESSION 2: Button Integration ✅ COMPLETE
+
+**Commit**: `7316009` - feat(ui): add IconButton component with Art Bible styling
+
+**What Was Done**:
 - IconButton component: 441 lines with 27 tests
 - Three sizes (50/80/120pt), three variants (Primary/Secondary/Danger)
 - Pre-commit hooks caught and fixed: trailing whitespace, line length, asset validator limits
 
 ---
 
-### SESSION 1: Background Integration
+### SESSION 3: Entry Point + Polish + 10-Second Test ⏭️ CURRENT
 
-**Estimated Time**: 1 hour
+**Estimated Time**: ~65 minutes
 
-**Objective**: Set up hub scene with existing concept art as background
+**Objective**: Change app entry point, add stub messages, polish, validate
 
-**Tasks**:
+#### Task Breakdown
 
-1. **Verify Godot Project Settings**
-   ```
-   Project → Project Settings → Display → Window
-   - Viewport Width: 1920
-   - Viewport Height: 1080
-   - Stretch Mode: canvas_items
-   - Stretch Aspect: expand
-   ```
+| Task | Time | Notes |
+|------|------|-------|
+| Change entry point → Hub | 15 min | project.godot modification |
+| Rename button label "Roster" → "Barracks" | 5 min | IconButton text only |
+| Settings button "Coming Soon" toast | 10 min | ModalFactory toast |
+| Start Run stub check | 15 min | Character/selection validation |
+| Haptic feedback validation | 10 min | iPhone 15 Pro Max |
+| 10-Second Impression Test | 10 min | With participant |
+| **Total** | **~65 min** | |
 
-2. **Import Background Asset**
-   - Copy `art-docs/scrap-town-sancturary.png` to `assets/hub/backgrounds/`
-   - Rename to `scrapyard_hub.png` (fix typo)
-   - Configure import settings for mobile
+#### Character Selection Model (Stub Implementation)
 
-3. **Update Scrapyard Scene**
-   ```
-   Scrapyard (Control - full rect)
-   ├── Background (TextureRect)
-   │   - texture = scrapyard_hub.png
-   │   - stretch_mode = "Keep Aspect Covered"
-   │   - anchors = full rect
-   └── UILayer (CanvasLayer)
-       └── ScreenContainer (existing)
-   ```
+**Current State** (from codebase investigation):
+- `GameState.active_character_id` EXISTS (runtime variable)
+- `GameState.set_active_character()` EXISTS
+- Selection NOT persisted between app sessions
+- Current entry point: `character_roster.tscn`
 
-4. **Test Multiple Aspect Ratios**
-   - Resize editor window to simulate:
-     - 16:9 (1920×1080)
-     - 19.5:9 (2340×1080)
-     - 20:9 (2400×1080)
+**Stub Logic for Start Run**:
+```gdscript
+func _on_start_run_pressed() -> void:
+    var character_count = CharacterService.get_character_count()
+    
+    if character_count == 0:
+        # No survivors exist
+        _show_toast("Recruit a survivor at the Barracks first")
+        return
+    
+    if GameState.active_character_id.is_empty():
+        # Survivors exist but none selected
+        _show_toast("Select a survivor at the Barracks first")
+        return
+    
+    # Has selected survivor - launch wasteland
+    get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
+```
 
-5. **Device QA**
+#### Terminology Changes (This Session)
 
-**QA Gate Checklist**:
-- [x] Project settings correct (canvas_items + expand)
-- [x] Background displays at all aspect ratios without breaking
-- [x] Art maintains quality (no compression artifacts)
-- [x] Safe areas still function
-- [x] Performance acceptable (< 100ms load)
-- [x] User approval
+| Old | New | Scope |
+|-----|-----|-------|
+| Roster | Barracks | Button label only |
+| Characters | Survivors | Toast messages only |
+| Create Character | Recruit | Toast messages only |
 
----
+**Full terminology update** (scene names, file names, all references) deferred to Phase 9.
 
-### SESSION 2: Button Integration
+#### QA Gate Checklist
 
-**Estimated Time**: 1.5-2 hours
+- [ ] App launches to Hub (scrapyard.tscn)
+- [ ] Button label shows "Barracks" (not "Roster")
+- [ ] Settings button shows "Coming Soon" toast
+- [ ] Start Run with no characters → "Recruit a survivor" toast
+- [ ] Start Run with characters but none selected → "Select a survivor" toast
+- [ ] Haptic feedback works on iPhone 15 Pro Max
+- [ ] Button press animations smooth and responsive
+- [ ] 10-Second Impression Test passed (4/5 positive responses)
+- [ ] User declares: "This looks like a real indie game"
 
-**Objective**: Position icon buttons on hub using Art Bible UI kit styling
-
-**Button Assets** (from Phase 8.2b):
-- `assets/icons/hub/icon_start_run_final.svg` ✅
-- `assets/icons/hub/icon_roster_final.svg` ✅
-- `assets/icons/hub/icon_settings_final.svg` ✅
-
-**Button Style** (from `buttons-signs.png` reference):
-- Metal plate background (orange for primary)
-- Weathered/scratched texture
-- Dark border with slight bevel
-- Drop shadow for depth
-
-**Button Placement** ("Hybrid Diegetic Floating"):
-
-| Button | Position | Size | Visual Anchor |
-|--------|----------|------|---------------|
-| **Start Run** | Right-center | 120×120pt | Toward gate area |
-| **Roster** | Left-center | 80×80pt | Toward barracks |
-| **Settings** | Top-right | 50×50pt | Universal convention |
-
-**Implementation**:
-
-1. Create `IconButton` component (if not exists)
-2. Style buttons to match Art Bible UI kit
-3. Position using anchors + safe area offsets
-4. Wire up navigation signals
-5. Test touch targets (≥44pt)
-
-**QA Gate Checklist**:
-- [x] Buttons visible and readable on background
-- [x] Button hierarchy clear (Start Run = hero)
-- [x] Touch targets adequate
-- [x] Navigation functional
-- [x] Style matches Art Bible
-
----
-
-### SESSION 3: Polish & Validation
-
-**Estimated Time**: 1 hour
-
-**Objective**: Final polish and 10-Second Impression Test
-
-**Polish Tasks**:
-1. Button press feedback (scale + haptic)
-2. Hover/focus states for controller
-3. Transition animation when leaving hub
-
-**10-Second Impression Test**:
+#### 10-Second Impression Test
 
 Show hub screenshot to someone unfamiliar with project:
 
@@ -261,12 +211,15 @@ Show hub screenshot to someone unfamiliar with project:
 
 **All must be TRUE**:
 
-- [ ] Hub background uses Art Bible concept art
-- [ ] Background handles 16:9 to 20:9 aspect ratios
-- [ ] Stretch settings = canvas_items + expand
-- [ ] Icon buttons integrated with Art Bible styling
-- [ ] Button positions work across aspect ratios
-- [ ] Start Run is clearly the primary action
+- [x] Hub background uses Art Bible concept art
+- [x] Background handles 16:9 to 20:9 aspect ratios
+- [x] Stretch settings = canvas_items + expand
+- [x] Icon buttons integrated with Art Bible styling
+- [x] Button positions work across aspect ratios
+- [x] Start Run is clearly the primary action
+- [ ] App launches to Hub (not Character Roster)
+- [ ] Start Run validates character/selection state
+- [ ] Button press feedback smooth and polished
 - [ ] 10-Second Impression Test passed (4/5)
 - [ ] User declares: "This looks like a real indie game"
 
@@ -274,49 +227,69 @@ Show hub screenshot to someone unfamiliar with project:
 
 ## 📝 Files to Create/Modify
 
-**New Files**:
-- `assets/hub/backgrounds/scrapyard_hub.png` - Copied from art-docs
-- `scripts/ui/components/icon_button.gd` - Reusable component (if needed)
-- `scenes/ui/components/icon_button.tscn` - Component scene (if needed)
+**Session 3 Files**:
 
-**Modified Files**:
-- `project.godot` - Verify stretch settings
-- `scenes/hub/scrapyard.tscn` - Add background + buttons
-- `scripts/hub/scrapyard.gd` - Button logic
+| File | Action | Notes |
+|------|--------|-------|
+| `project.godot` | Modify | Entry point → scrapyard.tscn |
+| `scripts/hub/scrapyard.gd` | Modify | Stub messages, selection check |
+| `scenes/hub/scrapyard.tscn` | Modify | Button label "Barracks" |
 
-**Reference Files** (read-only):
-- `art-docs/Scrapyard_Scene_Art_Bible.md` - Style guide
-- `art-docs/scrap-town-sancturary.png` - Background source
-- `art-docs/buttons-signs.png` - UI kit reference
+**Already Complete (Sessions 1-2)**:
+- `assets/hub/backgrounds/scrapyard_hub.png` - Art Bible background
+- `scenes/ui/components/icon_button.tscn` - Reusable button scene
+- `scripts/ui/components/icon_button.gd` - IconButton component
+- `scripts/tests/ui/icon_button_test.gd` - Test suite
 
 ---
 
-## 🚀 Quick Start for Next Session
+## 🚀 Quick Start for Session 3
 
 ```
-✅ Session 1 COMPLETE (Background Integration)
-✅ Session 2 COMPLETE (IconButton Component)
-⏭️ NEXT: Session 3 - Polish & 10-Second Test
+SESSION 3 READY (Entry Point + Polish + 10-Second Test)
 
 COMMITS MADE:
 - 48a792c: feat(hub): replace ColorRect background with Art Bible concept art
 - 7316009: feat(ui): add IconButton component with Art Bible styling
 
-SESSION 3 TASKS:
-1. Test button press animation on device
-2. Verify haptic feedback
-3. Add controller focus states (if needed)
-4. Add scene transition animation
-5. Run 10-Second Impression Test
-6. Get user approval
+CODEBASE STATE:
+✅ GameState.active_character_id exists (runtime)
+✅ Character selection infrastructure ready
+⚠️ Entry point is character_roster.tscn (needs change)
+⚠️ Selection not persisted (Phase 9 work)
 
-ESTIMATED TIME: 1 hour
+TASKS:
+1. Change entry point: project.godot → scrapyard.tscn
+2. Rename button label: "Roster" → "Barracks"
+3. Settings button: "Coming Soon" toast
+4. Start Run: Stub check for characters/selection
+5. Haptic feedback validation on device
+6. 10-Second Impression Test
+7. Get user approval
+
+ESTIMATED TIME: ~65 minutes
 ```
 
 ---
 
-**Document Version**: 3.0
+## 📋 PHASE 9 PREVIEW: Survivor Selection Model & Barracks Polish
+
+**Full Plan**: See `docs/design/phase-9-survivor-selection.md`
+
+**Estimated Time**: 3-4 hours (across 2-3 sessions)
+
+**Key Objectives**:
+1. **Persist Selection**: Save/load `active_character_id`
+2. **Hub Awareness**: Full state checking on all buttons
+3. **Barracks Selection Flow**: Tap → Detail → Select → Return to Hub
+4. **Hub Visual Indicator**: Survivor Status Panel
+5. **Barracks Art Bible**: Background + detail view polish
+6. **Terminology**: Full rename Roster → Barracks throughout codebase
+
+---
+
+**Document Version**: 4.0
 **Created**: 2025-11-24
-**Updated**: 2025-11-25 (Sessions 1 & 2 Complete)
+**Updated**: 2025-11-26 (Session 3 Scope Refinement)
 **Author**: Expert Panel (Claude)
-**Status**: IN PROGRESS - Session 3 Remaining
+**Status**: IN PROGRESS - Session 3 Ready
