@@ -4342,9 +4342,10 @@ Accessibility:
 
 ## Implementation Status (LIVING SECTION - Updated During Execution)
 
-**Last Updated**: 2025-11-24 by Claude Code (Phase 8 PIVOT - Art Bible Direction)
+**Last Updated**: 2025-11-26 by Claude Code (Phase 9 Complete, Phase 10 Planned)
 **Current Session**: See `.system/NEXT_SESSION.md` for detailed notes
-**Revised Phase 8 Plan**: See `docs/design/phase-8-revised-plan.md` ⭐ **NEW**
+**Art Asset Guide**: See `docs/design/art-asset-usage-guide.md` ⭐ **NEW**
+**Phase 10 Plan**: See `docs/design/phase-10-barracks-background.md` ⭐ **NEW**
 
 | Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
 |-------|---------------|---------------|--------|-----------------|-------|
@@ -4364,15 +4365,19 @@ Accessibility:
 | **Phase 8.2a** | 2h | 2h | ✅ Complete | 2025-11-23 | Research & reference gathering |
 | **Phase 8.2b** | 2h | 2h | ✅ Complete | 2025-11-23 | Icon design (3 SVG icons) - Commit: 9b9c27d |
 | **Phase 8.2c** | 9-11h | 1.5h | 🔄 **PIVOTED** | - | ColorRect approach FAILED QA → Art Bible approach |
-| **Phase 8.2c (REVISED)** | 3-5h | - | 🔨 **IN PROGRESS** | - | Art Bible hub + icon buttons (see revised plan) |
+| **Phase 8.2c (REVISED)** | 3-5h | 2h | ✅ Complete | 2025-11-26 | Hub visual transformation with Art Bible assets |
+| **Phase 9.1** | 1h | 1h | ✅ Complete | 2025-11-26 | Selection persistence across app restarts |
+| **Phase 9.2** | 2h | 2h | ✅ Complete | 2025-11-26 | 2-column grid + selection flow, device QA passed |
+| **Phase 9.3** | 1.5h | 1.5h | ✅ Complete | 2025-11-26 | Hub status panel + barracks rename |
+| **Phase 10** | 1-2h | - | 📋 Planned | - | Barracks background replacement (Option C) |
 
-**🔄 PIVOT NOTICE (2025-11-24)**: Phase 8.2c original approach (ColorRect metal wall) failed QA. Expert panel unanimously approved pivot to Art Bible "Illustrated Junkpunk" direction using existing concept art assets and Banana Nano generation. Scope reduced from 9-11h to 3-5h.
+**📊 Expert Panel Review (2025-11-26)**: Full art asset review conducted. Established "Marvel Snap Law" principle: characters are the stars, backgrounds serve them. Option C selected for Barracks roster. Complete asset catalog created with repurposing recommendations.
 
-**Current Phase**: Phase 8.2c Session 1 (Portrait Hub Generation) - **ART BIBLE DIRECTION**
-**Next Phase**: Phase 8.2c Sessions 2-3 → Phase 8 Complete → Week 16 Complete
-**Total Week 16 Progress**: ~85% complete (Phase 8.2c remaining)
-**Actual Time Spent**: ~22h (Week 16 core ~16h + detours ~6h)
-**Remaining Estimate**: 3-5h (Phase 8.2c revised scope)
+**Current Phase**: Phase 10 (Barracks Background) - **AWAITING ASSET GENERATION**
+**Next Phase**: Phase 10 → Device QA → Week 17 Planning
+**Total Week 16 Progress**: ~95% complete (Phase 10 pending)
+**Actual Time Spent**: ~28h (Week 16 core ~22h + Phase 9 ~6h)
+**Remaining Estimate**: 1-2h (Phase 10)
 
 ---
 

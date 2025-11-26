@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c0svjdiinxkl4" path="res://scripts/ui/barracks.gd" id="1_roster"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://k3o6w26cwvhk" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
-[ext_resource type="Texture2D" path="res://assets/ui/backgrounds/barracks_background.png" id="4_barracks_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/backgrounds/barracks_interior.jpg" id="4_barracks_bg"]
 
 [node name="CharacterRoster" type="Control"]
 layout_mode = 3
@@ -25,15 +25,6 @@ grow_vertical = 2
 texture = ExtResource("4_barracks_bg")
 expand_mode = 1
 stretch_mode = 6
-
-[node name="GradientOverlay" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
 
 [node name="ScreenContainer" type="MarginContainer" parent="."]
 layout_mode = 1

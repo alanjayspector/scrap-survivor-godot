@@ -1,102 +1,88 @@
-# Next Session: Phase 9 Complete - Ready for QA
+# Next Session: Phase 10 - Barracks Background Replacement
 
 **Date**: 2025-11-26
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
-**Phase 9 Plan**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
-**Current Phase**: Phase 9 COMPLETE
-**Status**: ✅ **READY FOR DEVICE QA**
+**Phase 10 Plan**: [docs/design/phase-10-barracks-background.md](../docs/design/phase-10-barracks-background.md)
+**Art Asset Guide**: [docs/design/art-asset-usage-guide.md](../docs/design/art-asset-usage-guide.md)
+**Current Phase**: Phase 10 - Barracks Background
+**Status**: ⏳ **AWAITING ASSET GENERATION**
 
 ---
 
-## ✅ PHASE 9.3 COMPLETE
+## 🎯 SESSION SUMMARY (2025-11-26)
 
-### Session Summary (2025-11-26)
+### Expert Panel Convened
 
-**What Was Done**:
+The expert panel (Sr Mobile Game Designer, Sr UI/UX Designer, Sr Product Manager, Sr Godot Developer) analyzed:
 
-1. **Expert Panel Convened**
-   - Competitive analysis: Darkest Dungeon, Marvel Snap, AFK Arena, ZZZ, Brotato, Vampire Survivors
-   - Key insight: "Marvel Snap Law" - Cards are brightest, UI serves cards
-   - Detailed specifications documented in phase-9-survivor-selection.md
+1. **The Problem**: Beautiful barracks exterior art is hidden behind 45% overlay AND character cards. Art competes with "the money" (characters players are attached to).
 
-2. **Survivor Status Panel Created**
-   - `scenes/ui/components/survivor_status_panel.tscn`
-   - `scripts/ui/components/survivor_status_panel.gd`
-   - 200×80pt panel, bottom-left of Hub
-   - Shows: Portrait (60×60), Name, Level/Type, Stats
-   - Empty state: "No Survivor Selected" / "Tap to choose"
-   - Tap → Opens Barracks
-   - Reactive updates via `CharacterService.active_character_changed`
+2. **The Solution**: Replace narrative art with UI background (Option C - dark gradient with industrial framing). Characters become the stars.
 
-3. **Hub Integration**
-   - Panel added to `scenes/hub/scrapyard.tscn`
-   - Positioned with safe area compliance (iOS HIG)
+3. **Key Principle Established**: "Marvel Snap Law" - Cards are brightest, UI serves cards.
 
-4. **Barracks Background**
-   - Copied `barracks-exterior.png` to `assets/ui/backgrounds/`
-   - Applied to Barracks with 60% black overlay
-   - Cards remain readable (Marvel Snap principle)
+### Three Background Options Reviewed
 
-5. **File Renames Complete**
-   - `character_roster.tscn` → `barracks.tscn`
-   - `character_roster.gd` → `barracks.gd`
-   - All code references updated (7 files)
+| Option | Score | Verdict |
+|--------|-------|---------|
+| **A** - Rusty corrugated metal | 17/20 | Clean, functional, less interesting |
+| **B** - Interior wall with patches | 16/20 | Rich detail but light fixture competes |
+| **C** - Dark gradient + edge framing | 18/20 | ✅ WINNER - Perfect "display case" for cards |
 
-**Tests**: 671/695 passing
-**GDLint**: Clean
+### All Art Assets Cataloged
 
----
+Complete review of 17 art assets with recommendations:
+- Hub backgrounds (scrapyard-topdown - current)
+- Building exteriors (barracks, bank, wasteland-gate, etc.)
+- UI backgrounds (Option A/B/C)
+- Interior scenes (workshop, bunker)
+- UI elements (buttons, signs, NPCs)
 
-## ✅ PHASE 9.2 COMPLETE
+**Full catalog**: `docs/design/art-asset-usage-guide.md`
 
-### Session Summary (2025-11-26)
+### Key Decisions Made
 
-**What Was Done**:
-1. ✅ Converted character roster from VBoxContainer list to 2-column GridContainer
-2. ✅ Redesigned CharacterCard as 180×240pt portrait cards (entire card tappable)
-3. ✅ Added selection state borders (4pt orange #FF6600 when selected)
-4. ✅ Added corner badge with checkmark for selected character
-5. ✅ Added bottom action bar to detail screen (Select/Start Run/Delete)
-6. ✅ "Select Survivor" sets active character and returns to Barracks
-7. ✅ Shows "✓ Selected" (disabled) when character already selected
-8. ✅ Device QA passed on iPhone 15 Pro Max
-
-**Commit**: `5bca147` - feat(barracks): Phase 9.2 - 2-column grid + selection flow
+| Decision | Rationale |
+|----------|-----------|
+| Use Option C for Barracks | Dark center + industrial framing = display case |
+| Remove barracks exterior from roster | Narrative art wrong for list screen |
+| Keep current Hub layout | Icon buttons work; building tiles deferred |
+| 2048×2048 for new textures | Covers all devices, GPU-optimized |
 
 ---
 
-## ✅ PHASE 9.1 COMPLETE
+## 📋 IMMEDIATE NEXT STEPS
 
-### Session Summary (2025-11-26)
+### Step 1: Generate Option C Asset
 
-**What Was Done**:
-1. ✅ Selection persistence across app restarts
-2. ✅ Hub state checking (no survivors, no selection)
-3. ✅ Auto-select first character
-4. ✅ Clear selection on delete
+**Alan Action Required**: Generate asset using Banana Nano
 
----
+**Prompt**:
+```
+Illustrated junkpunk style, abstract dark background gradient, 
+industrial grunge aesthetic, subtle metal and rust textures fading 
+into darkness, muted earth tones, hand-painted brushstroke style, 
+vignette effect darker at edges, atmospheric and moody, 
+minimalist background for UI overlay, no objects no text,
+pipes and cables visible at edges, teal oxidation on rust,
+dark center for content overlay, 2048x2048 square format
+```
 
-## 🧪 QA CHECKLIST (Device Testing)
+**Requirements**:
+- Resolution: 2048×2048 (square)
+- File size: ≤1MB
+- Format: PNG preferred
 
-**Hub (Scrapyard)**:
-- [ ] Survivor Status Panel visible in bottom-left
-- [ ] Panel shows correct character info when survivor selected
-- [ ] Panel shows "No Survivor Selected" when none selected
-- [ ] Tap panel → Opens Barracks
-- [ ] Panel updates when selection changes in Barracks
+### Step 2: Implement Phase 10
 
-**Barracks (formerly Character Roster)**:
-- [ ] Background image visible (barracks exterior)
-- [ ] Character cards readable over background
-- [ ] 2-column grid layout correct
-- [ ] Tap card → Opens detail screen
-- [ ] Selection flow: Detail → "Select Survivor" → Return to grid with border
+Once asset is received:
+1. Add to `assets/ui/backgrounds/barracks_interior.png`
+2. Update `barracks.tscn` to use new background
+3. Remove GradientOverlay (darkness built-in)
+4. Device QA on iPhone
+5. Commit
 
-**Selection Flow**:
-- [ ] Selection persists after app close/reopen
-- [ ] Start Run blocked without selection
-- [ ] Auto-select works when only 1 survivor
+**Estimated Time**: 1-2 hours
 
 ---
 
@@ -108,7 +94,46 @@
 | Phase 9.1 | ✅ Complete | Selection persistence |
 | Phase 9.2 | ✅ Complete | 2-column grid + selection flow |
 | Phase 9.3 | ✅ Complete | Hub status panel + barracks rename |
+| Phase 9 QA | ⏳ Pending | Awaiting device QA |
+| **Phase 10** | 📋 Planned | Barracks background replacement |
 | Week 17 | 📋 Planned | Visual polish, animations |
+
+---
+
+## 📚 Documentation Created This Session
+
+1. **Art Asset Usage Guide** (`docs/design/art-asset-usage-guide.md`)
+   - Complete catalog of 17 art assets
+   - Classification system (Hub BG, Building Exterior, UI BG, etc.)
+   - Expert panel analysis and scores
+   - Resolution/optimization guidelines
+   - Repurposing recommendations
+
+2. **Phase 10 Implementation Plan** (`docs/design/phase-10-barracks-background.md`)
+   - Step-by-step implementation
+   - Asset generation prompt
+   - QA checklist
+   - Rollback plan
+
+---
+
+## 🔮 Future Work Identified (Week 17+)
+
+Based on expert panel analysis:
+
+### High Value Repurposing
+- **wasteland-gate**: "Start Run" confirmation screen
+- **cultivation-chamber**: Character creation background (thematic fit!)
+- **detailed-workshop**: Upgrades screen background
+
+### Hub Enhancement (Deferred)
+- Building tiles system (tap on buildings in hub)
+- Button/sign sprite sheet integration
+- NPC integration for atmosphere
+
+### Asset Optimization
+- Consider removing unused assets from bundle
+- WebP conversion for size savings
 
 ---
 
@@ -126,19 +151,22 @@
 
 ---
 
-## 🚀 Next Steps (After QA)
+## 🚀 Quick Start Prompt (Next Session)
 
-If QA passes:
-1. Archive this session
-2. Update week plan status tracker
-3. Begin Week 17 planning (visual polish)
+```
+Read these files to continue:
+1. .system/CLAUDE_RULES.md (project rules)
+2. .system/NEXT_SESSION.md (this file - current state)
+3. docs/design/phase-10-barracks-background.md (implementation plan)
+4. docs/design/art-asset-usage-guide.md (asset catalog)
 
-If QA fails:
-1. Document issues
-2. Start new session with findings
-3. Fix and retest
+Current task: Implement Phase 10 - Barracks Background Replacement
+- Alan should have generated the Option C asset
+- Follow phase-10-barracks-background.md implementation steps
+- Device QA after implementation
+```
 
 ---
 
-**Last Updated**: 2025-11-26 (Phase 9.3 Complete)
-**Status**: Ready for Device QA
+**Last Updated**: 2025-11-26 (Expert Panel Review Complete)
+**Status**: Awaiting Option C Asset Generation
