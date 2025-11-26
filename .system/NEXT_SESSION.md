@@ -1,89 +1,81 @@
-# Next Session: Phase 9 - Survivor Selection Model & Barracks Polish
+# Next Session: Phase 9.3 - Hub Status Panel
 
 **Date**: 2025-11-26
 **Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
-**Phase 8.2c Plan**: [docs/design/phase-8-revised-plan.md](../docs/design/phase-8-revised-plan.md) ✅ COMPLETE
 **Phase 9 Plan**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
-**Current Phase**: Phase 9.1 - Selection Persistence + Hub State
-**Status**: 🔨 **IN PROGRESS**
+**Current Phase**: Phase 9.3 - Hub Visual Indicator + Barracks Background
+**Status**: ⏭️ **READY TO START**
 
 ---
 
-## 🔨 PHASE 9.1 IN PROGRESS
+## ✅ PHASE 9.2 COMPLETE
 
 ### Session Summary (2025-11-26)
 
 **What Was Done**:
-1. ✅ **Selection Persistence** - `active_character_id` now persists across app restarts
-   - CharacterService ALREADY persisted it (discovered during analysis)
-   - Added GameState sync from CharacterService via signals
-   - GameState._ready() connects to CharacterService.active_character_changed
-   - GameState.set_active_character() now updates CharacterService first
-2. ✅ **Hub State Checking** - Already implemented in Phase 8.2c
-   - "No Survivors" → "Recruit a survivor at the Barracks first"
-   - "No Selection" → "Select a survivor at the Barracks first"
-   - Selection exists → Launch wasteland
-3. ✅ **Auto-select** - Already implemented in CharacterService (line 214)
-   - First character created is auto-selected
-4. ✅ **Clear on delete** - Already implemented in CharacterService (lines 284-293)
-5. ✅ **Tests updated** - 2 tests changed to reflect new persistence behavior
-6. ✅ **All 671 tests passing**
+1. ✅ Converted character roster from VBoxContainer list to 2-column GridContainer
+2. ✅ Redesigned CharacterCard as 180×240pt portrait cards (entire card tappable)
+3. ✅ Added selection state borders (4pt orange #FF6600 when selected)
+4. ✅ Added corner badge with checkmark for selected character
+5. ✅ Added bottom action bar to detail screen (Select/Start Run/Delete)
+6. ✅ "Select Survivor" sets active character and returns to Barracks
+7. ✅ Shows "✓ Selected" (disabled) when character already selected
+8. ✅ Device QA passed on iPhone 15 Pro Max
+9. ✅ 671/695 tests passing
 
-**Files Modified**:
-- `scripts/autoload/game_state.gd` - Added CharacterService sync
-- `scripts/tests/ui/character_creation_integration_test.gd` - Updated test expectation
-- `scripts/tests/ui/first_run_flow_integration_test.gd` - Renamed + updated test
-
-**Key Discovery**:
-CharacterService already persisted `active_character_id` in its serialize/deserialize! The issue was GameState had a separate copy that wasn't synced. Fixed by making GameState listen to CharacterService signals.
+**Commit**: `5bca147` - feat(barracks): Phase 9.2 - 2-column grid + selection flow
 
 ---
 
-## ⏭️ REMAINING PHASE 9 TASKS
+## ✅ PHASE 9.1 COMPLETE
 
-### Session 9.2: Barracks Selection Flow + Detail View Polish (1.5h)
-- [ ] Add "Select" button to Character Details screen
-- [ ] Tap "Select" → sets active survivor → returns to Hub
-- [ ] Update character card tap behavior (tap → detail view)
-- [ ] Polish detail view with Art Bible styling
-
-### Session 9.3: Hub Visual Indicator + Barracks Background (1h)
-- [ ] Create Survivor Status Panel component (bottom-left of Hub)
-- [ ] Add Art Bible background to Barracks
-- [ ] Full terminology update: Roster → Barracks (file rename)
-
----
-
-## ✅ PHASE 8.2c COMPLETE
-
-### Session 3 Summary (2025-11-26)
+### Session Summary (2025-11-26)
 
 **What Was Done**:
-1. ✅ Changed entry point to Hub (scrapyard.tscn)
-2. ✅ Added "Barracks" label to roster button
-3. ✅ Settings button shows "Coming Soon" modal
-4. ✅ Start Run validates character/selection state with helpful messages
-5. ✅ Fixed MobileModal title/message not rendering (added `_update_title_label()` and `_update_message_label()` calls in `_ready()`)
-6. ✅ Fixed Barracks button incorrectly disabled on first run
-7. ✅ Button accessibility improvements (Barracks PRIMARY variant, Settings MEDIUM 80pt)
-8. ✅ 10-Second Impression Test passed
-9. ✅ Device QA passed
+1. ✅ Selection persistence across app restarts
+2. ✅ Hub state checking (no survivors, no selection)
+3. ✅ Auto-select first character
+4. ✅ Clear selection on delete
+5. ✅ 671 tests passing
 
 ---
 
-## 📋 PHASE 9: Survivor Selection Model & Barracks Polish
+## ⏭️ PHASE 9.3 TASKS
 
-**Full Plan**: [docs/design/phase-9-survivor-selection.md](../docs/design/phase-9-survivor-selection.md)
+### Session 9.3: Hub Visual Indicator + Barracks Background (~1h)
 
-**Estimated Time**: 3-4 hours (across 2-3 sessions)
+**Task 1: Hub Survivor Status Panel** (~30min)
+- Create `survivor_status_panel.tscn` component
+- Position: Bottom-left of Hub (doesn't conflict with buttons)
+- Shows: Character portrait/icon, name, level, type
+- Tap panel → Opens Barracks
+- Empty state: "No Survivor Selected"
 
-**Key Objectives**:
-1. ✅ **Persist Selection**: Save/load `active_character_id` in save data - DONE
-2. ✅ **Hub State Awareness**: Full button state checking - DONE (Phase 8.2c)
-3. ⏭️ **Barracks Selection Flow**: Tap → Detail → Select → Return to Hub
-4. ⏭️ **Hub Survivor Status Panel**: Visual indicator showing selected survivor
-5. ⏭️ **Barracks Art Bible**: Background + detail view polish
-6. ⏭️ **Terminology**: Full rename Roster → Barracks throughout codebase
+**Task 2: Barracks Art Bible Background** (~15min)
+- Apply background image or consistent styling
+- Ensure readability of character cards over background
+
+**Task 3: Full Terminology Update** (~15min)
+- Rename `character_roster.tscn` → `barracks.tscn`
+- Rename `character_roster.gd` → `barracks.gd`
+- Update all references in codebase
+- Update scene titles and labels
+
+**Files to Create/Modify**:
+```
+scenes/ui/components/survivor_status_panel.tscn  # NEW
+scripts/ui/components/survivor_status_panel.gd   # NEW
+scenes/hub/scrapyard.tscn                        # Add status panel
+scenes/ui/barracks.tscn                          # Renamed from character_roster
+scripts/ui/barracks.gd                           # Renamed from character_roster
+```
+
+**QA Gate**:
+- [ ] Hub shows selected survivor panel
+- [ ] Panel updates when selection changes
+- [ ] Barracks has consistent styling
+- [ ] All terminology updated (Roster → Barracks)
+- [ ] No broken scene references
 
 ---
 
@@ -91,13 +83,11 @@ CharacterService already persisted `active_character_id` in its serialize/deseri
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| Phase 8.2c Session 1 | ✅ Complete | Background integration |
-| Phase 8.2c Session 2 | ✅ Complete | IconButton component |
-| Phase 8.2c Session 3 | ✅ Complete | Entry point, stubs, QA fixes |
-| **Phase 8.2c** | ✅ **COMPLETE** | Hub visual transformation done |
-| Phase 9.1 | ✅ **COMPLETE** | Selection persistence + Hub state |
-| Phase 9.2 | ⏭️ Next | Barracks selection flow |
-| Phase 9.3 | ⏭️ Pending | Hub status panel + background |
+| Phase 8.2c | ✅ Complete | Hub visual transformation |
+| Phase 9.1 | ✅ Complete | Selection persistence |
+| Phase 9.2 | ✅ Complete | 2-column grid + selection flow |
+| Phase 9.3 | ⏭️ Ready | Hub status panel + rename |
+| Week 17 Barracks Polish | 📋 Planned | Visual "trophy case" upgrade |
 
 ---
 
@@ -110,7 +100,8 @@ CharacterService already persisted `active_character_id` in its serialize/deseri
 
 **Git Status**:
 - Branch: main
-- Latest Test Run: 671/695 passing
+- Latest Commit: `5bca147` - Phase 9.2 complete
+- Test Status: 671/695 passing
 - GDLint: Clean
 
 ---
@@ -118,32 +109,32 @@ CharacterService already persisted `active_character_id` in its serialize/deseri
 ## 🚀 Quick Start Command (Next Session)
 
 ```
-PHASE 9.1 COMPLETE - Selection Persistence
-
-COMPLETED:
-✅ active_character_id persists across app restart
-✅ GameState syncs from CharacterService
-✅ Hub state checking (no survivors, no selection)
-✅ Auto-select first character
-✅ Clear selection on delete
-✅ 671/695 tests passing
-
-NEXT UP - PHASE 9.2:
-1. Add "Select" button to Character Details screen
-2. Tap "Select" → sets survivor → returns to Hub
-3. Update card tap behavior (tap → detail view)
-4. Polish detail view with Art Bible styling
+PHASE 9.3: Hub Status Panel + Barracks Rename
 
 READ FIRST:
-- docs/design/phase-9-survivor-selection.md (Session 9.2 section)
-- scripts/ui/character_details_screen.gd
-- scripts/ui/character_roster.gd
+- docs/design/phase-9-survivor-selection.md (Session 9.3 section)
+- scenes/hub/scrapyard.tscn (current Hub layout)
 
-REMAINING TIME: ~2.5h (Sessions 9.2 + 9.3)
+CREATE:
+- scenes/ui/components/survivor_status_panel.tscn
+- scripts/ui/components/survivor_status_panel.gd
+
+RENAME:
+- character_roster.tscn → barracks.tscn
+- character_roster.gd → barracks.gd
+- Update all references (grep for "character_roster")
+
+SPECS:
+- Status panel: ~200×80pt, bottom-left of Hub
+- Shows: Portrait (60×60), Name, Level, Type
+- Tap → Opens Barracks
+- Empty state: "No Survivor Selected"
+
+START WITH: Create survivor_status_panel component first, then integrate into Hub, then do file renames last.
 ```
 
 ---
 
-**Last Updated**: 2025-11-26 (Phase 9.1 Complete)
-**Status**: Phase 9.1 Complete - Ready for Phase 9.2
-**Next Action**: Continue with Phase 9.2 (Barracks Selection Flow)
+**Last Updated**: 2025-11-26 (Phase 9.2 Complete - Device QA Passed)
+**Status**: Phase 9.2 Complete - Ready for Phase 9.3
+**Recommendation**: Start fresh session for Phase 9.3 (file renames benefit from full token budget)
