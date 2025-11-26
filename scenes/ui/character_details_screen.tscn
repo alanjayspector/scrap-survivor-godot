@@ -86,3 +86,28 @@ theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
+
+[node name="BottomActionBar" type="HBoxContainer" parent="MainContainer/ContentArea"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="SelectButton" type="Button" parent="MainContainer/ContentArea/BottomActionBar"]
+custom_minimum_size = Vector2(200, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Select Survivor"
+
+[node name="StartRunButton" type="Button" parent="MainContainer/ContentArea/BottomActionBar"]
+custom_minimum_size = Vector2(140, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Start Run"
+
+[node name="DeleteButton" type="Button" parent="MainContainer/ContentArea/BottomActionBar"]
+custom_minimum_size = Vector2(80, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+icon_alignment = 1
+expand_icon = true

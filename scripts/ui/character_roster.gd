@@ -20,7 +20,7 @@ const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 @onready
-var character_list: VBoxContainer = $ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer/CharacterList
+var character_list: GridContainer = $ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer/CharacterList
 @onready var slot_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/SlotLabel
 @onready
 var create_new_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/CreateNewButton
@@ -78,7 +78,7 @@ func _populate_character_list() -> void:
 
 
 func _create_character_list_item(character: Dictionary) -> void:
-	"""Create a character list item using CharacterCard component (QA Fix #2)"""
+	"""Create a character card for grid display (Phase 9.2: Portrait card grid)"""
 	# Instantiate CharacterCard component
 	var card = CHARACTER_CARD_SCENE.instantiate()
 
@@ -88,13 +88,11 @@ func _create_character_list_item(character: Dictionary) -> void:
 	# THEN setup with character data (after @onready vars are ready)
 	card.setup(character)
 
-	# Connect signals
-	card.play_pressed.connect(_on_character_play_pressed)
-	card.delete_pressed.connect(_on_character_delete_pressed)
-	card.details_pressed.connect(_on_character_details_pressed)
+	# Connect card tap signal → navigate to details
+	card.card_pressed.connect(_on_character_card_pressed)
 
-	GameLogger.info(
-		"[CharacterRoster] Card signals connected",
+	GameLogger.debug(
+		"[CharacterRoster] Card created",
 		{"character_id": character.get("id", ""), "name": character.get("name", "")}
 	)
 
@@ -146,85 +144,9 @@ func _connect_signals() -> void:
 	UI_ICONS.apply_button_icon(back_button, UI_ICONS.Icon.BACK)
 
 
-func _on_character_play_pressed(character_id: String) -> void:
-	"""Handle Play button - select character and launch combat"""
-	GameLogger.info("[CharacterRoster] ⭐ PLAY SIGNAL RECEIVED ⭐", {"character_id": character_id})
-	_play_sound(CHARACTER_SELECT_SOUND)
-
-	GameLogger.info("[CharacterRoster] Character selected for play", {"character_id": character_id})
-	Analytics.character_selected(
-		CharacterService.get_character(character_id).get("character_type", "unknown"),
-		CharacterService.get_character(character_id).get("level", 1)
-	)
-
-	# Set as active character
-	GameState.set_active_character(character_id)
-
-	# Update last_played timestamp
-	var character = CharacterService.get_character(character_id)
-	character["last_played"] = Time.get_unix_time_from_system()
-	CharacterService.update_character(character_id, character)
-
-	# Save before launching
-	SaveManager.save_all_services()
-
-	# Launch combat (with safety check)
-	if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
-		get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
-	else:
-		GameLogger.error("[CharacterRoster] wasteland.tscn not found")
-		_play_sound(ERROR_SOUND)
-
-
-func _on_character_delete_pressed(character_id: String, character_name: String) -> void:
-	"""Handle Delete button - show mobile-native confirmation (Week 16 Phase 4)
-
-	Uses MobileModal ALERT with destructive button styling per iOS HIG.
-	"""
-	_play_sound(BUTTON_CLICK_SOUND)
-
-	# Show mobile-native destructive confirmation
-	MODAL_FACTORY.show_destructive_confirmation(
-		self,
-		"Delete Survivor?",
-		"Delete '%s'? This cannot be undone." % character_name,
-		func(): _execute_delete(character_id)
-	)
-
-
-func _execute_delete(character_id: String) -> void:
-	"""Execute character deletion after confirmation"""
-	# Get character data for analytics before deletion
-	var character = CharacterService.get_character(character_id)
-
-	# Delete character
-	var success = CharacterService.delete_character(character_id)
-	if success:
-		GameLogger.info("[CharacterRoster] Character deleted", {"character_id": character_id})
-
-		# Track deletion in analytics
-		Analytics.character_deleted(
-			character.get("character_type", "unknown"), character.get("level", 1)
-		)
-
-		# Save changes
-		SaveManager.save_all_services()
-
-		# Refresh UI
-		_populate_character_list()
-		_update_slot_label()
-	else:
-		GameLogger.error(
-			"[CharacterRoster] Failed to delete character", {"character_id": character_id}
-		)
-		_play_sound(ERROR_SOUND)
-
-
-func _on_character_details_pressed(character_id: String) -> void:
-	"""Handle Details button - navigate to full-screen character details (QA Pass 10 Fix)"""
-	GameLogger.debug(
-		"[CharacterRoster] Details button pressed - ENTRY", {"character_id": character_id}
-	)
+func _on_character_card_pressed(character_id: String) -> void:
+	"""Handle card tap - navigate to full-screen character details (Phase 9.2)"""
+	GameLogger.debug("[CharacterRoster] Card pressed", {"character_id": character_id})
 	_play_sound(BUTTON_CLICK_SOUND)
 
 	# Get character data to verify it exists

@@ -69,11 +69,13 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 follow_focus = true
 
-[node name="CharacterList" type="VBoxContainer" parent="ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer"]
+[node name="CharacterList" type="GridContainer" parent="ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+columns = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer"]
 layout_mode = 2

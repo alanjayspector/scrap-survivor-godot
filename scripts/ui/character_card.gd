@@ -1,30 +1,36 @@
-extends PanelContainer
-## CharacterCard - Reusable character list item component
-## Week 15 Phase 3: Godot Specialist architecture improvement
+extends Button
+## CharacterCard - Tappable portrait card for character grid
+## Phase 9.2: Simplified vertical card layout
 ##
 ## Features:
-## - Displays character info (name, type, level, stats)
-## - View Details button to show full character preview
-## - Play button to select character
-## - Delete button with proper spacing (20pt)
-## - Color-coded by character type
+## - 180×240pt portrait card
+## - Color-coded portrait by character type
+## - Selection state border (orange when selected)
+## - Entire card tappable → navigates to detail screen
 
-signal play_pressed(character_id: String)
-signal delete_pressed(character_id: String, character_name: String)
-signal details_pressed(character_id: String)
+signal card_pressed(character_id: String)
 
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
-const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
-@onready var character_icon: ColorRect = $HBoxContainer/CharacterIcon
-@onready var name_label: Label = $HBoxContainer/InfoContainer/NameLabel
-@onready var type_label: Label = $HBoxContainer/InfoContainer/TypeLabel
-@onready var stats_label: Label = $HBoxContainer/InfoContainer/StatsLabel
-@onready var details_button: Button = $HBoxContainer/DetailsButton
-@onready var play_button: Button = $HBoxContainer/PlayButton
-@onready var delete_button: Button = $HBoxContainer/DeleteButton
+## Selection state colors
+const COLOR_BORDER_UNSELECTED := Color("#5C5C5C")
+const COLOR_BORDER_SELECTED := Color("#FF6600")
+const COLOR_BADGE_BG := Color("#FF6600")
+
+@onready var panel_bg: Panel = $PanelBg
+@onready var portrait_rect: ColorRect = $ContentContainer/VBoxContainer/PortraitRect
+@onready var name_label: Label = $ContentContainer/VBoxContainer/NameLabel
+@onready var type_level_label: Label = $ContentContainer/VBoxContainer/TypeLevelLabel
+@onready var stats_label: Label = $ContentContainer/VBoxContainer/StatsLabel
+@onready var selection_badge: Panel = $SelectionBadge
 
 var character_data: Dictionary = {}
+var is_selected: bool = false
+
+
+func _ready() -> void:
+	# Connect button press
+	pressed.connect(_on_card_pressed)
 
 
 func setup(character: Dictionary) -> void:
@@ -36,79 +42,64 @@ func setup(character: Dictionary) -> void:
 	var character_type = character.get("character_type", "scavenger")
 	var character_level = character.get("level", 1)
 	var highest_wave = character.get("highest_wave", 0)
+	var max_hp = character.get("max_hp", 100)
 
-	GameLogger.info(
-		"[CharacterCard] Setup starting",
-		{"id": character_id, "name": character_name, "buttons_exist": details_button != null}
-	)
-
+	# Get type definition for color
 	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
 	var type_display_name = type_def.get("display_name", character_type.capitalize())
 	var type_color = type_def.get("color", Color.GRAY)
 
-	# Set icon color
-	character_icon.color = type_color
+	# Set portrait color
+	portrait_rect.color = type_color
 
 	# Set labels
 	name_label.text = character_name
-	type_label.text = type_display_name
-	type_label.add_theme_color_override("font_color", type_color)
-	stats_label.text = "Level %d • Best Wave %d" % [character_level, highest_wave]
+	type_level_label.text = "%s • Lv.%d" % [type_display_name, character_level]
+	stats_label.text = "HP %d • Wave %d" % [max_hp, highest_wave]
 
-	# Style panel border with character type color
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.15, 0.15)
-	style.border_color = type_color
-	style.border_width_left = 3
-	style.corner_radius_top_left = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_right = 8
-	add_theme_stylebox_override("panel", style)
+	# Check if this character is selected
+	var active_id = GameState.active_character_id
+	set_selected(character_id == active_id and not active_id.is_empty())
 
-	# Apply button styling
-	THEME_HELPER.apply_button_style(details_button, THEME_HELPER.ButtonStyle.SECONDARY)
-	THEME_HELPER.apply_button_style(play_button, THEME_HELPER.ButtonStyle.PRIMARY)
-	THEME_HELPER.apply_button_style(delete_button, THEME_HELPER.ButtonStyle.DANGER)
-
-	# Apply button icons
-	UI_ICONS.apply_button_icon(delete_button, UI_ICONS.Icon.DELETE)
-
-	# Connect buttons
-	details_button.pressed.connect(_on_details_pressed)
-	play_button.pressed.connect(_on_play_pressed)
-	delete_button.pressed.connect(_on_delete_pressed)
-
-	GameLogger.info(
-		"[CharacterCard] Setup complete, buttons connected",
-		{
-			"id": character_id,
-			"details_disabled": details_button.disabled,
-			"play_disabled": play_button.disabled,
-			"delete_disabled": delete_button.disabled
-		}
+	GameLogger.debug(
+		"[CharacterCard] Setup complete",
+		{"id": character_id, "name": character_name, "is_selected": is_selected}
 	)
 
 
-func _on_details_pressed() -> void:
-	"""Emit details signal"""
+func set_selected(selected: bool) -> void:
+	"""Update selection visual state"""
+	is_selected = selected
+
+	# Update border
+	var border_color = COLOR_BORDER_SELECTED if selected else COLOR_BORDER_UNSELECTED
+	var border_width = 4 if selected else 2
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.15, 0.15)
+	style.border_color = border_color
+	style.set_border_width_all(border_width)
+	style.set_corner_radius_all(8)
+	panel_bg.add_theme_stylebox_override("panel", style)
+
+	# Update badge visibility
+	if selection_badge:
+		selection_badge.visible = selected
+		if selected:
+			_style_selection_badge()
+
+
+func _style_selection_badge() -> void:
+	"""Style the selection badge as orange circle with checkmark"""
+	var badge_style = StyleBoxFlat.new()
+	badge_style.bg_color = COLOR_BADGE_BG
+	badge_style.set_corner_radius_all(16)  # 32pt badge / 2 = 16 radius for circle
+	selection_badge.add_theme_stylebox_override("panel", badge_style)
+
+
+func _on_card_pressed() -> void:
+	"""Emit card pressed signal with character ID"""
 	var char_id = character_data.get("id", "")
+	GameLogger.debug("[CharacterCard] Card pressed", {"character_id": char_id})
 	HapticManager.light()
-	details_pressed.emit(char_id)
-
-
-func _on_play_pressed() -> void:
-	"""Emit play signal"""
-	var char_id = character_data.get("id", "")
-	GameLogger.info("[CharacterCard] Play button pressed", {"character_id": char_id})
-	HapticManager.light()
-	play_pressed.emit(char_id)
-	GameLogger.info("[CharacterCard] Play signal emitted", {"character_id": char_id})
-
-
-func _on_delete_pressed() -> void:
-	"""Emit delete signal - confirmation handled by CharacterRoster via MobileModal (Week 16 Phase 4)"""
-	var char_id = character_data.get("id", "")
-	var char_name = character_data.get("name", "Unknown")
-	HapticManager.light()
-	delete_pressed.emit(char_id, char_name)
+	card_pressed.emit(char_id)

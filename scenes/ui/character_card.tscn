@@ -3,59 +3,86 @@
 [ext_resource type="Script" path="res://scripts/ui/character_card.gd" id="1_card"]
 [ext_resource type="Theme" path="res://themes/game_theme.tres" id="2_theme"]
 
-[node name="CharacterCard" type="PanelContainer"]
+[node name="CharacterCard" type="Button"]
 theme = ExtResource("2_theme")
-custom_minimum_size = Vector2(0, 80)
+custom_minimum_size = Vector2(180, 240)
+focus_mode = 0
 script = ExtResource("1_card")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="PanelBg" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="CharacterIcon" type="ColorRect" parent="HBoxContainer"]
-custom_minimum_size = Vector2(60, 60)
+[node name="ContentContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentContainer"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="PortraitRect" type="ColorRect" parent="ContentContainer/VBoxContainer"]
+custom_minimum_size = Vector2(148, 148)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
 color = Color(0.5, 0.5, 0.5, 1)
 
-[node name="InfoContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="NameLabel" type="Label" parent="ContentContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="NameLabel" type="Label" parent="HBoxContainer/InfoContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Character Name"
-
-[node name="TypeLabel" type="Label" parent="HBoxContainer/InfoContainer"]
-layout_mode = 2
+mouse_filter = 2
 theme_override_font_sizes/font_size = 20
-text = "Scavenger"
+text = "Character"
+horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="HBoxContainer/InfoContainer"]
+[node name="TypeLevelLabel" type="Label" parent="ContentContainer/VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 14
+text = "Scavenger • Lv.1"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
-theme_override_font_sizes/font_size = 20
-text = "Level 1 • Best Wave 0"
+theme_override_font_sizes/font_size = 14
+text = "HP 100 • Wave 0"
+horizontal_alignment = 1
 
-[node name="DetailsButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(160, 60)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Details"
+[node name="SelectionBadge" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 24.0
+offset_bottom = 24.0
 
-[node name="PlayButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(280, 60)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Play"
-
-[node name="Spacer" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-
-[node name="DeleteButton" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(70, 60)
-layout_mode = 2
-icon_alignment = 1
-expand_icon = true
+[node name="CheckLabel" type="Label" parent="SelectionBadge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "✓"
+horizontal_alignment = 1
+vertical_alignment = 1
