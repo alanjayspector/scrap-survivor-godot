@@ -1,8 +1,8 @@
 # Phase 8 REVISED Plan - Art Bible Visual Identity
 
 **Document Created**: 2025-11-24
-**Last Updated**: 2025-11-26 (Session 3 Scope Refinement)
-**Status**: IN PROGRESS - Session 3 Ready
+**Last Updated**: 2025-11-26 (Session 3 Complete)
+**Status**: ✅ COMPLETE
 **Replaces**: Original Phase 8 "Metal Wall" approach (FAILED QA)
 
 ---
@@ -100,7 +100,7 @@ window/stretch/aspect = "expand"
 |---------|-------|------|--------|
 | **Session 1** | Background Integration | 1h | ✅ **COMPLETE** |
 | **Session 2** | Button Integration (IconButton) | 1.5-2h | ✅ **COMPLETE** |
-| **Session 3** | Entry Point + Polish + 10-Second Test | ~65 min | ⏭️ **CURRENT** |
+| **Session 3** | Entry Point + Polish + 10-Second Test | ~65 min | ✅ **COMPLETE** |
 
 ---
 
@@ -126,11 +126,20 @@ window/stretch/aspect = "expand"
 
 ---
 
-### SESSION 3: Entry Point + Polish + 10-Second Test ⏭️ CURRENT
+### SESSION 3: Entry Point + Polish + 10-Second Test ✅ COMPLETE
 
-**Estimated Time**: ~65 minutes
+**Commit**: (pending) - feat(hub): Phase 8.2c Session 3 - entry point, stubs, and QA fixes
 
-**Objective**: Change app entry point, add stub messages, polish, validate
+**What Was Done**:
+- Entry point changed to Hub (scrapyard.tscn)
+- "Barracks" label on roster button
+- Settings button shows "Coming Soon" modal
+- Start Run validates character/selection state
+- Fixed MobileModal title/message not rendering
+- Fixed Barracks button incorrectly disabled on first run
+- Button accessibility improvements (Barracks PRIMARY variant, Settings MEDIUM size)
+- 10-Second Impression Test passed
+- Device QA passed
 
 #### Task Breakdown
 
@@ -217,11 +226,11 @@ Show hub screenshot to someone unfamiliar with project:
 - [x] Icon buttons integrated with Art Bible styling
 - [x] Button positions work across aspect ratios
 - [x] Start Run is clearly the primary action
-- [ ] App launches to Hub (not Character Roster)
-- [ ] Start Run validates character/selection state
-- [ ] Button press feedback smooth and polished
-- [ ] 10-Second Impression Test passed (4/5)
-- [ ] User declares: "This looks like a real indie game"
+- [x] App launches to Hub (not Character Roster)
+- [x] Start Run validates character/selection state
+- [x] Button press feedback smooth and polished
+- [x] 10-Second Impression Test passed (4/5)
+- [x] User declares: "This looks like a real indie game"
 
 ---
 
@@ -288,8 +297,8 @@ ESTIMATED TIME: ~65 minutes
 
 ---
 
-**Document Version**: 4.0
+**Document Version**: 5.0
 **Created**: 2025-11-24
-**Updated**: 2025-11-26 (Session 3 Scope Refinement)
+**Updated**: 2025-11-26 (Phase 8.2c Complete)
 **Author**: Expert Panel (Claude)
-**Status**: IN PROGRESS - Session 3 Ready
+**Status**: ✅ COMPLETE - Phase 9 Next

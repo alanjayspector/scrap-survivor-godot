@@ -87,9 +87,8 @@ func _setup_buttons() -> void:
 	# IconButton handles its own styling via button_variant property
 	# No need for THEME_HELPER.apply_button_style() - already set in scene
 
-	# Disable settings button (not implemented in Week 15)
-	settings_button.disabled = true
-	settings_button.tooltip_text = "Coming in Week 16"
+	# Settings button enabled but shows "Coming Soon" toast
+	settings_button.disabled = false
 
 	# Show debug QA button ONLY in debug builds (Week 16 Priority 1)
 	var is_debug = OS.is_debug_build()
@@ -102,10 +101,8 @@ func _setup_buttons() -> void:
 		debug_qa_button.visible = false
 		GameLogger.info("[Hub] Debug QA button hidden (not a debug build)")
 
-	# If first run, disable roster (no characters exist yet)
-	if is_first_run:
-		roster_button.disabled = true
-		roster_button.tooltip_text = "Create your first character to unlock"
+	# Note: Roster (Barracks) is always enabled - users need it to recruit their first character
+	# Start Run button handles the "no characters" case with a helpful message
 
 
 func _show_save_corruption_dialog() -> void:
@@ -123,34 +120,47 @@ func _play_button_click_sound() -> void:
 
 
 func _on_start_run_pressed() -> void:
-	"""Handle Start Run button - launch character selection or creation"""
+	"""Handle Start Run button - validate character state before launching"""
 	_play_button_click_sound()
 
 	if is_instance_valid(Analytics):
 		Analytics.hub_button_pressed("StartRun")
 
+	var character_count := CharacterService.get_character_count()
+	var active_id := CharacterService.get_active_character_id()
+
 	GameLogger.info(
 		"[Hub] Start Run button pressed",
 		{
-			"is_first_run": is_first_run,
-			"target_scene": "character_creation" if is_first_run else "character_roster"
+			"character_count": character_count,
+			"active_character_id": active_id,
+			"is_first_run": is_first_run
 		}
 	)
 
-	if is_first_run:
-		# First run: Force character creation
-		if ResourceLoader.exists("res://scenes/ui/character_creation.tscn"):
-			get_tree().change_scene_to_file("res://scenes/ui/character_creation.tscn")
-		else:
-			GameLogger.warning("[Hub] character_creation.tscn not yet implemented")
-			get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+	# Check 1: No survivors exist
+	if character_count == 0:
+		GameLogger.info("[Hub] No survivors - showing recruitment prompt")
+		ModalFactory.show_alert(
+			self, "No Survivors", "Recruit a survivor at the Barracks first.", Callable()
+		)
+		return
+
+	# Check 2: Survivors exist but none selected
+	if active_id.is_empty():
+		GameLogger.info("[Hub] No survivor selected - showing selection prompt")
+		ModalFactory.show_alert(
+			self, "No Survivor Selected", "Select a survivor at the Barracks first.", Callable()
+		)
+		return
+
+	# Has selected survivor - launch wasteland
+	GameLogger.info("[Hub] Launching wasteland with survivor", {"character_id": active_id})
+	if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
+		get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
 	else:
-		# Has characters: Show character roster
-		if ResourceLoader.exists("res://scenes/ui/character_roster.tscn"):
-			get_tree().change_scene_to_file("res://scenes/ui/character_roster.tscn")
-		else:
-			GameLogger.warning("[Hub] character_roster.tscn not yet implemented")
-			get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+		GameLogger.warning("[Hub] wasteland.tscn not found - falling back to character selection")
+		get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
 
 
 func _on_roster_pressed() -> void:
@@ -170,13 +180,17 @@ func _on_roster_pressed() -> void:
 
 
 func _on_settings_pressed() -> void:
-	"""Handle Settings button - open settings menu"""
+	"""Handle Settings button - show Coming Soon toast"""
 	_play_button_click_sound()
 
 	if is_instance_valid(Analytics):
 		Analytics.hub_button_pressed("Settings")
 
-	GameLogger.warning("[Hub] Settings button pressed but not implemented (Week 15)")
+	GameLogger.info("[Hub] Settings button pressed - showing Coming Soon alert")
+
+	ModalFactory.show_alert(
+		self, "Coming Soon", "Settings will be available in a future update.", Callable()
+	)
 
 
 func _on_debug_qa_pressed() -> void:

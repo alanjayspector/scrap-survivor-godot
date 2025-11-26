@@ -93,7 +93,8 @@ grow_horizontal = 2
 grow_vertical = 2
 icon_texture = ExtResource("6_icon_roster")
 button_size = 1
-button_variant = 1
+button_variant = 0
+label_text = "Barracks"
 
 [node name="SettingsButton" parent="." instance=ExtResource("4_icon_button")]
 layout_mode = 1
@@ -105,7 +106,7 @@ offset_right = -44.0
 offset_bottom = 109.0
 grow_horizontal = 0
 icon_texture = ExtResource("7_icon_settings")
-button_size = 0
+button_size = 1
 button_variant = 1
 
 [node name="DebugQAButton" type="Button" parent="."]

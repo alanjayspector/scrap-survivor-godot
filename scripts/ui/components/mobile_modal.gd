@@ -89,6 +89,11 @@ func _ready() -> void:
 	_build_modal_container()
 	_build_content()
 
+	# Apply any text values that were set before _ready() ran
+	# (property setters early-return if not is_node_ready())
+	_update_title_label()
+	_update_message_label()
+
 	# Start hidden (only use visible, not modulate - parent alpha affects all children)
 	visible = false
 
