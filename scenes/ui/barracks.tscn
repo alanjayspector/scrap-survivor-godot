@@ -1,9 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://dt1ti218xk7p0"]
+[gd_scene load_steps=6 format=3 uid="uid://dt1ti218xk7p0"]
 
 [ext_resource type="Script" uid="uid://c0svjdiinxkl4" path="res://scripts/ui/barracks.gd" id="1_roster"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://k3o6w26cwvhk" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
 [ext_resource type="Texture2D" path="res://assets/ui/backgrounds/barracks_interior.jpg" id="4_barracks_bg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_bg"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.08, 0.08, 0.08, 0.4)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="CharacterRoster" type="Control"]
 layout_mode = 3
@@ -70,6 +81,7 @@ theme_override_constants/margin_bottom = 20
 
 [node name="ScrollContainer" type="ScrollContainer" parent="ScreenContainer/VBoxContainer/CharacterListContainer"]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_scroll_bg")
 follow_focus = true
 
 [node name="CharacterList" type="GridContainer" parent="ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer"]
