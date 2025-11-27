@@ -263,11 +263,15 @@ func test_set_locked_shows_overlay() -> void:
 	assert_true(lock_overlay.visible, "Lock overlay should be visible")
 
 
-func test_set_locked_disables_button() -> void:
+func test_set_locked_allows_interaction_for_preview() -> void:
+	# Phase 2 change: locked cards are NOT disabled - long-press should work for CTA preview
 	_card.setup_type("scavenger")
 	_card.set_locked(true, CharacterService.UserTier.PREMIUM)
 
-	assert_true(_card.disabled, "Button should be disabled when locked")
+	# Button NOT disabled - allows long-press for preview modal (CTA opportunity)
+	assert_false(
+		_card.disabled, "Button should NOT be disabled when locked (allows long-press preview)"
+	)
 
 
 func test_set_locked_false_enables_button() -> void:

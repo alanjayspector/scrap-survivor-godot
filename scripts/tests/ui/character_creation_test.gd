@@ -43,8 +43,11 @@ func after_each() -> void:
 
 func test_name_input_exists() -> void:
 	# Assert
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	assert_not_null(name_input, "Name input should exist")
 	assert_true(name_input is LineEdit, "Name input should be LineEdit")
@@ -52,8 +55,11 @@ func test_name_input_exists() -> void:
 
 func test_name_input_has_correct_max_length() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 
 	# Assert
@@ -62,8 +68,11 @@ func test_name_input_has_correct_max_length() -> void:
 
 func test_create_button_disabled_with_empty_name() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
@@ -80,8 +89,11 @@ func test_create_button_disabled_with_empty_name() -> void:
 
 func test_create_button_disabled_with_short_name() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
@@ -98,8 +110,11 @@ func test_create_button_disabled_with_short_name() -> void:
 
 func test_create_button_enabled_with_valid_name() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
@@ -116,8 +131,11 @@ func test_create_button_enabled_with_valid_name() -> void:
 
 func test_create_button_enabled_with_max_length_name() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
@@ -134,8 +152,11 @@ func test_create_button_enabled_with_max_length_name() -> void:
 
 func test_name_with_whitespace_is_trimmed() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
@@ -209,8 +230,11 @@ func test_selected_card_is_marked_selected() -> void:
 
 func test_create_character_with_valid_name() -> void:
 	# Arrange
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 	name_input.text = "TestHero"
 	name_input.text_changed.emit("TestHero")
@@ -316,8 +340,11 @@ func test_create_button_shows_slot_limit_tooltip() -> void:
 	var create_button = character_creation.get_node(
 		"ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/CreateButton"
 	)
-	var name_input = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+	var name_input = (
+		character_creation
+		. get_node(
+			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+		)
 	)
 
 	# Set valid name
@@ -410,8 +437,11 @@ func test_scene_has_correct_script() -> void:
 func test_all_required_nodes_exist() -> void:
 	# Assert
 	assert_not_null(
-		character_creation.get_node(
-			"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput"
+		(
+			character_creation
+			. get_node(
+				"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput"
+			)
 		),
 		"NameInput should exist"
 	)

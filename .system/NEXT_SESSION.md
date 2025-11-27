@@ -2,12 +2,12 @@
 
 **Date**: 2025-11-26 (Updated)
 **Week 16 Status**: ✅ **COMPLETE**
-**Week 17 Status**: ✅ **PHASE 1 COMPLETE** - Ready for Phase 2
+**Week 17 Status**: ✅ **PHASE 2 COMPLETE** - Ready for Phase 3
 **Current Branch**: main
 
 ---
 
-## 🎯 CURRENT FOCUS: Phase 2 - Character Creation Overhaul (Next Session)
+## 🎯 CURRENT FOCUS: Phase 3 - Character Details Overhaul
 
 ### Expert Panel Decisions (Finalized 2025-11-27)
 
@@ -31,6 +31,25 @@
 - [x] QA Pass 4 - Fix "white" portrait issue ✅ (2025-11-26)
 - [x] Device QA validation (Pass 5) ✅ (2025-11-26) - Approved, pragmatic pass
 - [x] Deprecate old `CharacterCard` ✅ (2025-11-26)
+
+### Phase 2 Implementation (2025-11-26) ✅ COMPLETE (Device QA Passed)
+
+- [x] **Keyboard UX fix**: Tap outside to dismiss keyboard (iOS HIG compliance)
+  - Removed auto-focus on name input
+  - Added `_setup_keyboard_dismissal()` with gui_input handler
+- [x] **Name input width**: Constrained to 300pt centered (was full width)
+- [x] **Background applied**: `character_creation_bg.jpg` TextureRect added to scene
+- [x] **Type Preview Modal**: Long-press on type card shows iOS HIG Sheet modal
+  - 250×250pt silhouette portrait with type-colored border
+  - Full description text
+  - **Aura info section** (Scavenger=Collection, Tank=Shield, Mutant=Damage)
+  - All stat bonuses displayed with +/- coloring
+  - **CTA for locked types**: "Unlock with Premium/Subscription" + value prop
+  - Swipe-to-dismiss and tap-outside dismiss
+- [x] **Long-press works on locked types**: CTA opportunity for upgrades
+- [x] **Modal stacking fix**: Dismisses existing modal before showing new
+- [x] **"Select Type" button**: Unlocked types get "Select Type" + "Close"
+- [x] **Upgrade flow placeholder**: Shows alert (IAP integration coming)
 
 ### QA Pass 4 Decisions (2025-11-26)
 
@@ -77,9 +96,9 @@
 
 | Phase | Description | Effort | Priority | Status |
 |-------|-------------|--------|----------|--------|
-| **Phase 1** | Unified Card Component | 3-4h | CRITICAL | 🚧 In Progress |
-| **Phase 2** | Character Creation Overhaul | 3-4h | HIGH | ⏳ Ready |
-| **Phase 3** | Character Details Overhaul | 3-4h | HIGH | ⏳ Ready |
+| **Phase 1** | Unified Card Component | 3-4h | CRITICAL | ✅ Complete |
+| **Phase 2** | Character Creation Overhaul | 3-4h | HIGH | ✅ Complete |
+| **Phase 3** | Character Details Overhaul | 3-4h | HIGH | 🚧 Next |
 | **Phase 4** | "Enter the Wasteland" Screen | 2-3h | MEDIUM | ⏳ Ready |
 | **Phase 5** | Polish & Animation | 2-3h | MEDIUM | ⏳ Ready |
 | **Phase 6** | Scrapyard Title Polish | 0.5-1h | LOW | ⏳ Ready |
@@ -121,7 +140,7 @@
 ## 🚀 QUICK START PROMPT (Next Session)
 
 ```
-Continuing Week 17 Phase 2 for Scrap Survivor.
+Continuing Week 17 for Scrap Survivor.
 
 Read these files:
 1. .system/CLAUDE_RULES.md
@@ -129,15 +148,13 @@ Read these files:
 3. docs/migration/week17-plan.md
 
 Phase 1 COMPLETE ✅
-- CharacterTypeCard component created and deployed
-- Both Character Creation and Barracks using silhouette portraits
-- Old CharacterCard deprecated
+Phase 2 COMPLETE ✅
 
-Phase 2: Character Creation Overhaul
-- Keyboard UX fix (dismissable, content scrolls)
-- Apply character_creation_bg.jpg background
-- Type Preview Modal (long-press on type card)
-- Selection flow polish
+Phase 3: Character Details Overhaul
+- Hero Section (200pt portrait area)
+- Apply character_details_bg.jpg background
+- Replace stat text icons [HP] with proper sprites
+- Type color badge, unified styling
 ```
 
 ---
@@ -153,4 +170,4 @@ Phase 2: Character Creation Overhaul
 ---
 
 **Last Updated**: 2025-11-26
-**Status**: Phase 1 Complete - Ready for Phase 2 (Character Creation Overhaul)
+**Status**: Phase 2 Complete - Ready for Phase 3 (Character Details Overhaul)

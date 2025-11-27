@@ -287,8 +287,8 @@ func set_locked(locked: bool, required_tier: int = 0) -> void:
 	if lock_overlay:
 		lock_overlay.visible = locked
 
-	# Disable button interaction if locked
-	disabled = locked
+	# NOTE: Do NOT disable button - we want long-press to work for preview CTA
+	# Selection is blocked in _on_pressed() via _is_locked check
 
 	# Update lock icon text based on tier
 	if lock_icon_label and locked:
@@ -572,13 +572,12 @@ func _animate_tap() -> void:
 
 func _on_button_down() -> void:
 	"""Handle button press start"""
-	if _is_locked:
-		return
-
 	_is_pressing = true
+
+	# Animate tap even for locked (shows responsiveness)
 	_animate_tap()
 
-	# Start long press timer
+	# Start long press timer (works for locked types too - shows preview CTA)
 	if _press_timer:
 		_press_timer.start()
 
@@ -607,8 +606,8 @@ func _on_pressed() -> void:
 
 
 func _on_long_press_timeout() -> void:
-	"""Handle long press detected"""
-	if not _is_pressing or _is_locked:
+	"""Handle long press detected - works on locked types too (CTA opportunity)"""
+	if not _is_pressing:
 		return
 
 	HapticManager.medium()
@@ -616,7 +615,11 @@ func _on_long_press_timeout() -> void:
 
 	GameLogger.debug(
 		"[CharacterTypeCard] Card long pressed",
-		{"identifier": _identifier, "mode": "TYPE" if _mode == CardMode.TYPE else "PLAYER"}
+		{
+			"identifier": _identifier,
+			"mode": "TYPE" if _mode == CardMode.TYPE else "PLAYER",
+			"locked": _is_locked
+		}
 	)
 
 

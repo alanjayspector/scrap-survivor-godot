@@ -1,3 +1,4 @@
+# gdlint: disable=max-file-lines
 extends Control
 ## Character Creation UI
 ## Week 15 Phase 2: Create and save named characters
@@ -12,7 +13,7 @@ extends Control
 
 ## Node references
 @onready
-var name_input: LineEdit = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInput
+var name_input: LineEdit = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/NameInputContainer/NameInput
 # gdlint: disable=max-line-length
 @onready
 var character_type_cards: GridContainer = $ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards
@@ -30,6 +31,7 @@ var character_type_card_buttons: Dictionary = {}
 var _upgrade_dialog_shown_this_session: bool = false  # Prevent dialog spam
 var _slot_usage_banner: Label = null  # Banner showing slot usage for FREE tier
 var _upgrade_dialog_shown_at: int = 0  # Timestamp when upgrade dialog was shown (for time tracking)
+var _active_preview_modal: MobileModal = null  # Track active modal to prevent stacking
 
 ## Constants
 const MIN_NAME_LENGTH = 2
@@ -61,6 +63,7 @@ func _ready() -> void:
 	)
 
 	_setup_name_input()
+	_setup_keyboard_dismissal()
 	_create_character_type_cards()
 	_connect_signals()
 	_update_create_button_state()
@@ -87,12 +90,29 @@ func _setup_name_input() -> void:
 	name_input.placeholder_text = "Enter survivor name..."
 	name_input.max_length = MAX_NAME_LENGTH
 	name_input.text_changed.connect(_on_name_changed)
-	name_input.grab_focus()  # Auto-focus for keyboard
+	# Note: Don't auto-focus on mobile - let user tap to show keyboard (iOS HIG)
 
 	GameLogger.info(
 		"[CharacterCreation] Name input configured",
 		{"min_length": MIN_NAME_LENGTH, "max_length": MAX_NAME_LENGTH}
 	)
+
+
+func _setup_keyboard_dismissal() -> void:
+	"""Setup tap-outside-to-dismiss keyboard behavior (iOS HIG compliance)"""
+	# Connect to root gui_input for background taps
+	gui_input.connect(_on_background_input)
+
+	GameLogger.info("[CharacterCreation] Keyboard dismissal configured")
+
+
+func _on_background_input(event: InputEvent) -> void:
+	"""Dismiss keyboard when tapping outside the name input field"""
+	if event is InputEventMouseButton and event.pressed:
+		# Release focus from name input to dismiss virtual keyboard
+		if name_input.has_focus():
+			name_input.release_focus()
+			GameLogger.debug("[CharacterCreation] Keyboard dismissed via background tap")
 
 
 func _create_character_type_cards() -> void:
@@ -249,12 +269,326 @@ func _on_card_pressed(type_id: String) -> void:
 
 func _on_card_long_pressed(type_id: String) -> void:
 	"""Handle CharacterTypeCard long press signal - show type preview (Week 17 Phase 2)"""
-	# Phase 2: Will show Character Type Preview Modal with full stats/abilities
-	# For now, just log for testing
-	GameLogger.info(
-		"[CharacterCreation] Long press on type card (Preview modal coming Phase 2)",
-		{"type_id": type_id}
+	GameLogger.info("[CharacterCreation] Long press on type card", {"type_id": type_id})
+	_show_type_preview_modal(type_id)
+
+
+func _show_type_preview_modal(type_id: String) -> void:
+	"""Show Character Type Preview Modal (iOS HIG Sheet pattern)"""
+	# Dismiss existing modal to prevent stacking
+	if _active_preview_modal and is_instance_valid(_active_preview_modal):
+		_active_preview_modal.dismiss()
+		_active_preview_modal = null
+
+	var type_def = CharacterService.CHARACTER_TYPES.get(type_id, {})
+	if type_def.is_empty():
+		GameLogger.warning(
+			"[CharacterCreation] Cannot show preview for unknown type", {"type_id": type_id}
+		)
+		return
+
+	var display_name = type_def.get("display_name", type_id.capitalize())
+	var description = type_def.get("description", "A survivor type.")
+	var stat_mods = type_def.get("stat_modifiers", {})
+	var tier_required = type_def.get("tier_required", CharacterService.UserTier.FREE)
+
+	# Check if this type is locked for current user
+	var current_tier = CharacterService.get_tier()
+	var is_locked = current_tier < tier_required
+
+	# Create sheet modal using ModalFactory
+	var modal = ModalFactory.create_sheet(self, display_name, true, true)
+	_active_preview_modal = modal
+
+	# Build custom content with aura info and upgrade CTA
+	var content = _build_type_preview_content(
+		type_id, display_name, description, stat_mods, tier_required, is_locked
 	)
+	modal.add_custom_content(content)
+
+	# Add buttons based on lock state
+	if is_locked:
+		# CTA button for upgrade
+		var tier_names = ["Free", "Premium", "Subscription"]
+		var tier_name = (
+			tier_names[tier_required] if tier_required < tier_names.size() else "Premium"
+		)
+		modal.add_primary_button(
+			"Upgrade to %s" % tier_name,
+			func():
+				modal.dismiss()
+				_active_preview_modal = null
+				_show_upgrade_flow(tier_required)
+		)
+		modal.add_secondary_button(
+			"Close",
+			func():
+				modal.dismiss()
+				_active_preview_modal = null
+		)
+	else:
+		# Select button for unlocked types
+		modal.add_primary_button(
+			"Select Type",
+			func():
+				modal.dismiss()
+				_active_preview_modal = null
+				_select_character_type(type_id)
+		)
+		modal.add_secondary_button(
+			"Close",
+			func():
+				modal.dismiss()
+				_active_preview_modal = null
+		)
+
+	modal.show_modal()
+
+	# Track analytics
+	Analytics.track_event(
+		"type_preview_opened",
+		{"type_id": type_id, "is_locked": is_locked, "tier_required": tier_required}
+	)
+
+
+func _build_type_preview_content(
+	type_id: String,
+	_display_name: String,
+	description: String,
+	stat_mods: Dictionary,
+	tier_required: int,
+	is_locked: bool = false
+) -> Control:
+	"""Build the content for type preview modal - HYPED sales pitch for locked types"""
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 16)
+
+	# Portrait section - LARGER centered silhouette (250x250 for impact)
+	var portrait_container = CenterContainer.new()
+	container.add_child(portrait_container)
+	portrait_container.layout_mode = 2
+
+	var portrait_panel = Panel.new()
+	portrait_container.add_child(portrait_panel)
+	portrait_panel.layout_mode = 2
+	portrait_panel.custom_minimum_size = Vector2(250, 250)
+
+	# Style portrait panel background with type-colored border
+	var type_color = _get_type_color(type_id)
+	var portrait_style = StyleBoxFlat.new()
+	portrait_style.bg_color = Color(0.15, 0.15, 0.15, 1.0)
+	portrait_style.border_color = type_color
+	portrait_style.set_border_width_all(3)
+	portrait_style.set_corner_radius_all(16)
+	portrait_panel.add_theme_stylebox_override("panel", portrait_style)
+
+	# Add portrait texture
+	var portrait_rect = TextureRect.new()
+	portrait_panel.add_child(portrait_rect)
+	portrait_rect.layout_mode = 2
+	portrait_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	# Load silhouette texture
+	var silhouette_paths = {
+		"scavenger": "res://assets/ui/portraits/silhouette_scavenger.png",
+		"tank": "res://assets/ui/portraits/silhouette_tank.png",
+		"commando": "res://assets/ui/portraits/silhouette_commando.png",
+		"mutant": "res://assets/ui/portraits/silhouette_mutant.png",
+	}
+	var texture_path = silhouette_paths.get(type_id, "")
+	if not texture_path.is_empty():
+		var texture = load(texture_path) as Texture2D
+		if texture:
+			portrait_rect.texture = texture
+
+	# Description
+	var desc_label = Label.new()
+	container.add_child(desc_label)
+	desc_label.layout_mode = 2
+	desc_label.text = description
+	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc_label.add_theme_font_size_override("font_size", 18)
+	desc_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	# Aura section (unique selling point!)
+	var aura_info = _get_type_aura_info(type_id)
+	if not aura_info.is_empty():
+		var aura_container = HBoxContainer.new()
+		container.add_child(aura_container)
+		aura_container.layout_mode = 2
+		aura_container.alignment = BoxContainer.ALIGNMENT_CENTER
+		aura_container.add_theme_constant_override("separation", 8)
+
+		var aura_icon = Label.new()
+		aura_container.add_child(aura_icon)
+		aura_icon.text = aura_info.get("icon", "✨")
+		aura_icon.add_theme_font_size_override("font_size", 24)
+
+		var aura_label = Label.new()
+		aura_container.add_child(aura_label)
+		aura_label.text = "%s Aura" % aura_info.get("name", "Special")
+		aura_label.add_theme_font_size_override("font_size", 18)
+		aura_label.add_theme_color_override("font_color", type_color)
+
+		# Aura description
+		var aura_desc = Label.new()
+		container.add_child(aura_desc)
+		aura_desc.layout_mode = 2
+		aura_desc.text = aura_info.get("description", "")
+		aura_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		aura_desc.add_theme_font_size_override("font_size", 14)
+		aura_desc.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		aura_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	# Stats section header
+	var stats_header = Label.new()
+	container.add_child(stats_header)
+	stats_header.layout_mode = 2
+	stats_header.text = "Starting Bonuses"
+	stats_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats_header.add_theme_font_size_override("font_size", 20)
+	stats_header.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
+
+	# Stats grid - centered
+	var stats_center = CenterContainer.new()
+	container.add_child(stats_center)
+	stats_center.layout_mode = 2
+
+	var stats_grid = GridContainer.new()
+	stats_center.add_child(stats_grid)
+	stats_grid.layout_mode = 2
+	stats_grid.columns = 2
+	stats_grid.add_theme_constant_override("h_separation", 24)
+	stats_grid.add_theme_constant_override("v_separation", 6)
+
+	# Stat display names
+	var stat_display = {
+		"max_hp": "Health",
+		"armor": "Armor",
+		"damage": "Damage",
+		"ranged_damage": "Ranged",
+		"melee_damage": "Melee",
+		"attack_speed": "Attack Speed",
+		"speed": "Move Speed",
+		"crit_chance": "Critical",
+		"dodge": "Dodge",
+		"luck": "Luck",
+		"scavenging": "Scavenging",
+		"pickup_range": "Pickup Range",
+		"resonance": "Resonance",
+	}
+
+	for stat_key in stat_mods.keys():
+		var value = stat_mods[stat_key]
+		var stat_name = stat_display.get(stat_key, stat_key.capitalize())
+		var sign_str = "+" if value >= 0 else ""
+		var color = Color(0.4, 0.9, 0.4) if value >= 0 else Color(0.9, 0.4, 0.4)
+
+		var name_label = Label.new()
+		stats_grid.add_child(name_label)
+		name_label.layout_mode = 2
+		name_label.text = stat_name + ":"
+		name_label.add_theme_font_size_override("font_size", 16)
+		name_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+
+		var value_label = Label.new()
+		stats_grid.add_child(value_label)
+		value_label.layout_mode = 2
+		value_label.text = "%s%s" % [sign_str, value]
+		value_label.add_theme_font_size_override("font_size", 16)
+		value_label.add_theme_color_override("font_color", color)
+
+	# CTA messaging for locked types (THE MONEY SHOT)
+	if is_locked:
+		var tier_names = ["Free", "Premium", "Subscription"]
+		var tier_name = (
+			tier_names[tier_required] if tier_required < tier_names.size() else "Premium"
+		)
+
+		# Separator
+		var sep = HSeparator.new()
+		container.add_child(sep)
+		sep.layout_mode = 2
+		sep.modulate = Color(0.3, 0.3, 0.3, 1.0)
+
+		# CTA headline
+		var cta_headline = Label.new()
+		container.add_child(cta_headline)
+		cta_headline.layout_mode = 2
+		cta_headline.text = "🔓 Unlock with %s" % tier_name
+		cta_headline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cta_headline.add_theme_font_size_override("font_size", 22)
+		cta_headline.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2))
+
+		# Value proposition
+		var value_prop = Label.new()
+		container.add_child(value_prop)
+		value_prop.layout_mode = 2
+		if tier_required == CharacterService.UserTier.PREMIUM:
+			value_prop.text = "One-time purchase • Permanent access"
+		else:
+			value_prop.text = "All premium content • Monthly rewards"
+		value_prop.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		value_prop.add_theme_font_size_override("font_size", 14)
+		value_prop.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+
+	return container
+
+
+func _get_type_color(type_id: String) -> Color:
+	"""Get the signature color for a character type"""
+	var colors = {
+		"scavenger": Color("#999999"),
+		"tank": Color("#4D7A4D"),
+		"commando": Color("#CC3333"),
+		"mutant": Color("#8033B3"),
+	}
+	return colors.get(type_id, Color.GRAY)
+
+
+func _get_type_aura_info(type_id: String) -> Dictionary:
+	"""Get aura information for a character type (from AURA-SYSTEM.md)"""
+	var auras = {
+		"scavenger":
+		{
+			"name": "Collection",
+			"icon": "🧲",
+			"description": "Auto-collects nearby currency and items faster"
+		},
+		"tank":
+		{
+			"name": "Shield",
+			"icon": "🛡️",
+			"description": "Grants armor bonus to you and nearby minions"
+		},
+		"commando": {},  # No aura - pure DPS
+		"mutant":
+		{
+			"name": "Damage",
+			"icon": "☠️",
+			"description": "Deals damage to nearby enemies every second"
+		},
+	}
+	return auras.get(type_id, {})
+
+
+func _show_upgrade_flow(required_tier: int) -> void:
+	"""Show upgrade flow for tier (placeholder - integrate with IAP)"""
+	var tier_names = ["Free", "Premium", "Subscription"]
+	var tier_name = tier_names[required_tier] if required_tier < tier_names.size() else "Premium"
+
+	# For now, show an info modal - will integrate with actual IAP later
+	ModalFactory.show_alert(
+		self,
+		"Upgrade to %s" % tier_name,
+		"In-app purchases coming soon!\n\nFor now, all character types are available for testing.",
+		func(): pass
+	)
+
+	Analytics.track_event("upgrade_flow_shown", {"tier_required": required_tier})
 
 
 func _on_create_pressed() -> void:
