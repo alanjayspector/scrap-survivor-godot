@@ -1,172 +1,140 @@
-# Next Session: Phase 10 - Barracks Background Replacement
+# Next Session: Week 17 Planning
 
 **Date**: 2025-11-26
-**Week Plan**: [docs/migration/week16-implementation-plan.md](../docs/migration/week16-implementation-plan.md)
-**Phase 10 Plan**: [docs/design/phase-10-barracks-background.md](../docs/design/phase-10-barracks-background.md)
-**Art Asset Guide**: [docs/design/art-asset-usage-guide.md](../docs/design/art-asset-usage-guide.md)
-**Current Phase**: Phase 10 - Barracks Background
-**Status**: ⏳ **AWAITING ASSET GENERATION**
+**Week 16 Status**: ✅ **COMPLETE**
+**Current Branch**: main
 
 ---
 
-## 🎯 SESSION SUMMARY (2025-11-26)
+## 🎉 WEEK 16 COMPLETION SUMMARY
 
-### Expert Panel Convened
+### All Phases Complete
 
-The expert panel (Sr Mobile Game Designer, Sr UI/UX Designer, Sr Product Manager, Sr Godot Developer) analyzed:
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 9.1 | Selection Persistence | ✅ Complete |
+| Phase 9.2 | 2-Column Grid + Selection Flow | ✅ Complete |
+| Phase 9.3 | Hub Status Panel + Barracks Rename | ✅ Complete |
+| Phase 10 | Barracks Background Replacement | ✅ Complete |
+| Phase 10.1 | Color Fix (purple → charcoal) | ✅ Complete |
 
-1. **The Problem**: Beautiful barracks exterior art is hidden behind 45% overlay AND character cards. Art competes with "the money" (characters players are attached to).
+### Key Accomplishments
 
-2. **The Solution**: Replace narrative art with UI background (Option C - dark gradient with industrial framing). Characters become the stars.
+1. **Character Selection System**
+   - Persistent selection across app restarts
+   - 2-column grid layout for character cards
+   - Visual selection indicator (gold border)
+   - View vs Select distinction (tap to view, must use Play button)
 
-3. **Key Principle Established**: "Marvel Snap Law" - Cards are brightest, UI serves cards.
+2. **Hub Status Panel**
+   - SurvivorStatusPanel component showing active character
+   - Level, XP progress bar, currency display
+   - "Tap to manage" button for quick navigation
 
-### Three Background Options Reviewed
+3. **Barracks Visual Overhaul**
+   - Expert panel review of 17 art assets
+   - "Marvel Snap Law" principle established (characters are stars, UI serves them)
+   - Option C dark gradient background implemented (923KB optimized)
+   - Removed purple theme override, replaced with semi-transparent charcoal
 
-| Option | Score | Verdict |
-|--------|-------|---------|
-| **A** - Rusty corrugated metal | 17/20 | Clean, functional, less interesting |
-| **B** - Interior wall with patches | 16/20 | Rich detail but light fixture competes |
-| **C** - Dark gradient + edge framing | 18/20 | ✅ WINNER - Perfect "display case" for cards |
+### Commits This Session
 
-### All Art Assets Cataloged
-
-Complete review of 17 art assets with recommendations:
-- Hub backgrounds (scrapyard-topdown - current)
-- Building exteriors (barracks, bank, wasteland-gate, etc.)
-- UI backgrounds (Option A/B/C)
-- Interior scenes (workshop, bunker)
-- UI elements (buttons, signs, NPCs)
-
-**Full catalog**: `docs/design/art-asset-usage-guide.md`
-
-### Key Decisions Made
-
-| Decision | Rationale |
-|----------|-----------|
-| Use Option C for Barracks | Dark center + industrial framing = display case |
-| Remove barracks exterior from roster | Narrative art wrong for list screen |
-| Keep current Hub layout | Icon buttons work; building tiles deferred |
-| 2048×2048 for new textures | Covers all devices, GPU-optimized |
-
----
-
-## 📋 IMMEDIATE NEXT STEPS
-
-### Step 1: Generate Option C Asset
-
-**Alan Action Required**: Generate asset using Banana Nano
-
-**Prompt**:
 ```
-Illustrated junkpunk style, abstract dark background gradient, 
-industrial grunge aesthetic, subtle metal and rust textures fading 
-into darkness, muted earth tones, hand-painted brushstroke style, 
-vignette effect darker at edges, atmospheric and moody, 
-minimalist background for UI overlay, no objects no text,
-pipes and cables visible at edges, teal oxidation on rust,
-dark center for content overlay, 2048x2048 square format
+aaf6799 feat(barracks): replace background with Option C dark gradient
+f510d7a fix(barracks): replace purple scroll background with semi-transparent charcoal
 ```
 
-**Requirements**:
-- Resolution: 2048×2048 (square)
-- File size: ≤1MB
-- Format: PNG preferred
-
-### Step 2: Implement Phase 10
-
-Once asset is received:
-1. Add to `assets/ui/backgrounds/barracks_interior.png`
-2. Update `barracks.tscn` to use new background
-3. Remove GradientOverlay (darkness built-in)
-4. Device QA on iPhone
-5. Commit
-
-**Estimated Time**: 1-2 hours
-
 ---
 
-## 📊 Overall Progress
+## 📚 Documentation Created
 
-| Phase | Status | Notes |
-|-------|--------|-------|
-| Phase 8.2c | ✅ Complete | Hub visual transformation |
-| Phase 9.1 | ✅ Complete | Selection persistence |
-| Phase 9.2 | ✅ Complete | 2-column grid + selection flow |
-| Phase 9.3 | ✅ Complete | Hub status panel + barracks rename |
-| Phase 9 QA | ⏳ Pending | Awaiting device QA |
-| **Phase 10** | 📋 Planned | Barracks background replacement |
-| Week 17 | 📋 Planned | Visual polish, animations |
-
----
-
-## 📚 Documentation Created This Session
-
-1. **Art Asset Usage Guide** (`docs/design/art-asset-usage-guide.md`)
+1. **Art Asset Usage Guide** - `docs/design/art-asset-usage-guide.md`
    - Complete catalog of 17 art assets
-   - Classification system (Hub BG, Building Exterior, UI BG, etc.)
-   - Expert panel analysis and scores
+   - Classification system and expert panel scores
    - Resolution/optimization guidelines
-   - Repurposing recommendations
+   - Future repurposing recommendations
 
-2. **Phase 10 Implementation Plan** (`docs/design/phase-10-barracks-background.md`)
-   - Step-by-step implementation
-   - Asset generation prompt
+2. **Phase 10 Implementation Plan** - `docs/design/phase-10-barracks-background.md`
+   - Step-by-step implementation guide
+   - Asset generation prompts
    - QA checklist
-   - Rollback plan
+
+3. **Preview Images** - `art-docs/preview/`
+   - All 17 art asset previews for future AI sessions
+   - Option A/B/C background comparisons
+   - Final selected background preview
 
 ---
 
-## 🔮 Future Work Identified (Week 17+)
+## 📊 Project Status
 
-Based on expert panel analysis:
+**Tests**: 671/695 passing
+**GDLint**: Clean
+**All Validators**: Passing
 
-### High Value Repurposing
-- **wasteland-gate**: "Start Run" confirmation screen
-- **cultivation-chamber**: Character creation background (thematic fit!)
-- **detailed-workshop**: Upgrades screen background
-
-### Hub Enhancement (Deferred)
-- Building tiles system (tap on buildings in hub)
-- Button/sign sprite sheet integration
-- NPC integration for atmosphere
-
-### Asset Optimization
-- Consider removing unused assets from bundle
-- WebP conversion for size savings
+**Git Log (Recent)**:
+```
+f510d7a fix(barracks): replace purple scroll background with semi-transparent charcoal
+aaf6799 feat(barracks): replace background with Option C dark gradient
+dd2be38 feat(barracks): Phase 9.3 - Hub status panel + file renames
+a8d08fe fix(barracks): separate viewing from selecting characters
+```
 
 ---
 
-## 🔧 Development Environment
+## 🔮 WEEK 17 PLANNING CONTEXT
 
-**Platform**: macOS (MacBook Pro)
-**Project Path**: `/Users/alan/Developer/scrap-survivor-godot`
-**Engine**: Godot 4, GDScript
-**Test Device**: iPhone 15 Pro Max
+### Tentative Week 17 Scope
 
-**Git Status**:
-- Branch: main
-- Test Status: 671/695 passing
-- GDLint: Clean
+Based on `docs/migration/week17-tentative.md` and expert panel recommendations:
+
+**High-Value Art Repurposing:**
+- `wasteland-gate` → "Start Run" confirmation screen
+- `cultivation-chamber` → Character creation background  
+- `detailed-workshop` → Upgrades screen background
+
+**Potential Focus Areas:**
+1. Visual polish and animations
+2. Additional screen backgrounds (character creation, etc.)
+3. Hub building tiles system (deferred from Week 16)
+4. Button/sign sprite sheet integration
+5. Start Run confirmation flow
+
+### Technical Debt to Consider
+
+- 33 test pattern warnings (analytics tests missing assertions)
+- Pre-commit hook naming consistency warnings (non-blocking)
+- Some integration tests missing USER_STORY references
 
 ---
 
 ## 🚀 Quick Start Prompt (Next Session)
 
 ```
-Read these files to continue:
+Read these files to begin Week 17 planning:
 1. .system/CLAUDE_RULES.md (project rules)
-2. .system/NEXT_SESSION.md (this file - current state)
-3. docs/design/phase-10-barracks-background.md (implementation plan)
-4. docs/design/art-asset-usage-guide.md (asset catalog)
+2. .system/NEXT_SESSION.md (this file - Week 16 complete)
+3. docs/migration/week17-tentative.md (tentative Week 17 scope)
+4. docs/design/art-asset-usage-guide.md (asset repurposing roadmap)
 
-Current task: Implement Phase 10 - Barracks Background Replacement
-- Alan should have generated the Option C asset
-- Follow phase-10-barracks-background.md implementation steps
-- Device QA after implementation
+Week 16 is complete. Ready for Week 17 planning.
+Key principle established: "Marvel Snap Law" - characters are the stars, UI serves them.
 ```
 
 ---
 
-**Last Updated**: 2025-11-26 (Expert Panel Review Complete)
-**Status**: Awaiting Option C Asset Generation
+## 🖼️ Art Assets Ready for Week 17
+
+| Asset | Recommended Use | Priority |
+|-------|-----------------|----------|
+| wasteland-gate | "Start Run" confirmation | High |
+| cultivation-chamber | Character creation BG | High |
+| detailed-workshop | Upgrades screen BG | Medium |
+| barracks-exterior | Hub building tile OR char creation | Medium |
+| buttons-signs | Button/sign sprites | Medium |
+| npcs | Hub population | Low |
+
+---
+
+**Last Updated**: 2025-11-26 (Week 16 Complete)
+**Status**: Ready for Week 17 Planning
