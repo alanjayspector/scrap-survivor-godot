@@ -6,23 +6,126 @@
 
 ---
 
-## 🎨 NEW: UI Visual Overhaul (NEEDS DESIGN SESSION)
+## 🎨 PRIORITY 0: Barracks "Trophy Case" Visual Overhaul
 
-**Added:** 2025-11-26 (Post-Phase 9 planning)
+**Added:** 2025-11-26 (Expert Panel Analysis Complete)
+**Prerequisite:** Phase 9.2 Complete (2-column grid functional)
+**Estimated Effort:** 3-4 hours
+**Priority:** CRITICAL - This is the retention engine
+
+### Why This Matters
+
+> "Barracks is probably the most important scene for the game in terms of stickiness to customers."
+
+The Barracks is where players bond with their survivors. Character collection games live or die on making players feel **proud of their roster**. Phase 9.2 ships functional grid; Week 17 makes it emotionally compelling.
+
+### Expert Panel Analysis (2025-11-26)
+
+**Competitors Analyzed:** Darkest Dungeon, AFK Arena, Marvel Snap, Brotato, Vampire Survivors, Genshin Impact
+
+**Key Insights:**
+1. **Grid Over List** - Universal pattern. Spatial memory, equal visual weight, portrait cards.
+2. **Card-First Hierarchy** (Marvel Snap) - UI serves cards, not competes with them. Dark backgrounds, cards are brightest elements.
+3. **Two-Tap Selection** - Browse → Inspect → Act. No accidental selections.
+4. **Darkest Dungeon Influence** - Portrait-forward, stress/quirks visible, dismissal feels weighty.
+
+### Implementation Tasks (Week 17)
+
+#### Task 1: Card Visual Polish (1.5h)
+**Current (Phase 9.2):** Functional 180×240pt cards with type color backgrounds
+**Target:** "Trophy case" cards that make players proud
+
+**Specifications:**
+- Card shadow: 4pt blur, `#000000` at 25% opacity
+- Selection glow: 4pt outer glow in type color at 80% opacity
+- Tap animation: Scale to 0.97 (50ms ease-out)
+- Card entrance: Fade + slide up, 200ms stagger per card
+- Border treatment: Gradient border (type color → darker)
+- Corner badge refinement: Slight rotation (-5°) for hand-painted feel
+
+#### Task 2: Barracks Exterior Background (1h)
+**Asset:** `art-docs/barracks-exterior.png` (already have it!)
+**Implementation:**
+- Full-bleed background using barracks exterior art
+- Gradient overlay: 50% opacity top → 75% opacity bottom
+- Transition point at 30% from top (let "BARRACKS" sign show through)
+- Cards have solid backgrounds (not transparent) for readability
+
+**Header Treatment:**
+- "BARRACKS" title: 36pt bold, `#FFC857` (Window Yellow)
+- Subtitle: "Your Survivors" in 18pt, `#C4A77D`
+- 2pt black text shadow for crispness over background
+
+#### Task 3: Character Portrait Artwork (1h)
+**Current:** Solid ColorRect with type color
+**Target:** Silhouette portraits with orange rim lighting (like NPCs art)
+
+**Options:**
+- **Option A:** Generate 3 type-specific portrait silhouettes (Scavenger, Tank, Commando)
+- **Option B:** Use existing NPC silhouette art as base, colorize per type
+- **Option C:** Defer portraits, enhance type color backgrounds with icons/badges
+
+**Recommendation:** Option B for Week 17, Option A for Week 18 polish
+
+#### Task 4: Detail Screen Hero Section (0.5h)
+**Current:** Stats-focused, no "showcase" moment
+**Target:** Hero portrait section that makes players proud
+
+**Specifications:**
+- Hero portrait area: 200pt height at top of detail screen
+- Large character silhouette: 160×160pt centered
+- Type color gradient background
+- Name: 32pt bold, white
+- Type badge + Level: 20pt with icon
+
+### Visual Specifications Reference
+
+**Color Palette:**
+```
+Primary Orange:    #FF6600  (selection, highlights)
+Rust Orange:       #B85C38  (borders, accents)
+Corrugated Tan:    #C4A77D  (body text, labels)
+Scrap Gray:        #5C5C5C  (unselected borders)
+Burnt Umber:       #8B4513  (warm accents)
+Window Yellow:     #FFC857  (headlines, important text)
+Near-Black:        #1A1A1A  (detail screen background)
+Card Background:   #2A2A2A  (unselected cards)
+Selected Card BG:  #3D2817  (warmer brown)
+```
+
+**Typography:**
+```
+Screen Title:     36pt bold (BARRACKS)
+Character Name:   20pt bold (on card), 32pt bold (in detail)
+Type/Level:       14pt regular (on card), 20pt (in detail)
+Stats:            14pt (on card), 24pt bold (primary in detail)
+```
+
+### Success Criteria
+
+After Week 17 Barracks polish:
+- [ ] Players feel proud looking at their roster
+- [ ] Selected character is unmistakably highlighted
+- [ ] Cards feel like collectibles, not database rows
+- [ ] Background creates atmosphere (junkpunk military base)
+- [ ] Grid entrance animation feels polished
+- [ ] Detail view has "showcase" hero section
+
+### Art Assets Available
+
+**Already Have (art-docs/):**
+- `barracks-exterior.png` - Background for roster screen ✅
+- `npcs.png` - Silhouette style reference for portraits ✅
+- `buttons-signs.png` - UI element reference ✅
+- `detailed-workshop.png` - Detail view background inspiration ✅
+
+**Preview Script:** `art-docs/generate-previews.sh` creates <300KB versions for Claude analysis
+
+---
+
+## 🎨 UI Visual Overhaul (Additional Items)
+
 **Prerequisite:** Phase 9 Complete (Survivor Selection Model)
-
-### What Needs Design Planning
-
-These items require design decisions BEFORE implementation:
-
-#### 1. Barracks (Roster) Art Bible Transformation
-- **Current:** MVP character cards, basic list view
-- **Target:** Art Bible "Illustrated Junkpunk" aesthetic matching Hub
-- **Needs Design:**
-  - Character card visual design (layout, styling, icons)
-  - List view background (concept art or generated)
-  - Empty state design
-  - Selected character visual indicator
 
 #### 2. Recruitment (Character Creation) Revamp
 - **Current:** Basic name input + type dropdown

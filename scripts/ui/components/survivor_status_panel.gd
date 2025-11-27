@@ -116,8 +116,8 @@ func _show_empty_state() -> void:
 	portrait_label.add_theme_color_override("font_color", COLOR_EMPTY_ICON)
 	portrait_label.add_theme_font_size_override("font_size", 32)
 
-	# Text labels
-	name_label.text = "No Survivor Selected"
+	# Text labels - shortened to fit 200px panel
+	name_label.text = "No Survivor"
 	name_label.add_theme_color_override("font_color", COLOR_MUTED)
 
 	type_level_label.text = "Tap to choose"
