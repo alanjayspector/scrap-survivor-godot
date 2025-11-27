@@ -1,84 +1,100 @@
-extends Panel
-## CharacterDetailsPanel - Tabbed character information panel
-## Week 15 Phase 3: Modern mobile UI redesign
+extends Control
+## CharacterDetailsPanel - Three-column landscape character showcase
+## Week 17 Phase 3: Character Details Overhaul (QA Pass 12)
+##
+## Design: Brotato-inspired clean layout optimized for landscape
+## - Column 1 (Left): Portrait, Name, Type/Level, Aura
+## - Column 2 (Center): Primary Stats (HP, DMG, ARM, SPD)
+## - Column 3 (Right): Records + Currency
 ##
 ## Features:
-## - 3-tab layout: Stats | Gear | Records
-## - Primary stats card with 4 key stats + icons
-## - Collapsible stat categories (Offense/Defense/Utility)
-## - Readable fonts (18-20px) for accessibility
+## - Color-coded stat values (green positive, red negative, white neutral)
+## - Compact, scannable Brotato-style stat rows
+## - No emojis (iOS compatibility)
 
 signal closed
 
-# UI references (set in _ready to keep lines short)
+# Silhouette paths (same as CharacterTypeCard)
+const SILHOUETTE_PATHS = {
+	"scavenger": "res://assets/ui/portraits/silhouette_scavenger.png",
+	"tank": "res://assets/ui/portraits/silhouette_tank.png",
+	"commando": "res://assets/ui/portraits/silhouette_commando.png",
+	"mutant": "res://assets/ui/portraits/silhouette_mutant.png",
+}
+
+# Base stats for color comparison (green if above, red if below)
+const BASE_STATS = {
+	"max_hp": 100,
+	"damage": 10,
+	"armor": 0,
+	"speed": 0,  # Speed shown as % modifier, 0 is base
+}
+
+# Node references - Three Column Layout
+# Left Column
+var portrait_panel: Panel
+var portrait_texture: TextureRect
 var character_name_label: Label
 var character_type_label: Label
-var aura_label: Label
-var tab_container: TabContainer
-var hp_label: Label
-var damage_label: Label
-var armor_label: Label
-var speed_label: Label
-var collapsible_stats: VBoxContainer
-var items_label: Label
+var aura_name: Label
+var aura_description: Label
+
+# Center Column - Primary Stats
+var hp_value: Label
+var damage_value: Label
+var armor_value: Label
+var speed_value: Label
+
+# Right Column - Records & Currency
 var kills_value: Label
 var wave_value: Label
 var deaths_value: Label
 var scrap_value: Label
 var nanites_value: Label
 var components_value: Label
-var close_button: Button
-
-# Track expanded state of collapsible sections
-var _expanded_sections: Dictionary = {"Offense": false, "Defense": false, "Utility": false}
 
 
 func _ready() -> void:
-	# Get node references (paths split for line length compliance)
-	var vbox = $MarginContainer/VBoxContainer
-	var header = vbox.get_node("HeaderContainer")
-	character_name_label = header.get_node("CharacterNameLabel")
-	character_type_label = header.get_node("CharacterTypeLabel")
-	aura_label = vbox.get_node("AuraContainer/AuraLabel")
-	tab_container = vbox.get_node("TabContainer")
-	close_button = vbox.get_node("CloseButton")
+	# Get node references - Three Column Layout
+	var layout = $MarginContainer/ThreeColumnLayout
 
-	# Stats tab references
-	var stats_grid = tab_container.get_node("Stats/StatsContent/PrimaryStatsCard/PrimaryStatsGrid")
-	hp_label = stats_grid.get_node("HPContainer/HPLabel")
-	damage_label = stats_grid.get_node("DamageContainer/DamageLabel")
-	armor_label = stats_grid.get_node("ArmorContainer/ArmorLabel")
-	speed_label = stats_grid.get_node("SpeedContainer/SpeedLabel")
-	collapsible_stats = tab_container.get_node("Stats/StatsContent/CollapsibleStats")
+	# Left Column
+	var left_col = layout.get_node("LeftColumn")
+	portrait_panel = left_col.get_node("PortraitPanel")
+	portrait_texture = portrait_panel.get_node("PortraitTexture")
+	character_name_label = left_col.get_node("CharacterNameLabel")
+	character_type_label = left_col.get_node("CharacterTypeLabel")
+	aura_name = left_col.get_node("AuraName")
+	aura_description = left_col.get_node("AuraDescription")
 
-	# Gear tab
-	items_label = tab_container.get_node("Gear/ItemsLabel")
+	# Center Column - Stats
+	var center_col = layout.get_node("CenterColumn")
+	var stats_list = center_col.get_node("StatsList")
+	hp_value = stats_list.get_node("HPRow/HPValue")
+	damage_value = stats_list.get_node("DamageRow/DamageValue")
+	armor_value = stats_list.get_node("ArmorRow/ArmorValue")
+	speed_value = stats_list.get_node("SpeedRow/SpeedValue")
 
-	# Records tab
-	var records_grid = tab_container.get_node("Records/RecordsGrid")
-	kills_value = records_grid.get_node("KillsValue")
-	wave_value = records_grid.get_node("WaveValue")
-	deaths_value = records_grid.get_node("DeathsValue")
-	var currency_grid = tab_container.get_node("Records/CurrencyGrid")
-	scrap_value = currency_grid.get_node("ScrapValue")
-	nanites_value = currency_grid.get_node("NanitesValue")
-	components_value = currency_grid.get_node("ComponentsValue")
+	# Right Column - Records & Currency
+	var right_col = layout.get_node("RightColumn")
+	var records_list = right_col.get_node("RecordsList")
+	kills_value = records_list.get_node("KillsRow/KillsValue")
+	wave_value = records_list.get_node("WaveRow/WaveValue")
+	deaths_value = records_list.get_node("DeathsRow/DeathsValue")
 
-	close_button.pressed.connect(_on_close_pressed)
-	tab_container.current_tab = 0  # Start on Stats tab
-
-	# Apply button styling
-	ThemeHelper.apply_button_style(close_button, ThemeHelper.ButtonStyle.SECONDARY)
+	var currency_list = right_col.get_node("CurrencyList")
+	scrap_value = currency_list.get_node("ScrapRow/ScrapValue")
+	nanites_value = currency_list.get_node("NanitesRow/NanitesValue")
+	components_value = currency_list.get_node("ComponentsRow/ComponentsValue")
 
 
 func show_character(character: Dictionary) -> void:
-	"""Display full character details in tabbed layout"""
+	"""Display character details in three-column landscape layout"""
 	GameLogger.debug(
-		"[CharacterDetailsPanel] show_character() ENTRY",
-		{"character": character.get("name", "Unknown"), "id": character.get("id", "")}
+		"[CharacterDetailsPanel] show_character()",
+		{"name": character.get("name", "Unknown"), "id": character.get("id", "")}
 	)
 
-	var character_id = character.get("id", "")
 	var character_name = character.get("name", "Unknown")
 	var character_type = character.get("character_type", "scavenger")
 	var character_level = character.get("level", 1)
@@ -87,213 +103,143 @@ func show_character(character: Dictionary) -> void:
 
 	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
 	var type_display_name = type_def.get("display_name", character_type.capitalize())
-	var type_color = type_def.get("color", Color.GRAY)
+	var type_color = _get_type_color(character_type)
 
-	# Header - Compact format
+	# LEFT COLUMN - Portrait with type-colored border
+	_setup_portrait(character_type, type_color)
+
+	# LEFT COLUMN - Name and type
 	character_name_label.text = character_name
+	character_name_label.add_theme_color_override("font_color", Color.WHITE)
 	character_type_label.text = "%s • Level %d" % [type_display_name, character_level]
 	character_type_label.add_theme_color_override("font_color", type_color)
 
-	# Aura
+	# LEFT COLUMN - Aura Section
+	_setup_aura_section(character_type, aura_data)
+
+	# CENTER COLUMN - Primary Stats with color coding
+	var max_hp = stats.get("max_hp", 100)
+	var damage = stats.get("damage", 10)
+	var armor = stats.get("armor", 0)
+	var speed_mod = stats.get("speed", 200) - 200  # Show as % modifier from base 200
+
+	hp_value.text = str(max_hp)
+	_color_stat_value(hp_value, max_hp, BASE_STATS.max_hp)
+
+	damage_value.text = str(damage)
+	_color_stat_value(damage_value, damage, BASE_STATS.damage)
+
+	armor_value.text = str(armor)
+	_color_stat_value(armor_value, armor, BASE_STATS.armor)
+
+	speed_value.text = str(speed_mod)
+	_color_stat_value(speed_value, speed_mod, BASE_STATS.speed)
+
+	# RIGHT COLUMN - Records
+	var total_kills = character.get("total_kills", 0)
+	var highest_wave = character.get("highest_wave", 0)
+	var death_count = character.get("death_count", 0)
+
+	kills_value.text = _format_number(total_kills)
+	_color_stat_value(kills_value, total_kills, 0)  # Green if any kills
+
+	wave_value.text = str(highest_wave)
+	_color_stat_value(wave_value, highest_wave, 0)  # Green if any waves
+
+	deaths_value.text = str(death_count)
+	# Deaths: red if any, white if zero
+	if death_count > 0:
+		deaths_value.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+	else:
+		deaths_value.add_theme_color_override("font_color", Color.WHITE)
+
+	# RIGHT COLUMN - Currency (colors set in scene, just update values)
+	var currency = character.get("starting_currency", {})
+	scrap_value.text = _format_number(currency.get("scrap", 0))
+	nanites_value.text = _format_number(currency.get("nanites", 0))
+	components_value.text = _format_number(currency.get("components", 0))
+
+	show()
+	GameLogger.debug("[CharacterDetailsPanel] Panel displayed successfully (3-column layout)")
+
+
+func _setup_portrait(character_type: String, type_color: Color) -> void:
+	"""Setup portrait panel with type-colored border and silhouette"""
+	var portrait_style = StyleBoxFlat.new()
+	portrait_style.bg_color = Color(0.12, 0.12, 0.12, 1.0)
+	portrait_style.border_color = type_color
+	portrait_style.set_border_width_all(3)
+	portrait_style.set_corner_radius_all(12)
+	portrait_panel.add_theme_stylebox_override("panel", portrait_style)
+
+	var texture_path = SILHOUETTE_PATHS.get(character_type, "")
+	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
+		var texture = load(texture_path) as Texture2D
+		if texture:
+			portrait_texture.texture = texture
+			GameLogger.debug("[CharacterDetailsPanel] Portrait loaded", {"type": character_type})
+	else:
+		GameLogger.warning("[CharacterDetailsPanel] Portrait not found", {"type": character_type})
+
+
+func _setup_aura_section(character_type: String, aura_data: Dictionary) -> void:
+	"""Setup aura section with name and description"""
+	var aura_info = _get_type_aura_info(character_type)
 	var aura_type = aura_data.get("type", "none")
 	var aura_level = aura_data.get("level", 1)
-	if aura_type == null or aura_type == "none":
-		aura_label.text = "None (Pure DPS)"
+	var type_color = _get_type_color(character_type)
+
+	if aura_info.is_empty() or aura_type == null or aura_type == "none":
+		# No aura (Commando) - show "Pure DPS" message
+		aura_name.text = "No Aura - Pure DPS"
+		aura_description.text = "Focuses on raw damage output"
+		aura_name.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
 	else:
-		aura_label.text = "%s (Level %d)" % [aura_type.capitalize(), aura_level]
-
-	# Stats Tab - Primary Stats Card
-	_update_primary_stats(stats)
-
-	# Stats Tab - Collapsible sections
-	await _populate_collapsible_stats(stats)
-
-	# Gear Tab
-	items_label.text = "No equipped items yet"
-
-	# Records Tab
-	kills_value.text = str(character.get("total_kills", 0))
-	wave_value.text = str(character.get("highest_wave", 0))
-	deaths_value.text = str(character.get("death_count", 0))
-
-	# Currency
-	var currency = character.get("starting_currency", {})
-	scrap_value.text = str(currency.get("scrap", 0))
-	nanites_value.text = str(currency.get("nanites", 0))
-	components_value.text = str(currency.get("components", 0))
-
-	# Reset to Stats tab and show
-	tab_container.current_tab = 0
-	show()
-
-	GameLogger.debug("[CharacterDetailsPanel] show_character() EXIT - Panel displayed successfully")
+		aura_name.text = "%s Aura (Lv%d)" % [aura_info.get("name", "Special"), aura_level]
+		aura_description.text = aura_info.get("description", "")
+		aura_name.add_theme_color_override("font_color", type_color)
 
 
-func _update_primary_stats(stats: Dictionary) -> void:
-	"""Update the 4 primary stats in the always-visible card"""
-	hp_label.text = "%d HP" % stats.get("max_hp", 100)
-	damage_label.text = "%d DMG" % stats.get("damage", 10)
-	armor_label.text = "%d ARM" % stats.get("armor", 0)
-	speed_label.text = "%d SPD" % stats.get("speed", 200)
+func _color_stat_value(label: Label, value: int, base: int) -> void:
+	"""Color stat value: green if above base, red if below, white if equal"""
+	if value > base:
+		label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))  # Green
+	elif value < base:
+		label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))  # Red
+	else:
+		label.add_theme_color_override("font_color", Color.WHITE)
 
 
-func _populate_collapsible_stats(stats: Dictionary) -> void:
-	"""Create collapsible sections for secondary stats"""
-	GameLogger.debug("[CharacterDetailsPanel] _populate_collapsible_stats() ENTRY")
-
-	# Clear existing
-	for child in collapsible_stats.get_children():
-		child.queue_free()
-
-	await get_tree().process_frame
-
-	# Offense section (collapsed by default)
-	_add_collapsible_section(
-		"Offense",
-		[
-			["[CRIT] Crit Chance", "%d%%" % int(stats.get("crit_chance", 0.05) * 100)],
-			["[ASPD] Attack Speed", "%d%%" % int(stats.get("attack_speed", 0))],
-			["[MEL] Melee DMG", str(stats.get("melee_damage", 0))],
-			["[RNG] Ranged DMG", str(stats.get("ranged_damage", 0))],
-			["[RES] Resonance", str(stats.get("resonance", 0))],
-		]
-	)
-
-	# Defense section
-	_add_collapsible_section(
-		"Defense",
-		[
-			["[DOD] Dodge", "%d%%" % int(stats.get("dodge", 0) * 100)],
-			["[LS] Life Steal", "%d%%" % int(stats.get("life_steal", 0) * 100)],
-			["[REG] HP Regen", str(stats.get("hp_regen", 0))],
-		]
-	)
-
-	# Utility section
-	_add_collapsible_section(
-		"Utility",
-		[
-			["[LCK] Luck", str(stats.get("luck", 0))],
-			["[PKP] Pickup Range", str(stats.get("pickup_range", 100))],
-			["[SCV] Scavenging", "%d%%" % int(stats.get("scavenging", 0))],
-		]
-	)
-
-	await get_tree().process_frame
-
-	GameLogger.debug(
-		"[CharacterDetailsPanel] _populate_collapsible_stats() EXIT - All sections created"
-	)
+func _get_type_color(type_id: String) -> Color:
+	"""Get the signature color for a character type (from Art Bible)"""
+	var colors = {
+		"scavenger": Color("#999999"),
+		"tank": Color("#4D7A4D"),
+		"commando": Color("#CC3333"),
+		"mutant": Color("#8033B3"),
+	}
+	return colors.get(type_id, Color.GRAY)
 
 
-func _add_collapsible_section(section_name: String, stat_rows: Array) -> void:
-	"""Add a collapsible section with header button and stat rows"""
-	GameLogger.debug(
-		"[CharacterDetailsPanel] _add_collapsible_section() ENTRY",
-		{"section": section_name, "row_count": stat_rows.size()}
-	)
-
-	var section_container = VBoxContainer.new()
-	collapsible_stats.add_child(section_container)  # 1. Parent FIRST
-	section_container.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
-	section_container.name = section_name + "Section"  # 3. Configure name AFTER parenting
-	section_container.add_theme_constant_override("separation", 4)
-
-	# Header button (tap to expand/collapse)
-	var header_btn = Button.new()
-	section_container.add_child(header_btn)  # 1. Parent FIRST
-	header_btn.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
-	header_btn.name = section_name + "Header"  # 3. Configure name AFTER parenting
-	header_btn.custom_minimum_size = Vector2(0, 44)  # Touch-friendly
-	header_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	_update_section_header(header_btn, section_name, _expanded_sections.get(section_name, false))
-	header_btn.add_theme_font_size_override("font_size", 18)
-	header_btn.pressed.connect(_on_section_toggled.bind(section_name, section_container))
-
-	# Content container (stats)
-	var content = VBoxContainer.new()
-	section_container.add_child(content)  # 1. Parent FIRST
-	content.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
-	content.name = section_name + "Content"  # 3. Configure name AFTER parenting
-	content.add_theme_constant_override("separation", 6)
-	content.visible = _expanded_sections.get(section_name, false)
-
-	for stat_data in stat_rows:
-		GameLogger.debug(
-			"[CharacterDetailsPanel] About to create stat row",
-			{"section": section_name, "stat": stat_data[0]}
-		)
-		var row = _create_stat_row(stat_data[0], stat_data[1])
-		content.add_child(row)  # 1. Parent FIRST (Parent-First Protocol)
-		row.layout_mode = 2  # 2. Explicit Mode 2 (Container) for iOS
-		row.custom_minimum_size = Vector2(0, 28)  # 3. Configure AFTER parenting
-		GameLogger.debug(
-			"[CharacterDetailsPanel] Stat row parented successfully",
-			{"section": section_name, "stat": stat_data[0]}
-		)
-
-	GameLogger.debug(
-		"[CharacterDetailsPanel] _add_collapsible_section() EXIT",
-		{"section": section_name, "rows_created": stat_rows.size()}
-	)
+func _get_type_aura_info(type_id: String) -> Dictionary:
+	"""Get aura information for a character type (from AURA-SYSTEM.md)"""
+	var auras = {
+		"scavenger": {"name": "Collection", "description": "Auto-collects nearby items"},
+		"tank": {"name": "Shield", "description": "Armor bonus to nearby allies"},
+		"commando": {},  # No aura - pure DPS
+		"mutant": {"name": "Damage", "description": "Damages nearby enemies"},
+	}
+	return auras.get(type_id, {})
 
 
-func _create_stat_row(stat_name: String, stat_value: String) -> HBoxContainer:
-	"""Create a single stat row with icon+name and value
-
-	CRITICAL: This function follows Parent-First protocol to prevent iOS SIGKILL.
-	The hbox is created with children, but NO configuration.
-	The CALLER must parent the hbox FIRST, then configure it.
-	"""
-	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() ENTRY", {"name": stat_name})
-
-	var hbox = HBoxContainer.new()
-	# DO NOT configure ANY properties here - violates Parent-First protocol!
-	# The hbox will be parented by caller AFTER this function returns.
-
-	var name_label = Label.new()
-	hbox.add_child(name_label)  # Parent FIRST
-	name_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
-	name_label.text = stat_name
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_label.add_theme_font_size_override("font_size", 18)
-
-	var value_label = Label.new()
-	hbox.add_child(value_label)  # Parent FIRST
-	value_label.layout_mode = 2  # Explicit Mode 2 (Container) for iOS
-	value_label.text = stat_value
-	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	value_label.add_theme_font_size_override("font_size", 18)
-
-	# DO NOT configure hbox here! Caller will configure AFTER parenting.
-
-	GameLogger.debug("[CharacterDetailsPanel] _create_stat_row() EXIT", {"name": stat_name})
-	return hbox
-
-
-func _on_section_toggled(section_name: String, section_container: VBoxContainer) -> void:
-	"""Toggle a collapsible section"""
-	_expanded_sections[section_name] = not _expanded_sections.get(section_name, false)
-	var is_expanded = _expanded_sections[section_name]
-
-	# Update header text
-	var header_btn = section_container.get_node(section_name + "Header") as Button
-	_update_section_header(header_btn, section_name, is_expanded)
-
-	# Show/hide content
-	var content = section_container.get_node(section_name + "Content")
-	content.visible = is_expanded
-
-
-func _update_section_header(header_btn: Button, section_name: String, is_expanded: bool) -> void:
-	"""Update section header with expand/collapse indicator"""
-	var arrow = "[-] " if is_expanded else "[+] "
-	header_btn.text = arrow + section_name
-	# Apply ghost button styling for collapsible headers
-	ThemeHelper.apply_button_style(header_btn, ThemeHelper.ButtonStyle.GHOST)
-
-
-func _on_close_pressed() -> void:
-	"""Handle close button"""
-	closed.emit()
-	hide()
+func _format_number(value: int) -> String:
+	"""Format large numbers with commas (e.g., 1523 → 1,523)"""
+	var str_value = str(value)
+	var result = ""
+	var count = 0
+	for i in range(str_value.length() - 1, -1, -1):
+		if count > 0 and count % 3 == 0:
+			result = "," + result
+		result = str_value[i] + result
+		count += 1
+	return result

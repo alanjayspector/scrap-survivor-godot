@@ -145,6 +145,41 @@ Handlers (multiple, configurable)
 
 ---
 
+## 🎨 UI/UX Enhancements
+
+### Secondary Stats Display (Character Details)
+**Deferred From:** Week 17 Phase 3
+**Estimated Effort:** 1-2 hours
+**Dependencies:** None
+**Priority:** LOW (power users only)
+
+**Context:**
+Character Details screen shows 4 primary stats (HP, DMG, ARM, SPD). There are 10 additional secondary stats that power users may want to see.
+
+**Secondary Stats (10 total):**
+| Stat | Type | Purpose |
+|------|------|---------|
+| melee_damage | int | Melee weapon bonus |
+| ranged_damage | int | Ranged weapon bonus |
+| attack_speed | float | Weapon cooldown reduction % |
+| crit_chance | float | Critical hit probability |
+| life_steal | float | % damage → HP (capped 90%) |
+| hp_regen | int | HP per second |
+| dodge | float | Evasion chance % |
+| luck | int | Drop rate modifier |
+| pickup_range | int | Collection radius |
+| scavenging | int | Currency multiplier % |
+| resonance | int | Aura power multiplier |
+
+**Implementation Options:**
+1. **"View All Stats" Button** → Opens modal with full stat breakdown
+2. **Expandable Section** → Tap to reveal secondary stats inline
+3. **Swipe Gesture** → Swipe left on stats card to see more
+
+**Recommendation:** Option 1 (modal) - keeps main view clean, power users can deep-dive.
+
+---
+
 ## 🎮 Gameplay Features
 
 ### Meta Progression System

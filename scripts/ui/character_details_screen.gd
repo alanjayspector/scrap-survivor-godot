@@ -1,11 +1,12 @@
 extends Control
 ## CharacterDetailsScreen - Full-screen character details with action bar
-## Phase 9.2: Added bottom action bar with Select/Start Run/Delete
+## Week 17 Phase 3: Character Details Overhaul
 ##
 ## Architecture:
-## - Full-screen hierarchical navigation (iOS HIG compliant)
-## - Left sidebar: Character roster for quick switching
-## - Main content: Embedded CharacterDetailsPanel
+## - Full-screen mobile-first layout (iOS HIG compliant)
+## - Hero Section with 250×250pt portrait and type-colored border
+## - Background: character_details_bg.jpg with overlay
+## - Embedded CharacterDetailsPanel with Stats/Gear/Records tabs
 ## - Bottom action bar: Select, Start Run, Delete buttons
 ##
 ## Flow:
@@ -31,8 +32,6 @@ const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 @onready var title_label: Label = $MainContainer/ContentArea/HeaderBar/TitleLabel
 @onready
 var details_content_container: MarginContainer = $MainContainer/ContentArea/DetailsContentContainer
-@onready
-var sidebar_character_list: VBoxContainer = $MainContainer/SidebarContainer/SidebarScroll/SidebarCharacterList
 @onready var select_button: Button = $MainContainer/ContentArea/BottomActionBar/SelectButton
 @onready var start_run_button: Button = $MainContainer/ContentArea/BottomActionBar/StartRunButton
 @onready var delete_button: Button = $MainContainer/ContentArea/BottomActionBar/DeleteButton
@@ -42,7 +41,7 @@ var audio_player: AudioStreamPlayer
 
 ## State
 var current_character_id: String = ""
-var details_panel: Panel = null
+var details_panel: Control = null
 
 
 func _ready() -> void:
@@ -85,9 +84,6 @@ func _ready() -> void:
 	# Show the character being viewed
 	_show_character(viewing_id)
 
-	# Populate sidebar roster
-	_populate_sidebar_roster()
-
 	GameLogger.info("[CharacterDetailsScreen] Initialized", {"character_id": viewing_id})
 
 
@@ -125,14 +121,6 @@ func _show_character(character_id: String) -> void:
 	details_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	details_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	# Hide close button (we have header back button instead)
-	var close_btn = details_panel.get_node_or_null("MarginContainer/VBoxContainer/CloseButton")
-	if close_btn:
-		close_btn.visible = false
-
-	# Connect close signal (redirect to back navigation)
-	details_panel.closed.connect(_on_back_pressed)
-
 	# Show character data
 	details_panel.show_character(character)
 
@@ -153,65 +141,6 @@ func _update_select_button_state() -> void:
 	else:
 		select_button.text = "Select Survivor"
 		select_button.disabled = false
-
-
-func _populate_sidebar_roster() -> void:
-	"""Populate sidebar with character portraits for quick switching"""
-	GameLogger.debug("[CharacterDetailsScreen] _populate_sidebar_roster() ENTRY")
-
-	# Clear existing
-	for child in sidebar_character_list.get_children():
-		child.queue_free()
-
-	# Get all characters
-	var characters = CharacterService.get_all_characters()
-	if characters == null or characters.is_empty():
-		GameLogger.warning("[CharacterDetailsScreen] No characters to display in sidebar")
-		return
-
-	# Sort by last played (most recent first)
-	characters.sort_custom(func(a, b): return a.get("last_played", 0) > b.get("last_played", 0))
-
-	# Create button for each character
-	for character in characters:
-		var char_id = character.get("id", "")
-		var char_name = character.get("name", "Unknown")
-
-		var btn = Button.new()
-
-		# Parent FIRST (Parent-First Protocol)
-		sidebar_character_list.add_child(btn)
-
-		# THEN configure (after parenting)
-		btn.layout_mode = 2
-		btn.custom_minimum_size = Vector2(0, 70)
-		btn.text = char_name
-		btn.add_theme_font_size_override("font_size", 20)
-		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-		# Highlight current character
-		if char_id == current_character_id:
-			btn.disabled = true
-
-		# Connect signal with character_id binding
-		btn.pressed.connect(_on_sidebar_character_pressed.bind(char_id))
-
-	GameLogger.debug(
-		"[CharacterDetailsScreen] _populate_sidebar_roster() EXIT", {"count": characters.size()}
-	)
-
-
-func _on_sidebar_character_pressed(character_id: String) -> void:
-	"""Handle sidebar character button - switch to different character"""
-	GameLogger.debug(
-		"[CharacterDetailsScreen] Sidebar character pressed", {"character_id": character_id}
-	)
-
-	# Show new character
-	_show_character(character_id)
-
-	# Update sidebar highlighting
-	_populate_sidebar_roster()
 
 
 func _on_select_pressed() -> void:

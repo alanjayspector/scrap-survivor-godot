@@ -413,24 +413,15 @@ func _build_type_preview_content(
 	desc_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
-	# Aura section (unique selling point!)
+	# Aura section (unique selling point!) - Clean text, no emojis (iOS compatible)
 	var aura_info = _get_type_aura_info(type_id)
 	if not aura_info.is_empty():
-		var aura_container = HBoxContainer.new()
-		container.add_child(aura_container)
-		aura_container.layout_mode = 2
-		aura_container.alignment = BoxContainer.ALIGNMENT_CENTER
-		aura_container.add_theme_constant_override("separation", 8)
-
-		var aura_icon = Label.new()
-		aura_container.add_child(aura_icon)
-		aura_icon.text = aura_info.get("icon", "✨")
-		aura_icon.add_theme_font_size_override("font_size", 24)
-
 		var aura_label = Label.new()
-		aura_container.add_child(aura_label)
+		container.add_child(aura_label)
+		aura_label.layout_mode = 2
 		aura_label.text = "%s Aura" % aura_info.get("name", "Special")
-		aura_label.add_theme_font_size_override("font_size", 18)
+		aura_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		aura_label.add_theme_font_size_override("font_size", 20)
 		aura_label.add_theme_color_override("font_color", type_color)
 
 		# Aura description
@@ -553,24 +544,10 @@ func _get_type_aura_info(type_id: String) -> Dictionary:
 	"""Get aura information for a character type (from AURA-SYSTEM.md)"""
 	var auras = {
 		"scavenger":
-		{
-			"name": "Collection",
-			"icon": "🧲",
-			"description": "Auto-collects nearby currency and items faster"
-		},
-		"tank":
-		{
-			"name": "Shield",
-			"icon": "🛡️",
-			"description": "Grants armor bonus to you and nearby minions"
-		},
+		{"name": "Collection", "description": "Auto-collects nearby currency and items faster"},
+		"tank": {"name": "Shield", "description": "Grants armor bonus to you and nearby minions"},
 		"commando": {},  # No aura - pure DPS
-		"mutant":
-		{
-			"name": "Damage",
-			"icon": "☠️",
-			"description": "Deals damage to nearby enemies every second"
-		},
+		"mutant": {"name": "Damage", "description": "Deals damage to nearby enemies every second"},
 	}
 	return auras.get(type_id, {})
 

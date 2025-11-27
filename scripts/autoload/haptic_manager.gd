@@ -43,6 +43,11 @@ var enabled: bool = true
 ## Platform capability flag (set during _ready)
 var _platform_supports_haptics: bool = false
 
+## Cooldown to prevent rapid haptic calls (iOS safety)
+## Minimum time between haptic calls in milliseconds
+const HAPTIC_COOLDOWN_MS: int = 50
+var _last_haptic_time: int = 0
+
 
 func _ready() -> void:
 	_check_platform_support()
@@ -127,6 +132,12 @@ func _vibrate(intensity: Intensity) -> void:
 	# Don't call haptics in editor (prevents simulator errors during testing)
 	if OS.has_feature("editor"):
 		return
+
+	# Cooldown check to prevent rapid-fire haptics (iOS safety)
+	var current_time := Time.get_ticks_msec()
+	if current_time - _last_haptic_time < HAPTIC_COOLDOWN_MS:
+		return  # Skip this haptic call - too soon after last one
+	_last_haptic_time = current_time
 
 	# Get parameters for this intensity level
 	var params: Dictionary = PARAMS.get(intensity, PARAMS[Intensity.LIGHT])
