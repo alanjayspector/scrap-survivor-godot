@@ -175,46 +175,30 @@ func test_default_character_type_is_scavenger() -> void:
 
 func test_character_type_selection_updates_state() -> void:
 	# Arrange
-	var tank_button = null
-	var cards_container = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards"
-	)
+	var tank_card = character_creation.character_type_card_buttons.get("tank")
 
-	# Find tank button (if available for current tier)
-	for child in cards_container.get_children():
-		if child is Button and "Tank" in child.text:
-			tank_button = child
-			break
-
-	if tank_button == null:
+	if tank_card == null or tank_card.is_locked():
 		# Tank not available for current tier, skip test
 		pass_test("Tank type not available for current tier")
 		return
 
-	# Act - Press tank button
-	tank_button.pressed.emit()
+	# Act - Emit card_pressed signal (simulates tap on CharacterTypeCard)
+	tank_card.card_pressed.emit("tank")
 	await wait_frames(1)
 
 	# Assert
 	assert_eq(character_creation.selected_character_type, "tank", "Selected type should be tank")
 
 
-func test_selected_card_has_full_opacity() -> void:
-	# Arrange
-	var scavenger_button = null
-	var cards_container = character_creation.get_node(
-		"ScreenContainer/MarginContainer/VBoxContainer/CreationContainer/CharacterTypeCards"
+func test_selected_card_is_marked_selected() -> void:
+	# Arrange - Get scavenger card from dictionary (default selected)
+	var scavenger_card = character_creation.character_type_card_buttons.get("scavenger")
+
+	# Assert - Selected card should be marked as selected via is_selected()
+	assert_not_null(scavenger_card, "Scavenger card should exist")
+	assert_true(
+		scavenger_card.is_selected(), "Default selected card should report is_selected() = true"
 	)
-
-	# Find scavenger button
-	for child in cards_container.get_children():
-		if child is Button and "Scavenger" in child.text:
-			scavenger_button = child
-			break
-
-	# Assert - Selected card should have full opacity
-	assert_not_null(scavenger_button, "Scavenger button should exist")
-	assert_eq(scavenger_button.modulate, Color.WHITE, "Selected card should have full opacity")
 
 
 ## ============================================================================

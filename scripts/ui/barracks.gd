@@ -13,8 +13,10 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 const CHARACTER_SELECT_SOUND: AudioStream = preload("res://assets/audio/ui/character_select.ogg")
 const ERROR_SOUND: AudioStream = preload("res://assets/audio/ui/ui_error.ogg")
 
-## Components (QA Fix #2: Use CharacterCard component instead of manual UI generation)
-const CHARACTER_CARD_SCENE: PackedScene = preload("res://scenes/ui/character_card.tscn")
+## Components (Week 17: Unified CharacterTypeCard component)
+const CHARACTER_TYPE_CARD_SCENE: PackedScene = preload(
+	"res://scenes/ui/components/character_type_card.tscn"
+)
 const MODAL_FACTORY = preload("res://scripts/ui/components/modal_factory.gd")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
@@ -78,15 +80,15 @@ func _populate_character_list() -> void:
 
 
 func _create_character_list_item(character: Dictionary) -> void:
-	"""Create a character card for grid display (Phase 9.2: Portrait card grid)"""
-	# Instantiate CharacterCard component
-	var card = CHARACTER_CARD_SCENE.instantiate()
+	"""Create a character card for grid display (Week 17: CharacterTypeCard component)"""
+	# Instantiate CharacterTypeCard component
+	var card = CHARACTER_TYPE_CARD_SCENE.instantiate()
 
 	# Add to scene tree FIRST (so @onready variables initialize)
 	character_list.add_child(card)
 
 	# THEN setup with character data (after @onready vars are ready)
-	card.setup(character)
+	card.setup_player(character)
 
 	# Connect card tap signal → navigate to details
 	card.card_pressed.connect(_on_character_card_pressed)

@@ -58,6 +58,9 @@ const COLOR_CARD_BORDER_SELECTED := Color("#FF6600")
 ## Lock overlay
 const COLOR_LOCK_OVERLAY := Color(0.0, 0.0, 0.0, 0.5)
 
+## Portrait background (lighter than card for contrast)
+const COLOR_PORTRAIT_BG := Color(0.25, 0.25, 0.25, 1.0)
+
 ## Tap animation constants (iOS-safe, no Tween)
 const TAP_DOWN_DURATION := 0.08  # 80ms - fast response
 const TAP_UP_DURATION := 0.12  # 120ms - satisfying release
@@ -76,8 +79,13 @@ const LONG_PRESS_DURATION := 0.5  # 500ms for long press
 ## Node references (set after _ready or via @onready)
 @onready var glow_panel: Panel = $GlowPanel
 @onready var panel_bg: Panel = $PanelBg
-@onready var portrait_rect: TextureRect = $ContentContainer/VBoxContainer/PortraitRect
-@onready var portrait_color_rect: ColorRect = $ContentContainer/VBoxContainer/PortraitColorRect
+@onready var portrait_container: Control = $ContentContainer/VBoxContainer/PortraitContainer
+@onready
+var portrait_background: Panel = $ContentContainer/VBoxContainer/PortraitContainer/PortraitBackground
+@onready
+var portrait_rect: TextureRect = $ContentContainer/VBoxContainer/PortraitContainer/PortraitRect
+@onready
+var portrait_color_rect: ColorRect = $ContentContainer/VBoxContainer/PortraitContainer/PortraitColorRect
 @onready var name_label: Label = $ContentContainer/VBoxContainer/NameLabel
 @onready var sub_label: Label = $ContentContainer/VBoxContainer/SubLabel
 @onready var lock_overlay: Panel = $LockOverlay
@@ -132,6 +140,9 @@ func _ready() -> void:
 
 	# Apply default border style
 	_update_border_style()
+
+	# Style portrait background (lighter than card for contrast)
+	_style_portrait_background()
 
 	# Setup long press timer
 	_press_timer = Timer.new()
@@ -212,8 +223,8 @@ func setup_player(character_data: Dictionary) -> void:
 	var type_display = type_def.get("display_name", char_type.capitalize())
 	var type_color = type_def.get("color", Color.GRAY)
 
-	# Set portrait to colored rect (Phase 1 - silhouettes in Phase 3)
-	_set_color_portrait(type_color)
+	# Set portrait to silhouette (same as type cards for visual consistency)
+	_set_silhouette_portrait(char_type)
 
 	# Set labels
 	if name_label:
@@ -418,6 +429,17 @@ func _update_border_style() -> void:
 	style.set_border_width_all(border_width)
 	style.set_corner_radius_all(8)
 	panel_bg.add_theme_stylebox_override("panel", style)
+
+
+func _style_portrait_background() -> void:
+	"""Style the portrait background panel (lighter than card for contrast)"""
+	if not portrait_background:
+		return
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = COLOR_PORTRAIT_BG
+	style.set_corner_radius_all(8)
+	portrait_background.add_theme_stylebox_override("panel", style)
 
 
 func _style_selection_badge() -> void:

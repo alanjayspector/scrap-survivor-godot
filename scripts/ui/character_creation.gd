@@ -44,6 +44,9 @@ const ERROR_SOUND: String = "res://assets/audio/ui/ui_error.ogg"
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
+## CharacterTypeCard component (Week 17)
+const CHARACTER_TYPE_CARD_SCENE = preload("res://scenes/ui/components/character_type_card.tscn")
+
 
 func _ready() -> void:
 	var start_time = Time.get_ticks_msec()
@@ -93,7 +96,7 @@ func _setup_name_input() -> void:
 
 
 func _create_character_type_cards() -> void:
-	"""Create character type selection cards"""
+	"""Create character type selection cards using CharacterTypeCard component (Week 17)"""
 	# Clear existing cards to prevent leaks on scene reload
 	for child in character_type_cards.get_children():
 		child.queue_free()
@@ -107,14 +110,26 @@ func _create_character_type_cards() -> void:
 			GameLogger.warning("[CharacterCreation] Unknown character type", {"type": char_type})
 			continue
 
-		var type_def = CharacterService.CHARACTER_TYPES[char_type]
+		# Create CharacterTypeCard instance
+		var card = CHARACTER_TYPE_CARD_SCENE.instantiate()
+		character_type_cards.add_child(card)
 
-		# Check if player has access to this type (tier restriction)
+		# Setup card for type display (handles lock state internally)
+		card.setup_type(char_type)
+
+		# Connect signals
+		card.card_pressed.connect(_on_card_pressed)
+		card.card_long_pressed.connect(_on_card_long_pressed)
+
+		character_type_card_buttons[char_type] = card
+		cards_created += 1
+
+		var type_def = CharacterService.CHARACTER_TYPES[char_type]
 		var is_locked = type_def.tier_required > CharacterService.get_tier()
 
 		if is_locked:
 			GameLogger.info(
-				"[CharacterCreation] Character type LOCKED (will show with lock overlay)",
+				"[CharacterCreation] Character type LOCKED (shown with lock overlay)",
 				{
 					"type": char_type,
 					"required_tier": type_def.tier_required,
@@ -122,95 +137,20 @@ func _create_character_type_cards() -> void:
 				}
 			)
 
-		# Show ALL character types (locked and unlocked)
-		var card_button = _create_type_card_button(char_type, type_def, is_locked)
-		character_type_cards.add_child(card_button)
-		character_type_card_buttons[char_type] = card_button
-		cards_created += 1
-
 	# Select default type
 	_select_character_type("scavenger")
 
 	GameLogger.info("[CharacterCreation] Character type cards created", {"count": cards_created})
 
 
-func _create_type_card_button(
-	character_type: String, type_def: Dictionary, is_locked: bool = false
-) -> Button:
-	"""Create a button-based character type card"""
-	var button = Button.new()
-	button.custom_minimum_size = Vector2(170, 200)
-
-	# Show lock icon and tier requirement for locked types
-	if is_locked:
-		var tier_names = ["FREE", "PREMIUM", "SUBSCRIPTION"]
-		var required_tier_name = (
-			tier_names[type_def.tier_required]
-			if type_def.tier_required < tier_names.size()
-			else "???"
-		)
-		button.text = type_def.display_name + "\n\n🔒 LOCKED\n\n" + required_tier_name + " Required"
-	else:
-		button.text = type_def.display_name + "\n\n" + type_def.description
-
-	# Style (mobile-friendly card design)
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.15, 0.15, 0.15) if not is_locked else Color(0.1, 0.1, 0.1)  # Darker for locked
-	style_normal.border_color = type_def.color if not is_locked else Color(0.5, 0.5, 0.5)  # Gray border for locked
-	style_normal.border_width_left = 2
-	style_normal.border_width_top = 2
-	style_normal.border_width_right = 2
-	style_normal.border_width_bottom = 2
-	style_normal.corner_radius_top_left = 8
-	style_normal.corner_radius_top_right = 8
-	style_normal.corner_radius_bottom_left = 8
-	style_normal.corner_radius_bottom_right = 8
-	style_normal.content_margin_left = 10
-	style_normal.content_margin_top = 10
-	style_normal.content_margin_right = 10
-	style_normal.content_margin_bottom = 10
-
-	var style_pressed = style_normal.duplicate()
-	style_pressed.border_width_left = 4
-	style_pressed.border_width_top = 4
-	style_pressed.border_width_right = 4
-	style_pressed.border_width_bottom = 4
-
-	if not is_locked:
-		style_pressed.bg_color = type_def.color.darkened(0.3)
-	else:
-		# Locked cards don't change much on press (shows they're not selectable)
-		style_pressed.bg_color = Color(0.12, 0.12, 0.12)
-
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("pressed", style_pressed)
-	button.add_theme_stylebox_override("hover", style_pressed)
-	button.add_theme_font_size_override("font_size", 16)
-
-	# Store locked state as metadata
-	button.set_meta("is_locked", is_locked)
-	button.set_meta("required_tier", type_def.tier_required)
-
-	# Dim locked cards visually
-	if is_locked:
-		button.modulate = Color(0.5, 0.5, 0.5)  # 50% dimmed
-
-	button.pressed.connect(_on_type_card_pressed.bind(character_type))
-
-	return button
-
-
 func _select_character_type(character_type: String) -> void:
-	"""Select a character type and update UI"""
+	"""Select a character type and update UI using CharacterTypeCard.set_selected()"""
 	selected_character_type = character_type
 
-	# Update card visual states
+	# Update card visual states using set_selected()
 	for type_name in character_type_card_buttons.keys():
-		var button = character_type_card_buttons[type_name]
-		if type_name == character_type:
-			button.modulate = Color.WHITE
-		else:
-			button.modulate = Color(0.6, 0.6, 0.6)  # Dim unselected
+		var card = character_type_card_buttons[type_name]
+		card.set_selected(type_name == character_type)
 
 	_update_create_button_state()
 
@@ -299,23 +239,22 @@ func _update_create_button_state() -> void:
 		create_hub_button.tooltip_text = ""
 
 
-func _on_type_card_pressed(character_type: String) -> void:
-	"""Handle character type card tap"""
-	# Check if this card is locked
-	if character_type_card_buttons.has(character_type):
-		var button = character_type_card_buttons[character_type]
-		var is_locked = button.get_meta("is_locked", false)
-
-		if is_locked:
-			# Locked card clicked - show upgrade dialog
-			_play_sound(ERROR_SOUND)
-			var required_tier = button.get_meta("required_tier", CharacterService.UserTier.PREMIUM)
-			_show_locked_character_dialog(character_type, required_tier)
-			return
-
-	# Unlocked card - select it
+func _on_card_pressed(type_id: String) -> void:
+	"""Handle CharacterTypeCard press signal (Week 17)"""
+	# CharacterTypeCard handles locked state internally (disabled button)
+	# If we receive the signal, the card is unlocked
 	_play_sound(CHARACTER_SELECT_SOUND)
-	_select_character_type(character_type)
+	_select_character_type(type_id)
+
+
+func _on_card_long_pressed(type_id: String) -> void:
+	"""Handle CharacterTypeCard long press signal - show type preview (Week 17 Phase 2)"""
+	# Phase 2: Will show Character Type Preview Modal with full stats/abilities
+	# For now, just log for testing
+	GameLogger.info(
+		"[CharacterCreation] Long press on type card (Preview modal coming Phase 2)",
+		{"type_id": type_id}
+	)
 
 
 func _on_create_pressed() -> void:

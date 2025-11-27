@@ -66,8 +66,12 @@ func test_setup_type_scavenger_displays_stat_preview() -> void:
 func test_setup_type_scavenger_shows_silhouette() -> void:
 	_card.setup_type("scavenger")
 
-	var portrait_rect = _card.get_node("ContentContainer/VBoxContainer/PortraitRect")
-	var portrait_color = _card.get_node("ContentContainer/VBoxContainer/PortraitColorRect")
+	var portrait_rect = _card.get_node(
+		"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
+	)
+	var portrait_color = _card.get_node(
+		"ContentContainer/VBoxContainer/PortraitContainer/PortraitColorRect"
+	)
 
 	assert_true(portrait_rect.visible, "PortraitRect should be visible for type mode")
 	assert_false(portrait_color.visible, "PortraitColorRect should be hidden for type mode")
@@ -124,7 +128,9 @@ func test_setup_type_all_types_load_silhouettes() -> void:
 		CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
 		card.setup_type(type_id)
 
-		var portrait_rect = card.get_node("ContentContainer/VBoxContainer/PortraitRect")
+		var portrait_rect = card.get_node(
+			"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
+		)
 		assert_not_null(portrait_rect.texture, "Silhouette for '%s' should load" % type_id)
 
 
@@ -160,25 +166,34 @@ func test_setup_player_displays_type_and_level() -> void:
 	assert_true(sub_label.text.contains("7"), "Sub label should contain level")
 
 
-func test_setup_player_shows_color_rect_not_texture() -> void:
+func test_setup_player_shows_silhouette_texture() -> void:
+	# Week 17 QA fix: Player mode now uses silhouettes for visual consistency
 	var char_data = {"id": "test_1", "name": "Hero", "character_type": "scavenger", "level": 1}
 	_card.setup_player(char_data)
 
-	var portrait_rect = _card.get_node("ContentContainer/VBoxContainer/PortraitRect")
-	var portrait_color = _card.get_node("ContentContainer/VBoxContainer/PortraitColorRect")
+	var portrait_rect = _card.get_node(
+		"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
+	)
+	var portrait_color = _card.get_node(
+		"ContentContainer/VBoxContainer/PortraitContainer/PortraitColorRect"
+	)
 
-	assert_false(portrait_rect.visible, "PortraitRect should be hidden for player mode")
-	assert_true(portrait_color.visible, "PortraitColorRect should be visible for player mode")
+	assert_true(
+		portrait_rect.visible, "PortraitRect should be visible for player mode (silhouette)"
+	)
+	assert_false(portrait_color.visible, "PortraitColorRect should be hidden for player mode")
+	assert_not_null(portrait_rect.texture, "Silhouette texture should be loaded")
 
 
-func test_setup_player_uses_type_color_for_portrait() -> void:
+func test_setup_player_loads_correct_type_silhouette() -> void:
+	# Week 17 QA fix: Player portraits use type silhouettes for visual consistency
 	var char_data = {"id": "test_1", "name": "Hero", "character_type": "tank", "level": 1}
 	_card.setup_player(char_data)
 
-	var portrait_color = _card.get_node("ContentContainer/VBoxContainer/PortraitColorRect")
-	# Tank color from CharacterService is Color(0.3, 0.5, 0.3) - olive green
-	assert_almost_eq(portrait_color.color.r, 0.3, 0.1, "Portrait should use tank red channel")
-	assert_almost_eq(portrait_color.color.g, 0.5, 0.1, "Portrait should use tank green channel")
+	var portrait_rect = _card.get_node(
+		"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
+	)
+	assert_not_null(portrait_rect.texture, "Tank silhouette should be loaded for player")
 
 
 func test_setup_player_never_locked() -> void:

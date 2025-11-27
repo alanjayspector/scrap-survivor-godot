@@ -1,4 +1,8 @@
 extends Button
+## @deprecated - Use CharacterTypeCard instead (Week 17 Phase 1)
+## This component is no longer used. Scheduled for removal.
+## Migration: scenes/ui/components/character_type_card.tscn
+##
 ## CharacterCard - Tappable portrait card for character grid
 ## Phase 9.2: Simplified vertical card layout
 ##

@@ -2,12 +2,12 @@
 
 **Date**: 2025-11-26 (Updated)
 **Week 16 Status**: ✅ **COMPLETE**
-**Week 17 Status**: 🚧 **PHASE 1 IN PROGRESS - Component Created**
+**Week 17 Status**: ✅ **PHASE 1 COMPLETE** - Ready for Phase 2
 **Current Branch**: main
 
 ---
 
-## 🎯 CURRENT FOCUS: Phase 1 - Unified Card Component
+## 🎯 CURRENT FOCUS: Phase 2 - Character Creation Overhaul (Next Session)
 
 ### Expert Panel Decisions (Finalized 2025-11-27)
 
@@ -15,7 +15,7 @@
 |----------|--------|-----------|
 | Tap Animation | Custom (0.95 scale, 80ms/120ms asymmetric) | Cards deserve premium feel per Marvel Snap Law |
 | Selection Glow | Animated GlowPanel (NOT shader) | Mobile performance, simpler implementation |
-| Portrait Display | Hybrid: silhouette PNGs for types, ColorRect for players (Phase 1) | Immediate improvement in Character Creation |
+| Portrait Display | Silhouette PNGs for BOTH types and players (QA Pass 4 fix) | Visual consistency across screens |
 | Component Strategy | NEW `CharacterTypeCard` component | Safe migration, side-by-side operation |
 | Detail Views | Type Preview Modal (Phase 2) + Player Details Overhaul (Phase 3) | Two distinct experiences |
 
@@ -26,15 +26,30 @@
 - [x] Implement `character_type_card.gd` script (`scripts/ui/character_type_card.gd`)
 - [x] Load silhouette textures for type portraits (all 4 types implemented)
 - [x] Unit tests for both modes (34 tests, all passing - 705/729 total)
-- [ ] Migrate Character Creation to use new component
-- [ ] Migrate Barracks to use new component
-- [ ] Device QA validation
-- [ ] Deprecate old `CharacterCard`
+- [x] Migrate Character Creation to use new component ✅ (2025-11-26)
+- [x] Migrate Barracks to use new component ✅ (2025-11-26)
+- [x] QA Pass 4 - Fix "white" portrait issue ✅ (2025-11-26)
+- [x] Device QA validation (Pass 5) ✅ (2025-11-26) - Approved, pragmatic pass
+- [x] Deprecate old `CharacterCard` ✅ (2025-11-26)
+
+### QA Pass 4 Decisions (2025-11-26)
+
+**Issue 1: Barracks Player Portrait "White"**
+- Root cause: Scavenger color `(0.6, 0.6, 0.6)` appeared nearly white on dark background
+- Fix applied: `setup_player()` now uses silhouettes (same as `setup_type()`)
+- Result: Visual consistency between Character Creation and Barracks
+
+**Issue 2: Silhouette Detail Lacking at Thumbnail Size**
+- Decision: **DEFERRED** to Phase 2/3
+- Rationale: Silhouettes are excellent at full size (512×512), will shine in detail views
+- Phase 2 (Type Preview Modal): 300×300pt display
+- Phase 3 (Character Details Hero Section): 200×200pt display
+- Cards are "identifiers," detail views are "appreciation moments"
 
 ### Component Features Implemented
 
 - `setup_type(type_id)` - For Character Creation (silhouette portraits)
-- `setup_player(character_data)` - For Barracks (ColorRect portraits)
+- `setup_player(character_data)` - For Barracks (silhouette portraits - QA Pass 4 fix)
 - `set_selected(bool)` - Animated breathing glow effect (Timer-based, iOS-safe)
 - `set_locked(bool, tier)` - Lock overlay for tier-restricted types
 - Custom tap animation (0.95 scale, 80ms down / 120ms return, _process-based)
@@ -106,19 +121,23 @@
 ## 🚀 QUICK START PROMPT (Next Session)
 
 ```
-Continuing Week 17 Phase 1 for Scrap Survivor.
+Continuing Week 17 Phase 2 for Scrap Survivor.
 
 Read these files:
 1. .system/CLAUDE_RULES.md
 2. .system/NEXT_SESSION.md
 3. docs/migration/week17-plan.md
 
-Current task: Migrate screens to use CharacterTypeCard component
-- CharacterTypeCard component created ✅
-- Unit tests passing (34 tests) ✅
-- Ready to migrate Character Creation screen
+Phase 1 COMPLETE ✅
+- CharacterTypeCard component created and deployed
+- Both Character Creation and Barracks using silhouette portraits
+- Old CharacterCard deprecated
 
-Next step: Migrate Character Creation to use CharacterTypeCard.setup_type()
+Phase 2: Character Creation Overhaul
+- Keyboard UX fix (dismissable, content scrolls)
+- Apply character_creation_bg.jpg background
+- Type Preview Modal (long-press on type card)
+- Selection flow polish
 ```
 
 ---
@@ -134,4 +153,4 @@ Next step: Migrate Character Creation to use CharacterTypeCard.setup_type()
 ---
 
 **Last Updated**: 2025-11-26
-**Status**: Phase 1 In Progress - Component Created, Ready for Migration
+**Status**: Phase 1 Complete - Ready for Phase 2 (Character Creation Overhaul)
