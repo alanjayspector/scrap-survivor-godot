@@ -21,9 +21,12 @@ const MODAL_FACTORY = preload("res://scripts/ui/components/modal_factory.gd")
 const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
 const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
+## State
+var _slot_badge_nodes: Dictionary = {}  # Store badge references for potential updates
+
 @onready
 var character_list: GridContainer = $ScreenContainer/VBoxContainer/CharacterListContainer/ScrollContainer/CharacterList
-@onready var slot_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/SlotLabel
+@onready var header_container: VBoxContainer = $ScreenContainer/VBoxContainer/HeaderContainer
 @onready
 var create_new_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/CreateNewButton
 @onready var back_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/BackButton
@@ -111,22 +114,21 @@ func _show_empty_state() -> void:
 
 
 func _update_slot_label() -> void:
-	"""Update slot count display"""
+	"""Create slot usage badge using shared ThemeHelper component (Week 17 uniformity)"""
+	# Create the uniform badge using shared utility
+	_slot_badge_nodes = THEME_HELPER.create_slot_usage_badge(header_container)
+
+	# Check if at limit and disable create button
 	var character_count = CharacterService.get_character_count()
 	var slot_limit = CharacterService.get_character_slot_limit()
-	var tier = CharacterService.get_tier()
-	var tier_name = ["Free", "Premium", "Subscription"][tier]
 
-	slot_label.text = "%d/%d Survivors (%s Tier)" % [character_count, slot_limit, tier_name]
-
-	# Disable create button if at limit
 	if character_count >= slot_limit:
 		create_new_button.disabled = true
 		create_new_button.tooltip_text = "Slot limit reached. Upgrade tier for more slots."
 
 		GameLogger.info(
 			"[CharacterRoster] Slot limit reached",
-			{"count": character_count, "limit": slot_limit, "tier": tier}
+			{"count": character_count, "limit": slot_limit, "tier": CharacterService.get_tier()}
 		)
 	else:
 		create_new_button.disabled = false

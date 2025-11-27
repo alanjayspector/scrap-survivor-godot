@@ -59,25 +59,10 @@ theme_override_font_sizes/font_size = 48
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 
-[node name="SubtitleLabel" type="Label" parent="ScreenContainer/MarginContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
-text = "Choose a name and type"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.91, 0.91, 0.816, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
-
 [node name="CreationContainer" type="VBoxContainer" parent="ScreenContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 20
-
-[node name="NameInputLabel" type="Label" parent="ScreenContainer/MarginContainer/VBoxContainer/CreationContainer"]
-layout_mode = 2
-text = "Survivor Name:"
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 1
 
 [node name="NameInputContainer" type="CenterContainer" parent="ScreenContainer/MarginContainer/VBoxContainer/CreationContainer"]
 layout_mode = 2

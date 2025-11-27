@@ -63,13 +63,6 @@ theme_override_font_sizes/font_size = 48
 text = "Your Survivors"
 horizontal_alignment = 1
 
-[node name="SlotLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
-theme_override_font_sizes/font_size = 20
-text = "0/3 Survivors (Free Tier)"
-horizontal_alignment = 1
-
 [node name="CharacterListContainer" type="MarginContainer" parent="ScreenContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3

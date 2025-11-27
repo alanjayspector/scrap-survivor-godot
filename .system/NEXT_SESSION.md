@@ -1,78 +1,43 @@
-# Next Session: Week 17 Phase 4 Part B - QA Ready
+# Next Session: Week 17 Phase 4B Complete - Ready for Phase 5
 
 **Date**: 2025-11-27
-**Week 17 Status**: Phases 1-4A Complete, Phase 4B Code Complete (awaiting QA)
+**Week 17 Status**: Phases 1-4B Complete ✅
 **Current Branch**: main
 
 ---
 
-## 🎯 CURRENT STATUS: Phase 4 Part B - CODE COMPLETE, AWAITING QA
+## 🎯 CURRENT STATUS: Phase 4B COMPLETE ✅
 
 ### What Was Completed This Session
 
-**Phase 4 Part B: Character Creation Input Polish** ✅ CODE COMPLETE
+**Phase 4 Part B: Character Creation Input Polish + UX Simplification** ✅ COMPLETE
 
-1. **Name Input Field Styling** (Expert Panel reviewed)
-   - Added solid dark background: `Color(0.17, 0.17, 0.17, 0.95)` (SOOT_BLACK)
-   - Added rust-orange border: `RUST_ORANGE` (#D4722B)
-   - Focus state: brighter border (`RUST_LIGHT`), thicker (3px)
-   - Increased size: 300x60 → 340x64 (larger touch target)
-   - Font size: 20 → 22
-   - Placeholder color: `CONCRETE_GRAY`
-   - Text color: `DIRTY_WHITE`
-   - Caret color: `RUST_LIGHT`
+1. **Name Input Field Styling** ✅
+   - Dark background with rust-orange border
+   - Focus state with brighter/thicker border
+   - Larger touch target (340x64)
 
-2. **Subtitle Visibility Fix**
-   - Changed color from gray to `DIRTY_WHITE` (#E8E8D0)
-   - Added 2px black outline for readability against busy background
+2. **UX Simplification** ✅ (Expert Panel approved)
+   - Removed redundant "Choose a name and type" subtitle
+   - Removed redundant "Survivor Name:" label
+   - Input placeholder is self-documenting
 
-3. **Slot Usage Indicator** (NEW - Expert Panel requested)
-   - Added dynamic label below subtitle showing "X/Y Tier Slots Used"
-   - Shows for ALL tiers (not just Free)
-   - Color-coded by slot pressure:
-     - At limit: Red warning with upgrade CTA
-     - Last slot: Yellow "Last Slot Available"
-     - Normal: Yellow informational
-   - 2px black outline for readability
-   - Follows Parent-First Protocol for iOS safety
+3. **Slot Usage Badge - Unified Component** ✅
+   - Created shared `ThemeHelper.create_slot_usage_badge()` utility
+   - Pill badge style: dark background, colored border, 20pt font
+   - Applied uniformly to BOTH Character Creation AND Barracks screens
+   - Shows "X/Y [Tier] Slots Used" format
+   - Color-coded: Yellow (normal), Red (at limit)
+   - Single source of truth - DRY implementation
 
 **Files Modified:**
-- `scenes/ui/character_creation.tscn` - Input size, subtitle styling
-- `scripts/ui/character_creation.gd` - Input styling function, slot indicator
+- `scripts/ui/theme/theme_helper.gd` - NEW: `create_slot_usage_badge()` shared utility
+- `scripts/ui/character_creation.gd` - Refactored to use shared badge
+- `scripts/ui/barracks.gd` - Refactored to use shared badge (replaced plain label)
+- `scenes/ui/character_creation.tscn` - Removed SubtitleLabel, NameInputLabel
+- `scenes/ui/barracks.tscn` - Removed static SlotLabel
 
-**Validation Status:**
-- ✅ GDLint: Clean
-- ✅ Tests: 705/729 passing
-
----
-
-## 🧪 QA CHECKLIST (Next Session)
-
-### Name Input Field
-- [ ] Input field clearly visible against busy background
-- [ ] Dark background blocks the scene behind it
-- [ ] Rust-orange border visible
-- [ ] Tap brings up keyboard correctly
-- [ ] Text readable while typing
-- [ ] Focus state shows brighter/thicker border
-- [ ] Caret/cursor visible
-- [ ] Placeholder text ("Enter survivor name...") readable
-
-### Subtitle
-- [ ] "Choose a name and type" now readable (was nearly invisible)
-- [ ] Black outline provides contrast against background
-
-### Slot Usage Indicator
-- [ ] Appears below subtitle
-- [ ] Shows correct slot count (matches actual character count)
-- [ ] Shows correct tier name (Free/Premium/Subscriber)
-- [ ] Text readable with black outline
-- [ ] Yellow color (HAZARD_YELLOW) visible
-
-### Overall
-- [ ] Visual hierarchy clear: Title > Subtitle > Slot Indicator
-- [ ] Layout balanced, nothing feels cramped
-- [ ] Matches wasteland aesthetic
+**QA Status**: ✅ PASSED on device
 
 ---
 
@@ -84,7 +49,7 @@
 | Phase 2: Character Creation | ✅ Complete |
 | Phase 3: Character Details | ✅ Complete |
 | Phase 4 Part A: Enter Wasteland | ✅ Complete |
-| **Phase 4 Part B: Input Polish** | **🧪 CODE COMPLETE - QA PENDING** |
+| Phase 4 Part B: Input Polish | ✅ **Complete** |
 | Phase 5: Polish | 📦 Backlogged |
 | Phase 6: Scrapyard Title | ⏳ Low Priority |
 
@@ -101,48 +66,50 @@
 ## 🚀 QUICK START PROMPT (Next Session)
 
 ```
-Continuing Week 17 Phase 4 Part B QA for Scrap Survivor.
+Continuing Scrap Survivor development.
 
 Read these files:
 1. .system/CLAUDE_RULES.md
 2. .system/NEXT_SESSION.md
 
-Phase 4 Part B is CODE COMPLETE, awaiting device QA.
+Week 17 Phase 4B is COMPLETE. QA passed on device.
 
-Changes made:
-1. Name input field - dark background, rust-orange border, larger size
-2. Subtitle - changed to DIRTY_WHITE with black outline
-3. Slot usage indicator - new label showing "X/Y Tier Slots Used"
+Key accomplishment: Unified slot usage badge component now shared between
+Character Creation and Barracks screens via ThemeHelper.create_slot_usage_badge().
 
-Please build and deploy to iOS device for QA testing.
-QA checklist is in NEXT_SESSION.md.
+Ready to discuss next priorities:
+- Phase 5: Polish (backlogged)
+- Phase 6: Scrapyard Title (low priority)
+- Or new work as directed
 ```
 
 ---
 
 ## 📝 DECISIONS MADE THIS SESSION
 
-1. **Name Input Styling** - Expert Panel recommended SOOT_BLACK background with RUST_ORANGE border to match wasteland aesthetic
-2. **Slot Usage Visibility** - Sr. PM strongly advocated for showing slot limits upfront to prevent "slots full" surprise and create soft upgrade CTA
-3. **Text Outlines** - Added 2px black outlines to all header text for readability against busy backgrounds
+1. **UX Simplification** - Removed redundant subtitle and label per Expert Panel recommendation
+2. **Uniform Slot Badge** - Created shared component for DRY implementation across screens
+3. **Pill Badge Design** - Dark semi-transparent background with colored border for visual prominence
 
 ---
 
 ## 🔧 TECHNICAL NOTES
 
-### New Function: `_apply_name_input_styling()`
-Creates StyleBoxFlat for LineEdit with:
-- Normal state: 2px RUST_ORANGE border
-- Focus state: 3px RUST_LIGHT border (brighter, thicker)
+### New Shared Utility: `ThemeHelper.create_slot_usage_badge()`
+- Location: `scripts/ui/theme/theme_helper.gd`
+- Creates uniform pill badge for slot usage display
+- Returns `{"container": CenterContainer, "badge": PanelContainer, "label": Label}`
+- Follows Parent-First Protocol for iOS safety
+- Used by: `character_creation.gd`, `barracks.gd`
 
-### New Function: `_setup_slot_usage_indicator()`
-Replaces old `_setup_slot_usage_banner()`:
-- Shows for ALL tiers (was only Free)
-- Color-coded by slot pressure
-- Uses Parent-First Protocol
-- Added to header_container (not separate VBox position)
+### Badge Visual Specs:
+- Background: `Color(0.12, 0.12, 0.12, 0.85)` (dark semi-transparent)
+- Corner radius: 16px (pill shape)
+- Border: 2px, color matches text (yellow/red)
+- Font: 20pt with 2px black outline
+- Padding: 20px horizontal, 8px vertical
 
 ---
 
 **Last Updated**: 2025-11-27
-**Status**: Phase 4B Code Complete, QA Pending
+**Status**: Phase 4B Complete, QA Passed ✅

@@ -159,3 +159,105 @@ static func add_button_animation(button: Button, press_scale: float = 0.90) -> B
 	animation.press_scale = press_scale
 	button.add_child(animation)
 	return animation
+
+
+static func create_slot_usage_badge(parent: Control) -> Dictionary:
+	"""
+	Create a uniform slot usage badge showing character slots and tier.
+
+	Design Pattern: Transparent Scarcity with Visual Prominence
+	- Shows slot limits BEFORE users hit the wall
+	- Soft CTA for upgrade consideration
+	- Uniform appearance across all screens (Create, Barracks, etc.)
+
+	Visual Design: Pill badge with dark background and colored border
+	- Dark semi-transparent background
+	- Colored border matching slot pressure state
+	- Larger font for prominence
+
+	Args:
+		parent: The Control node to add the badge to (typically HeaderContainer)
+
+	Returns:
+		Dictionary with keys:
+		- "container": CenterContainer (the outer wrapper)
+		- "badge": PanelContainer (the pill background)
+		- "label": Label (the text label, for updates if needed)
+
+	Example:
+		var badge_nodes = ThemeHelper.create_slot_usage_badge(header_container)
+		# badge_nodes.label.text can be updated later if needed
+	"""
+	var tier = CharacterService.get_tier()
+	var character_count = CharacterService.get_character_count()
+	var slot_limit = CharacterService.get_character_slot_limit()
+
+	# Get tier display name
+	var tier_names = {
+		CharacterService.UserTier.FREE: "Free",
+		CharacterService.UserTier.PREMIUM: "Premium",
+		CharacterService.UserTier.SUBSCRIPTION: "Subscriber"
+	}
+	var tier_name = tier_names.get(tier, "Free")
+
+	# Determine color and text based on slot pressure
+	var slots_remaining = slot_limit - character_count
+	var indicator_color: Color
+	var indicator_text: String
+
+	if slots_remaining <= 0:
+		# At limit - prominent warning (red)
+		indicator_color = GameColorPalette.WARNING_RED
+		indicator_text = "%d/%d Slots Full - Upgrade for More!" % [character_count, slot_limit]
+	else:
+		# Normal/warning - informational (yellow)
+		indicator_color = GameColorPalette.HAZARD_YELLOW
+		indicator_text = "%d/%d %s Slots Used" % [character_count, slot_limit, tier_name]
+
+	# Create badge container (Parent-First Protocol for iOS safety)
+	var badge_center = CenterContainer.new()
+	parent.add_child(badge_center)  # Parent FIRST
+	badge_center.layout_mode = 2
+
+	var badge = PanelContainer.new()
+	badge_center.add_child(badge)  # Parent FIRST
+	badge.layout_mode = 2
+
+	# Style the badge background (pill shape)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.12, 0.12, 0.85)  # Dark semi-transparent
+	style.set_corner_radius_all(16)  # Pill shape
+	style.content_margin_left = 20
+	style.content_margin_right = 20
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	style.border_color = indicator_color
+	style.set_border_width_all(2)  # Visible border in indicator color
+	badge.add_theme_stylebox_override("panel", style)
+
+	# Create label inside badge
+	var label = Label.new()
+	badge.add_child(label)  # Parent FIRST
+	label.layout_mode = 2
+
+	# Configure label
+	label.text = indicator_text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 20)  # Larger for prominence
+	label.add_theme_color_override("font_color", indicator_color)
+
+	# Add outline for extra readability
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	label.add_theme_constant_override("outline_size", 2)
+
+	GameLogger.debug(
+		"[ThemeHelper] Slot usage badge created",
+		{
+			"tier": tier_name,
+			"count": character_count,
+			"limit": slot_limit,
+			"slots_remaining": slots_remaining
+		}
+	)
+
+	return {"container": badge_center, "badge": badge, "label": label}
