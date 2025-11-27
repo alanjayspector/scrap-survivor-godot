@@ -402,21 +402,118 @@ hand-painted brushstroke, transparent background PNG,
 
 ### Phase 1: Unified Card Component (3-4 hours)
 **Priority:** CRITICAL (foundation for other phases)
+**Status:** 🚧 IN PROGRESS (Started 2025-11-27)
 
-**Tasks:**
-1. Create `CharacterTypeCard` component
-2. Implement `setup_player()` and `setup_type()` modes
-3. Add selection glow effect
-4. Add tap animation (scale to 0.97, 50ms)
-5. Migrate Barracks to use new component
-6. Migrate Character Create to use new component
-7. Unit tests for both modes
+#### Expert Panel Decisions (Session 2025-11-27)
+
+**Decision 1: Tap Animation - Custom vs THEME_HELPER**
+> **Recommendation:** Custom animation in card component
+> 
+> **Rationale:** Character cards are "the stars of the show" per Marvel Snap Law. They deserve premium feel distinct from standard buttons.
+> 
+> **Specification:**
+> - Scale: **0.95** (more pronounced than standard 0.97)
+> - Duration: **80ms down, 120ms return** (asymmetric for snap feel)
+> - Optional: 1-2° rotation for 'lift' feel
+> - Haptic: `HapticManager.light()` on press
+
+**Decision 2: Selection Glow - Shader vs Panel**
+> **Recommendation:** Animated GlowPanel behind card (NOT shader)
+> 
+> **Rationale:** Shaders add complexity and can cause issues on older iOS devices. Panel approach achieves 90% of effect with simpler implementation.
+> 
+> **Specification:**
+> ```
+> GlowPanel (Panel, visible only when selected)
+> ├── Position: Behind card, 4-8px larger on each side
+> ├── StyleBoxFlat: type_color or Primary Orange (#FF6600)
+> ├── Corner radius: 12px
+> ├── Animation: Alpha pulses 0.6 ↔ 1.0 over 800ms, loops
+> └── Creates soft "breathing" glow effect
+> ```
+
+**Decision 3: Portrait Display - Phase Timing**
+> **Recommendation:** Hybrid approach for Phase 1
+> 
+> | Mode | Portrait Behavior | Phase |
+> |------|-------------------|-------|
+> | `setup_type()` | Silhouette PNG images | Phase 1 (assets ready!) |
+> | `setup_player()` | Type-colored ColorRect | Phase 1 (enhanced Phase 3) |
+> 
+> **Rationale:** Immediate visual improvement in Character Creation while deferring Barracks portrait enhancement.
+
+**Decision 4: New Component vs Modify Existing**
+> **Recommendation:** Create NEW `CharacterTypeCard` component
+> 
+> **Rationale:** 
+> - Existing `CharacterCard` has specific API tightly coupled to player display
+> - New component allows side-by-side operation during migration
+> - Safer rollback if issues arise
+> 
+> **Migration Order:**
+> 1. Create `CharacterTypeCard` 
+> 2. Migrate Character Creation first
+> 3. Validate on device
+> 4. Migrate Barracks
+> 5. Deprecate old `CharacterCard`
+
+**Decision 5: Detail Views Scope**
+> **Recommendation:** Two distinct detail experiences
+> 
+> | View | Type | Phase | Purpose |
+> |------|------|-------|---------|
+> | **Character Type Preview Modal** | NEW Modal | Phase 2 | Full stats when tapping type in creation |
+> | **Player Character Details Screen** | OVERHAUL | Phase 3 | Hero Section + Art Bible compliance |
+> 
+> **Type Preview Modal Spec (iOS HIG Sheet pattern):**
+> - Slides up from bottom (not full screen navigation)
+> - Shows full type stats, abilities, starting bonuses
+> - Tap outside or 'X' to dismiss
+> - Keeps player in creation flow
+
+#### Component Architecture
+
+```
+scenes/ui/components/character_type_card.tscn
+├── GlowPanel (Panel, behind card, selection glow)
+│   └── StyleBoxFlat: type_color, corner_radius=12, alpha pulses
+├── CardButton (Button, root, 170×220pt)
+│   ├── PanelBg (Panel, card background)
+│   ├── ContentContainer (MarginContainer)
+│   │   ├── VBoxContainer
+│   │   │   ├── PortraitRect (TextureRect, 140×140pt)
+│   │   │   ├── NameLabel (Label, 20pt bold)
+│   │   │   ├── SubLabel (Label, 14pt, stats or level)
+│   │   │   └── BadgeContainer (for selection checkmark)
+│   └── LockOverlay (Panel, 50% dim + lock icon, tier-restricted)
+```
+
+#### Tasks (Refined)
+
+1. ✅ Document expert panel decisions (this update)
+2. ⬜ Create `CharacterTypeCard` scene via Godot editor
+3. ⬜ Implement `character_type_card.gd` script
+   - `setup_type(type_id: String)` - For Character Creation
+   - `setup_player(character_data: Dictionary)` - For Barracks
+   - `set_selected(selected: bool)` - Toggle glow effect
+   - `set_locked(locked: bool, required_tier: int)` - Lock overlay
+   - `_animate_tap()` - Custom tap animation
+   - `_start_glow_animation()` / `_stop_glow_animation()`
+4. ⬜ Load silhouette textures for type portraits
+5. ⬜ Migrate Character Creation to use new component
+6. ⬜ Migrate Barracks to use new component  
+7. ⬜ Unit tests for both modes
+8. ⬜ Device QA validation
+9. ⬜ Deprecate old `CharacterCard` (mark for removal)
 
 **Success Criteria:**
 - [ ] Both screens use same card component
-- [ ] Selection glow visually distinct
-- [ ] Tap animation feels responsive
+- [ ] Selection glow visually distinct (breathing animation)
+- [ ] Tap animation feels premium (0.95 scale, asymmetric timing)
+- [ ] Type silhouettes display in Character Creation
+- [ ] Lock overlay works for tier-restricted types
 - [ ] Tests passing
+- [ ] Device QA passed
 
 ---
 
@@ -424,43 +521,56 @@ hand-painted brushstroke, transparent background PNG,
 **Priority:** HIGH
 
 **Tasks:**
-1. **Keyboard fix** - Dismissable, content scrolls
-2. Generate Cultivation Chamber background
-3. Implement background with gradient overlay
-4. Type card detailed view (tap to see full stats)
-5. Generate 4 type silhouette assets
-6. Integrate silhouettes into type cards
-7. Selection flow: tap to select, glow indicates selection
-8. Device QA
+1. **Keyboard fix** - Dismissable, content scrolls (iOS HIG compliance)
+2. Apply `character_creation_bg.jpg` background with gradient overlay
+3. **NEW: Character Type Preview Modal** (iOS HIG Sheet pattern)
+   - Slides up when tapping type card (long-press or info button)
+   - Shows full type stats, abilities, starting bonuses, lore
+   - Tap outside or 'X' to dismiss
+   - Keeps player in creation flow
+4. Integrate silhouettes into type cards (via `CharacterTypeCard.setup_type()`)
+5. Selection flow: tap to select, glow indicates selection
+6. Device QA
+
+**Note:** Type silhouette assets already generated and ready:
+- `assets/ui/portraits/silhouette_scavenger.png`
+- `assets/ui/portraits/silhouette_tank.png`
+- `assets/ui/portraits/silhouette_commando.png`
+- `assets/ui/portraits/silhouette_mutant.png`
 
 **Success Criteria:**
 - [ ] Keyboard dismissable by tapping outside
 - [ ] Content scrolls when keyboard appears
 - [ ] Type cards show silhouette portraits
-- [ ] Tap type card → detailed preview modal
+- [ ] Tap type card → select; long-press/info → detailed preview modal
 - [ ] Selection glow on chosen type
-- [ ] Art Bible background applied
+- [ ] Art Bible background applied (`character_creation_bg.jpg`)
 
 ---
 
 ### Phase 3: Character Details Overhaul (3-4 hours)  
 **Priority:** HIGH
 
+**Focus:** Player Character Details Screen (`character_details_screen.tscn`)
+
 **Tasks:**
-1. Implement Hero Section (200pt portrait area)
-2. Generate Character Details background
-3. Replace stat text icons with proper icons
-4. Type color badge next to name
-5. Unified visual language with Barracks
+1. Implement Hero Section (200pt portrait area with type silhouette)
+2. Apply `character_details_bg.jpg` background with gradient overlay
+3. Replace stat text icons `[HP]` with proper icon sprites
+4. Type color badge next to character name
+5. Unified visual language with Barracks (use `CharacterTypeCard` for any card displays)
 6. Remove sidebar (simplify to single character view)
-7. Device QA
+7. Enhance player portrait display (upgrade from ColorRect to silhouette)
+8. Device QA
 
 **Success Criteria:**
-- [ ] Hero portrait prominently displayed
-- [ ] Background matches Art Bible
-- [ ] Stats use icon sprites (not text)
-- [ ] Type visually indicated
+- [ ] Hero portrait prominently displayed (200pt area)
+- [ ] Background matches Art Bible (`character_details_bg.jpg`)
+- [ ] Stats use icon sprites (not `[HP]` text placeholders)
+- [ ] Type visually indicated (color badge)
 - [ ] Consistent with Barracks styling
+- [ ] Player portrait uses type silhouette (not ColorRect)
+- [ ] Sidebar removed, single-character focus
 
 ---
 

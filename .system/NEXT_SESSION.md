@@ -2,40 +2,38 @@
 
 **Date**: 2025-11-27
 **Week 16 Status**: ✅ **COMPLETE**
-**Week 17 Status**: 📋 **PLANNING COMPLETE - READY TO IMPLEMENT**
+**Week 17 Status**: 🚧 **PHASE 1 IN PROGRESS**
 **Current Branch**: main
 
 ---
 
-## 🎯 WEEK 17 FOCUS
+## 🎯 CURRENT FOCUS: Phase 1 - Unified Card Component
 
-**Theme:** Core Character Management Experience Polish
+### Expert Panel Decisions (Finalized 2025-11-27)
 
-Transform Barracks, Character Creation, and Character Details from "MVP functional" to "emotionally compelling, production-quality" UI.
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Tap Animation | Custom (0.95 scale, 80ms/120ms asymmetric) | Cards deserve premium feel per Marvel Snap Law |
+| Selection Glow | Animated GlowPanel (NOT shader) | Mobile performance, simpler implementation |
+| Portrait Display | Hybrid: silhouette PNGs for types, ColorRect for players (Phase 1) | Immediate improvement in Character Creation |
+| Component Strategy | NEW `CharacterTypeCard` component | Safe migration, side-by-side operation |
+| Detail Views | Type Preview Modal (Phase 2) + Player Details Overhaul (Phase 3) | Two distinct experiences |
 
-### Design Principle (Established Week 16)
-> **"Marvel Snap Law"** - Characters are the stars, UI serves them.
+### Phase 1 Tasks
 
----
-
-## 📋 WEEK 17 PHASES
-
-| Phase | Description | Effort | Priority | Status |
-|-------|-------------|--------|----------|--------|
-| **Phase 1** | Unified Card Component | 3-4h | CRITICAL | ⏳ Ready |
-| **Phase 2** | Character Creation Overhaul | 3-4h | HIGH | ⏳ Ready |
-| **Phase 3** | Character Details Overhaul | 3-4h | HIGH | ⏳ Ready |
-| **Phase 4** | "Enter the Wasteland" Screen | 2-3h | MEDIUM | ⏳ Ready |
-| **Phase 5** | Polish & Animation | 2-3h | MEDIUM | ⏳ Ready |
-| **Phase 6** | Scrapyard Title Polish | 0.5-1h | LOW | ⏳ Ready |
-
-**Total Estimated Effort:** 15-19 hours
+- [x] Document expert panel decisions
+- [ ] Create `CharacterTypeCard` scene via Godot editor
+- [ ] Implement `character_type_card.gd` script
+- [ ] Load silhouette textures for type portraits
+- [ ] Migrate Character Creation to use new component
+- [ ] Migrate Barracks to use new component
+- [ ] Unit tests for both modes
+- [ ] Device QA validation
+- [ ] Deprecate old `CharacterCard`
 
 ---
 
 ## 🖼️ ART ASSETS - ALL READY ✅
-
-All art assets have been generated and optimized for mobile:
 
 | Asset | Size | Location |
 |-------|------|----------|
@@ -48,7 +46,18 @@ All art assets have been generated and optimized for mobile:
 | Mutant Silhouette | 406KB | `assets/ui/portraits/silhouette_mutant.png` |
 | Wasteland Gate | (existing) | `art-docs/wasteland-gate.png` |
 
-Previews available in `art-docs/preview/` for reference.
+---
+
+## 📋 WEEK 17 PHASES
+
+| Phase | Description | Effort | Priority | Status |
+|-------|-------------|--------|----------|--------|
+| **Phase 1** | Unified Card Component | 3-4h | CRITICAL | 🚧 In Progress |
+| **Phase 2** | Character Creation Overhaul | 3-4h | HIGH | ⏳ Ready |
+| **Phase 3** | Character Details Overhaul | 3-4h | HIGH | ⏳ Ready |
+| **Phase 4** | "Enter the Wasteland" Screen | 2-3h | MEDIUM | ⏳ Ready |
+| **Phase 5** | Polish & Animation | 2-3h | MEDIUM | ⏳ Ready |
+| **Phase 6** | Scrapyard Title Polish | 0.5-1h | LOW | ⏳ Ready |
 
 ---
 
@@ -56,12 +65,12 @@ Previews available in `art-docs/preview/` for reference.
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Character Creation BG | Barracks Recruitment Interior | Same visual family as roster, "recruiting" metaphor |
-| Run Initiation Copy | "ENTER THE WASTELAND" + "GO" | Title dramatic, button simple/punchy |
-| Character Details | Remove sidebar, add Hero Section | Simplify, create "proud showcase" moment |
+| Character Creation BG | Barracks Recruitment Interior | Same visual family as roster |
+| Run Initiation Copy | "ENTER THE WASTELAND" + "GO" | Title dramatic, button punchy |
+| Character Details | Remove sidebar, add Hero Section | Simplify, "proud showcase" moment |
 | Card Component | Unified for both screens | Visual consistency, reduced maintenance |
-| Scrapyard Title | Primary Orange (#FF6600) | Art Bible compliance, better visibility |
-| Type Silhouettes | Generate all 4 now | Dedicated week, no deferring |
+| Scrapyard Title | Primary Orange (#FF6600) | Art Bible compliance |
+| Type Silhouettes | All 4 generated | Ready in `assets/ui/portraits/` |
 
 ---
 
@@ -71,23 +80,15 @@ Previews available in `art-docs/preview/` for reference.
 **GDLint**: Clean
 **All Validators**: Passing
 
-**Git Log (Recent)**:
-```
-f510d7a fix(barracks): replace purple scroll background with semi-transparent charcoal
-aaf6799 feat(barracks): replace background with Option C dark gradient
-dd2be38 feat(barracks): Phase 9.3 - Hub status panel + file renames
-a8d08fe fix(barracks): separate viewing from selecting characters
-```
-
 ---
 
 ## 📚 KEY DOCUMENTATION
 
 | Document | Purpose |
 |----------|---------|
-| `docs/migration/week17-plan.md` | Full Week 17 implementation plan |
+| `docs/migration/week17-plan.md` | Full Week 17 plan with expert panel decisions |
 | `docs/migration/backlog-items.md` | Deferred work (IAP, tech debt) |
-| `docs/design/art-asset-usage-guide.md` | Art asset catalog & recommendations |
+| `docs/design/art-asset-usage-guide.md` | Art asset catalog |
 | `art-docs/Scrapyard_Scene_Art_Bible.md` | Color palette, style guide |
 
 ---
@@ -95,32 +96,32 @@ a8d08fe fix(barracks): separate viewing from selecting characters
 ## 🚀 QUICK START PROMPT (Next Session)
 
 ```
-Starting Week 17 Phase 1 implementation for Scrap Survivor.
+Continuing Week 17 Phase 1 for Scrap Survivor.
 
 Read these files:
-1. .system/CLAUDE_RULES.md (project rules)
-2. .system/NEXT_SESSION.md (this file)
-3. docs/migration/week17-plan.md (full implementation plan)
+1. .system/CLAUDE_RULES.md
+2. .system/NEXT_SESSION.md
+3. docs/migration/week17-plan.md
 
-Week 17 Focus: Core character management experience polish
-- Phase 1: Unified Card Component (CharacterTypeCard)
-- Screens: Barracks, Character Creation, Character Details
-- Art assets needed (prompts in NEXT_SESSION.md)
+Current task: Create CharacterTypeCard component
+- Expert panel decisions documented ✅
+- Art assets ready ✅
+- Ready to create scene in Godot editor
 
-Ready to begin Phase 1: Unified Card Component
+Begin CharacterTypeCard component creation.
 ```
 
 ---
 
 ## ⚠️ REMINDERS
 
-1. **All art assets are ready** - no generation needed, start coding immediately
-2. **Keyboard fix is CRITICAL** in Phase 2 - current UX violates iOS HIG
-3. **Remove sidebar** from Character Details (simplify to single-character view)
-4. **Use wasteland-gate.png** for "Enter the Wasteland" screen (already have it!)
-5. **Scrapyard title fix** is quick win - Primary Orange (#FF6600) with Burnt Umber outline
+1. **Use Godot editor for scene creation** (per CLAUDE_RULES)
+2. **Parent-First Protocol** for dynamic UI nodes
+3. **GlowPanel animation**: alpha 0.6↔1.0 over 800ms
+4. **Tap animation**: 0.95 scale, 80ms down / 120ms return
+5. **Test on iOS device** before marking complete
 
 ---
 
 **Last Updated**: 2025-11-27
-**Status**: Week 17 Planning Complete - ALL ASSETS READY - Begin Phase 1
+**Status**: Phase 1 In Progress - Expert Panel Decisions Documented
