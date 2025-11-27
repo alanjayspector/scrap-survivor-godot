@@ -147,6 +147,103 @@ Handlers (multiple, configurable)
 
 ## 🎨 UI/UX Enhancements
 
+### Card Entrance Animations
+**Deferred From:** Week 17 Phase 5
+**Estimated Effort:** 30-45 minutes
+**Dependencies:** None
+**Priority:** LOW (polish)
+
+**Scope:**
+- Fade + slide animation for card appearance
+- 200ms stagger between cards in grid
+- Applies to Barracks roster and Character Creation type cards
+
+**Implementation:**
+```gdscript
+func _animate_card_entrance(card: Control, index: int) -> void:
+    card.modulate.a = 0.0
+    card.position.y += 20
+    var tween = create_tween()
+    tween.set_delay(index * 0.2)  # 200ms stagger
+    tween.parallel().tween_property(card, "modulate:a", 1.0, 0.3)
+    tween.parallel().tween_property(card, "position:y", card.position.y - 20, 0.3)
+```
+
+---
+
+### Card Drop Shadows
+**Deferred From:** Week 17 Phase 5
+**Estimated Effort:** 15-30 minutes
+**Dependencies:** None
+**Priority:** LOW (polish)
+
+**Scope:**
+- Add subtle drop shadow to CharacterTypeCard
+- 4pt blur, 25% opacity, 2px offset
+- Consider performance on older devices
+
+**Implementation Options:**
+1. StyleBoxFlat with shadow properties
+2. Separate shadow Panel behind card
+3. Shader-based shadow (avoid if possible)
+
+---
+
+### Screen Transition Animations
+**Deferred From:** Week 17 Phase 5
+**Estimated Effort:** 1-2 hours
+**Dependencies:** None
+**Priority:** LOW (polish)
+
+**Scope:**
+- Smooth transitions between screens (Hub → Barracks → Details → etc.)
+- Options: Fade, Slide, Scale
+- Should feel quick but not jarring
+
+**Screens to Animate:**
+- Hub → Barracks
+- Barracks → Character Details
+- Barracks → Character Creation
+- Character Creation → Hub/Barracks
+- Character Details → Enter Wasteland
+
+---
+
+### Sound Effects for Selection
+**Deferred From:** Week 17 Phase 5
+**Estimated Effort:** 30-45 minutes
+**Dependencies:** Audio assets
+**Priority:** LOW (polish)
+
+**Scope:**
+- Card tap sound (satisfying click)
+- Card selection sound (confirmation tone)
+- Button hover/tap sounds
+- Modal open/close sounds
+
+**Note:** Need audio assets first. Consider royalty-free SFX or custom.
+
+---
+
+### Haptic Feedback Refinement
+**Deferred From:** Week 17 Phase 5
+**Estimated Effort:** 30 minutes
+**Dependencies:** None
+**Priority:** LOW (polish)
+
+**Scope:**
+- Review all haptic feedback points
+- Ensure consistent intensity levels
+- Add haptics to any missing interactions:
+  - Card selection
+  - Modal confirmation
+  - Destructive action warnings
+  - Success/failure feedback
+
+**Current Status:** Basic haptics implemented with 50ms cooldown (fixed continuous vibration bug in Phase 3).
+
+---
+
 ### Secondary Stats Display (Character Details)
 **Deferred From:** Week 17 Phase 3
 **Estimated Effort:** 1-2 hours
@@ -259,6 +356,7 @@ Character Details screen shows 4 primary stats (HP, DMG, ARM, SPD). There are 10
 | Date | Change |
 |------|--------|
 | 2025-11-27 | Initial creation from Week 17 planning |
+| 2025-11-27 | Added Week 17 Phase 5 polish items (5 items, broken down) |
 
 ---
 

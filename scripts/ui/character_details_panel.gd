@@ -14,12 +14,12 @@ extends Control
 
 signal closed
 
-# Silhouette paths (same as CharacterTypeCard)
-const SILHOUETTE_PATHS = {
-	"scavenger": "res://assets/ui/portraits/silhouette_scavenger.png",
-	"tank": "res://assets/ui/portraits/silhouette_tank.png",
-	"commando": "res://assets/ui/portraits/silhouette_commando.png",
-	"mutant": "res://assets/ui/portraits/silhouette_mutant.png",
+# Showcase portrait paths (1024x1024 high-detail versions for Character Details)
+const SHOWCASE_PORTRAIT_PATHS = {
+	"scavenger": "res://assets/ui/portraits/showcase/showcase_scavenger.png",
+	"tank": "res://assets/ui/portraits/showcase/showcase_tank.png",
+	"commando": "res://assets/ui/portraits/showcase/showcase_commando.png",
+	"mutant": "res://assets/ui/portraits/showcase/showcase_mutant.png",
 }
 
 # Base stats for color comparison (green if above, red if below)
@@ -172,14 +172,18 @@ func _setup_portrait(character_type: String, type_color: Color) -> void:
 	portrait_style.set_corner_radius_all(12)
 	portrait_panel.add_theme_stylebox_override("panel", portrait_style)
 
-	var texture_path = SILHOUETTE_PATHS.get(character_type, "")
+	var texture_path = SHOWCASE_PORTRAIT_PATHS.get(character_type, "")
 	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
 		var texture = load(texture_path) as Texture2D
 		if texture:
 			portrait_texture.texture = texture
-			GameLogger.debug("[CharacterDetailsPanel] Portrait loaded", {"type": character_type})
+			GameLogger.debug(
+				"[CharacterDetailsPanel] Showcase portrait loaded", {"type": character_type}
+			)
 	else:
-		GameLogger.warning("[CharacterDetailsPanel] Portrait not found", {"type": character_type})
+		GameLogger.warning(
+			"[CharacterDetailsPanel] Showcase portrait not found", {"type": character_type}
+		)
 
 
 func _setup_aura_section(character_type: String, aura_data: Dictionary) -> void:
