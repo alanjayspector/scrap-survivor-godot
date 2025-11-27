@@ -202,12 +202,19 @@ func _on_start_run_pressed() -> void:
 	# Save before launching
 	SaveManager.save_all_services()
 
-	# Launch combat
-	if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
-		get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
+	# Navigate to Enter Wasteland confirmation screen
+	if ResourceLoader.exists("res://scenes/ui/enter_wasteland_confirmation.tscn"):
+		get_tree().change_scene_to_file("res://scenes/ui/enter_wasteland_confirmation.tscn")
 	else:
-		GameLogger.error("[CharacterDetailsScreen] wasteland.tscn not found")
-		_play_sound(ERROR_SOUND)
+		# Fallback to direct wasteland launch if confirmation screen doesn't exist
+		GameLogger.warning(
+			"[CharacterDetailsScreen] enter_wasteland_confirmation.tscn not found - direct launch"
+		)
+		if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
+			get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
+		else:
+			GameLogger.error("[CharacterDetailsScreen] wasteland.tscn not found")
+			_play_sound(ERROR_SOUND)
 
 
 func _on_delete_pressed() -> void:

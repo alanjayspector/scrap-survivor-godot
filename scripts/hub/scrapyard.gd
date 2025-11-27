@@ -154,13 +154,17 @@ func _on_start_run_pressed() -> void:
 		)
 		return
 
-	# Has selected survivor - launch wasteland
-	GameLogger.info("[Hub] Launching wasteland with survivor", {"character_id": active_id})
-	if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
-		get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
+	# Has selected survivor - show Enter Wasteland confirmation screen
+	GameLogger.info("[Hub] Opening Enter Wasteland confirmation", {"character_id": active_id})
+	if ResourceLoader.exists("res://scenes/ui/enter_wasteland_confirmation.tscn"):
+		get_tree().change_scene_to_file("res://scenes/ui/enter_wasteland_confirmation.tscn")
 	else:
-		GameLogger.warning("[Hub] wasteland.tscn not found - falling back to character selection")
-		get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+		# Fallback to direct wasteland launch if confirmation screen doesn't exist
+		GameLogger.warning("[Hub] enter_wasteland_confirmation.tscn not found - direct launch")
+		if ResourceLoader.exists("res://scenes/game/wasteland.tscn"):
+			get_tree().change_scene_to_file("res://scenes/game/wasteland.tscn")
+		else:
+			get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
 
 
 func _on_roster_pressed() -> void:
