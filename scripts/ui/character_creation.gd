@@ -24,12 +24,14 @@ var create_hub_button: Button = $ScreenContainer/MarginContainer/VBoxContainer/B
 @onready
 var back_button: Button = $ScreenContainer/MarginContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
+@onready
+var header_container: VBoxContainer = $ScreenContainer/MarginContainer/VBoxContainer/HeaderContainer
 
 ## State
 var selected_character_type: String = "scavenger"  # Default type
 var character_type_card_buttons: Dictionary = {}
 var _upgrade_dialog_shown_this_session: bool = false  # Prevent dialog spam
-var _slot_usage_banner: Label = null  # Banner showing slot usage for FREE tier
+var _slot_usage_label: Label = null  # Dynamic slot usage indicator (Week 17 Phase 4B)
 var _upgrade_dialog_shown_at: int = 0  # Timestamp when upgrade dialog was shown (for time tracking)
 var _active_preview_modal: MobileModal = null  # Track active modal to prevent stacking
 
@@ -67,7 +69,7 @@ func _ready() -> void:
 	_create_character_type_cards()
 	_connect_signals()
 	_update_create_button_state()
-	_setup_slot_usage_banner()
+	_setup_slot_usage_indicator()
 
 	# Add button animations (Week16: ButtonAnimation component)
 	THEME_HELPER.add_button_animation(create_button)
@@ -86,16 +88,66 @@ func _exit_tree() -> void:
 
 
 func _setup_name_input() -> void:
-	"""Configure name input field"""
+	"""Configure name input field with wasteland-themed styling"""
 	name_input.placeholder_text = "Enter survivor name..."
 	name_input.max_length = MAX_NAME_LENGTH
 	name_input.text_changed.connect(_on_name_changed)
 	# Note: Don't auto-focus on mobile - let user tap to show keyboard (iOS HIG)
 
+	# Apply wasteland-themed styling for visibility against busy background
+	_apply_name_input_styling()
+
 	GameLogger.info(
 		"[CharacterCreation] Name input configured",
 		{"min_length": MIN_NAME_LENGTH, "max_length": MAX_NAME_LENGTH}
 	)
+
+
+func _apply_name_input_styling() -> void:
+	"""
+	Apply wasteland-themed StyleBox to name input field.
+
+	Design Pattern: StyleBoxFlat for custom input field appearance
+	Rationale: Default LineEdit is nearly invisible against busy background images.
+	Solution: Solid dark background with rust-orange border matches wasteland aesthetic.
+
+	Expert Panel Recommendations (Week 17 Phase 4B):
+	- Background: SOOT_BLACK (#2B2B2B) at 95% alpha
+	- Border: RUST_ORANGE (#D4722B) for consistency with primary actions
+	- Corner radius: 8px (matches button styling)
+	- Content margin: 12px for comfortable text padding
+	- Focus state: Brighter border to indicate active input
+	"""
+	# Normal state style
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = Color(0.17, 0.17, 0.17, 0.95)  # SOOT_BLACK with 95% alpha
+	style_normal.border_color = GameColorPalette.RUST_ORANGE
+	style_normal.set_border_width_all(2)
+	style_normal.set_corner_radius_all(8)
+	style_normal.set_content_margin_all(12)
+
+	# Focus state style (brighter border for active indication)
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0.17, 0.17, 0.17, 0.98)  # Slightly more opaque when focused
+	style_focus.border_color = GameColorPalette.RUST_LIGHT  # Brighter rust for focus
+	style_focus.set_border_width_all(3)  # Thicker border when focused
+	style_focus.set_corner_radius_all(8)
+	style_focus.set_content_margin_all(12)
+
+	# Apply styles to LineEdit
+	name_input.add_theme_stylebox_override("normal", style_normal)
+	name_input.add_theme_stylebox_override("focus", style_focus)
+
+	# Set placeholder text color for visibility
+	name_input.add_theme_color_override("font_placeholder_color", GameColorPalette.CONCRETE_GRAY)
+
+	# Ensure text color is readable
+	name_input.add_theme_color_override("font_color", GameColorPalette.DIRTY_WHITE)
+
+	# Caret color for visibility
+	name_input.add_theme_color_override("caret_color", GameColorPalette.RUST_LIGHT)
+
+	GameLogger.debug("[CharacterCreation] Name input styling applied (wasteland theme)")
 
 
 func _setup_keyboard_dismissal() -> void:
@@ -178,41 +230,81 @@ func _select_character_type(character_type: String) -> void:
 	Analytics.track_event("character_type_selected", {"type": character_type})
 
 
-func _setup_slot_usage_banner() -> void:
-	"""Show slot usage banner for FREE tier users (early upgrade awareness)"""
+func _setup_slot_usage_indicator() -> void:
+	"""
+	Show slot usage indicator below subtitle (Week 17 Phase 4B).
+
+	Design Pattern: Transparent Scarcity
+	Rationale: Users should see slot limits BEFORE hitting the wall.
+	- Builds trust through transparency
+	- Soft CTA for upgrade consideration
+	- Prevents rage-quit from surprise "slots full" error
+
+	Shows for ALL tiers with tier-appropriate messaging.
+	"""
 	var tier = CharacterService.get_tier()
 	var character_count = CharacterService.get_character_count()
 	var slot_limit = CharacterService.get_character_slot_limit()
 
-	# Only show for FREE tier users who have created at least 1 character
-	if tier != CharacterService.UserTier.FREE or character_count == 0:
-		return
+	# Get tier display name
+	var tier_names = {
+		CharacterService.UserTier.FREE: "Free",
+		CharacterService.UserTier.PREMIUM: "Premium",
+		CharacterService.UserTier.SUBSCRIPTION: "Subscriber"
+	}
+	var tier_name = tier_names.get(tier, "Free")
 
-	# Create banner label
-	_slot_usage_banner = Label.new()
-	_slot_usage_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_slot_usage_banner.add_theme_font_size_override("font_size", 18)
-	_slot_usage_banner.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2))  # Gold color
-	_slot_usage_banner.text = (
-		"Using %d/%d Free slots. Upgrade to Premium for 15 slots + exclusive features!"
-		% [character_count, slot_limit]
-	)
+	# Create slot usage label (Parent-First Protocol)
+	_slot_usage_label = Label.new()
+	header_container.add_child(_slot_usage_label)  # Parent FIRST
+	_slot_usage_label.layout_mode = 2  # Container mode for iOS
 
-	# Insert banner after subtitle (before creation container)
-	var vbox = $ScreenContainer/MarginContainer/VBoxContainer
-	var header_container = $ScreenContainer/MarginContainer/VBoxContainer/HeaderContainer
-	vbox.add_child(_slot_usage_banner)
-	vbox.move_child(_slot_usage_banner, header_container.get_index() + 1)
+	# Configure label
+	_slot_usage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_slot_usage_label.add_theme_font_size_override("font_size", 18)
+
+	# Color and text based on slot pressure
+	var slots_remaining = slot_limit - character_count
+	if slots_remaining <= 0:
+		# At limit - prominent warning
+		_slot_usage_label.text = (
+			"Character Slots Full (%d/%d) - Upgrade for More!" % [character_count, slot_limit]
+		)
+		_slot_usage_label.add_theme_color_override("font_color", GameColorPalette.WARNING_RED)
+	elif slots_remaining == 1:
+		# Last slot - gentle warning
+		_slot_usage_label.text = (
+			"Last %s Slot Available (%d/%d)" % [tier_name, character_count, slot_limit]
+		)
+		_slot_usage_label.add_theme_color_override("font_color", GameColorPalette.HAZARD_YELLOW)
+	else:
+		# Normal - informational
+		_slot_usage_label.text = "%d/%d %s Slots Used" % [character_count, slot_limit, tier_name]
+		_slot_usage_label.add_theme_color_override("font_color", GameColorPalette.HAZARD_YELLOW)
+
+	# Add outline for readability against busy background
+	_slot_usage_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	_slot_usage_label.add_theme_constant_override("outline_size", 2)
 
 	GameLogger.info(
-		"[CharacterCreation] Slot usage banner shown",
-		{"character_count": character_count, "slot_limit": slot_limit}
+		"[CharacterCreation] Slot usage indicator shown",
+		{
+			"tier": tier_name,
+			"character_count": character_count,
+			"slot_limit": slot_limit,
+			"slots_remaining": slots_remaining
+		}
 	)
 
-	# Track analytics (early awareness opportunity)
+	# Track analytics
 	Analytics.track_event(
-		"slot_usage_banner_shown",
-		{"tier": tier, "slots_used": character_count, "slots_total": slot_limit}
+		"slot_usage_indicator_shown",
+		{
+			"tier": tier,
+			"slots_used": character_count,
+			"slots_total": slot_limit,
+			"slots_remaining": slots_remaining
+		}
 	)
 
 
