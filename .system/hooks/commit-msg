@@ -29,3 +29,11 @@ if echo "$COMMIT_MSG" | grep -qiE "^fix"; then
         fi
     fi
 fi
+
+# Refactor verification validator (validates component/refactor claims match reality)
+# This is the proper place for this validator - commit message is now available
+if [ -f .system/validators/refactor_verification_validator.py ]; then
+    if ! python3 .system/validators/refactor_verification_validator.py "$COMMIT_MSG_FILE"; then
+        exit 1
+    fi
+fi

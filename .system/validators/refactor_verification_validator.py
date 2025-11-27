@@ -14,7 +14,13 @@ Validates:
 - If claiming component usage, verify preload() and instantiate() exist
 - If claiming code reduction, verify actual line count change
 
-Only runs when commit message contains refactor-related keywords.
+IMPORTANT: This validator must read the CURRENT commit message being made,
+not the previous commit. It reads from:
+1. Command line argument (commit message file path, passed by commit-msg hook)
+2. .git/COMMIT_EDITMSG (fallback, exists during commit-msg hook)
+
+This validator should be called from the commit-msg hook, NOT pre-commit,
+because the commit message doesn't exist yet during pre-commit.
 """
 
 import re
@@ -33,18 +39,32 @@ NC = '\033[0m'
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
-def get_last_commit_message() -> Optional[str]:
-    """Get the last commit message"""
-    try:
-        result = subprocess.run(
-            ['git', 'log', '-1', '--pretty=%B'],
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_ROOT
-        )
-        return result.stdout.strip() if result.returncode == 0 else None
-    except Exception:
-        return None
+def get_current_commit_message(commit_msg_file: Optional[str] = None) -> Optional[str]:
+    """
+    Get the CURRENT commit message being committed.
+    
+    This function ONLY returns a message when called from commit-msg hook
+    (which passes the message file path). During pre-commit, no message
+    exists yet, so we return None to skip validation.
+    
+    Args:
+        commit_msg_file: Path to commit message file (passed by commit-msg hook)
+    
+    Returns:
+        The commit message text, or None if not in commit-msg context
+    """
+    # Only read from file path passed as argument (commit-msg hook passes this)
+    # Do NOT fall back to COMMIT_EDITMSG - it contains the PREVIOUS commit's message
+    if commit_msg_file:
+        try:
+            msg_path = Path(commit_msg_file)
+            if msg_path.exists():
+                return msg_path.read_text().strip()
+        except Exception:
+            pass
+    
+    # No file argument means we're in pre-commit or manual run - skip validation
+    return None
 
 
 def is_refactor_commit(commit_msg: str) -> bool:
@@ -147,10 +167,15 @@ def get_staged_files() -> List[Path]:
 
 def main() -> int:
     """Main validation function"""
-    commit_msg = get_last_commit_message()
+    # Get commit message file from command line argument (if provided by hook)
+    commit_msg_file = sys.argv[1] if len(sys.argv) > 1 else None
+    
+    commit_msg = get_current_commit_message(commit_msg_file)
 
     if not commit_msg:
-        # Not in a git commit context - skip validation
+        # Not in a commit context where we can read the message - skip validation
+        # This happens during pre-commit (message doesn't exist yet)
+        print(f"{YELLOW}⚠️  No commit message available (pre-commit phase), skipping refactor verification{NC}")
         return 0
 
     if not is_refactor_commit(commit_msg):
