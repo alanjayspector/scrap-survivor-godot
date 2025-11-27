@@ -1361,5 +1361,115 @@ When creating week plans, use this template:
 
 ---
 
-**Last Updated**: 2025-11-23 by Claude Code (Added Process Quality Gates: Pre-Implementation Spec Checkpoint, Scene Modification Protocol, Multi-Scene Commit Warning, Thinking Transparency, Time Pressure Detection, Phase Breakdown Strategy)
+## File Size Safety Protocol (MANDATORY)
+
+**Effective**: 2025-11-27 (After session crashes from large file reads)
+
+### The Problem
+
+Claude can error out and crash the session when attempting to read files larger than ~5MB. This wastes tokens and forces users to restart sessions.
+
+### Before Reading ANY File
+
+**ALWAYS check file size first using `get_file_info` before:**
+- Reading file contents
+- Viewing images
+- Processing assets
+- Any file operation that loads content into context
+
+```
+# CORRECT Pattern
+1. get_file_info(path) → Check size
+2. If size > 5MB → DO NOT READ, inform user
+3. If size < 5MB → Safe to read
+```
+
+### Size Thresholds
+
+| Size | Action |
+|------|--------|
+| < 1MB | Safe to read |
+| 1-5MB | Read with caution, consider if necessary |
+| > 5MB | **DO NOT READ** - will crash session |
+
+### For Image/Asset Files
+
+- **Never attempt to read image file contents** (they're binary anyway)
+- Use `get_file_info` to verify existence and get metadata
+- Images are referenced by path in code, not read directly
+
+### Red Flags
+
+- 🚩 Reading a .png, .jpg, .wav, .ogg file directly
+- 🚩 Reading any file without checking size first
+- 🚩 Assuming a file is small because of its extension
+
+### Example Workflow
+
+```
+User: "Please read the wasteland-gate.png file"
+
+Claude's Response:
+1. [get_file_info] → size: 6,121,047 bytes (6.1MB)
+2. "This file is 6.1MB which exceeds the safe read limit.
+   I cannot read this file directly as it would crash the session.
+   However, I can:
+   - Confirm the file exists ✓
+   - Tell you its size and metadata ✓
+   - Reference it by path in code ✓
+   - Copy/move it to another location ✓"
+```
+
+---
+
+## 2D Texture Import Settings (Godot Standard)
+
+**Effective**: 2025-11-27 (Asset import compliance)
+
+### Required Setting for 2D UI Textures
+
+All 2D textures (sprites, UI backgrounds, icons) MUST have:
+
+```
+detect_3d/compress_to=0
+```
+
+### Why This Matters
+
+- `detect_3d/compress_to=1` (VRAM Compressed) = **BAD** for 2D
+  - Causes auto-recompression if texture detected in 3D context
+  - Wastes processing, can cause visual artifacts
+  - Not appropriate for UI/2D assets
+
+- `detect_3d/compress_to=0` (Disabled) = **GOOD** for 2D
+  - Prevents unnecessary recompression
+  - Correct setting for all 2D UI textures
+  - Matches Godot best practices
+
+### When Importing New Assets
+
+After copying a new image to `assets/`:
+
+1. Open Godot editor (generates .import file)
+2. Check the .import file for `detect_3d/compress_to`
+3. If value is `1`, change to `0`
+4. Validator will catch this if missed
+
+### Verification
+
+The `check-imports.sh` validator enforces this rule:
+- Checks all .import files in assets/
+- Flags any 2D textures with `detect_3d/compress_to=1`
+- **BLOCKING** - commit will fail until fixed
+
+### Files That Need This Setting
+
+- `assets/ui/backgrounds/*.png`, `*.jpg`
+- `assets/ui/portraits/*.png`
+- `assets/ui/icons/*.png`
+- Any 2D sprite or UI texture
+
+---
+
+**Last Updated**: 2025-11-27 by Claude Code (Added File Size Safety Protocol, 2D Texture Import Settings)
 **Next Review**: When violations occur or user requests update
