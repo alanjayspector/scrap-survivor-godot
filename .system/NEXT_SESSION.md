@@ -1,8 +1,8 @@
 # Next Session: Week 17 Implementation
 
-**Date**: 2025-11-27
+**Date**: 2025-11-26 (Updated)
 **Week 16 Status**: ✅ **COMPLETE**
-**Week 17 Status**: 🚧 **PHASE 1 IN PROGRESS**
+**Week 17 Status**: 🚧 **PHASE 1 IN PROGRESS - Component Created**
 **Current Branch**: main
 
 ---
@@ -22,14 +22,24 @@
 ### Phase 1 Tasks
 
 - [x] Document expert panel decisions
-- [ ] Create `CharacterTypeCard` scene via Godot editor
-- [ ] Implement `character_type_card.gd` script
-- [ ] Load silhouette textures for type portraits
+- [x] Create `CharacterTypeCard` scene via Godot editor (`scenes/ui/components/character_type_card.tscn`)
+- [x] Implement `character_type_card.gd` script (`scripts/ui/character_type_card.gd`)
+- [x] Load silhouette textures for type portraits (all 4 types implemented)
+- [x] Unit tests for both modes (34 tests, all passing - 705/729 total)
 - [ ] Migrate Character Creation to use new component
 - [ ] Migrate Barracks to use new component
-- [ ] Unit tests for both modes
 - [ ] Device QA validation
 - [ ] Deprecate old `CharacterCard`
+
+### Component Features Implemented
+
+- `setup_type(type_id)` - For Character Creation (silhouette portraits)
+- `setup_player(character_data)` - For Barracks (ColorRect portraits)
+- `set_selected(bool)` - Animated breathing glow effect (Timer-based, iOS-safe)
+- `set_locked(bool, tier)` - Lock overlay for tier-restricted types
+- Custom tap animation (0.95 scale, 80ms down / 120ms return, _process-based)
+- Long press detection (500ms for type preview modal)
+- `card_pressed` and `card_long_pressed` signals
 
 ---
 
@@ -76,7 +86,7 @@
 
 ## 📊 PROJECT STATUS
 
-**Tests**: 671/695 passing
+**Tests**: 705/729 passing (24 pending/skipped)
 **GDLint**: Clean
 **All Validators**: Passing
 
@@ -103,12 +113,12 @@ Read these files:
 2. .system/NEXT_SESSION.md
 3. docs/migration/week17-plan.md
 
-Current task: Create CharacterTypeCard component
-- Expert panel decisions documented ✅
-- Art assets ready ✅
-- Ready to create scene in Godot editor
+Current task: Migrate screens to use CharacterTypeCard component
+- CharacterTypeCard component created ✅
+- Unit tests passing (34 tests) ✅
+- Ready to migrate Character Creation screen
 
-Begin CharacterTypeCard component creation.
+Next step: Migrate Character Creation to use CharacterTypeCard.setup_type()
 ```
 
 ---
@@ -123,5 +133,5 @@ Begin CharacterTypeCard component creation.
 
 ---
 
-**Last Updated**: 2025-11-27
-**Status**: Phase 1 In Progress - Expert Panel Decisions Documented
+**Last Updated**: 2025-11-26
+**Status**: Phase 1 In Progress - Component Created, Ready for Migration

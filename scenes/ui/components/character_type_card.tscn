@@ -1,0 +1,130 @@
+[gd_scene load_steps=2 format=3 uid="uid://dejp1rdasokxa"]
+
+[ext_resource type="Script" path="res://scripts/ui/character_type_card.gd" id="1_script"]
+
+[node name="CharacterTypeCard" type="Button"]
+custom_minimum_size = Vector2(170, 220)
+offset_right = 8.0
+offset_bottom = 8.0
+focus_mode = 0
+flat = true
+script = ExtResource("1_script")
+
+[node name="GlowPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PanelBg" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ContentContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="PortraitRect" type="TextureRect" parent="ContentContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PortraitColorRect" type="ColorRect" parent="ContentContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+color = Color(0.5, 0.5, 0.5, 1.0)
+
+[node name="NameLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "Type Name"
+horizontal_alignment = 1
+
+[node name="SubLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1.0)
+theme_override_font_sizes/font_size = 14
+text = "+5 HP, +10 Luck"
+horizontal_alignment = 1
+
+[node name="BadgeContainer" type="HBoxContainer" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="SelectionBadge" type="Panel" parent="ContentContainer/VBoxContainer/BadgeContainer"]
+visible = false
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CheckLabel" type="Label" parent="ContentContainer/VBoxContainer/BadgeContainer/SelectionBadge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "✓"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LockOverlay" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LockIconLabel" type="Label" parent="LockOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "🔒 Premium"
+horizontal_alignment = 1
+vertical_alignment = 1
