@@ -243,12 +243,15 @@ if [ -f .system/validators/component_usage_validator.py ]; then
     fi
 fi
 
-# Refactor verification validator (BLOCKING on refactor commits - Week 15 Phase 3 QA Fix)
-if [ -f .system/validators/refactor_verification_validator.py ]; then
-    if ! python3 .system/validators/refactor_verification_validator.py; then
-        VALIDATION_FAILED=1
-    fi
-fi
+# Refactor verification validator (DISABLED - reads previous commit, not current)
+# This validator is fundamentally broken for pre-commit: it uses git log -1 which
+# returns the LAST commit, not the commit being made. It can only work in commit-msg hook.
+# TODO: Move to commit-msg hook or redesign to read from COMMIT_EDITMSG
+# if [ -f .system/validators/refactor_verification_validator.py ]; then
+#     if ! python3 .system/validators/refactor_verification_validator.py; then
+#         VALIDATION_FAILED=1
+#     fi
+# fi
 
 # Documentation validator
 if [ -f .system/validators/documentation_validator.py ]; then

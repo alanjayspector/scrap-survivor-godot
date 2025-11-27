@@ -724,9 +724,9 @@ font_size = 48
 | Phase 1: Card Component | ✅ Complete | Alan | 2025-11-27 |
 | Phase 2: Character Creation | ✅ Complete | Alan | 2025-11-27 |
 | Phase 3: Character Details | ✅ Complete | Alan | 2025-11-27 |
-| Phase 4: Enter Wasteland | ⏳ Pending | Alan | - |
+| Phase 4: Enter Wasteland | ✅ Complete | Alan | 2025-11-27 |
 | Phase 5: Polish | 📦 Backlogged | - | - |
-| Phase 6: Scrapyard Title | ⏳ Low Priority | Alan | - |
+| Phase 6: Scrapyard Title | ✅ Complete | Alan | 2025-11-27 |
 
 ---
 

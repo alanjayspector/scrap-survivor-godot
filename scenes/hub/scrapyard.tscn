@@ -51,9 +51,12 @@ size_flags_vertical = 0
 
 [node name="GameTitle" type="Label" parent="SafeAreaContainer/TitleContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.918, 0.773, 0.239, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
+theme_override_colors/font_color = Color(1.0, 0.4, 0.0, 1)
+theme_override_colors/font_outline_color = Color(0.545, 0.271, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
+theme_override_constants/outline_size = 6
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 48
 text = "SCRAP SURVIVOR"
 horizontal_alignment = 1
