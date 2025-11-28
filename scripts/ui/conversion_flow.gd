@@ -40,29 +40,26 @@ func start_free_trial(character_type: String) -> String:
 		GameLogger.warning("Trial already active", {"active_trial": trial_character_type})
 		return ""
 
-	# Validate character type exists
-	if not CharacterService.CHARACTER_TYPES.has(character_type):
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	if not CharacterTypeDatabase.has_type(character_type):
 		GameLogger.error("Invalid character type for trial", {"type": character_type})
 		return ""
 
-	var type_def = CharacterService.CHARACTER_TYPES[character_type]
+	var type_def = CharacterTypeDatabase.get_type(character_type)
 
 	# Check if user tier is below required
 	var user_tier = CharacterService.get_tier()
-	if user_tier >= type_def.tier_required:
+	var tier_required = type_def.get("tier_required", CharacterTypeDatabase.Tier.FREE)
+	if user_tier >= tier_required:
 		GameLogger.warning(
 			"Trial not needed - user already has required tier",
-			{
-				"type": character_type,
-				"user_tier": user_tier,
-				"required_tier": type_def.tier_required
-			}
+			{"type": character_type, "user_tier": user_tier, "required_tier": tier_required}
 		)
 		return ""
 
 	# Temporarily elevate user tier for character creation
 	var original_tier = user_tier
-	CharacterService.set_tier(type_def.tier_required)
+	CharacterService.set_tier(tier_required)
 
 	# Create trial character
 	var trial_name = "TRIAL_%s" % type_def.display_name
@@ -204,7 +201,8 @@ func _show_post_trial_conversion_screen(run_stats: Dictionary) -> void:
 
 func _create_conversion_modal(run_stats: Dictionary) -> Control:
 	"""Create conversion modal following Parent-First protocol for iOS safety"""
-	var type_def = CharacterService.CHARACTER_TYPES[trial_character_type]
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var type_def = CharacterTypeDatabase.get_type(trial_character_type)
 
 	# Create modal container (will be parented by caller)
 	var modal = PanelContainer.new()

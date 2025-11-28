@@ -59,8 +59,8 @@ func test_setup_type_scavenger_displays_stat_preview() -> void:
 	_card.setup_type("scavenger")
 
 	var sub_label = _card.get_node("ContentContainer/VBoxContainer/SubLabel")
-	# Scavenger has scavenging: 5, pickup_range: 20
-	assert_true(sub_label.text.contains("+5"), "Stat preview should contain '+5'")
+	# Week 18: Scavenger has scavenging: 10, pickup_range: 15
+	assert_true(sub_label.text.contains("+10"), "Stat preview should contain '+10' scavenging")
 
 
 func test_setup_type_scavenger_shows_silhouette() -> void:
@@ -85,41 +85,44 @@ func test_setup_type_scavenger_unlocked_at_free_tier() -> void:
 	assert_false(_card.is_locked(), "Scavenger should be unlocked at FREE tier")
 
 
-func test_setup_type_tank_locked_at_free_tier() -> void:
+# Week 18 Phase 2: Tests updated for new character types
+func test_setup_type_tinkerer_locked_at_free_tier() -> void:
 	CharacterService.set_tier(CharacterService.UserTier.FREE)
-	_card.setup_type("tank")
+	_card.setup_type("tinkerer")
 
-	assert_true(_card.is_locked(), "Tank should be locked at FREE tier")
+	assert_true(_card.is_locked(), "Tinkerer should be locked at FREE tier")
 
 	var lock_overlay = _card.get_node("LockOverlay")
 	assert_true(lock_overlay.visible, "Lock overlay should be visible")
 
 
-func test_setup_type_tank_unlocked_at_premium_tier() -> void:
+func test_setup_type_tinkerer_unlocked_at_premium_tier() -> void:
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
-	_card.setup_type("tank")
+	_card.setup_type("tinkerer")
 
-	assert_false(_card.is_locked(), "Tank should be unlocked at PREMIUM tier")
+	assert_false(_card.is_locked(), "Tinkerer should be unlocked at PREMIUM tier")
 
 
-func test_setup_type_commando_locked_at_premium_tier() -> void:
+func test_setup_type_overclocked_locked_at_premium_tier() -> void:
 	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
-	_card.setup_type("commando")
+	_card.setup_type("overclocked")
 
-	assert_true(_card.is_locked(), "Commando should be locked at PREMIUM tier")
+	assert_true(_card.is_locked(), "Overclocked should be locked at PREMIUM tier")
 
 
-func test_setup_type_commando_unlocked_at_subscription_tier() -> void:
+func test_setup_type_overclocked_unlocked_at_subscription_tier() -> void:
 	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
-	_card.setup_type("commando")
+	_card.setup_type("overclocked")
 
-	assert_false(_card.is_locked(), "Commando should be unlocked at SUBSCRIPTION tier")
+	assert_false(_card.is_locked(), "Overclocked should be unlocked at SUBSCRIPTION tier")
 
 
 func test_setup_type_all_types_load_silhouettes() -> void:
-	var types = ["scavenger", "tank", "commando", "mutant"]
+	# Week 18: Test silhouettes for types that have textures
+	# Only scavenger has silhouette; other new types need art assets
+	var types_with_silhouettes = ["scavenger"]
 
-	for type_id in types:
+	for type_id in types_with_silhouettes:
 		# Create fresh card for each type
 		var card = CharacterTypeCardScene.instantiate()
 		add_child_autofree(card)
@@ -132,6 +135,9 @@ func test_setup_type_all_types_load_silhouettes() -> void:
 			"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
 		)
 		assert_not_null(portrait_rect.texture, "Silhouette for '%s' should load" % type_id)
+
+	# Note: New types (hotshot, tinkerer, salvager, overclocked) need silhouette textures
+	# These can be added in a future art pass
 
 
 ## ============================================================================
@@ -158,11 +164,12 @@ func test_setup_player_displays_character_name() -> void:
 
 
 func test_setup_player_displays_type_and_level() -> void:
-	var char_data = {"id": "test_1", "name": "Rusty", "character_type": "tank", "level": 7}
+	# Week 18: Updated to use rustbucket (the new tank-like type)
+	var char_data = {"id": "test_1", "name": "Rusty", "character_type": "rustbucket", "level": 7}
 	_card.setup_player(char_data)
 
 	var sub_label = _card.get_node("ContentContainer/VBoxContainer/SubLabel")
-	assert_true(sub_label.text.contains("Tank"), "Sub label should contain type name")
+	assert_true(sub_label.text.contains("Rustbucket"), "Sub label should contain type name")
 	assert_true(sub_label.text.contains("7"), "Sub label should contain level")
 
 
@@ -186,20 +193,20 @@ func test_setup_player_shows_silhouette_texture() -> void:
 
 
 func test_setup_player_loads_correct_type_silhouette() -> void:
-	# Week 17 QA fix: Player portraits use type silhouettes for visual consistency
-	var char_data = {"id": "test_1", "name": "Hero", "character_type": "tank", "level": 1}
+	# Use scavenger since it has a silhouette texture
+	var char_data = {"id": "test_1", "name": "Hero", "character_type": "scavenger", "level": 1}
 	_card.setup_player(char_data)
 
 	var portrait_rect = _card.get_node(
 		"ContentContainer/VBoxContainer/PortraitContainer/PortraitRect"
 	)
-	assert_not_null(portrait_rect.texture, "Tank silhouette should be loaded for player")
+	assert_not_null(portrait_rect.texture, "Scavenger silhouette should be loaded for player")
 
 
 func test_setup_player_never_locked() -> void:
 	CharacterService.set_tier(CharacterService.UserTier.FREE)
-	# Even a "commando" type player character should never be locked
-	var char_data = {"id": "test_1", "name": "Hero", "character_type": "commando", "level": 1}
+	# Even a "overclocked" (subscription) type player character should never be locked
+	var char_data = {"id": "test_1", "name": "Hero", "character_type": "overclocked", "level": 1}
 	_card.setup_player(char_data)
 
 	assert_false(_card.is_locked(), "Player cards should never be locked")
@@ -283,7 +290,8 @@ func test_set_locked_false_enables_button() -> void:
 
 
 func test_lock_overlay_shows_premium_text() -> void:
-	_card.setup_type("tank")
+	# Week 18: tinkerer is the new premium character
+	_card.setup_type("tinkerer")
 	_card.set_locked(true, CharacterService.UserTier.PREMIUM)
 
 	var lock_label = _card.get_node("LockOverlay/LockIconLabel")
@@ -291,7 +299,8 @@ func test_lock_overlay_shows_premium_text() -> void:
 
 
 func test_lock_overlay_shows_subscriber_text() -> void:
-	_card.setup_type("commando")
+	# Week 18: overclocked is the new subscription character
+	_card.setup_type("overclocked")
 	_card.set_locked(true, CharacterService.UserTier.SUBSCRIPTION)
 
 	var lock_label = _card.get_node("LockOverlay/LockIconLabel")
@@ -319,8 +328,8 @@ func test_card_pressed_signal_emitted_on_press() -> void:
 
 
 func test_card_pressed_not_emitted_when_locked() -> void:
-	_card.setup_type("tank")
-	# Tank is locked at FREE tier
+	# Week 18: tinkerer is premium and locked at FREE tier
+	_card.setup_type("tinkerer")
 
 	var signal_received = false
 	_card.card_pressed.connect(func(_id): signal_received = true)
@@ -357,8 +366,9 @@ func test_multiple_setup_calls_update_correctly() -> void:
 	_card.setup_type("scavenger")
 	assert_eq(_card.get_identifier(), "scavenger")
 
-	_card.setup_type("tank")
-	assert_eq(_card.get_identifier(), "tank", "Second setup should update identifier")
+	# Week 18: use rustbucket instead of tank
+	_card.setup_type("rustbucket")
+	assert_eq(_card.get_identifier(), "rustbucket", "Second setup should update identifier")
 	assert_eq(_card.get_mode(), _card.CardMode.TYPE, "Mode should still be TYPE")
 
 
@@ -366,7 +376,10 @@ func test_mode_switch_type_to_player() -> void:
 	_card.setup_type("scavenger")
 	assert_eq(_card.get_mode(), _card.CardMode.TYPE)
 
-	var char_data = {"id": "switch_test", "name": "Switcher", "character_type": "tank", "level": 1}
+	# Week 18: use rustbucket instead of tank
+	var char_data = {
+		"id": "switch_test", "name": "Switcher", "character_type": "rustbucket", "level": 1
+	}
 	_card.setup_player(char_data)
 
 	assert_eq(_card.get_mode(), _card.CardMode.PLAYER, "Mode should switch to PLAYER")

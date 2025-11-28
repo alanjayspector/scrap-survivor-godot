@@ -15,11 +15,14 @@ extends Control
 signal closed
 
 # Showcase portrait paths (1024x1024 high-detail versions for Character Details)
+# Week 18: Updated for CharacterTypeDatabase types
 const SHOWCASE_PORTRAIT_PATHS = {
 	"scavenger": "res://assets/ui/portraits/showcase/showcase_scavenger.png",
-	"tank": "res://assets/ui/portraits/showcase/showcase_tank.png",
-	"commando": "res://assets/ui/portraits/showcase/showcase_commando.png",
-	"mutant": "res://assets/ui/portraits/showcase/showcase_mutant.png",
+	"rustbucket": "res://assets/ui/portraits/showcase/showcase_rustbucket.png",
+	"hotshot": "res://assets/ui/portraits/showcase/showcase_hotshot.png",
+	"tinkerer": "res://assets/ui/portraits/showcase/showcase_tinkerer.png",
+	"salvager": "res://assets/ui/portraits/showcase/showcase_salvager.png",
+	"overclocked": "res://assets/ui/portraits/showcase/showcase_overclocked.png",
 }
 
 # Base stats for color comparison (green if above, red if below)
@@ -101,8 +104,8 @@ func show_character(character: Dictionary) -> void:
 	var aura_data = character.get("aura", {})
 	var stats = character.get("stats", {})
 
-	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
-	var type_display_name = type_def.get("display_name", character_type.capitalize())
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var type_display_name = CharacterTypeDatabase.get_display_name(character_type)
 	var type_color = _get_type_color(character_type)
 
 	# LEFT COLUMN - Portrait with type-colored border

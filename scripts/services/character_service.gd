@@ -29,49 +29,9 @@ const XP_PER_LEVEL = 100  # Level 2 = 100 XP, Level 3 = 200 XP, etc.
 ## Default character type (Week 6: single type, expand in Week 7+)
 const DEFAULT_CHARACTER_TYPE = "scavenger"
 
-## Character type definitions (Week 7 Phase 2)
-const CHARACTER_TYPES = {
-	"scavenger":
-	{
-		"tier_required": UserTier.FREE,
-		"display_name": "Scavenger",
-		"description": "Efficient resource gatherer with auto-collect aura",
-		"color": Color(0.6, 0.6, 0.6),  # Gray
-		"stat_modifiers": {"scavenging": 5, "pickup_range": 20},
-		"aura_type": "collect",  # Auto-collect currency (quality of life)
-		"unlock_condition": "default"  # Always unlocked
-	},
-	"tank":
-	{
-		"tier_required": UserTier.PREMIUM,
-		"display_name": "Tank",
-		"description": "Heavy armor specialist with protective aura",
-		"color": Color(0.3, 0.5, 0.3),  # Olive green
-		"stat_modifiers": {"max_hp": 20, "armor": 3, "speed": -20},
-		"aura_type": "shield",  # +Armor while in aura radius
-		"unlock_condition": "premium_purchase"
-	},
-	"commando":
-	{
-		"tier_required": UserTier.SUBSCRIPTION,
-		"display_name": "Commando",
-		"description": "High DPS glass cannon with no defensive aura",
-		"color": Color(0.8, 0.2, 0.2),  # Red
-		"stat_modifiers": {"ranged_damage": 5, "attack_speed": 15, "armor": -2},
-		"aura_type": null,  # No aura (trade-off for raw DPS)
-		"unlock_condition": "subscription_active"
-	},
-	"mutant":
-	{
-		"tier_required": UserTier.SUBSCRIPTION,
-		"display_name": "Mutant",
-		"description": "Mutation specialist with powerful damage aura",
-		"color": Color(0.5, 0.2, 0.7),  # Purple (mutation theme)
-		"stat_modifiers": {"resonance": 10, "luck": 5, "pickup_range": 20},
-		"aura_type": "damage",  # Damage aura that scales with Resonance
-		"unlock_condition": "subscription_active"
-	}
-}
+## Character type definitions are now in CharacterTypeDatabase (Week 18 Phase 2)
+## Access via: CharacterTypeDatabase.get_type(type_id)
+## Valid types: scavenger, rustbucket, hotshot, tinkerer, salvager, overclocked
 
 ## Default base stats for new characters (Week 7: expanded from 8 to 14 stats)
 const DEFAULT_BASE_STATS = {
@@ -136,17 +96,20 @@ func create_character(character_name: String, character_type: String = "scavenge
 		GameLogger.warning("Cannot create character with empty name")
 		return ""
 
-	# Validate character type exists
-	if not CHARACTER_TYPES.has(character_type):
+	# Validate character type exists (Week 18: use CharacterTypeDatabase)
+	if not CharacterTypeDatabase.has_type(character_type):
 		GameLogger.error("Invalid character type", {"type": character_type})
 		return ""
 
+	# Get type definition from database
+	var type_def = CharacterTypeDatabase.get_type(character_type)
+
 	# Check tier restrictions
-	var type_def = CHARACTER_TYPES[character_type]
-	if type_def.tier_required > current_tier:
+	var tier_required = type_def.get("tier_required", CharacterTypeDatabase.Tier.FREE)
+	if tier_required > current_tier:
 		GameLogger.warning(
 			"Character type requires higher tier",
-			{"type": character_type, "required": type_def.tier_required, "current": current_tier}
+			{"type": character_type, "required": tier_required, "current": current_tier}
 		)
 		return ""
 
@@ -165,10 +128,23 @@ func create_character(character_name: String, character_type: String = "scavenge
 	# Build base stats with character type modifiers
 	var base_stats = DEFAULT_BASE_STATS.duplicate(true)
 
-	# Apply character type stat modifiers
-	for stat_name in type_def.stat_modifiers.keys():
+	# Apply character type stat modifiers (Week 18: from CharacterTypeDatabase)
+	var stat_modifiers = type_def.get("stat_modifiers", {})
+	for stat_name in stat_modifiers.keys():
 		if base_stats.has(stat_name):
-			base_stats[stat_name] += type_def.stat_modifiers[stat_name]
+			base_stats[stat_name] += stat_modifiers[stat_name]
+
+	# Get slot limits from type definition (Week 18 Phase 2)
+	var weapon_slots = type_def.get("weapon_slots", 6)
+	var inventory_slots = type_def.get(
+		"inventory_slots", CharacterTypeDatabase.DEFAULT_INVENTORY_SLOTS
+	)
+
+	# Get starting items from type definition (Week 18 Phase 2)
+	var starting_items = type_def.get("starting_items", []).duplicate()
+
+	# Get special mechanics (Week 18 Phase 2)
+	var special_mechanics = type_def.get("special_mechanics", {}).duplicate(true)
 
 	# Build character data
 	var character_data = {
@@ -178,13 +154,15 @@ func create_character(character_name: String, character_type: String = "scavenge
 		"level": 1,
 		"experience": 0,
 		"stats": base_stats,
+		"weapon_slots": weapon_slots,  # Week 18: per-type weapon slot limit
+		"inventory_slots": inventory_slots,  # Week 18: per-type inventory slot limit
+		"special_mechanics": special_mechanics,  # Week 18: type-specific mechanics
 		"created_at": Time.get_unix_time_from_system(),
 		"last_played": Time.get_unix_time_from_system(),
 		"death_count": 0,
 		"total_kills": 0,
 		"highest_wave": 0,
 		"current_wave": 0,
-		"aura": {"type": type_def.aura_type, "enabled": true, "level": 1},
 		"starting_currency": {"scrap": 0, "nanites": 0, "components": 0}
 	}
 
@@ -192,7 +170,7 @@ func create_character(character_name: String, character_type: String = "scavenge
 	var pre_context = {
 		"character_type": character_data.character_type,
 		"base_stats": character_data.stats.duplicate(true),
-		"starting_items": [],
+		"starting_items": starting_items,  # Week 18: type-specific starting items
 		"starting_currency": {"scrap": 0, "nanites": 0, "components": 0},
 		"allow_create": true
 	}
@@ -214,11 +192,12 @@ func create_character(character_name: String, character_type: String = "scavenge
 	if characters.size() == 1:
 		active_character_id = character_id
 
-	# Fire post-hook (perks can grant welcome bonuses)
+	# Fire post-hook (perks can grant welcome bonuses, handle starting_items)
 	var post_context = {
 		"character_id": character_id,
 		"character_data": character_data.duplicate(true),
-		"player_tier": current_tier
+		"player_tier": current_tier,
+		"starting_items": pre_context.starting_items,  # Week 18: for InventoryService to consume
 	}
 
 	character_create_post.emit(post_context)
@@ -228,7 +207,13 @@ func create_character(character_name: String, character_type: String = "scavenge
 
 	GameLogger.info(
 		"Character created",
-		{"character_id": character_id, "name": character_name, "type": character_type}
+		{
+			"character_id": character_id,
+			"name": character_name,
+			"type": character_type,
+			"weapon_slots": weapon_slots,
+			"starting_items": starting_items.size()
+		}
 	)
 
 	return character_id
@@ -563,6 +548,60 @@ func get_tier() -> UserTier:
 ## Get character count (convenience method)
 func get_character_count() -> int:
 	return characters.size()
+
+
+## Get weapon slots for a character (Week 18 Phase 2)
+## Returns 6 as default if character not found
+func get_weapon_slots(character_id: String) -> int:
+	if not characters.has(character_id):
+		return 6  # Default
+	return characters[character_id].get("weapon_slots", 6)
+
+
+## Get inventory slots for a character (Week 18 Phase 2)
+## Returns 30 as default if character not found
+func get_inventory_slots(character_id: String) -> int:
+	if not characters.has(character_id):
+		return CharacterTypeDatabase.DEFAULT_INVENTORY_SLOTS  # Default
+	return characters[character_id].get(
+		"inventory_slots", CharacterTypeDatabase.DEFAULT_INVENTORY_SLOTS
+	)
+
+
+## Get special mechanics for a character (Week 18 Phase 2)
+## Returns empty dictionary if character not found
+func get_special_mechanics(character_id: String) -> Dictionary:
+	if not characters.has(character_id):
+		return {}
+	return characters[character_id].get("special_mechanics", {}).duplicate(true)
+
+
+## Check if character has a specific special mechanic (Week 18 Phase 2)
+func has_special_mechanic(character_id: String, mechanic_name: String) -> bool:
+	var mechanics = get_special_mechanics(character_id)
+	return mechanics.has(mechanic_name)
+
+
+## Get a specific special mechanic value (Week 18 Phase 2)
+## Returns default_value if not found
+func get_special_mechanic(character_id: String, mechanic_name: String, default_value = null):
+	var mechanics = get_special_mechanics(character_id)
+	return mechanics.get(mechanic_name, default_value)
+
+
+## Get all available character types (Week 18 Phase 2)
+## Returns array of type IDs that the current tier can access
+func get_available_character_types() -> Array:
+	var result = []
+	for type_id in CharacterTypeDatabase.get_type_ids():
+		if CharacterTypeDatabase.can_access_type(type_id, current_tier):
+			result.append(type_id)
+	return result
+
+
+## Check if current tier can create a specific character type (Week 18 Phase 2)
+func can_create_character_type(character_type: String) -> bool:
+	return CharacterTypeDatabase.can_access_type(character_type, current_tier)
 
 
 ## Add XP to character with detailed level-up information

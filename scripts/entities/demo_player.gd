@@ -66,10 +66,10 @@ func _physics_process(_delta: float) -> void:
 func _apply_character_appearance() -> void:
 	"""Apply character type color to visual"""
 	var character_type = character_data.character_type
-	var type_def = CharacterService.CHARACTER_TYPES[character_type]
+	var type_color = CharacterTypeDatabase.get_color(character_type)
 
 	# Set visual color based on character type
-	visual.color = type_def.color
+	visual.color = type_color
 
 
 func _setup_aura() -> void:

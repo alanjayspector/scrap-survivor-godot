@@ -48,10 +48,9 @@ func setup(character: Dictionary) -> void:
 	var highest_wave = character.get("highest_wave", 0)
 	var max_hp = character.get("max_hp", 100)
 
-	# Get type definition for color
-	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
-	var type_display_name = type_def.get("display_name", character_type.capitalize())
-	var type_color = type_def.get("color", Color.GRAY)
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var type_display_name = CharacterTypeDatabase.get_display_name(character_type)
+	var type_color = CharacterTypeDatabase.get_color(character_type)
 
 	# Set portrait color
 	portrait_rect.color = type_color

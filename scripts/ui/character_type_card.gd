@@ -30,20 +30,24 @@ signal card_long_pressed(identifier: String)
 ## Card mode enum
 enum CardMode { TYPE, PLAYER }
 
-## Type silhouette texture paths
+## Type silhouette texture paths (Week 18: Updated for CharacterTypeDatabase types)
 const SILHOUETTE_PATHS := {
 	"scavenger": "res://assets/ui/portraits/silhouette_scavenger.png",
-	"tank": "res://assets/ui/portraits/silhouette_tank.png",
-	"commando": "res://assets/ui/portraits/silhouette_commando.png",
-	"mutant": "res://assets/ui/portraits/silhouette_mutant.png",
+	"rustbucket": "res://assets/ui/portraits/silhouette_rustbucket.png",
+	"hotshot": "res://assets/ui/portraits/silhouette_hotshot.png",
+	"tinkerer": "res://assets/ui/portraits/silhouette_tinkerer.png",
+	"salvager": "res://assets/ui/portraits/silhouette_salvager.png",
+	"overclocked": "res://assets/ui/portraits/silhouette_overclocked.png",
 }
 
-## Type colors (from Art Bible - Week 17 plan)
+## Type colors (from CharacterTypeDatabase - Week 18)
 const TYPE_COLORS := {
-	"scavenger": Color("#999999"),  # Gray
-	"tank": Color("#4D7A4D"),  # Olive
-	"commando": Color("#CC3333"),  # Red
-	"mutant": Color("#8033B3"),  # Purple
+	"scavenger": Color(0.72, 0.53, 0.32),  # Dusty Brown/Orange
+	"rustbucket": Color(0.72, 0.40, 0.25),  # Rusty Orange/Red-Brown
+	"hotshot": Color(0.95, 0.55, 0.15),  # Flame Orange/Yellow
+	"tinkerer": Color(0.15, 0.65, 0.60),  # Teal/Copper
+	"salvager": Color(0.35, 0.60, 0.30),  # Green/Brass
+	"overclocked": Color(0.30, 0.60, 0.95),  # Electric Blue/White
 }
 
 ## Selection glow color (Primary Orange from Art Bible)
@@ -167,8 +171,8 @@ func setup_type(type_id: String) -> void:
 	"""Setup card for character type selection (Character Creation screen)"""
 	_mode = CardMode.TYPE
 
-	# Get type definition from CharacterService
-	var type_def = CharacterService.CHARACTER_TYPES.get(type_id, {})
+	# Get type definition from CharacterTypeDatabase (Week 18 Phase 2)
+	var type_def = CharacterTypeDatabase.get_type(type_id)
 	if type_def.is_empty():
 		GameLogger.warning("[CharacterTypeCard] Unknown type", {"type_id": type_id})
 		_identifier = ""  # Clear identifier for unknown types
@@ -178,7 +182,7 @@ func setup_type(type_id: String) -> void:
 
 	var display_name = type_def.get("display_name", type_id.capitalize())
 	var description = type_def.get("description", "")
-	var tier_required = type_def.get("tier_required", CharacterService.UserTier.FREE)
+	var tier_required = type_def.get("tier_required", CharacterTypeDatabase.Tier.FREE)
 	var stat_mods = type_def.get("stat_modifiers", {})
 
 	# Set portrait to silhouette texture
@@ -218,8 +222,8 @@ func setup_player(character_data: Dictionary) -> void:
 	var char_level = character_data.get("level", 1)
 	var highest_wave = character_data.get("highest_wave", 0)
 
-	# Get type definition for color
-	var type_def = CharacterService.CHARACTER_TYPES.get(char_type, {})
+	# Get type definition for color (Week 18 Phase 2: use CharacterTypeDatabase)
+	var type_def = CharacterTypeDatabase.get_type(char_type)
 	var type_display = type_def.get("display_name", char_type.capitalize())
 	var type_color = type_def.get("color", Color.GRAY)
 

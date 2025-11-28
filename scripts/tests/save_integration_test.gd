@@ -522,10 +522,10 @@ func test_week15_character_service_persists_through_save_load() -> void:
 
 
 func test_week15_multiple_characters_persist() -> void:
-	# Create multiple characters
+	# Create multiple characters (Week 18: updated to new character types)
 	CharacterService.create_character("Char1", "scavenger")
-	CharacterService.create_character("Char2", "tank")
-	CharacterService.create_character("Char3", "commando")
+	CharacterService.create_character("Char2", "rustbucket")
+	CharacterService.create_character("Char3", "hotshot")
 
 	SaveManager.save_all_services(TEST_SLOT)
 	CharacterService.reset()

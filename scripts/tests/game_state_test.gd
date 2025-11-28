@@ -426,8 +426,8 @@ func test_week15_get_active_character_returns_character_data() -> void:
 
 
 func test_week15_full_run_flow() -> void:
-	# Create character
-	var char_id = CharacterService.create_character("RunTestChar", "tank")
+	# Create character (Week 18: updated to new character type)
+	var char_id = CharacterService.create_character("RunTestChar", "scavenger")
 	assert_ne(char_id, "", "Character creation should succeed")
 
 	# Set active and start run

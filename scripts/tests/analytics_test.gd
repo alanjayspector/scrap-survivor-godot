@@ -60,7 +60,8 @@ func test_hub_button_pressed_event() -> void:
 
 # Character Event Tests
 func test_character_created_event() -> void:
-	var character_types = ["scavenger", "tank", "commando", "mutant"]
+	# Week 18 Phase 2: Updated to use new 6 character types
+	var character_types = CharacterTypeDatabase.get_type_ids()
 
 	for char_type in character_types:
 		Analytics.character_created(char_type)
@@ -70,13 +71,13 @@ func test_character_created_event() -> void:
 
 func test_character_deleted_event() -> void:
 	Analytics.character_deleted("scavenger", 5)
-	Analytics.character_deleted("tank", 10)
+	Analytics.character_deleted("rustbucket", 10)
 
 	pass_test("character_deleted() handles level parameter")
 
 
 func test_character_selected_event() -> void:
-	Analytics.character_selected("commando", 3)
+	Analytics.character_selected("hotshot", 3)
 
 	pass_test("character_selected() executes without error")
 
@@ -84,7 +85,7 @@ func test_character_selected_event() -> void:
 # Run Event Tests
 func test_run_started_event() -> void:
 	Analytics.run_started("scavenger", 1)
-	Analytics.run_started("tank", 5)
+	Analytics.run_started("rustbucket", 5)
 
 	pass_test("run_started() handles different levels")
 

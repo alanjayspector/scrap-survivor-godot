@@ -195,20 +195,24 @@ func test_default_character_type_is_scavenger() -> void:
 
 
 func test_character_type_selection_updates_state() -> void:
-	# Arrange
-	var tank_card = character_creation.character_type_card_buttons.get("tank")
+	# Arrange - Week 18: use rustbucket (new tank-like character) instead of tank
+	var rustbucket_card = character_creation.character_type_card_buttons.get("rustbucket")
 
-	if tank_card == null or tank_card.is_locked():
-		# Tank not available for current tier, skip test
-		pass_test("Tank type not available for current tier")
+	if rustbucket_card == null or rustbucket_card.is_locked():
+		# Rustbucket not available for current tier, skip test
+		pass_test("Rustbucket type not available for current tier")
 		return
 
 	# Act - Emit card_pressed signal (simulates tap on CharacterTypeCard)
-	tank_card.card_pressed.emit("tank")
+	rustbucket_card.card_pressed.emit("rustbucket")
 	await wait_frames(1)
 
 	# Assert
-	assert_eq(character_creation.selected_character_type, "tank", "Selected type should be tank")
+	assert_eq(
+		character_creation.selected_character_type,
+		"rustbucket",
+		"Selected type should be rustbucket"
+	)
 
 
 func test_selected_card_is_marked_selected() -> void:

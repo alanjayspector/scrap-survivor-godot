@@ -148,12 +148,12 @@ func test_new_character_has_scavenging() -> void:
 	var character_id = CharacterService.create_character("TestCharacter")
 	var character = CharacterService.get_character(character_id)
 
-	# Assert
+	# Assert - Week 18: Scavenger now has +10 scavenging (not +5)
 	assert_true(character.stats.has("scavenging"), "New character should have scavenging stat")
 	assert_eq(
 		character.stats.scavenging,
-		5,
-		"New character scavenging should be 5 (default scavenger type bonus)"
+		10,
+		"New character scavenging should be 10 (scavenger type bonus)"
 	)
 
 
@@ -296,13 +296,13 @@ func test_scavenging_increases_multiple_levels() -> void:
 	# Act - Level up 5 times (100 + 200 + 300 + 400 + 500 = 1500 XP)
 	CharacterService.add_experience(character_id, 1500)
 
-	# Assert
+	# Assert - Week 18: Scavenger starts at 10 scavenging + 5 from levels = 15
 	var character = CharacterService.get_character(character_id)
 	assert_eq(character.level, 6, "Character should be level 6 (1 + 5 levels)")
 	assert_eq(
 		character.stats.scavenging,
-		10,
-		"scavenging should be 10 (5 base from scavenger + 5 from levels)"
+		15,
+		"scavenging should be 15 (10 base from scavenger + 5 from levels)"
 	)
 
 

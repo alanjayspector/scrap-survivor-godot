@@ -57,11 +57,11 @@ func _create_character_type_cards() -> void:
 		push_warning("CharacterSelection: character_cards_container not set")
 		return
 
-	# Create a card for each character type
-	var character_types = ["scavenger", "tank", "commando", "mutant"]
+	# Week 18 Phase 2: Use CharacterTypeDatabase for all 6 character types
+	var character_types = CharacterTypeDatabase.get_type_ids()
 
 	for char_type in character_types:
-		if not CharacterService.CHARACTER_TYPES.has(char_type):
+		if not CharacterTypeDatabase.has_type(char_type):
 			continue
 
 		var card = _create_character_card(char_type)
@@ -71,7 +71,7 @@ func _create_character_type_cards() -> void:
 
 func _create_character_card(character_type: String) -> Control:
 	"""Create character card following Parent-First protocol for iOS safety"""
-	var type_def = CharacterService.CHARACTER_TYPES[character_type]
+	var type_def = CharacterTypeDatabase.get_type(character_type)
 
 	# Create card container (will be parented by caller)
 	var card = PanelContainer.new()
@@ -305,9 +305,11 @@ func _show_character_detail_panel(character_type: String) -> void:
 	if current_detail_panel:
 		_dismiss_detail_panel()
 
-	var type_def = CharacterService.CHARACTER_TYPES[character_type]
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var type_def = CharacterTypeDatabase.get_type(character_type)
 	var user_tier = CharacterService.get_tier()
-	var is_locked = type_def.tier_required > user_tier
+	var tier_required = type_def.get("tier_required", CharacterTypeDatabase.Tier.FREE)
+	var is_locked = tier_required > user_tier
 
 	# Create full-screen container for backdrop + panel
 	var panel_root = Control.new()
@@ -758,11 +760,11 @@ func _highlight_selected_card(character_type: String) -> void:
 
 
 func _on_create_character_pressed() -> void:
-	# Check if user can create this character type
+	# Check if user can create this character type (Week 18 Phase 2: CharacterTypeDatabase)
 	var user_tier = CharacterService.get_tier()
-	var type_def = CharacterService.CHARACTER_TYPES[selected_character_type]
+	var tier_required = CharacterTypeDatabase.get_tier_required(selected_character_type)
 
-	if type_def.tier_required > user_tier:
+	if tier_required > user_tier:
 		# Play error sound (Week 14 Phase 1.5)
 		_play_ui_sound(ERROR_SOUND, "error")
 

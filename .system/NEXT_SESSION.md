@@ -1,89 +1,144 @@
 # Next Session Handoff
 
 **Updated:** 2025-11-27
-**Current Branch:** `main` (after docs merge)
-**Status:** Week 18 Implementation STARTING 🚀
+**Current Branch:** `main`
+**Status:** Week 18 Phase 2 COMPLETE - Phase 3 NEXT
 
 ---
 
-## 🎯 IMMEDIATE NEXT ACTION
+## IMMEDIATE NEXT ACTION
 
-**Begin Phase 1: Item Database + ItemService**
+**Begin Phase 3: ShopService**
 
-We've completed the planning discussion and documented:
-- Phase 8 (Try-Before-Buy) added as stretch goal
-- Deferred integrations documented for stat modifiers
-
-Ready to implement Phase 1.
+Phase 2 (Character Type System) is complete and tests passing.
 
 ---
 
-## ✅ SESSION ACCOMPLISHMENTS
+## SESSION ACCOMPLISHMENTS
 
-1. Read and understood Week 18 plan
-2. Expert panel consultation on scope questions
-3. Added **Phase 8: Try-Before-Buy** (2h stretch goal)
-4. Added **Deferred Integrations** section documenting:
-   - `stack_limit_bonus` → consumed by InventoryService (Phase 3)
-   - `wave_hp_damage_pct` → consumed by combat scene
-   - `shop_discount` → consumed by ShopService (Phase 5)
-   - `component_yield_bonus` → consumed by Workshop (Week 19-20)
+1. Created `scripts/data/character_type_database.gd` with 6 character types
+2. Updated CharacterService to use CharacterTypeDatabase
+3. Implemented weapon_slots, inventory_slots, special_mechanics per type
+4. Created `scripts/tests/character_type_test.gd` (60+ tests)
+5. Updated 15+ files to use new CharacterTypeDatabase
+6. Removed obsolete `character_types_test.gd`
+7. Tests passing: 787/811
 
 ---
 
-## 📋 WEEK 18 PHASE ORDER
+## WEEK 18 PHASE ORDER
 
 | Phase | Description | Est. Time | Status |
 |-------|-------------|-----------|--------|
-| **1** | Item Database + ItemService | 1.5h | ⏭️ NEXT |
-| **2** | Character Type System | 1.5h | PENDING |
-| **3** | InventoryService | 1.5h | PENDING |
-| **4** | WeaponService Refactor | 1h | PENDING |
-| **5** | ShopService | 1.5h | PENDING |
+| **1** | Item Database + ItemService | 1.5h | ✅ COMPLETE |
+| **2** | Character Type System | 1.5h | ✅ COMPLETE |
+| **3** | ShopService | 1.5h | ⏭️ NEXT |
+| **4** | InventoryService | 1.5h | PENDING |
+| **5** | WeaponService Refactor | 1h | PENDING |
 | **6** | Shop UI | 1.5h | PENDING |
 | **7** | Integration & QA | 1h | PENDING |
 | **8** | Try-Before-Buy | 2h | STRETCH |
 
 ---
 
-## 📖 KEY DOCUMENTS
+## QUICK START PROMPT
 
-- `docs/migration/week18-plan.md` - Master plan (v2.1)
-- `docs/game-design/systems/CHARACTER-SYSTEM.md` - 6 character types
-- `docs/game-design/systems/INVENTORY-SYSTEM.md` - Death penalties, yields
+```
+Continue Week 18 Phase 3: ShopService.
+
+Read (IN THIS ORDER):
+1. .system/CLAUDE_RULES.md (ALWAYS read first - development protocols)
+2. docs/migration/week18-plan.md (Phase 3 section)
+3. docs/game-design/systems/SHOPS-SYSTEM.md (shop design spec)
+4. scripts/services/item_service.gd (reference pattern)
+5. scripts/data/item_database.gd (item data source)
+
+Tasks:
+1. Create scripts/services/shop_service.gd
+2. Implement shop inventory with timed refresh (4h cycle)
+3. Add tier-based item pools (FREE/PREMIUM/SUBSCRIPTION)
+4. Create purchase flow with validation
+5. Implement manual reroll with scrap cost
+6. Create scripts/tests/shop_service_test.gd
+```
+
+---
+
+## PHASE 2 DELIVERABLES (Reference)
+
+**6 Character Types:**
+| Type | Tier | Weapon Slots | Special Mechanic |
+|------|------|--------------|------------------|
+| Scavenger | FREE | 6 | +10% scrap drops, +15 pickup range |
+| Rustbucket | FREE | 4 | +30 HP, +5 armor, -15% speed |
+| Hotshot | FREE | 6 | +20% damage, +10% crit, -20 HP |
+| Tinkerer | PREMIUM | 6 | +1 stack limit, -10% damage |
+| Salvager | PREMIUM | 5 | +50% components, 25% shop discount |
+| Overclocked | SUBSCRIPTION | 6 | +25% attack speed, +15% damage, 5% HP/wave |
+
+**Files Created:**
+- `scripts/data/character_type_database.gd` - Type definitions
+- `scripts/tests/character_type_test.gd` - 60+ unit tests
+
+**Files Updated:**
+- `scripts/services/character_service.gd` - Uses CharacterTypeDatabase
+- Multiple UI files updated for new character types
+
+---
+
+## KEY DOCUMENTS
+
+- `docs/migration/week18-plan.md` - Master plan (v2.2)
+- `docs/game-design/systems/SHOPS-SYSTEM.md` - Shop design
+- `docs/game-design/systems/CHARACTER-SYSTEM.md` - Character types
 - `.system/CLAUDE_RULES.md` - Development protocols
 
 ---
 
-## 🔍 QUICK START PROMPT
+## ARCHITECTURE NOTES
 
+### CharacterTypeDatabase Usage:
+```gdscript
+# Access type definition
+var type_def = CharacterTypeDatabase.get_type("scavenger")
+
+# Check tier access
+var can_access = CharacterTypeDatabase.can_access_type("tinkerer", user_tier)
+
+# Get slot limits
+var weapon_slots = CharacterTypeDatabase.get_weapon_slots("rustbucket")  # Returns 4
+
+# Get special mechanics
+var mechanics = CharacterTypeDatabase.get_special_mechanics("scavenger")
+# mechanics.scrap_drop_bonus = 0.10
 ```
-Continue Week 18 Phase 1: Item Database + ItemService.
 
-Read (IN THIS ORDER):
-1. .system/CLAUDE_RULES.md (ALWAYS read first - development protocols)
-2. docs/migration/week18-plan.md (Phase 1 section)
-3. scripts/services/weapon_service.gd (WEAPON_DEFINITIONS to migrate)
-4. scripts/services/character_service.gd (DEFAULT_BASE_STATS for valid stat keys)
-
-Tasks:
-1. Create scripts/data/ directory
-2. Create scripts/data/item_database.gd with 35+ items
-3. Migrate 10 weapons from WeaponService
-4. Add 10 armor, 10 trinkets, 5 consumables
-5. Create scripts/services/item_service.gd
-6. Create scripts/tests/item_service_test.gd
+### Character Data Structure (Updated):
+```gdscript
+{
+    "id": "char_1",
+    "character_type": "scavenger",
+    "weapon_slots": 6,           # Per-type limit
+    "inventory_slots": 30,       # Consistent across types
+    "special_mechanics": {       # Type-specific abilities
+        "scrap_drop_bonus": 0.10
+    },
+    "stats": { ... },
+}
 ```
 
 ---
 
-## ⚠️ IMPORTANT NOTES
+## KNOWN ISSUES / NOTES
 
-- Save data migration NOT needed (pre-release)
-- Stat modifiers defined in Phase 2 are consumed in later phases (documented)
-- Try-Before-Buy is STRETCH goal, core loop works without it
+1. **Silhouette Textures Missing**: New character types (hotshot, tinkerer, salvager, overclocked) need art assets. Tests skip these.
+
+2. **Aura System Decoupled**: Old aura_type field removed from character data. Tests updated accordingly.
+
+3. **Starting Items**: Passed in character_create_post context for InventoryService (Phase 4).
 
 ---
 
-**Git Status:** Clean (pending doc updates to commit)
-**Tests:** 705/729 passing
+**Git Status:** Uncommitted Phase 2 changes
+**Tests:** 787/811 passing (24 pending)
+**Last Commit:** `2f18a0d` feat: implement Week 18 Phase 1 - Item Database & ItemService

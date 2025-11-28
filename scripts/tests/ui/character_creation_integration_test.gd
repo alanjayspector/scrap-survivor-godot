@@ -80,10 +80,10 @@ func test_character_persists_after_save_and_load() -> void:
 
 
 func test_multiple_characters_persist_correctly() -> void:
-	# Arrange - Create multiple characters
+	# Arrange - Create multiple characters (Week 18: updated to new types)
 	var char1_id = CharacterService.create_character("Hero1", "scavenger")
-	var char2_id = CharacterService.create_character("Hero2", "tank")
-	var char3_id = CharacterService.create_character("Hero3", "scavenger")
+	var char2_id = CharacterService.create_character("Hero2", "rustbucket")
+	var char3_id = CharacterService.create_character("Hero3", "hotshot")
 
 	GameState.set_active_character(char2_id)
 	SaveManager.save_all_services()
@@ -181,8 +181,8 @@ func test_active_character_persists_across_scenes() -> void:
 
 
 func test_get_active_character_returns_correct_data() -> void:
-	# Arrange
-	var character_id = CharacterService.create_character("GetActiveTest", "tank")
+	# Arrange (Week 18: updated to new character type)
+	var character_id = CharacterService.create_character("GetActiveTest", "rustbucket")
 	GameState.set_active_character(character_id)
 
 	# Act
@@ -190,7 +190,7 @@ func test_get_active_character_returns_correct_data() -> void:
 
 	# Assert
 	assert_eq(active_character.name, "GetActiveTest", "Should return correct character name")
-	assert_eq(active_character.character_type, "tank", "Should return correct character type")
+	assert_eq(active_character.character_type, "rustbucket", "Should return correct character type")
 
 
 ## ============================================================================

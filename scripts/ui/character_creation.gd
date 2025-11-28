@@ -174,11 +174,12 @@ func _create_character_type_cards() -> void:
 		child.queue_free()
 	character_type_card_buttons.clear()
 
-	var character_types = ["scavenger", "tank", "commando", "mutant"]
+	# Week 18 Phase 2: Use CharacterTypeDatabase for all 6 character types
+	var character_types = CharacterTypeDatabase.get_type_ids()
 	var cards_created = 0
 
 	for char_type in character_types:
-		if not CharacterService.CHARACTER_TYPES.has(char_type):
+		if not CharacterTypeDatabase.has_type(char_type):
 			GameLogger.warning("[CharacterCreation] Unknown character type", {"type": char_type})
 			continue
 
@@ -196,15 +197,15 @@ func _create_character_type_cards() -> void:
 		character_type_card_buttons[char_type] = card
 		cards_created += 1
 
-		var type_def = CharacterService.CHARACTER_TYPES[char_type]
-		var is_locked = type_def.tier_required > CharacterService.get_tier()
+		var tier_required = CharacterTypeDatabase.get_tier_required(char_type)
+		var is_locked = tier_required > CharacterService.get_tier()
 
 		if is_locked:
 			GameLogger.info(
 				"[CharacterCreation] Character type LOCKED (shown with lock overlay)",
 				{
 					"type": char_type,
-					"required_tier": type_def.tier_required,
+					"required_tier": tier_required,
 					"current_tier": CharacterService.get_tier()
 				}
 			)
@@ -326,7 +327,8 @@ func _show_type_preview_modal(type_id: String) -> void:
 		_active_preview_modal.dismiss()
 		_active_preview_modal = null
 
-	var type_def = CharacterService.CHARACTER_TYPES.get(type_id, {})
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var type_def = CharacterTypeDatabase.get_type(type_id)
 	if type_def.is_empty():
 		GameLogger.warning(
 			"[CharacterCreation] Cannot show preview for unknown type", {"type_id": type_id}
@@ -436,12 +438,14 @@ func _build_type_preview_content(
 	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
-	# Load silhouette texture
+	# Load silhouette texture (Week 18: Updated for CharacterTypeDatabase types)
 	var silhouette_paths = {
 		"scavenger": "res://assets/ui/portraits/silhouette_scavenger.png",
-		"tank": "res://assets/ui/portraits/silhouette_tank.png",
-		"commando": "res://assets/ui/portraits/silhouette_commando.png",
-		"mutant": "res://assets/ui/portraits/silhouette_mutant.png",
+		"rustbucket": "res://assets/ui/portraits/silhouette_rustbucket.png",
+		"hotshot": "res://assets/ui/portraits/silhouette_hotshot.png",
+		"tinkerer": "res://assets/ui/portraits/silhouette_tinkerer.png",
+		"salvager": "res://assets/ui/portraits/silhouette_salvager.png",
+		"overclocked": "res://assets/ui/portraits/silhouette_overclocked.png",
 	}
 	var texture_path = silhouette_paths.get(type_id, "")
 	if not texture_path.is_empty():
@@ -1023,8 +1027,8 @@ Please try again or free up storage space."""
 
 func _show_locked_character_dialog(character_type: String, required_tier: int) -> void:
 	"""Show upgrade dialog when locked character is clicked"""
-	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
-	var character_name = type_def.get("display_name", character_type.capitalize())
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var character_name = CharacterTypeDatabase.get_display_name(character_type)
 	var tier_names = ["Free", "Premium", "Subscription"]
 	var tier_name = tier_names[required_tier] if required_tier < tier_names.size() else "Unknown"
 
@@ -1066,9 +1070,11 @@ func _show_locked_character_dialog(character_type: String, required_tier: int) -
 
 func _get_locked_character_dialog_text(character_type: String, required_tier: int) -> String:
 	"""Get tier-specific dialog copy for locked characters"""
-	var type_def = CharacterService.CHARACTER_TYPES.get(character_type, {})
-	var character_name = type_def.get("display_name", character_type.capitalize())
-	var character_desc = type_def.get("description", "A powerful character")
+	# Week 18 Phase 2: Use CharacterTypeDatabase
+	var character_name = CharacterTypeDatabase.get_display_name(character_type)
+	var character_desc = CharacterTypeDatabase.get_description(character_type)
+	if character_desc.is_empty():
+		character_desc = "A powerful character"
 
 	match required_tier:
 		CharacterService.UserTier.PREMIUM:

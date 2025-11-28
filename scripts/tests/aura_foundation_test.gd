@@ -28,8 +28,11 @@ func after_each() -> void:
 ## User Story: "As a player, I want my character's aura data to be saved"
 ## ============================================================================
 
+# Week 18 Phase 2: Character types now use special_mechanics instead of auras
+# The old aura system was tied to character types; it has been replaced
 
-func test_aura_data_stored_in_character() -> void:
+
+func test_special_mechanics_stored_in_character() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.FREE)
 
@@ -37,14 +40,11 @@ func test_aura_data_stored_in_character() -> void:
 	var character_id = CharacterService.create_character("TestChar", "scavenger")
 	var character = CharacterService.get_character(character_id)
 
-	# Assert
-	assert_true(character.has("aura"), "Character should have aura data")
-	assert_true(character.aura.has("type"), "Aura should have type field")
-	assert_true(character.aura.has("enabled"), "Aura should have enabled field")
-	assert_true(character.aura.has("level"), "Aura should have level field")
+	# Assert - New system uses special_mechanics
+	assert_true(character.has("special_mechanics"), "Character should have special_mechanics")
 
 
-func test_aura_type_matches_character_type() -> void:
+func test_scavenger_has_scrap_drop_bonus() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.FREE)
 
@@ -52,11 +52,15 @@ func test_aura_type_matches_character_type() -> void:
 	var scavenger_id = CharacterService.create_character("Scav", "scavenger")
 	var scavenger = CharacterService.get_character(scavenger_id)
 
-	# Assert
-	assert_eq(scavenger.aura.type, "collect", "Scavenger should have collect aura")
+	# Assert - Scavenger has +10% scrap drop bonus
+	assert_eq(
+		scavenger.special_mechanics.get("scrap_drop_bonus", 0),
+		0.10,
+		"Scavenger should have +10% scrap drop bonus"
+	)
 
 
-func test_scavenger_has_collect_aura() -> void:
+func test_scavenger_has_pickup_bonus() -> void:
 	# Arrange
 	CharacterService.set_tier(CharacterService.UserTier.FREE)
 
@@ -64,35 +68,50 @@ func test_scavenger_has_collect_aura() -> void:
 	var character_id = CharacterService.create_character("Scavenger", "scavenger")
 	var character = CharacterService.get_character(character_id)
 
-	# Assert
-	assert_eq(character.aura.type, "collect", "Scavenger should have collect aura type")
-	assert_true(character.aura.enabled, "Aura should be enabled by default")
-	assert_eq(character.aura.level, 1, "Aura should start at level 1")
+	# Assert - Scavenger has +10 scavenging and +15 pickup_range in stats
+	assert_eq(character.stats.scavenging, 10, "Scavenger should have +10 scavenging")
+	assert_eq(character.stats.pickup_range, 115, "Scavenger should have 115 pickup range")
 
 
-func test_tank_has_shield_aura() -> void:
-	# Arrange
-	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
+# Week 18 Phase 2: Aura tests updated - character types now use special_mechanics
+# The old character type -> aura mapping has been removed
+# Auras are now a separate system from character types
 
+
+func test_rustbucket_has_speed_mechanic() -> void:
+	# Arrange - Rustbucket is the new tank-like character with speed penalty
 	# Act
-	var character_id = CharacterService.create_character("Tank", "tank")
+	var character_id = CharacterService.create_character("Rusty", "rustbucket")
 	var character = CharacterService.get_character(character_id)
 
-	# Assert
-	assert_eq(character.aura.type, "shield", "Tank should have shield aura type")
-	assert_true(character.aura.enabled, "Aura should be enabled by default")
+	# Assert - Check special mechanics instead of aura
+	assert_true(
+		character.special_mechanics.has("speed_multiplier"),
+		"Rustbucket should have speed_multiplier special mechanic"
+	)
+	assert_eq(
+		character.special_mechanics.speed_multiplier,
+		0.85,
+		"Rustbucket should have 0.85 speed multiplier"
+	)
 
 
-func test_commando_has_no_aura() -> void:
-	# Arrange
-	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
-
+func test_hotshot_has_damage_multiplier() -> void:
+	# Arrange - Hotshot is the new glass cannon character
 	# Act
-	var character_id = CharacterService.create_character("Commando", "commando")
+	var character_id = CharacterService.create_character("Hot", "hotshot")
 	var character = CharacterService.get_character(character_id)
 
-	# Assert
-	assert_null(character.aura.type, "Commando should have null aura type")
+	# Assert - Check special mechanics
+	assert_true(
+		character.special_mechanics.has("damage_multiplier"),
+		"Hotshot should have damage_multiplier special mechanic"
+	)
+	assert_eq(
+		character.special_mechanics.damage_multiplier,
+		1.20,
+		"Hotshot should have 1.20 damage multiplier"
+	)
 
 
 ## ============================================================================
@@ -177,47 +196,53 @@ func test_invalid_aura_type_returns_zero() -> void:
 ## ============================================================================
 
 
-func test_aura_persists_after_save_load() -> void:
-	# Arrange
-	CharacterService.set_tier(CharacterService.UserTier.PREMIUM)
-	var character_id = CharacterService.create_character("PersistTest", "tank")
+func test_special_mechanics_persist_after_save_load() -> void:
+	# Arrange - Week 18: Use new character types
+	CharacterService.set_tier(CharacterService.UserTier.FREE)
+	var character_id = CharacterService.create_character("PersistTest", "rustbucket")
 
-	# Verify aura before save
+	# Verify special_mechanics before save
 	var character_before = CharacterService.get_character(character_id)
-	assert_eq(character_before.aura.type, "shield", "Tank should have shield aura")
+	assert_eq(
+		character_before.special_mechanics.speed_multiplier,
+		0.85,
+		"Rustbucket should have speed_multiplier"
+	)
 
 	# Act - Serialize and deserialize
 	var saved_data = CharacterService.serialize()
 	CharacterService.reset()
 	CharacterService.deserialize(saved_data)
 
-	# Assert - Verify aura after load
+	# Assert - Verify special_mechanics after load
 	var character_after = CharacterService.get_character(character_id)
-	assert_eq(character_after.aura.type, "shield", "Aura type should persist after save/load")
-	assert_true(character_after.aura.enabled, "Aura enabled state should persist")
-	assert_eq(character_after.aura.level, 1, "Aura level should persist")
+	assert_eq(
+		character_after.special_mechanics.speed_multiplier,
+		0.85,
+		"Special mechanics should persist after save/load"
+	)
 
 
-func test_multiple_characters_with_different_auras_persist() -> void:
-	# Arrange
-	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
+func test_multiple_characters_with_different_mechanics_persist() -> void:
+	# Arrange - Week 18: Use new character types
+	CharacterService.set_tier(CharacterService.UserTier.FREE)
 	var scav_id = CharacterService.create_character("Scavenger", "scavenger")
-	var tank_id = CharacterService.create_character("Tank", "tank")
-	var cmd_id = CharacterService.create_character("Commando", "commando")
+	var rust_id = CharacterService.create_character("Rusty", "rustbucket")
+	var hot_id = CharacterService.create_character("Hot", "hotshot")
 
 	# Act - Serialize and deserialize
 	var saved_data = CharacterService.serialize()
 	CharacterService.reset()
 	CharacterService.deserialize(saved_data)
 
-	# Assert - All aura types should persist correctly
+	# Assert - All special mechanics should persist correctly
 	var scav = CharacterService.get_character(scav_id)
-	var tank = CharacterService.get_character(tank_id)
-	var cmd = CharacterService.get_character(cmd_id)
+	var rust = CharacterService.get_character(rust_id)
+	var hot = CharacterService.get_character(hot_id)
 
-	assert_eq(scav.aura.type, "collect", "Scavenger aura should persist")
-	assert_eq(tank.aura.type, "shield", "Tank aura should persist")
-	assert_null(cmd.aura.type, "Commando null aura should persist")
+	assert_eq(scav.special_mechanics.scrap_drop_bonus, 0.10, "Scavenger mechanics should persist")
+	assert_eq(rust.special_mechanics.speed_multiplier, 0.85, "Rustbucket mechanics should persist")
+	assert_eq(hot.special_mechanics.damage_multiplier, 1.20, "Hotshot mechanics should persist")
 
 
 ## ============================================================================
@@ -370,24 +395,16 @@ func test_aura_visual_ring_has_correct_point_count() -> void:
 	assert_eq(ring.points.size(), 65, "Ring should have 65 points (64 segments + 1 to close)")
 
 
-func test_mutant_has_damage_aura_visual() -> void:
-	# Arrange
-	CharacterService.set_tier(CharacterService.UserTier.SUBSCRIPTION)
-	var mutant_id = CharacterService.create_character("MutantVisual", "mutant")
-	var mutant = CharacterService.get_character(mutant_id)
-
-	# Assert - Mutant should have damage aura
-	assert_eq(mutant.aura.type, "damage", "Mutant should have damage aura")
-
-	# Create visual for mutant aura
+func test_damage_aura_visual() -> void:
+	# Week 18 Phase 2: Test aura visuals without character type dependency
+	# Create visual for damage aura
 	var aura_visual = AURA_VISUAL.new()
 	add_child_autofree(aura_visual)
 
-	# Calculate aura parameters from mutant stats
-	var aura_power = AuraTypes.calculate_aura_power(mutant.aura.type, mutant.stats.resonance)
-	var aura_radius = AuraTypes.calculate_aura_radius(mutant.stats.pickup_range)
+	# Use standard radius for test
+	var aura_radius = 100.0
 
-	aura_visual.update_aura(mutant.aura.type, aura_radius)
+	aura_visual.update_aura("damage", aura_radius)
 	await wait_physics_frames(2)
 
 	# Assert - Visual should be configured for damage aura
@@ -395,5 +412,4 @@ func test_mutant_has_damage_aura_visual() -> void:
 	assert_eq(
 		aura_visual.color, AuraTypes.AURA_TYPES["damage"].color, "Should use damage aura color"
 	)
-	# Mutant has +10 resonance and +20 pickup_range, so radius should be 120
-	assert_eq(aura_visual.radius, 120.0, "Mutant aura radius should be 120 (100 + 20)")
+	assert_eq(aura_visual.radius, 100.0, "Aura radius should match configured value")
