@@ -42,17 +42,22 @@ Phase 4 can proceed - InventoryService is independent of shop refresh mechanism.
 
 ---
 
-## SESSION ACCOMPLISHMENTS (Course Correction Session)
+## SESSION ACCOMPLISHMENTS (Course Correction & Rules Restructure)
 
-1. Identified ShopService misalignment (hub vs combat)
-2. Reviewed hub art and store concept art
-3. Determined correct hub layout:
+1. **Restructured CLAUDE_RULES.md**:
+   - Extracted UI standards to `docs/ui/IMPLEMENTATION-GUIDE.md`
+   - Extracted modal patterns to `docs/ui/MODAL-PATTERNS.md`
+   - Consolidated service protocols
+   - Reduced file size and improved maintainability
+2. Identified ShopService misalignment (hub vs combat)
+3. Reviewed hub art and store concept art
+4. Determined correct hub layout:
    - Barracks (15%) | Shop (35%) | Bank (55%) | Start Run (85%)
-4. Added Phase 5: ShopService Refactor for Hub Model
-5. Added Phase 6.5: Hub Bank UI
-6. Renamed Workshop → Foundry (avoid "shop" confusion)
-7. Added Design Doc Requirement Protocol to CLAUDE_RULES.md
-8. Updated Week 18 plan with all corrections
+5. Added Phase 5: ShopService Refactor for Hub Model
+6. Added Phase 6.5: Hub Bank UI
+7. Renamed Workshop → Foundry (avoid "shop" confusion)
+8. Added Design Doc Requirement Protocol to CLAUDE_RULES.md
+9. Updated Week 18 plan with all corrections
 
 ---
 
@@ -194,6 +199,6 @@ The SHOPS-SYSTEM.md clearly stated "Location: Hub → Shop" but this wasn't chec
 
 ---
 
-**Git Status:** Course corrections documented, ready for Phase 4
+**Git Status:** Course corrections documented, CLAUDE_RULES.md restructured, ready for Phase 4
 **Tests:** 836/860 passing (24 pending)
 **Last Commit:** `1f3330b` feat: implement Week 18 Phase 3 - ShopService
