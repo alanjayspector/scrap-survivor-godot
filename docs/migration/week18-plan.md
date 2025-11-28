@@ -549,6 +549,13 @@ signal character_create_post(context: Dictionary)
 - [ ] Perk hooks implemented
 - [ ] Unit tests passing
 
+**Technical Notes:**
+> ⚠️ **PERFORMANCE WARNING (2025-11-28)**: The `calculate_stats` function calls `ItemService.get_item()` for every item, creating a deep copy each time.
+> - **Impact:** Frequent calls (e.g., every frame) will cause GC pressure.
+> - **Recommendation:** Acceptable for Phase 4 (only called on inventory change). For Phase 5/Combat, implement caching or `get_item_read_only` to avoid allocation.
+
+> ⚠️ **PERSISTENCE REQUIREMENT (2025-11-28)**: `InventoryService` MUST implement `serialize()` and `deserialize()` to support the SaveManager. This was identified as a critical gap during expert review.
+
 ### Phase 4: WeaponService Refactor (1h)
 
 **Tasks:**
@@ -838,8 +845,11 @@ scenes/
 
 ## 📝 DEPENDENCIES FOR FUTURE WEEKS
 
-**Week 19-20 (Workshop) will need:**
-- Item durability field (add placeholder now?)
+**Week 19-20 (Workshop/Foundry) will need:**
+- ~~Item durability field~~ ✅ DONE (2025-11-28) - Instance-based storage with durability HP
+- Durability perk hooks (`durability_damage_pre/post`, `durability_repair_pre/post`) - Deferred to Foundry
+- Death penalty (tier-based durability damage on death) - Uses `apply_durability_damage()`
+- Mr Fix-It repair service (subscription) - Uses `repair_item()`
 - Blueprint item type
 - Minion item type
 
@@ -906,25 +916,27 @@ func calculate_price(character_id: String, base_price: int) -> int:
 
 ## Implementation Status (LIVING SECTION)
 
-**Last Updated**: 2025-11-27 by Claude Code
+**Last Updated**: 2025-11-28 by Claude Code
 **Current Session**: See `.system/NEXT_SESSION.md` for detailed notes
 
 | Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
 |-------|---------------|---------------|--------|-----------------|-------|
-| Phase 1: Item Database | 1.5h | - | ⏭️ PENDING | - | - |
-| Phase 2: Character Types | 1.5h | - | ⏭️ PENDING | - | - |
-| Phase 3: InventoryService | 1.5h | - | ⏭️ PENDING | - | - |
-| Phase 4: WeaponService Refactor | 1h | - | ⏭️ PENDING | - | - |
-| Phase 5: ShopService | 1.5h | - | ⏭️ PENDING | - | - |
-| Phase 6: Shop UI | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 1: Item Database | 1.5h | ~1.5h | ✅ DONE | 2025-11-27 | ItemService + ItemDatabase created |
+| Phase 2: Character Types | 1.5h | ~1.5h | ✅ DONE | 2025-11-27 | 6 character types, portraits, CharacterTypeDatabase |
+| Phase 3: ShopService | 1.5h | ~1.5h | ✅ DONE | 2025-11-27 | Hub model, perk hooks, rerolls |
+| Phase 4: InventoryService | 1.5h | ~2h | ✅ DONE | 2025-11-28 | Instance-based with durability placeholder. Gemini implementation, Claude review+fixes |
+| Phase 5: ShopService Hub Refactor | 1h | - | ⏭️ PENDING | - | Needs wave param removal, time-based refresh |
+| Phase 6: Hub Shop UI | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 6.5: Hub Bank UI | 1h | - | ⏭️ PENDING | - | - |
 | Phase 7: Integration & QA | 1h | - | ⏭️ PENDING | - | - |
 | Phase 8: Try-Before-Buy | 2h | - | ⏭️ STRETCH | - | Conversion optimization, can defer |
 
 **Total Estimated**: 10-12 hours (8-10h core + 2h stretch)
+**Actual So Far**: ~6.5h for Phases 1-4
 
 ---
 
-**Document Version:** 2.2 (Added Implementation Conventions section)
+**Document Version:** 2.3 (Phase 4 complete with durability)
 **Created:** 2025-11-27
-**Last Major Update:** 2025-11-27 - Added Implementation Conventions (item ID naming, weapon migration scope, valid stat keys)
-**Next Review:** After Phase 1 completion
+**Last Major Update:** 2025-11-28 - Phase 4 InventoryService complete with instance-based durability placeholder
+**Next Review:** After Phase 5 completion

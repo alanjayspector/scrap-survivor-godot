@@ -20,7 +20,8 @@ const RARITY_CONFIG = {
 		"price_min": 50,
 		"price_max": 150,
 		"color": Color(0.42, 0.45, 0.50),  # Gray #6B7280
-		"drop_weight": 0.60
+		"drop_weight": 0.60,
+		"base_durability": 100  # Per INVENTORY-SYSTEM.md Section 6
 	},
 	"uncommon":
 	{
@@ -28,7 +29,8 @@ const RARITY_CONFIG = {
 		"price_min": 150,
 		"price_max": 400,
 		"color": Color(0.06, 0.73, 0.51),  # Green #10B981
-		"drop_weight": 0.30
+		"drop_weight": 0.30,
+		"base_durability": 200
 	},
 	"rare":
 	{
@@ -36,7 +38,8 @@ const RARITY_CONFIG = {
 		"price_min": 400,
 		"price_max": 800,
 		"color": Color(0.23, 0.51, 0.96),  # Blue #3B82F6
-		"drop_weight": 0.08
+		"drop_weight": 0.08,
+		"base_durability": 400
 	},
 	"epic":
 	{
@@ -44,7 +47,8 @@ const RARITY_CONFIG = {
 		"price_min": 800,
 		"price_max": 1500,
 		"color": Color(0.66, 0.33, 0.97),  # Purple #A855F7
-		"drop_weight": 0.015
+		"drop_weight": 0.015,
+		"base_durability": 800
 	},
 	"legendary":
 	{
@@ -52,7 +56,8 @@ const RARITY_CONFIG = {
 		"price_min": 1500,
 		"price_max": 3000,
 		"color": Color(0.96, 0.62, 0.04),  # Gold #F59E0B
-		"drop_weight": 0.005
+		"drop_weight": 0.005,
+		"base_durability": 1600
 	}
 }
 
@@ -541,3 +546,10 @@ static func get_stack_limit_for_rarity(rarity: String) -> int:
 static func get_rarity_color(rarity: String) -> Color:
 	var config = get_rarity_config(rarity)
 	return config.get("color", Color.WHITE)
+
+
+## Get base durability for rarity (per INVENTORY-SYSTEM.md Section 6)
+## Common: 100, Uncommon: 200, Rare: 400, Epic: 800, Legendary: 1600
+static func get_base_durability_for_rarity(rarity: String) -> int:
+	var config = get_rarity_config(rarity)
+	return config.get("base_durability", 100)

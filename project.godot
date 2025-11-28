@@ -37,6 +37,7 @@ DropSystem="*res://scripts/systems/drop_system.gd"
 HudService="*res://scripts/autoload/hud_service.gd"
 AuraTypes="*res://scripts/systems/aura_types.gd"
 ConversionFlow="*res://scripts/ui/conversion_flow.gd"
+InventoryService="*res://scripts/services/inventory_service.gd"
 
 [display]
 
