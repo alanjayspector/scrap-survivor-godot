@@ -81,3 +81,6 @@ package-lock.json
 assets/audio/**/*.wav
 assets/audio/**/*.ogg
 assets/audio/**/*.mp3
+art-docs/processed/
+qa/archive/
+qa/previews/

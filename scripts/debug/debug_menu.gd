@@ -23,6 +23,7 @@ class_name DebugMenu
 @onready var reset_options_container: VBoxContainer = %ResetOptionsContainer
 @onready var visual_regression_container: VBoxContainer = %VisualRegressionContainer
 @onready var ui_audit_container: VBoxContainer = %UIAuditContainer
+@onready var currency_container: VBoxContainer = %CurrencyContainer
 
 ## Tier buttons
 var free_button: Button
@@ -41,6 +42,12 @@ var capture_current_button: Button
 ## UI audit buttons
 var run_audit_button: Button
 var export_audit_button: Button
+
+## Currency controls
+var scrap_spinbox: SpinBox
+var components_spinbox: SpinBox
+var nanites_spinbox: SpinBox
+var apply_currency_button: Button
 
 ## Visual regression script (loaded once to avoid duplication)
 const VISUAL_REGRESSION_SCRIPT = preload("res://scripts/debug/visual_regression.gd")
@@ -86,6 +93,9 @@ func _ready() -> void:
 	# Build UI
 	GameLogger.info("[DEBUG MENU] Building tier buttons...")
 	_setup_tier_buttons()
+
+	GameLogger.info("[DEBUG MENU] Building currency controls...")
+	_setup_currency_controls()
 
 	GameLogger.info("[DEBUG MENU] Building reset options...")
 	_setup_reset_options()
@@ -162,6 +172,215 @@ func _setup_tier_buttons() -> void:
 			]
 		)
 	)
+
+
+func _setup_currency_controls() -> void:
+	"""Setup currency manipulation controls for QA testing"""
+	GameLogger.info("[DEBUG MENU] _setup_currency_controls() called")
+
+	if not is_instance_valid(currency_container):
+		push_error("[DEBUG MENU] CurrencyContainer not found!")
+		GameLogger.error("[DEBUG MENU] CurrencyContainer is null or invalid!")
+		return
+
+	GameLogger.info("[DEBUG MENU] CurrencyContainer found - creating controls...")
+
+	# Get active character's currency (currency is per-character!)
+	var initial_scrap = 0
+	var initial_components = 0
+	var initial_nanites = 0
+
+	var character_id = CharacterService.get_active_character_id()
+	if not character_id.is_empty():
+		var character = CharacterService.get_character(character_id)
+		if not character.is_empty():
+			var currency = character.get("starting_currency", {})
+			initial_scrap = currency.get("scrap", 0)
+			initial_components = currency.get("components", 0)
+			initial_nanites = currency.get("nanites", 0)
+
+	# Section label
+	var label = Label.new()
+	label.text = "Currency Controls (Active Character):"
+	label.add_theme_font_size_override("font_size", 16)
+	currency_container.add_child(label)
+
+	# Scrap row
+	var scrap_row = HBoxContainer.new()
+	scrap_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	currency_container.add_child(scrap_row)
+
+	var scrap_label = Label.new()
+	scrap_label.text = "Scrap:"
+	scrap_label.custom_minimum_size = Vector2(100, 0)
+	scrap_row.add_child(scrap_label)
+
+	scrap_spinbox = SpinBox.new()
+	scrap_spinbox.min_value = 0
+	scrap_spinbox.max_value = 999999
+	scrap_spinbox.step = 100
+	scrap_spinbox.value = initial_scrap
+	scrap_spinbox.custom_minimum_size = Vector2(150, 0)
+	scrap_row.add_child(scrap_spinbox)
+
+	# Components row
+	var components_row = HBoxContainer.new()
+	components_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	currency_container.add_child(components_row)
+
+	var components_label = Label.new()
+	components_label.text = "Components:"
+	components_label.custom_minimum_size = Vector2(100, 0)
+	components_row.add_child(components_label)
+
+	components_spinbox = SpinBox.new()
+	components_spinbox.min_value = 0
+	components_spinbox.max_value = 999999
+	components_spinbox.step = 10
+	components_spinbox.value = initial_components
+	components_spinbox.custom_minimum_size = Vector2(150, 0)
+	components_row.add_child(components_spinbox)
+
+	# Nanites row
+	var nanites_row = HBoxContainer.new()
+	nanites_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	currency_container.add_child(nanites_row)
+
+	var nanites_label = Label.new()
+	nanites_label.text = "Nanites:"
+	nanites_label.custom_minimum_size = Vector2(100, 0)
+	nanites_row.add_child(nanites_label)
+
+	nanites_spinbox = SpinBox.new()
+	nanites_spinbox.min_value = 0
+	nanites_spinbox.max_value = 999999
+	nanites_spinbox.step = 10
+	nanites_spinbox.value = initial_nanites
+	nanites_spinbox.custom_minimum_size = Vector2(150, 0)
+	nanites_row.add_child(nanites_spinbox)
+
+	# Apply button
+	apply_currency_button = Button.new()
+	apply_currency_button.text = "💰 Set Currency Balances"
+	apply_currency_button.custom_minimum_size = Vector2(300, 50)
+	apply_currency_button.pressed.connect(_on_apply_currency)
+	currency_container.add_child(apply_currency_button)
+
+	# Quick preset buttons
+	var presets_row = HBoxContainer.new()
+	presets_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	presets_row.add_theme_constant_override("separation", 10)
+	currency_container.add_child(presets_row)
+
+	var poor_button = Button.new()
+	poor_button.text = "Poor (100)"
+	poor_button.custom_minimum_size = Vector2(100, 40)
+	poor_button.pressed.connect(func(): _set_currency_preset(100, 10, 5))
+	presets_row.add_child(poor_button)
+
+	var medium_button = Button.new()
+	medium_button.text = "Medium (1K)"
+	medium_button.custom_minimum_size = Vector2(100, 40)
+	medium_button.pressed.connect(func(): _set_currency_preset(1000, 100, 50))
+	presets_row.add_child(medium_button)
+
+	var rich_button = Button.new()
+	rich_button.text = "Rich (10K)"
+	rich_button.custom_minimum_size = Vector2(100, 40)
+	rich_button.pressed.connect(func(): _set_currency_preset(10000, 1000, 500))
+	presets_row.add_child(rich_button)
+
+	var whale_button = Button.new()
+	whale_button.text = "Whale (100K)"
+	whale_button.custom_minimum_size = Vector2(100, 40)
+	whale_button.pressed.connect(func(): _set_currency_preset(100000, 10000, 5000))
+	presets_row.add_child(whale_button)
+
+	GameLogger.info("[DEBUG MENU] Currency controls created")
+
+
+func _set_currency_preset(scrap: int, components: int, nanites: int) -> void:
+	"""Set spinbox values to preset amounts"""
+	scrap_spinbox.value = scrap
+	components_spinbox.value = components
+	nanites_spinbox.value = nanites
+
+
+func _on_apply_currency() -> void:
+	"""Apply currency values from spinboxes to the ACTIVE CHARACTER"""
+	var new_scrap = int(scrap_spinbox.value)
+	var new_components = int(components_spinbox.value)
+	var new_nanites = int(nanites_spinbox.value)
+
+	# Get active character - currency is per-character!
+	var character_id = CharacterService.get_active_character_id()
+	if character_id.is_empty():
+		_show_success_notification(
+			"ERROR: No active character!\nSelect a character at Barracks first."
+		)
+		return
+
+	var character = CharacterService.get_character(character_id)
+	if character.is_empty():
+		_show_success_notification("ERROR: Character not found!")
+		return
+
+	GameLogger.warning("[DEBUG] Setting currency for character: %s" % character_id)
+	GameLogger.warning(
+		(
+			"[DEBUG] Target values: Scrap=%d, Components=%d, Nanites=%d"
+			% [new_scrap, new_components, new_nanites]
+		)
+	)
+
+	# Get current character currency
+	var current_currency = character.get(
+		"starting_currency", {"scrap": 0, "components": 0, "nanites": 0}
+	)
+	GameLogger.warning("[DEBUG] Current character currency: %s" % str(current_currency))
+
+	# Set currency directly on character
+	CharacterService.update_character(
+		character_id,
+		{
+			"starting_currency":
+			{"scrap": new_scrap, "components": new_components, "nanites": new_nanites}
+		}
+	)
+
+	# ALSO update BankingService to keep it in sync (for UI that reads from BankingService)
+	# First reset to 0, then add the new amounts
+	BankingService.reset()
+	if new_scrap > 0:
+		BankingService.add_currency(BankingService.CurrencyType.SCRAP, new_scrap)
+	if new_components > 0:
+		BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, new_components)
+	if new_nanites > 0:
+		BankingService.add_currency(BankingService.CurrencyType.NANITES, new_nanites)
+
+	# Verify
+	var updated_char = CharacterService.get_character(character_id)
+	var updated_currency = updated_char.get("starting_currency", {})
+	GameLogger.warning("[DEBUG] Updated character currency: %s" % str(updated_currency))
+	GameLogger.warning(
+		(
+			"[DEBUG] BankingService balance: Scrap=%d"
+			% BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+		)
+	)
+
+	# Save
+	SaveManager.save_all_services()
+
+	_show_success_notification(
+		(
+			"Currency updated for %s!\nScrap: %d\nComponents: %d\nNanites: %d"
+			% [character.get("name", "Unknown"), new_scrap, new_components, new_nanites]
+		)
+	)
+
+	# Update status display
+	_update_status_display()
 
 
 func _setup_reset_options() -> void:
@@ -405,10 +624,16 @@ func _update_status_display() -> void:
 	var preview_tier_name = CharacterService.UserTier.keys()[selected_tier]
 	var preview_slot_limit = CharacterService.SLOT_LIMITS[selected_tier]
 
+	# Get currency balances
+	var scrap = BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+	var components = BankingService.get_balance(BankingService.CurrencyType.COMPONENTS)
+	var nanites = BankingService.get_balance(BankingService.CurrencyType.NANITES)
+
 	status_label.text = (
 		"""CURRENT STATE:
 • Tier: %s
 • Characters: %d / %d slots
+• Scrap: %d | Components: %d | Nanites: %d
 • Save File: %s
 
 PREVIEW (after apply):
@@ -420,6 +645,9 @@ PREVIEW (after apply):
 			current_tier_name,
 			character_count,
 			slot_limit,
+			scrap,
+			components,
+			nanites,
 			save_file_size,
 			preview_tier_name,
 			preview_slot_limit,

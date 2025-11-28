@@ -1,152 +1,177 @@
 # Next Session Handoff
 
-**Updated:** 2025-11-28
+**Updated:** 2025-11-28 (End of Session)
 **Current Branch:** `main`
-**Status:** Week 18 Phase 6 CODE COMPLETE - Ready for Manual QA
+**Status:** Phase 6 Shop UI Rework - COMPLETE ✅ Ready to Commit
 
 ---
 
 ## SESSION ACCOMPLISHMENTS (2025-11-28)
 
-### Phase 6: Hub Shop UI - CODE COMPLETE
+### Phase 6 Shop UI Rework - COMPLETE ✅
 
-**Implemented the full Shop UI accessible from the scrapyard hub.**
+**All issues identified and fixed:**
 
-**Files Created:**
-- `scripts/ui/components/shop_item_card.gd` - Item card component with rarity colors
-- `scenes/ui/components/shop_item_card.tscn` - Item card scene
-- `scripts/ui/shop.gd` - Main shop scene logic
-- `scenes/ui/shop.tscn` - Main shop scene
-- `assets/icons/hub/icon_shop_final.png` - Scrap crate shop icon (512x512)
+1. **Shop Background Art** - Generated new UI-optimized background
+   - Used expert panel criteria for art review
+   - Final: `inside-shop-3.png` - dark center, shop elements at edges
+   - Processed to `assets/ui/backgrounds/shop_interior.jpg` (811KB, 2048x2048)
 
-**Files Modified:**
-- `scenes/hub/scrapyard.tscn` - Added ShopButton at 35% position with shop icon
-- `scripts/hub/scrapyard.gd` - Added `_on_shop_pressed()` with character gate
+2. **Shop Scene Rewrite** (`scenes/ui/shop.tscn`)
+   - `TextureRect` background with shop_interior.jpg
+   - `StyleBoxFlat` on ScrollContainer
+   - Added InfoRow with refresh timer AND reroll count
+   - 3×2 grid layout (changed from 2×3 for better horizontal fill)
+   - Cards centered via CenterContainer
 
-**Features:**
-1. Shop button in scrapyard hub (35% position, scrap crate icon)
-2. Character gate (requires active survivor, same as Start Run)
-3. 6-item grid with rarity-colored borders
-4. Refresh countdown timer (updates every second)
-5. Purchase flow with confirmation modal
-6. Reroll with escalating cost display
-7. Empty stock auto-refresh with alert notification
-8. Back navigation to scrapyard
+3. **Shop Item Cards** - Polished and resized
+   - Increased size: 170×200 → 220×190 (wider for 3-column layout)
+   - iOS-safe tap animations
+   - Haptic feedback
 
-**Art Assets:**
-- Generated two shop icon options via Gemini (cart and crate)
-- Selected scrap crate icon per expert panel recommendation
-- Original high-res files in `art-docs/` (shop_box_icon.png, shop_cart_icon.png)
+4. **Debug Menu Currency Fix** - BUG FIXED
+   - Currency is per-character (stored in `CharacterService.starting_currency`)
+   - Debug menu was only updating `BankingService` (global singleton)
+   - Now updates BOTH character currency AND BankingService
+   - Shows error if no active character selected
 
----
+5. **Art Pipeline Tools** - NEW
+   - `scripts/tools/optimize-art-asset.sh` - Process art assets for game
+   - `scripts/tools/process-qa-screenshot.sh` - Process QA screenshots for Claude review
+   - `docs/ART-PIPELINE.md` - Documentation
+   - Updated `CLAUDE_RULES.md` with art review protocols
 
-## IMMEDIATE NEXT ACTION
-
-**Manual QA on Device (iPhone)**
-
-Test the following flows:
-1. Fresh start (no characters) → Shop button → "No Survivors" alert
-2. Create character at Barracks → Select character
-3. Shop button → Shop opens
-4. Verify 6 items display with correct rarity colors
-5. Verify refresh countdown updates
-6. Test purchase flow (confirm modal, scrap deduction, SOLD overlay)
-7. Test reroll (confirm modal, cost deduction, new items)
-8. Test back navigation to hub
-9. Buy all 6 items → Verify empty stock refresh triggers
+### QA Status
+- ✅ Manual QA passed on device
+- ✅ Background displays correctly
+- ✅ 3×2 card layout fills space well
+- ✅ Purchase flow works
+- ✅ Reroll flow works
+- ✅ Currency controls now work (fixed!)
+- ✅ All tests pass (855/879)
 
 ---
 
-## WEEK 18 PHASE ORDER (UPDATED)
+## FILES TO COMMIT
 
-| Phase | Description | Est. Time | Status |
-|-------|-------------|-----------|--------|
-| **1** | Item Database + ItemService | 1.5h | ✅ COMPLETE |
-| **2** | Character Type System | 1.5h | ✅ COMPLETE |
-| **3** | ShopService | 1.5h | ✅ COMPLETE |
-| **4** | InventoryService | 1.5h | ✅ COMPLETE |
-| **5** | ShopService Hub Refactor | 1h | ✅ COMPLETE |
-| **6** | Hub Shop UI | 2h | 🔨 CODE COMPLETE |
-| **6.5** | Hub Bank UI | 1h | ⏭️ NEXT |
-| **7** | Integration & QA | 1h | PENDING |
-| **8** | Try-Before-Buy | 2h | STRETCH |
+### Modified:
+- `.gitignore` (added processed/archive dirs)
+- `.system/CLAUDE_RULES.md` (art review protocols)
+- `scenes/ui/shop.tscn` (complete rewrite)
+- `scripts/ui/shop.gd` (updated node paths)
+- `scenes/ui/components/shop_item_card.tscn` (new size)
+- `scripts/ui/components/shop_item_card.gd` (tap animations)
+- `scenes/debug/debug_menu.tscn` (currency controls)
+- `scripts/debug/debug_menu.gd` (currency controls - fixed per-character)
 
-**Total Estimated**: 12-14 hours
-**Actual So Far**: ~9.5h for Phases 1-6
+### New:
+- `assets/ui/backgrounds/shop_interior.jpg`
+- `docs/ART-PIPELINE.md`
+- `scripts/tools/optimize-art-asset.sh`
+- `scripts/tools/process-qa-screenshot.sh`
+- `qa/` directory structure
 
 ---
 
-## QUICK START PROMPT (Next Session)
+## SUGGESTED COMMIT
 
+```bash
+git add -A
+git commit -m "feat: complete Phase 6 shop UI rework with new background art
+
+- Add new shop interior background (dark center, shop elements at edges)
+- Rewrite shop.tscn with TextureRect background and StyleBoxFlat
+- Change grid layout from 2x3 to 3x2 for better horizontal fill
+- Increase shop item card size to 220x190
+- Add CenterContainer for proper card centering
+- Add reroll count display to header info row
+- Add currency controls to debug menu (presets: Poor/Medium/Rich/Whale)
+- Fix debug menu currency to update per-character storage
+- Add art asset optimization scripts for Claude workflow
+- Add QA screenshot processing script
+- Document art pipeline in docs/ART-PIPELINE.md
+- Update CLAUDE_RULES.md with art review protocols
+
+QA: Manual testing passed on device"
 ```
-Manual QA for Week 18 Phase 6: Hub Shop UI
-
-Test on device:
-1. Character gate (no character → alert, with character → shop opens)
-2. Shop displays 6 items with rarity colors
-3. Refresh countdown works
-4. Purchase flow (confirm → deduct scrap → SOLD overlay → add to inventory)
-5. Reroll flow (confirm → deduct scrap → new items)
-6. Empty stock refresh (buy all 6 → free refresh with alert)
-7. Back button returns to hub
-
-If QA passes, proceed to Phase 6.5: Hub Bank UI
-```
 
 ---
 
-## KEY FILES FOR PHASE 6
+## NEXT PHASE: 6.5 Hub Bank UI
 
-### Shop UI
-- `scenes/ui/shop.tscn` - Main shop scene
-- `scripts/ui/shop.gd` - Shop logic (items, purchases, rerolls, refresh)
-- `scenes/ui/components/shop_item_card.tscn` - Item card component
-- `scripts/ui/components/shop_item_card.gd` - Card logic (rarity colors, SOLD state)
+### Scope
+Implement the Bank UI in the Hub for depositing/withdrawing scrap.
 
-### Hub Integration
-- `scenes/hub/scrapyard.tscn` - ShopButton at 35%
-- `scripts/hub/scrapyard.gd` - `_on_shop_pressed()` with character gate
+### ⚠️ CRITICAL ARCHITECTURAL ISSUE TO FIX FIRST
 
-### Shop Service
-- `scripts/services/shop_service.gd` - Shop generation, purchases, rerolls
-- `scripts/services/shop_reroll_service.gd` - Reroll cost escalation (daily reset)
+**Problem Discovered:** `BankingService` and `CharacterService.starting_currency` are **not synchronized**.
 
----
+- Currency is stored per-character in `CharacterService.starting_currency`
+- `BankingService` is a global singleton with its own `balances` dictionary
+- Shop UI reads from `BankingService.get_balance()`
+- When you switch characters, `BankingService` doesn't update
+- This caused the debug menu currency bug we just fixed
 
-## SHOPSERVICE API REFERENCE
+**Required Fix for Phase 6.5:**
+1. `BankingService` should sync with active character on `active_character_changed` signal
+2. When character becomes active → load their currency into BankingService
+3. When BankingService currency changes → save back to active character
+4. OR: Refactor all UI to read directly from CharacterService (breaking change)
+
+**Recommended Approach:** Option 1 - make BankingService a "view" of the active character's currency.
 
 ```gdscript
-# Get shop items
-ShopService.get_shop_items() -> Array[Dictionary]
-ShopService.get_shop_item_by_id(item_id: String) -> Dictionary
+# In BankingService._ready() or initialization:
+CharacterService.active_character_changed.connect(_on_active_character_changed)
 
-# Refresh mechanics
-ShopService.get_time_until_refresh() -> int  # Seconds until 4h refresh
-ShopService.should_refresh() -> bool
-ShopService.check_empty_stock_refresh() -> bool  # FREE refresh if empty
-
-# Purchases
-ShopService.purchase_item(character_id: String, item_id: String) -> Dictionary
-ShopService.calculate_purchase_price(character_id: String, base_price: int) -> int
-
-# Rerolls (daily reset)
-ShopService.reroll_shop(character_id: String) -> Array[Dictionary]
-ShopService.get_reroll_cost(character_id: String) -> int
-ShopService.get_reroll_count() -> int
+func _on_active_character_changed(character_id: String) -> void:
+    if character_id.is_empty():
+        reset()
+        return
+    
+    var character = CharacterService.get_character(character_id)
+    var currency = character.get("starting_currency", {})
+    
+    # Load character's currency into BankingService
+    balances["scrap"] = currency.get("scrap", 0)
+    balances["components"] = currency.get("components", 0)
+    balances["nanites"] = currency.get("nanites", 0)
+    
+    # Emit signals so UI updates
+    currency_changed.emit(CurrencyType.SCRAP, balances["scrap"])
+    currency_changed.emit(CurrencyType.COMPONENTS, balances["components"])
+    currency_changed.emit(CurrencyType.NANITES, balances["nanites"])
 ```
 
----
-
-## KNOWN ISSUES / NOTES
-
-1. **Test Results Files**: `test_results.txt` and `test_results.xml` show as modified - these are auto-generated by test runner, safe to ignore or add to .gitignore
-
-2. **Character Gate Pattern**: Shop now uses same gate as Start Run. Future spokes (Bank, Workshop, Lab) should follow this pattern.
-
-3. **Reroll Daily Reset**: Costs reset at midnight (local time) via ShopRerollService.
+### Phase 6.5 Tasks (After Arch Fix)
+1. Fix BankingService ↔ CharacterService sync (see above)
+2. Create Bank scene (`scenes/hub/bank.tscn`)
+3. Bank UI: deposit/withdraw interface
+4. Bank balance display
+5. Connect to Scrapyard hub navigation
 
 ---
 
-**Git Status:** Phase 6 code complete, ready for commit
-**Tests:** 855/879 passing (24 pending - projectile tests)
-**Ready for Manual QA:** Yes - on device testing needed
+## KEY FILES REFERENCE
+
+| Purpose | File |
+|---------|------|
+| Shop scene | `scenes/ui/shop.tscn` |
+| Shop script | `scripts/ui/shop.gd` |
+| Item card scene | `scenes/ui/components/shop_item_card.tscn` |
+| Item card script | `scripts/ui/components/shop_item_card.gd` |
+| Shop background | `assets/ui/backgrounds/shop_interior.jpg` |
+| Debug menu | `scripts/debug/debug_menu.gd` |
+| BankingService | `scripts/services/banking_service.gd` |
+| CharacterService | `scripts/services/character_service.gd` |
+| Banking System Design | `docs/game-design/systems/BANKING-SYSTEM.md` |
+| Art pipeline docs | `docs/ART-PIPELINE.md` |
+
+---
+
+## LESSONS LEARNED THIS SESSION
+
+1. **Currency is per-character** - Always check design docs before assuming global state
+2. **BankingService needs sync** - It's currently disconnected from character data
+3. **Art backgrounds need UI optimization** - Dark center, detail at edges
+4. **3×2 layout beats 2×3** - Better horizontal fill for landscape mobile

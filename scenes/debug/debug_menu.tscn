@@ -5,7 +5,7 @@
 [node name="DebugMenu" type="ConfirmationDialog"]
 title = "🛠️ QA Debug Menu"
 initial_position = 2
-size = Vector2i(700, 650)
+size = Vector2i(700, 750)
 ok_button_text = "Apply Changes"
 dialog_text = "Change tier and reset account for testing"
 script = ExtResource("1_debug")
@@ -14,7 +14,7 @@ script = ExtResource("1_debug")
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 692.0
-offset_bottom = 601.0
+offset_bottom = 701.0
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
 layout_mode = 2
@@ -42,6 +42,14 @@ theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Separator1" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CurrencyContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Separator1b" type="HSeparator" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="ResetOptionsContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]

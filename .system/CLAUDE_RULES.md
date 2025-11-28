@@ -229,12 +229,91 @@ python3 .system/validators/godot_test_runner.py
 - Break large phases (>1.5h) into sub-phases (0.25-0.5h).
 - Each sub-phase must have a QA gate.
 
+## Art Asset Review Protocol
+
+### Overview
+Art assets are dropped in `art-docs/` and must be processed before use in-game.
+See `docs/ART-PIPELINE.md` for full documentation.
+
+### Reviewing New Art Assets
+
+**NEVER read raw art files directly** (they're too large and will crash the session).
+
+**Process:**
+1. **Check for preview file**: Look for `art-docs/{name}-preview.jpg`
+2. **If no preview exists**, ask user to run:
+   ```bash
+   ./scripts/tools/optimize-art-asset.sh art-docs/FILENAME.png
+   ```
+3. **Copy preview to Claude's computer** for viewing:
+   ```
+   Filesystem:copy_file_user_to_claude → /Users/alan/Developer/scrap-survivor-godot/art-docs/{name}-preview.jpg
+   ```
+4. **View with the `view` tool** on Claude's computer:
+   ```
+   view → /mnt/user-data/uploads/{name}-preview.jpg
+   ```
+
+### Expert Panel Review Criteria
+
+When reviewing art assets, evaluate as the expert panel:
+
+| Role | Focus |
+|------|-------|
+| **Sr UI/UX Designer** | Readability, contrast, UI overlay suitability |
+| **Sr Mobile Game Designer** | Aesthetic fit, player experience, focal points |
+| **Sr SQA** | Accessibility, edge cases, device compatibility |
+| **Sr Godot Developer** | Technical fit, performance, import settings |
+
+**For Backgrounds specifically:**
+- Dark center (~70%) for UI overlay?
+- Detail pushed to edges?
+- No competing focal points?
+- Muted color palette?
+- Matches existing art style?
+
+### Asset Locations
+
+| Type | Source | Game-Ready |
+|------|--------|------------|
+| Backgrounds | `art-docs/*.png` | `assets/ui/backgrounds/*.jpg` (2048x2048) |
+| Icons | `art-docs/*_icon.png` | `assets/ui/icons/*.png` (128x128) |
+| Sprites | `art-docs/*_sprite.png` | `assets/sprites/*.png` |
+| Previews | N/A | `art-docs/*-preview.jpg` (for Claude review) |
+
+## QA Screenshot Review Protocol
+
+### Overview
+QA screenshots are dropped in `qa/` and processed for Claude review.
+
+### Reviewing QA Screenshots
+
+**Process:**
+1. **Check for preview file**: Look for `qa/previews/{name}-preview.jpg`
+2. **If no preview exists**, ask user to run:
+   ```bash
+   ./scripts/tools/process-qa-screenshot.sh --batch
+   ```
+3. **Copy preview to Claude's computer** for viewing:
+   ```
+   Filesystem:copy_file_user_to_claude → /Users/alan/Developer/scrap-survivor-godot/qa/previews/{name}-preview.jpg
+   ```
+4. **View with the `view` tool** on Claude's computer
+
+### Directory Structure
+```
+qa/
+├── *.png              # Drop screenshots here
+├── previews/          # Claude-safe previews
+└── archive/           # Timestamped originals
+```
+
 ## Safety Protocols
 
 ### File Size Safety
 **ALWAYS check file size with `get_file_info` before reading.**
 - **> 5MB**: DO NOT READ (will crash session).
-- **Images**: Never read content, only check metadata.
+- **Images**: Never read raw content directly - use the Art Asset Review Protocol above.
 
 ### Time Pressure Detection
 If thinking "need to do this quickly" or "just do all X at once":
@@ -250,5 +329,6 @@ If thinking "need to do this quickly" or "just do all X at once":
 | **Testing** | `docs/TESTING-INDEX.md` |
 | **UI Standards** | `docs/ui/IMPLEMENTATION-GUIDE.md` |
 | **Modal Patterns** | `docs/ui/MODAL-PATTERNS.md` |
+| **Art Pipeline** | `docs/ART-PIPELINE.md` |
 | **Godot Reference** | `docs/godot-reference.md` |
 | **Lessons Learned** | `docs/lessons-learned/` |

@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://cshop1sc3n3"]
+[gd_scene load_steps=6 format=3 uid="uid://cshop1sc3n3"]
 
 [ext_resource type="Script" path="res://scripts/ui/shop.gd" id="1_shop_script"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
 [ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="3_screen_container"]
+[ext_resource type="Texture2D" path="res://assets/ui/backgrounds/shop_interior.jpg" id="4_shop_bg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll_bg"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.08, 0.08, 0.08, 0.4)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="Shop" type="Control"]
 layout_mode = 3
@@ -14,14 +26,16 @@ grow_vertical = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_shop_script")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.08, 0.1, 1)
+texture = ExtResource("4_shop_bg")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="ScreenContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -52,13 +66,14 @@ horizontal_alignment = 1
 
 [node name="ScrapContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="ScrapIconLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer/ScrapContainer"]
+[node name="ScrapIcon" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer/ScrapContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.77, 0.24, 1)
 theme_override_font_sizes/font_size = 24
-text = "Scrap: "
+text = "Scrap:"
 
 [node name="ScrapLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer/ScrapContainer"]
 layout_mode = 2
@@ -66,34 +81,52 @@ theme_override_colors/font_color = Color(0.92, 0.77, 0.24, 1)
 theme_override_font_sizes/font_size = 24
 text = "0"
 
-[node name="RefreshLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer"]
+[node name="InfoRow" type="HBoxContainer" parent="ScreenContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="RefreshLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer/InfoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 16
 text = "Next refresh: 4h 0m"
-horizontal_alignment = 1
+
+[node name="RerollInfoLabel" type="Label" parent="ScreenContainer/VBoxContainer/HeaderContainer/InfoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 16
+text = "Rerolls: 0"
 
 [node name="ItemGridContainer" type="MarginContainer" parent="ScreenContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
 
 [node name="ScrollContainer" type="ScrollContainer" parent="ScreenContainer/VBoxContainer/ItemGridContainer"]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_scroll_bg")
 follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="ItemGrid" type="GridContainer" parent="ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-columns = 2
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 12
+
+[node name="ItemGrid" type="GridContainer" parent="ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer/CenterContainer"]
+layout_mode = 2
+columns = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer"]
 layout_mode = 2
@@ -102,13 +135,13 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="RerollButton" type="Button" parent="ScreenContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(200, 56)
+custom_minimum_size = Vector2(220, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Reroll (50 scrap)"
 
 [node name="BackButton" type="Button" parent="ScreenContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(150, 56)
+custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Back to Hub"

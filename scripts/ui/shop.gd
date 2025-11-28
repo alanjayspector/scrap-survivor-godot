@@ -14,14 +14,19 @@ extends Control
 
 const SHOP_ITEM_CARD_SCENE = preload("res://scenes/ui/components/shop_item_card.tscn")
 const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_click.ogg")
+const THEME_HELPER = preload("res://scripts/ui/theme/theme_helper.gd")
+const UI_ICONS = preload("res://scripts/ui/theme/ui_icons.gd")
 
 ## Node references
 @onready var _title_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/TitleLabel
 @onready
 var _scrap_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/ScrapContainer/ScrapLabel
-@onready var _refresh_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/RefreshLabel
 @onready
-var _item_grid: GridContainer = $ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer/ItemGrid
+var _refresh_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/InfoRow/RefreshLabel
+@onready
+var _reroll_info_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/InfoRow/RerollInfoLabel
+@onready
+var _item_grid: GridContainer = $ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer/CenterContainer/ItemGrid
 @onready var _reroll_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/RerollButton
 @onready var _back_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var _audio_player: AudioStreamPlayer = $AudioStreamPlayer
@@ -48,7 +53,16 @@ func _ready() -> void:
 	# Update UI
 	_update_scrap_display()
 	_update_refresh_display()
-	_update_reroll_button()
+	_update_reroll_display()
+
+	# Apply button styling
+	THEME_HELPER.apply_button_style(_reroll_button, THEME_HELPER.ButtonStyle.PRIMARY)
+	THEME_HELPER.apply_button_style(_back_button, THEME_HELPER.ButtonStyle.SECONDARY)
+	UI_ICONS.apply_button_icon(_back_button, UI_ICONS.Icon.BACK)
+
+	# Add button animations
+	THEME_HELPER.add_button_animation(_reroll_button)
+	THEME_HELPER.add_button_animation(_back_button)
 
 	# Check for empty stock refresh on entry
 	_check_empty_stock_refresh()
@@ -126,19 +140,23 @@ func _update_refresh_display() -> void:
 		var secs = seconds % 60
 
 		if hours > 0:
-			_refresh_label.text = "Next refresh: %dh %dm" % [hours, minutes]
+			_refresh_label.text = "Refresh: %dh %dm" % [hours, minutes]
 		elif minutes > 0:
-			_refresh_label.text = "Next refresh: %dm %ds" % [minutes, secs]
+			_refresh_label.text = "Refresh: %dm %ds" % [minutes, secs]
 		else:
-			_refresh_label.text = "Next refresh: %ds" % secs
+			_refresh_label.text = "Refresh: %ds" % secs
 
 
-func _update_reroll_button() -> void:
-	"""Update reroll button text with current cost"""
+func _update_reroll_display() -> void:
+	"""Update reroll button and info label"""
 	var character_id = CharacterService.get_active_character_id()
 	var cost = ShopService.get_reroll_cost(character_id)
 	var reroll_count = ShopService.get_reroll_count()
 
+	# Update info label with reroll count
+	_reroll_info_label.text = "Rerolls: %d" % reroll_count
+
+	# Update button text with cost
 	_reroll_button.text = "Reroll (%d scrap)" % cost
 
 	# Disable if can't afford
@@ -169,6 +187,7 @@ func _play_button_sound() -> void:
 func _on_purchase_requested(item_id: String) -> void:
 	"""Handle purchase request from item card"""
 	_play_button_sound()
+	HapticManager.light()
 
 	var character_id = CharacterService.get_active_character_id()
 
@@ -205,6 +224,7 @@ func _execute_purchase(character_id: String, item_id: String) -> void:
 	if not result.is_empty():
 		# Purchase successful
 		GameLogger.info("[Shop] Purchase successful", {"item_id": item_id})
+		HapticManager.medium()
 
 		# Mark card as sold
 		for card in _item_cards:
@@ -223,7 +243,7 @@ func _execute_purchase(character_id: String, item_id: String) -> void:
 
 		# Update displays
 		_update_scrap_display()
-		_update_reroll_button()
+		_update_reroll_display()
 
 		# Check for empty stock refresh
 		_check_empty_stock_refresh()
@@ -234,6 +254,7 @@ func _execute_purchase(character_id: String, item_id: String) -> void:
 func _on_reroll_pressed() -> void:
 	"""Handle reroll button press"""
 	_play_button_sound()
+	HapticManager.light()
 
 	var character_id = CharacterService.get_active_character_id()
 	var cost = ShopService.get_reroll_cost(character_id)
@@ -256,7 +277,9 @@ func _execute_reroll(character_id: String) -> void:
 
 	if not result.is_empty():
 		GameLogger.info("[Shop] Reroll successful", {"new_item_count": result.size()})
+		HapticManager.medium()
 		# Items will be reloaded via shop_refreshed signal
+		_update_reroll_display()
 	else:
 		GameLogger.warning("[Shop] Reroll failed")
 
@@ -264,6 +287,7 @@ func _execute_reroll(character_id: String) -> void:
 func _on_back_pressed() -> void:
 	"""Handle back button - return to scrapyard"""
 	_play_button_sound()
+	HapticManager.light()
 
 	if is_instance_valid(Analytics):
 		Analytics.hub_button_pressed("Shop_Back")
@@ -276,7 +300,7 @@ func _on_shop_refreshed(_items: Array) -> void:
 	"""Handle shop refresh signal"""
 	_load_shop_items()
 	_update_refresh_display()
-	_update_reroll_button()
+	_update_reroll_display()
 
 
 func _on_purchase_failed(reason: String) -> void:
@@ -287,7 +311,7 @@ func _on_purchase_failed(reason: String) -> void:
 func _on_currency_changed(_currency_type: BankingService.CurrencyType, _new_balance: int) -> void:
 	"""Handle currency change from BankingService"""
 	_update_scrap_display()
-	_update_reroll_button()
+	_update_reroll_display()
 
 
 func _on_refresh_timer_tick() -> void:

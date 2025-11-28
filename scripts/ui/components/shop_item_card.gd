@@ -5,6 +5,12 @@ extends Button
 ## Week 18 Phase 6: Hub Shop UI
 ## Part of the Shop scene - displays item name, rarity, stats, and price.
 ##
+## Features:
+## - Rarity-colored border (matches CharacterTypeCard pattern)
+## - Tap animation (iOS-safe, no Tweens)
+## - SOLD overlay when purchased
+## - Haptic feedback on tap
+##
 ## Usage:
 ##   var card = SHOP_ITEM_CARD_SCENE.instantiate()
 ##   parent.add_child(card)
@@ -14,11 +20,25 @@ extends Button
 ## Emitted when player requests to purchase this item
 signal purchase_requested(item_id: String)
 
+## Card background color
+const COLOR_CARD_BG := Color(0.12, 0.12, 0.14, 1.0)
+
+## Tap animation constants (iOS-safe, no Tween - matches CharacterTypeCard)
+const TAP_DOWN_DURATION := 0.08  # 80ms - fast response
+const TAP_UP_DURATION := 0.12  # 120ms - satisfying release
+const TAP_SCALE_MIN := 0.95
+const TAP_SCALE_MAX := 1.0
+
 ## Item data dictionary (from ShopService)
 var _item_data: Dictionary = {}
 
 ## Whether this item has been purchased (sold out)
 var _is_sold: bool = false
+
+## Tap animation state (iOS-compatible)
+var _is_animating_tap: bool = false
+var _tap_elapsed: float = 0.0
+var _tap_phase: int = 0  # 0 = idle, 1 = pressing down, 2 = releasing up
 
 ## Node references
 @onready var _panel_bg: Panel = $PanelBg
@@ -34,11 +54,17 @@ var _is_sold: bool = false
 
 
 func _ready() -> void:
-	# Connect button press
+	# Connect button signals
+	button_down.connect(_on_button_down)
+	button_up.connect(_on_button_up)
 	pressed.connect(_on_pressed)
 
 	# Apply initial styling
 	_apply_panel_style()
+
+
+func _process(delta: float) -> void:
+	_update_tap_animation(delta)
 
 
 func setup(item_data: Dictionary) -> void:
@@ -138,10 +164,10 @@ func _update_rarity_border(rarity: String) -> void:
 	style.border_width_top = 3
 	style.border_width_right = 3
 	style.border_width_bottom = 3
-	style.corner_radius_top_left = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_top_right = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_bottom_left = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_bottom_right = UIConstants.CORNER_RADIUS_MD
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_left = 10
+	style.corner_radius_bottom_right = 10
 
 	_rarity_border.add_theme_stylebox_override("panel", style)
 
@@ -167,23 +193,81 @@ func _apply_panel_style() -> void:
 		return
 
 	var style = StyleBoxFlat.new()
-	style.bg_color = GameColorPalette.SOOT_BLACK
-	style.corner_radius_top_left = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_top_right = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_bottom_left = UIConstants.CORNER_RADIUS_MD
-	style.corner_radius_bottom_right = UIConstants.CORNER_RADIUS_MD
+	style.bg_color = COLOR_CARD_BG
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_left = 10
+	style.corner_radius_bottom_right = 10
 
 	_panel_bg.add_theme_stylebox_override("panel", style)
 
 	# Sold overlay style
 	if _sold_overlay:
 		var sold_style = StyleBoxFlat.new()
-		sold_style.bg_color = Color(0, 0, 0, 0.7)
-		sold_style.corner_radius_top_left = UIConstants.CORNER_RADIUS_MD
-		sold_style.corner_radius_top_right = UIConstants.CORNER_RADIUS_MD
-		sold_style.corner_radius_bottom_left = UIConstants.CORNER_RADIUS_MD
-		sold_style.corner_radius_bottom_right = UIConstants.CORNER_RADIUS_MD
+		sold_style.bg_color = Color(0, 0, 0, 0.75)
+		sold_style.corner_radius_top_left = 10
+		sold_style.corner_radius_top_right = 10
+		sold_style.corner_radius_bottom_left = 10
+		sold_style.corner_radius_bottom_right = 10
 		_sold_overlay.add_theme_stylebox_override("panel", sold_style)
+
+
+## ============================================================================
+## TAP ANIMATION (iOS-safe _process-based, matches CharacterTypeCard)
+## ============================================================================
+
+
+func _update_tap_animation(delta: float) -> void:
+	"""Update tap scale animation (called every frame via _process)"""
+	if not _is_animating_tap:
+		return
+
+	_tap_elapsed += delta
+
+	if _tap_phase == 1:  # Pressing down (linear for immediate response)
+		var t = clampf(_tap_elapsed / TAP_DOWN_DURATION, 0.0, 1.0)
+		var current_scale = lerpf(TAP_SCALE_MAX, TAP_SCALE_MIN, t)
+		scale = Vector2(current_scale, current_scale)
+
+		if t >= 1.0:
+			_tap_phase = 2
+			_tap_elapsed = 0.0
+
+	elif _tap_phase == 2:  # Releasing up (ease-out for satisfying release)
+		var t = clampf(_tap_elapsed / TAP_UP_DURATION, 0.0, 1.0)
+		# Quadratic ease-out: fast start, slow finish
+		var eased_t = 1.0 - pow(1.0 - t, 2.0)
+		var current_scale = lerpf(TAP_SCALE_MIN, TAP_SCALE_MAX, eased_t)
+		scale = Vector2(current_scale, current_scale)
+
+		if t >= 1.0:
+			_is_animating_tap = false
+			_tap_phase = 0
+			scale = Vector2.ONE
+
+
+func _animate_tap() -> void:
+	"""Start the tap animation sequence"""
+	_is_animating_tap = true
+	_tap_phase = 1
+	_tap_elapsed = 0.0
+
+
+## ============================================================================
+## INPUT HANDLING
+## ============================================================================
+
+
+func _on_button_down() -> void:
+	"""Handle button press start"""
+	if _is_sold:
+		return
+	_animate_tap()
+
+
+func _on_button_up() -> void:
+	"""Handle button release - animation continues in _process"""
+	return
 
 
 func _on_pressed() -> void:
@@ -191,7 +275,9 @@ func _on_pressed() -> void:
 	if _is_sold:
 		return
 
+	HapticManager.light()
+
 	var item_id = _item_data.get("id", "")
 	if not item_id.is_empty():
 		purchase_requested.emit(item_id)
-		GameLogger.info("[ShopItemCard] Purchase requested", {"item_id": item_id})
+		GameLogger.debug("[ShopItemCard] Purchase requested", {"item_id": item_id})
