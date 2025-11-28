@@ -99,12 +99,12 @@ Character types configure:
 - Stat modifiers (bonuses/penalties)
 - Item tags (for future shop affinity)
 
-**MVP Character Types:**
-- 3 Free: Scavenger, Gunslinger, Brawler
-- 2 Premium: Weapon Master (10 slots), One Armed (1 slot)
-- 1 Subscription: Collector (50 inventory slots)
+**MVP Character Types (AUTHORITATIVE - see CHARACTER-SYSTEM.md):**
+- 3 Free: Scavenger, Rustbucket, Hotshot
+- 2 Premium: Tinkerer, Salvager
+- 1 Subscription: Overclocked
 
-**Rationale:** Following Brotato's design - characters ARE the builds.
+**Rationale:** Original unique designs that avoid Brotato/Vampire Survivors IP concerns.
 
 ### Decision 4: Perk Hooks Required
 
@@ -209,91 +209,101 @@ const ITEM_DATABASE = {
 ### Character Type Definition Structure
 
 ```gdscript
+# CHARACTER TYPES - See CHARACTER-SYSTEM.md for authoritative definitions
+# This is a summary for Week 18 implementation reference
+
 const CHARACTER_TYPE_DEFINITIONS = {
     # === FREE TIER (3 types) ===
     "scavenger": {
         "id": "scavenger",
         "display_name": "Scavenger",
-        "description": "A balanced survivor. Jack of all trades.",
-        "tier_required": "free",
-        "weapon_slots": 6,
-        "inventory_slots": 30,
-        "starting_items": ["weapon_rusty_blade"],
-        "stat_modifiers": {},  # No bonuses or penalties
-        "tags": []
-    },
-    "gunslinger": {
-        "id": "gunslinger",
-        "display_name": "Gunslinger",
-        "description": "Ranged specialist. Keep your distance.",
-        "tier_required": "free",
-        "weapon_slots": 6,
-        "inventory_slots": 30,
-        "starting_items": ["weapon_plasma_pistol"],
-        "stat_modifiers": {
-            "ranged_damage_mult": 1.25,  # +25% ranged
-            "melee_damage_mult": 0.5     # -50% melee
-        },
-        "tags": ["Ranged Damage"]
-    },
-    "brawler": {
-        "id": "brawler",
-        "display_name": "Brawler",
-        "description": "Close combat expert. Get in their face.",
+        "description": "Knows where the good junk is.",
         "tier_required": "free",
         "weapon_slots": 6,
         "inventory_slots": 30,
         "starting_items": ["weapon_rusty_blade"],
         "stat_modifiers": {
-            "melee_damage_mult": 1.25,  # +25% melee
-            "range_mult": 0.5           # -50% range
+            "scrap_drop_bonus": 0.10,    # +10% scrap drops
+            "pickup_range_bonus": 15     # +15 pickup range
         },
-        "tags": ["Melee Damage"]
+        "tags": ["Economy"]
+    },
+    "rustbucket": {
+        "id": "rustbucket",
+        "display_name": "Rustbucket",
+        "description": "More patches than original parts.",
+        "tier_required": "free",
+        "weapon_slots": 4,  # FEWER weapons (trade-off)
+        "inventory_slots": 30,
+        "starting_items": ["weapon_rusty_blade"],
+        "stat_modifiers": {
+            "max_hp_bonus": 30,          # +30 Max HP
+            "armor_bonus": 5,            # +5 Armor
+            "speed_multiplier": 0.85     # -15% Speed
+        },
+        "tags": ["Defense", "HP"]
+    },
+    "hotshot": {
+        "id": "hotshot",
+        "display_name": "Hotshot",
+        "description": "Burns bright, burns fast.",
+        "tier_required": "free",
+        "weapon_slots": 6,
+        "inventory_slots": 30,
+        "starting_items": ["weapon_rusty_blade"],
+        "stat_modifiers": {
+            "damage_multiplier": 1.20,   # +20% damage
+            "crit_chance_bonus": 0.10,   # +10% crit chance
+            "max_hp_bonus": -20          # -20 Max HP (penalty)
+        },
+        "tags": ["Damage", "Crit"]
     },
     
     # === PREMIUM TIER (2 types) ===
-    "weapon_master": {
-        "id": "weapon_master",
-        "display_name": "Weapon Master",
-        "description": "Wield an arsenal. 10 weapon slots!",
+    "tinkerer": {
+        "id": "tinkerer",
+        "display_name": "Tinkerer",
+        "description": "Can always fit one more gadget.",
         "tier_required": "premium",
-        "weapon_slots": 10,  # MORE weapons
+        "weapon_slots": 6,
         "inventory_slots": 30,
-        "starting_items": ["weapon_rusty_blade", "weapon_plasma_pistol"],
+        "starting_items": ["weapon_rusty_blade"],
         "stat_modifiers": {
-            "damage_mult": 0.85  # -15% damage (trade-off)
+            "stack_limit_bonus": 1,      # +1 to all stack limits
+            "damage_multiplier": 0.90    # -10% damage (trade-off)
         },
-        "tags": ["Damage"]
+        "tags": ["Build Variety"]
     },
-    "one_armed": {
-        "id": "one_armed",
-        "display_name": "One Armed",
-        "description": "One weapon. Maximum power.",
+    "salvager": {
+        "id": "salvager",
+        "display_name": "Salvager",
+        "description": "Sees value in everything.",
         "tier_required": "premium",
-        "weapon_slots": 1,  # FEWER weapons
+        "weapon_slots": 5,  # FEWER weapons (trade-off)
         "inventory_slots": 30,
-        "starting_items": ["weapon_steel_sword"],  # Better weapon
+        "starting_items": ["weapon_rusty_blade"],
         "stat_modifiers": {
-            "damage_mult": 2.0,      # +100% damage
-            "attack_speed_mult": 2.0  # +100% attack speed
+            "component_yield_bonus": 0.50,  # +50% components from recycling
+            "shop_discount": 0.25           # 25% off shop purchases
         },
-        "tags": ["Damage", "Attack Speed"]
+        "tags": ["Economy", "Resource"]
     },
     
     # === SUBSCRIPTION TIER (1 type) ===
-    "collector": {
-        "id": "collector",
-        "display_name": "Collector",
-        "description": "Hoarder supreme. 50 inventory slots!",
+    "overclocked": {
+        "id": "overclocked",
+        "display_name": "Overclocked",
+        "description": "Pushed past factory specs.",
         "tier_required": "subscription",
         "weapon_slots": 6,
-        "inventory_slots": 50,  # MORE inventory
+        "inventory_slots": 30,
         "starting_items": ["weapon_rusty_blade"],
         "stat_modifiers": {
-            "luck_mult": 1.5,       # +50% luck
-            "harvesting_mult": 1.25  # +25% harvesting
+            "attack_speed_bonus": 0.25,     # +25% attack speed
+            "damage_multiplier": 1.15,      # +15% damage
+            "wave_hp_damage_pct": 0.05      # Takes 5% Max HP damage per wave
         },
-        "tags": ["Luck", "Harvesting"]
+        "tags": ["Damage", "Attack Speed", "High Risk"]
     }
 }
 ```
@@ -301,9 +311,9 @@ const CHARACTER_TYPE_DEFINITIONS = {
 ### Inventory System
 
 **Slot Validation Rules:**
-1. Total items ≤ `character.inventory_slots` (30 default, 50 for Collector)
-2. Weapons ≤ `character.weapon_slots` (6 default, 10 for Weapon Master, 1 for One Armed)
-3. Stack limit per rarity (Common: 5, Legendary: 1)
+1. Total items ≤ `character.inventory_slots` (30 default)
+2. Weapons ≤ `character.weapon_slots` (6 default, 4 for Rustbucket, 5 for Salvager)
+3. Stack limit per rarity (Common: 5, Legendary: 1) - Tinkerer gets +1 to all
 
 **Auto-Active Stats:**
 ```gdscript
@@ -595,8 +605,8 @@ scenes/
 
 **Character Creation:**
 - [ ] Can create Scavenger (Free)
-- [ ] Can create Gunslinger (Free)
-- [ ] Can create Brawler (Free)
+- [ ] Can create Rustbucket (Free)
+- [ ] Can create Hotshot (Free)
 - [ ] Premium types blocked for Free tier (shows CTA)
 - [ ] Starting weapon appears in inventory
 
@@ -615,8 +625,8 @@ scenes/
 - [ ] Can't exceed inventory slot limit
 - [ ] Can't exceed weapon slot limit
 - [ ] Stack limits enforced
-- [ ] One Armed can only have 1 weapon
-- [ ] Weapon Master can have 10 weapons
+- [ ] Rustbucket can only have 4 weapons
+- [ ] Salvager can only have 5 weapons
 
 ---
 
