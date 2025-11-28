@@ -25,8 +25,10 @@ var _scrap_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/ScrapCo
 var _refresh_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/InfoRow/RefreshLabel
 @onready
 var _reroll_info_label: Label = $ScreenContainer/VBoxContainer/HeaderContainer/InfoRow/RerollInfoLabel
+# gdlint: disable=max-line-length
 @onready
 var _item_grid: GridContainer = $ScreenContainer/VBoxContainer/ItemGridContainer/ScrollContainer/CenterContainer/ItemGrid
+# gdlint: enable=max-line-length
 @onready var _reroll_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/RerollButton
 @onready var _back_button: Button = $ScreenContainer/VBoxContainer/ButtonsContainer/BackButton
 @onready var _audio_player: AudioStreamPlayer = $AudioStreamPlayer
