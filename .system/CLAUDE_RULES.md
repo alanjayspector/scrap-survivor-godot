@@ -347,6 +347,118 @@ Proceed? (Requires user 'yes')
 | Changing quality gate | Configuration files + ask user |
 | Creating .tscn scene | ALWAYS use Godot editor (not manual) |
 | Refactoring to components | Component Integration Protocol above |
+| **Implementing ANY feature/service** | **MUST read design doc first (see below)** |
+
+---
+
+## Design Document Requirement Protocol (MANDATORY)
+
+**Effective**: 2025-11-28 (After ShopService hub vs combat misalignment)
+
+### The Problem
+
+Phase 3 (ShopService) was implemented with wave-based shop generation, but the design doc (`SHOPS-SYSTEM.md`) clearly stated "Location: Hub → Shop". This misalignment cost significant time in course correction.
+
+**Root Cause**: Implementation began without reading the design document.
+
+### The Rule
+
+**BEFORE implementing ANY feature or service, Claude MUST:**
+
+1. **Find the design document** in `docs/game-design/systems/`
+2. **Read the ENTIRE design document** (not just skim)
+3. **Quote key design decisions** to user before proceeding
+4. **If no design doc exists** → STOP and ask user for requirements
+
+### Pre-Implementation Design Doc Checkpoint
+
+**Output to user BEFORE writing any code:**
+
+```
+📋 **DESIGN DOC CHECKPOINT**
+
+Feature: [Feature Name]
+Design Doc: docs/game-design/systems/[FILENAME].md
+
+Key Design Decisions Found:
+1. [Quote from doc - e.g., "Location: Hub → Shop"]
+2. [Quote from doc - e.g., "Refresh: Every 4 hours"]
+3. [Quote from doc - e.g., "Access: All tiers can browse"]
+
+Hub/Combat Context:
+- Is this a HUB service? [yes/no + evidence from doc]
+- Is this a COMBAT feature? [yes/no + evidence from doc]
+- Where is it accessed from? [quote from doc]
+
+Does this match your understanding? (WAIT for 'yes')
+```
+
+### Design Doc Locations
+
+| Service/Feature | Design Doc Path |
+|----------------|-----------------|
+| Shop (Standard) | `docs/game-design/systems/SHOPS-SYSTEM.md` |
+| Black Market | `docs/game-design/systems/BLACK-MARKET-SYSTEM.md` |
+| Atomic Vending | `docs/game-design/systems/ATOMIC-VENDING-MACHINE.md` |
+| Banking | `docs/game-design/systems/BANKING-SYSTEM.md` |
+| Workshop (Foundry) | `docs/game-design/systems/WORKSHOP-SYSTEM.md` |
+| The Lab | `docs/game-design/systems/THE-LAB-SYSTEM.md` |
+| Character System | `docs/game-design/systems/CHARACTER-SYSTEM.md` |
+| Combat | `docs/game-design/systems/COMBAT-SYSTEM.md` |
+| Inventory | `docs/game-design/systems/INVENTORY-SYSTEM.md` |
+
+### Red Flags
+
+- 🚩 Starting implementation without reading design doc
+- 🚩 Assuming feature location (hub vs combat) without checking doc
+- 🚩 "I'll implement it like [other game]" without checking design doc
+- 🚩 Making architectural decisions not supported by design doc
+- 🚩 Design doc says one thing, implementation does another
+
+### When Design Doc Doesn't Exist
+
+**If no design doc found for feature:**
+
+1. **STOP implementation**
+2. **Inform user**: "No design document found for [Feature]. I need design requirements before proceeding."
+3. **Offer options**:
+   - "Shall I create a design doc draft for your approval?"
+   - "Can you point me to existing requirements?"
+   - "Would you like to describe the requirements now?"
+4. **Get explicit approval** before proceeding
+
+### Hub vs Combat Decision Tree
+
+**ALWAYS verify this before implementing:**
+
+```
+Is this feature...
+├── Accessed from Scrapyard hub? → HUB SERVICE
+│   └── Examples: Barracks, Shop, Bank, Foundry, Lab
+│   └── Implementation: Scene navigation from hub, time-based refresh
+│
+└── Active during Wasteland combat? → COMBAT FEATURE
+    └── Examples: Wave completion, enemy spawning, item drops
+    └── Implementation: Wave-based triggers, combat state management
+```
+
+### Lessons Learned (ShopService Incident)
+
+**What happened:**
+- Week 18 Phase 3 implemented ShopService with `generate_shop(wave, tier)`
+- Design doc (`SHOPS-SYSTEM.md`) clearly stated "Location: Hub → Shop"
+- Shop is a HUB service with 4-hour refresh, NOT wave-based combat shop
+- Required course correction: Remove wave parameter, add time-based refresh
+
+**What should have happened:**
+- Read `SHOPS-SYSTEM.md` BEFORE implementation
+- Quote "Location: Hub → Shop" in design checkpoint
+- Implement with `generate_shop(tier)` and time-based refresh from start
+
+**Prevention:**
+- This protocol makes design doc review MANDATORY
+- Cannot proceed without quoting key decisions to user
+- User approval required before implementation begins
 
 ## Running Tests and Validators
 
@@ -1471,5 +1583,5 @@ The `check-imports.sh` validator enforces this rule:
 
 ---
 
-**Last Updated**: 2025-11-27 by Claude Code (Added File Size Safety Protocol, 2D Texture Import Settings)
+**Last Updated**: 2025-11-28 by Claude Code (Added Design Document Requirement Protocol after ShopService misalignment)
 **Next Review**: When violations occur or user requests update

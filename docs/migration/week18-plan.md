@@ -565,59 +565,159 @@ signal character_create_post(context: Dictionary)
 - [ ] Audio still plays
 - [ ] All existing tests passing
 
-### Phase 5: ShopService (1.5h)
+### Phase 5: ShopService Refactor for Hub Model (1h)
+
+> ⚠️ **COURSE CORRECTION (2025-11-28)**: Shop is a HUB SERVICE, not a combat feature.
+> The shop is accessed from the Scrapyard hub, NOT between waves during combat.
+> See SHOPS-SYSTEM.md: "Location: Hub → Shop"
+
+**Context:**
+- Phase 3 created ShopService with wave-based generation (INCORRECT)
+- Shop should be a hub spoke like Barracks, Workshop, Lab
+- Refresh is time-based (4h or daily), not wave-based
 
 **Tasks:**
-1. Create `scripts/services/shop_service.gd`
-2. Implement shop generation (6 items, weighted rarity)
-3. Implement wave guarantees
-4. Implement purchase flow (currency + inventory)
-5. Implement reroll with escalating costs
-6. Add perk hooks
-7. Unit tests
+1. Remove wave parameter from `generate_shop()`
+2. Add `last_refresh_timestamp` tracking
+3. Implement `check_refresh_needed()` - 4-hour refresh cycle
+4. Implement `check_empty_stock_refresh()` - FREE refresh when all items purchased
+5. Add `get_time_until_refresh()` for UI countdown
+6. Update tests for hub model
+7. Keep existing: rarity weighting, tier discounts, perk hooks
+
+**API Changes:**
+```gdscript
+# BEFORE (wave-based - WRONG)
+func generate_shop(wave: int, tier: String) -> Array
+
+# AFTER (hub-based - CORRECT)
+func generate_shop(tier: String) -> Array
+func check_refresh_needed() -> bool  # True if 4h passed
+func check_empty_stock_refresh() -> bool  # True if stock = 0
+func get_time_until_refresh() -> int  # Seconds until next refresh
+func get_shop_items() -> Array  # Returns current stock (may auto-refresh)
+```
 
 **Success Criteria:**
-- [ ] ShopService generates 6 items
-- [ ] Rarity weighting working
-- [ ] Wave guarantees working
-- [ ] Purchase integrates with Banking + Inventory
-- [ ] Reroll cost escalation working
-- [ ] Perk hooks implemented
-- [ ] Unit tests passing
+- [ ] ShopService generates 6 items (no wave parameter)
+- [ ] 4-hour refresh cycle working
+- [ ] Empty stock triggers FREE auto-refresh
+- [ ] `get_time_until_refresh()` returns correct countdown
+- [ ] Existing tests updated and passing
+- [ ] Perk hooks still working
 
-### Phase 6: Shop UI (1.5h)
+### Phase 6: Hub Shop UI (2h)
+
+> **Design Reference:** Shop is accessed from scrapyard hub (per SHOPS-SYSTEM.md: "Location: Hub → Shop")
+> Store concept art: `art-docs/scrapyard-store.png` ("SCRAP HEAP" truck with OPEN sign)
 
 **Tasks:**
-1. Create `scenes/ui/shop_screen.tscn`
-2. Create shop item card component
-3. Display 6 items with rarity colors
-4. Show scrap balance
-5. Implement purchase button
-6. Implement reroll button with cost display
-7. Add "Continue to Next Wave" button
-8. Wire up to wave completion
+1. Create/commission `assets/icons/hub/icon_shop_final.svg`
+   - Recommended: Shopping bag, crate, or cart icon (universal commerce symbol)
+2. Add ShopButton to `scenes/hub/scrapyard.tscn`
+   - Position: 35% from left (between Barracks and Bank)
+   - Size: Same as Barracks (button_size = 1)
+   - Label: "Shop"
+3. Create `scenes/ui/shop.tscn` (hub shop scene)
+   - Background: Use `art-docs/scrapyard-store.png` or derive from it
+   - Layout: 6 item cards in grid (2x3 or 3x2)
+   - Header: "SCRAP HEAP" with scrap balance
+   - Footer: Reroll button + Back to Hub button
+4. Create `scenes/ui/components/shop_item_card.tscn`
+   - Item name, rarity color border, stats, price
+   - Purchase button (disabled if insufficient scrap)
+   - "SOLD" overlay for purchased items
+5. Wire scrapyard → shop navigation
+6. Wire shop → scrapyard back navigation
+7. Implement refresh countdown display ("Next refresh: 2h 34m")
+8. Show "Shop refreshed!" toast on auto-refresh
+
+**Week 18 Hub Layout (4 buttons - single row):**
+```
+┌─────────────────────────────────────────────────────────────┐
+│ [SCRAP SURVIVOR]                        [Settings ⚙️]       │
+│                                                             │
+│   [Barracks]    [Shop]    [Bank]        [Start Run]        │
+│     (15%)       (35%)     (55%)           (85%)            │
+│                                                             │
+│ [Survivor Panel]                                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Future Hub Layout (Week 19+, second row for premium services):**
+```
+┌─────────────────────────────────────────────────────────────┐
+│   [Barracks]    [Shop]    [Bank]        [Start Run]        │
+│     (15%)       (35%)     (55%)           (85%)            │
+│                                                             │
+│        [Foundry]   [Lab]   [Black Mkt]   [Atomic]          │
+│          (20%)     (40%)     (60%)        (80%)            │
+└─────────────────────────────────────────────────────────────┘
+```
 
 **Success Criteria:**
-- [ ] Shop screen displays correctly
-- [ ] Items show rarity colors
-- [ ] Purchase works
-- [ ] Reroll works
-- [ ] Scrap updates in real-time
-- [ ] Can continue to next wave
+- [ ] Shop button visible in scrapyard (35% position)
+- [ ] Shop scene displays 6 items with rarity colors
+- [ ] Refresh countdown visible
+- [ ] Purchase deducts scrap, marks item as SOLD
+- [ ] Reroll works with escalating cost display
+- [ ] Back button returns to scrapyard
+- [ ] Empty stock triggers refresh with toast notification
+
+### Phase 6.5: Hub Bank UI (1h)
+
+> **Design Reference:** Bank is the "SCRAP TRUST & EXCHANGE" truck in hub art center.
+> Per BANKING-SYSTEM.md: Deposit/withdraw scrap, protect from death penalties.
+
+**Tasks:**
+1. Create/commission `assets/icons/hub/icon_bank_final.svg`
+   - Recommended: Vault door, safe, or coins icon
+2. Add BankButton to `scenes/hub/scrapyard.tscn`
+   - Position: 55% from left (between Shop and Start Run)
+   - Size: Same as Barracks (button_size = 1)
+   - Label: "Bank"
+3. Create `scenes/ui/bank.tscn` (hub bank scene)
+   - Header: "SCRAP TRUST & EXCHANGE" with carried/banked balance
+   - Deposit section: Amount input + Deposit button
+   - Withdraw section: Amount input + Withdraw button
+   - Quick buttons: "Deposit All", "Withdraw 100", "Withdraw 500"
+   - Footer: Back to Hub button
+4. Wire scrapyard → bank navigation
+5. Wire bank → scrapyard back navigation
+6. Integrate with BankingService (already exists)
+7. Show balance updates in real-time
+
+**Bank Features (from BANKING-SYSTEM.md):**
+- Deposit carried scrap → banked (safe from death)
+- Withdraw banked scrap → carried (for shop/combat)
+- Quantum Storage tab (Subscription only) - transfer between characters
+
+**Success Criteria:**
+- [ ] Bank button visible in scrapyard (55% position)
+- [ ] Bank scene displays carried + banked balance
+- [ ] Deposit works (deducts carried, adds banked)
+- [ ] Withdraw works (deducts banked, adds carried)
+- [ ] Quick buttons work correctly
+- [ ] Back button returns to scrapyard
+- [ ] Balance updates in real-time
 
 ### Phase 7: Integration & QA (1h)
 
 **Tasks:**
-1. End-to-end test: Create character → Combat → Shop → Purchase → Continue
-2. Test all character types
-3. Test slot limits (try to exceed)
-4. Test stack limits
-5. Device QA on iOS
-6. Fix any issues found
+1. End-to-end test: Hub → Shop → Purchase → Back to Hub → Combat
+2. Test shop refresh cycle (4-hour or manual reroll)
+3. Test empty stock auto-refresh (buy all 6 → free refresh)
+4. Test all character types (Salvager 25% discount)
+5. Test slot limits with InventoryService
+6. Device QA on iOS
+7. Fix any issues found
 
 **Success Criteria:**
-- [ ] Full loop works on device
-- [ ] All character types playable
+- [ ] Full hub loop works on device
+- [ ] Shop accessible from scrapyard
+- [ ] Purchases add items to inventory
+- [ ] Refresh mechanics working correctly
+- [ ] All character types can shop
 - [ ] No crashes or errors
 - [ ] Performance acceptable
 
