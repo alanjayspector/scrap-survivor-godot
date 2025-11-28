@@ -1,8 +1,8 @@
 # Scrap Survivor - Godot Migration Timeline (Updated)
 
-**Last Updated**: 2025-11-14
-**Status**: Week 13 Complete (All Phases Including 3.5) ✅ + Week 14 Planning (Option A+D Recommended) 📅
-**Current Progress**: Week 13 complete - arena optimization (2000×2000 world + grid floor), character selection polish (2×2 grid + detail panel), enemy variety (4 new types: ranged, tank, fast, swarm), enemy density fix (2.5× increase to 20-30 enemies for genre parity). All 496/520 tests passing. Week 14 planning: **Option A+D (Polish & Pacing Package)** recommended - audio system (6-8h) + continuous spawning (3-4h) for professional feel and proper QA enablement.
+**Last Updated**: 2025-11-27
+**Status**: Week 17 Complete ✅ + Weeks 18-21 Planned 📅
+**Current Progress**: Week 17 complete - UI polish at "production-quality" status. Expert panel recommendation: pivot to core feature development. Weeks 18-21 planned: Shop System → Workshop (Part 1) → Workshop (Part 2) → Post-Run + Meta Progression. All 705/729 tests passing.
 
 ---
 
@@ -23,7 +23,13 @@
 | **iOS Deployment** | Complete | ✅ | Physics fixes, mobile controls, TestFlight prep |
 | **Mobile UX Optimization** | Complete | ✅ | Font sizing, text outlines, touch targets, animations, polish (Rounds 1-4 complete) |
 | **Week 13** | Complete | ✅ | Arena optimization + character selection polish + enemy variety (4 types) + density fix (2.5× enemies) |
-| **Week 14** | Planning | 📅 | **Option A+D**: Audio system (weapon/enemy sounds) + continuous spawning (9-12h total) |
+| **Week 14** | Complete | ✅ | QA passes, bug fixes, mobile polish |
+| **Week 15-16** | Complete | ✅ | Scrapyard hub UI, character management screens |
+| **Week 17** | Complete | ✅ | UI polish - Art Bible compliance, production quality |
+| **Week 18** | Planned | 📅 | **Shop System** + Item/Inventory foundation (6-8h) |
+| **Week 19** | Planned | 📅 | **Workshop Part 1**: Durability, Repair, Recycler, Storage (5-6h) |
+| **Week 20** | Planned | 📅 | **Workshop Part 2**: Fusion, Craft, Blueprints (5-6h) |
+| **Week 21** | Planned | 📅 | **Post-Run Flow** + Meta Progression (4-6h) |
 
 ---
 
@@ -1018,10 +1024,11 @@ CharacterService: 43/43 passing
 - Manual QA on iOS device (mobile UX validation)
 
 ### Planned (📅)
-- Minions system
-- The Lab services
-- Perks system
-- Monetization testing
+- **Week 18**: Shop System + Item/Inventory (core roguelite loop)
+- **Week 19**: Workshop Part 1 (Durability, Repair, Recycler, Storage)
+- **Week 20**: Workshop Part 2 (Fusion, Craft, Blueprints)
+- **Week 21**: Post-Run Flow + Meta Progression (Chips, permanent upgrades)
+- Future: Minions system, The Lab, Perks system, Monetization testing
 
 ---
 
@@ -1068,7 +1075,12 @@ CharacterService: 43/43 passing
 - [gut-migration-phase3-status.md](../gut-migration-phase3-status.md)
 
 ### Week Plans
-- [week10-implementation-plan.md](./week10-implementation-plan.md) (current)
+- [week21-plan.md](./week21-plan.md) - Post-Run + Meta Progression
+- [week20-plan.md](./week20-plan.md) - Workshop Part 2 (Fusion, Craft)
+- [week19-plan.md](./week19-plan.md) - Workshop Part 1 (Durability, Repair)
+- [week18-plan.md](./week18-plan.md) - Shop System + Items (current)
+- [week17-plan.md](./week17-plan.md) - UI Polish
+- [week10-implementation-plan.md](./week10-implementation-plan.md)
 - [week9-implementation-plan.md](./week9-implementation-plan.md)
 - [week8-completion.md](./week8-completion.md)
 - [week7-implementation-plan.md](./week7-implementation-plan.md)
@@ -1076,6 +1088,6 @@ CharacterService: 43/43 passing
 
 ---
 
-**Timeline Version**: 3.7
-**Last Updated**: 2025-01-11 (updated after mobile UX optimization completion - all 3 phases)
-**Next Review**: After TestFlight distribution and manual QA feedback
+**Timeline Version**: 4.0
+**Last Updated**: 2025-11-27 (Week 18-21 planning complete - Shop, Workshop, Meta Progression)
+**Next Review**: After Week 18 implementation (Shop System)
