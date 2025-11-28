@@ -551,6 +551,29 @@ signal character_create_post(context: Dictionary)
 - [ ] No crashes or errors
 - [ ] Performance acceptable
 
+### Phase 8: Try-Before-Buy Flow (2h) - STRETCH GOAL
+
+**Description:** Allow FREE players to trial Premium/Subscription characters for 1 run before purchasing.
+
+**Tasks:**
+1. Add `is_trial` flag to character data structure
+2. Create trial character creation flow (bypasses tier check, marks as trial)
+3. Create "Try" button UI on locked character type cards
+4. Track trial state during combat run
+5. Create post-run conversion screen (show stats, upgrade CTA)
+6. Analytics events: trial_started, trial_completed, conversion_success
+7. Clean up trial character if not converted (or keep with lock)
+8. Unit tests for trial flow
+
+**Success Criteria:**
+- [ ] FREE player can tap "Try" on Tinkerer
+- [ ] Trial run works identically to normal run
+- [ ] Post-run screen shows conversion option
+- [ ] Trial character blocked from future use without upgrade
+- [ ] Analytics events firing
+
+**Note:** This is a conversion optimization feature. Core Week 18 functionality works without it. Can be deferred to Week 19 if time constrained.
+
 ---
 
 ## 📂 FILE STRUCTURE
@@ -657,6 +680,60 @@ scenes/
 
 ---
 
+## 🔮 DEFERRED INTEGRATIONS (Documented for Future Work)
+
+These stat modifiers are defined in Phase 2 but consumed elsewhere:
+
+### stack_limit_bonus (Tinkerer: +1)
+- **Defined in:** CharacterTypeDatabase (Phase 2)
+- **Stored on:** Character stats when created
+- **Consumed by:** InventoryService.get_stack_limit() (Phase 3)
+- **Implementation:**
+```gdscript
+func get_stack_limit(character_id: String, rarity: String) -> int:
+    var base_limit = RARITY_STACK_LIMITS[rarity]  # Common=5, Legendary=1
+    var character = CharacterService.get_character(character_id)
+    var bonus = character.stats.get("stack_limit_bonus", 0)
+    return base_limit + bonus
+```
+
+### wave_hp_damage_pct (Overclocked: 0.05 = 5%)
+- **Defined in:** CharacterTypeDatabase (Phase 2)
+- **Stored on:** Character stats when created
+- **Consumed by:** Combat scene on `wave_completed` signal
+- **Implementation Location:** `scenes/combat/wasteland.gd` or combat controller
+- **Implementation:**
+```gdscript
+func _on_wave_completed(wave: int, stats: Dictionary):
+    var character = CharacterService.get_active_character()
+    var wave_damage_pct = character.stats.get("wave_hp_damage_pct", 0.0)
+    if wave_damage_pct > 0:
+        var damage = int(character.stats.max_hp * wave_damage_pct)
+        player.take_damage(damage)
+        GameLogger.info("Overclocked wave damage", {"wave": wave, "damage": damage})
+```
+- **Week:** Can be wired in Phase 7 Integration or Week 19
+
+### shop_discount (Salvager: 0.25 = 25%)
+- **Defined in:** CharacterTypeDatabase (Phase 2)
+- **Stored on:** Character stats when created
+- **Consumed by:** ShopService.calculate_price() (Phase 5)
+- **Implementation:**
+```gdscript
+func calculate_price(character_id: String, base_price: int) -> int:
+    var character = CharacterService.get_character(character_id)
+    var discount = character.stats.get("shop_discount", 0.0)
+    return int(base_price * (1.0 - discount))
+```
+
+### component_yield_bonus (Salvager: 0.50 = 50%)
+- **Defined in:** CharacterTypeDatabase (Phase 2)
+- **Stored on:** Character stats when created
+- **Consumed by:** RecyclerService or InventoryService when recycling items
+- **Week:** Week 19-20 Workshop system
+
+---
+
 ## Implementation Status (LIVING SECTION)
 
 **Last Updated**: 2025-11-27 by Claude Code
@@ -671,12 +748,13 @@ scenes/
 | Phase 5: ShopService | 1.5h | - | ⏭️ PENDING | - | - |
 | Phase 6: Shop UI | 1.5h | - | ⏭️ PENDING | - | - |
 | Phase 7: Integration & QA | 1h | - | ⏭️ PENDING | - | - |
+| Phase 8: Try-Before-Buy | 2h | - | ⏭️ STRETCH | - | Conversion optimization, can defer |
 
-**Total Estimated**: 8-10 hours
+**Total Estimated**: 10-12 hours (8-10h core + 2h stretch)
 
 ---
 
-**Document Version:** 2.0 (Expanded with character types, perk hooks, expert panel decisions)
+**Document Version:** 2.1 (Added Phase 8 Try-Before-Buy, Deferred Integrations section)
 **Created:** 2025-11-27
-**Last Major Update:** 2025-11-27 - Added character type system, perk hooks, tier gating decisions
+**Last Major Update:** 2025-11-27 - Added Phase 8, documented deferred stat modifier integrations
 **Next Review:** After Phase 1 completion

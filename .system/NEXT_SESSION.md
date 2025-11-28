@@ -1,87 +1,87 @@
 # Next Session Handoff
 
 **Updated:** 2025-11-27
-**Current Branch:** `docs/week18-documentation-cleanup`
-**Status:** Documentation cleanup COMPLETE ✅
+**Current Branch:** `main` (after docs merge)
+**Status:** Week 18 Implementation STARTING 🚀
 
 ---
 
 ## 🎯 IMMEDIATE NEXT ACTION
 
-**Merge documentation branch to main:**
+**Begin Phase 1: Item Database + ItemService**
 
-```bash
-git checkout main
-git merge docs/week18-documentation-cleanup
-git branch -d docs/week18-documentation-cleanup
-```
+We've completed the planning discussion and documented:
+- Phase 8 (Try-Before-Buy) added as stretch goal
+- Deferred integrations documented for stat modifiers
 
-Then begin **Week 18 Implementation**.
+Ready to implement Phase 1.
 
 ---
 
-## ✅ DOCUMENTATION CLEANUP COMPLETED
+## ✅ SESSION ACCOMPLISHMENTS
 
-All 7 phases completed successfully:
-
-| Phase | Status | Commit |
-|-------|--------|--------|
-| 1-3. Archive structure | ✅ | `b7b9de0` |
-| 4. Core system updates | ✅ | `b7b9de0` |
-| 5. New index docs | ✅ | `664e560` |
-| 6. Week 18 plan update | ✅ | `664e560` |
-| 7. Verification | ✅ | Passed |
-
-**Key changes:**
-- 63 files archived to `docs/archive/`
-- CHARACTER-SYSTEM.md updated with 6 character types
-- INVENTORY-SYSTEM.md updated with death penalties and yields
-- New GLOSSARY.md created
-- README.md updated with current structure
-- Week 18 plan updated with correct character types
+1. Read and understood Week 18 plan
+2. Expert panel consultation on scope questions
+3. Added **Phase 8: Try-Before-Buy** (2h stretch goal)
+4. Added **Deferred Integrations** section documenting:
+   - `stack_limit_bonus` → consumed by InventoryService (Phase 3)
+   - `wave_hp_damage_pct` → consumed by combat scene
+   - `shop_discount` → consumed by ShopService (Phase 5)
+   - `component_yield_bonus` → consumed by Workshop (Week 19-20)
 
 ---
 
-## 📋 WEEK 18 READY TO START
+## 📋 WEEK 18 PHASE ORDER
 
-**Authoritative Documents:**
+| Phase | Description | Est. Time | Status |
+|-------|-------------|-----------|--------|
+| **1** | Item Database + ItemService | 1.5h | ⏭️ NEXT |
+| **2** | Character Type System | 1.5h | PENDING |
+| **3** | InventoryService | 1.5h | PENDING |
+| **4** | WeaponService Refactor | 1h | PENDING |
+| **5** | ShopService | 1.5h | PENDING |
+| **6** | Shop UI | 1.5h | PENDING |
+| **7** | Integration & QA | 1h | PENDING |
+| **8** | Try-Before-Buy | 2h | STRETCH |
+
+---
+
+## 📖 KEY DOCUMENTS
+
+- `docs/migration/week18-plan.md` - Master plan (v2.1)
 - `docs/game-design/systems/CHARACTER-SYSTEM.md` - 6 character types
 - `docs/game-design/systems/INVENTORY-SYSTEM.md` - Death penalties, yields
-- `docs/migration/week18-plan.md` - Implementation roadmap
-
-**Character Types to Implement:**
-| Type | Tier | Key Mechanic |
-|------|------|--------------|
-| Scavenger | Free | +10% Scrap, +15 pickup |
-| Rustbucket | Free | +30 HP, +5 Armor, -15% Speed, 4 slots |
-| Hotshot | Free | +20% Damage, +10% Crit, -20 HP |
-| Tinkerer | Premium | +1 Stack limit, -10% Damage |
-| Salvager | Premium | +50% Yield, +25% Discount, 5 slots |
-| Overclocked | Subscription | +25% AtkSpd, +15% Dmg, 5% HP/wave |
+- `.system/CLAUDE_RULES.md` - Development protocols
 
 ---
 
 ## 🔍 QUICK START PROMPT
 
 ```
-Continue Week 18 implementation. Documentation cleanup is complete and merged.
+Continue Week 18 Phase 1: Item Database + ItemService.
 
-Read these files:
-1. docs/game-design/systems/CHARACTER-SYSTEM.md
-2. docs/migration/week18-plan.md
-3. .system/CLAUDE_RULES.md
+Read:
+1. docs/migration/week18-plan.md (Phase 1 section)
+2. scripts/services/weapon_service.gd (WEAPON_DEFINITIONS to migrate)
 
-Focus: Implement character type mechanics in CharacterService.
+Tasks:
+1. Create scripts/data/ directory
+2. Create scripts/data/item_database.gd with 35+ items
+3. Migrate 10 weapons from WeaponService
+4. Add 10 armor, 10 trinkets, 5 consumables
+5. Create scripts/services/item_service.gd
+6. Create scripts/tests/item_service_test.gd
 ```
 
 ---
 
-## ⚠️ SESSION NOTES
+## ⚠️ IMPORTANT NOTES
 
-**Strange occurrence this session:** Work was done but context appeared to drop mid-session. All file operations executed correctly but Claude had no memory of performing them. Work was verified correct against spec and committed. Root cause unknown.
-
-**Tests:** 705/729 passing (all blocking tests pass)
+- Save data migration NOT needed (pre-release)
+- Stat modifiers defined in Phase 2 are consumed in later phases (documented)
+- Try-Before-Buy is STRETCH goal, core loop works without it
 
 ---
 
-**Git Status:** Clean (only untracked art-docs/ files and test_results)
+**Git Status:** Clean (pending doc updates to commit)
+**Tests:** 705/729 passing
