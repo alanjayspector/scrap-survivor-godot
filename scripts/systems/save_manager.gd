@@ -130,9 +130,16 @@ func load_all_services(slot: int = 0) -> Dictionary:
 		return {"success": false, "source": "none", "error": "Save from newer version"}
 
 	# Deserialize all services
+	# IMPORTANT: CharacterService MUST be loaded FIRST because BankingService
+	# syncs currency from the active character via signals
 	if save_data.has("services"):
 		var services = save_data.services
 
+		# CharacterService FIRST (source of truth for per-character currency)
+		if services.has("character") and is_instance_valid(CharacterService):
+			CharacterService.deserialize(services.character)
+
+		# BankingService SECOND (syncs from CharacterService via signal)
 		if services.has("banking") and is_instance_valid(BankingService):
 			BankingService.deserialize(services.banking)
 
@@ -144,9 +151,6 @@ func load_all_services(slot: int = 0) -> Dictionary:
 
 		if services.has("error") and is_instance_valid(ErrorService):
 			ErrorService.deserialize(services.error)
-
-		if services.has("character") and is_instance_valid(CharacterService):
-			CharacterService.deserialize(services.character)
 
 	_unsaved_changes = false
 

@@ -95,15 +95,22 @@ func test_second_reroll_costs_more() -> void:
 
 
 # Tier Gating Tests
-func test_free_tier_rejects_scrap() -> void:
-	# Default tier is FREE
-	var caps = BankingService.get_balance_caps(BankingService.UserTier.FREE)
+func test_free_tier_no_banking_access() -> void:
+	# Week 18 Architecture Fix: FREE tier can have currency (for shop)
+	# but cannot ACCESS the Banking feature (deposit/withdraw to protect from death)
+	# See docs/game-design/systems/BANKING-SYSTEM.md
 
-	assert_eq(caps.per_character, 0, "FREE tier should have 0 per-character cap")
+	BankingService.set_tier(BankingService.UserTier.FREE)
 
+	# FREE tier should NOT have banking access (deposit/withdraw feature)
+	assert_false(BankingService.has_access(), "FREE tier should not have banking access")
+
+	# But FREE tier CAN still have currency (needed for shop purchases)
 	var add_result = BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
-
-	assert_false(add_result, "FREE tier should reject scrap")
+	assert_true(add_result, "FREE tier can hold scrap (no cap enforcement on FREE)")
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP), 100, "Balance should be 100"
+	)
 
 
 func test_premium_tier_accepts_scrap() -> void:

@@ -54,45 +54,83 @@ func test_save_all_services_succeeds() -> void:
 
 
 func test_load_all_services_restores_state() -> void:
-	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
-	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
+	# Week 18 Architecture: Currency is stored per-character in CharacterService
+	# BankingService syncs from active character on load
+
+	# Create a character first (required for currency)
+	var char_id = CharacterService.create_character("TestChar", "scavenger")
+	CharacterService.set_active_character(char_id)
+
+	# Set currency via CharacterService (source of truth)
+	CharacterService.update_character(
+		char_id, {"starting_currency": {"scrap": 1000, "components": 50, "nanites": 25}}
+	)
+	# Sync BankingService from character
+	BankingService._sync_from_character(char_id)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 
 	SaveManager.save_all_services(TEST_SLOT)
+
+	# Reset both services
+	CharacterService.reset()
 	BankingService.reset()
 
 	var load_result = SaveManager.load_all_services(TEST_SLOT)
 
 	assert_true(load_result.success, "Load should succeed")
-	assert_eq(BankingService.get_balance(BankingService.CurrencyType.SCRAP), 1000, "Scrap restored")
+	# BankingService syncs from CharacterService via signal on load
+	assert_eq(
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
+		1000,
+		"Scrap restored via CharacterService sync"
+	)
 	assert_eq(
 		BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
 		50,
-		"Components restored"
+		"Components restored via CharacterService sync"
 	)
 	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM, "Tier restored")
 
 
 # Multiple Services Tests
 func test_multiple_services_save_and_load() -> void:
-	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 500)
+	# Week 18 Architecture: Currency stored per-character
+	var char_id = CharacterService.create_character("TestChar", "scavenger")
+	CharacterService.set_active_character(char_id)
+
+	# Set currency via CharacterService
+	CharacterService.update_character(
+		char_id, {"starting_currency": {"scrap": 500, "components": 0, "nanites": 0}}
+	)
+	BankingService._sync_from_character(char_id)
+
 	ShopRerollService.execute_reroll()
 	ShopRerollService.execute_reroll()
 
 	SaveManager.save_all_services(TEST_SLOT)
+	CharacterService.reset()
 	BankingService.reset()
 	ShopRerollService.reset()
 
 	SaveManager.load_all_services(TEST_SLOT)
 
 	assert_eq(
-		BankingService.get_balance(BankingService.CurrencyType.SCRAP), 500, "Banking restored"
+		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
+		500,
+		"Banking restored via CharacterService"
 	)
 	assert_eq(ShopRerollService.get_reroll_count(), 2, "Shop reroll restored")
 
 
 # Transaction History Tests
-func test_transaction_history_persists() -> void:
+func test_transaction_history_not_persisted() -> void:
+	# Week 18 Architecture: Transaction history is NOT persisted
+	# It's runtime-only for debugging. Currency persistence is via CharacterService.
+	var char_id = CharacterService.create_character("TestChar", "scavenger")
+	CharacterService.set_active_character(char_id)
+	BankingService._sync_from_character(char_id)
+	BankingService.set_tier(BankingService.UserTier.PREMIUM)
+
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
 	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 200)
 	BankingService.subtract_currency(BankingService.CurrencyType.SCRAP, 50)
@@ -101,20 +139,16 @@ func test_transaction_history_persists() -> void:
 	assert_eq(history_before.size(), 3, "Should have 3 transactions")
 
 	SaveManager.save_all_services(TEST_SLOT)
+	CharacterService.reset()
 	BankingService.reset()
 
 	assert_eq(BankingService.get_transaction_history().size(), 0, "History cleared after reset")
 
 	SaveManager.load_all_services(TEST_SLOT)
 
+	# Transaction history is NOT persisted in v2 architecture
 	var history_after = BankingService.get_transaction_history()
-	assert_eq(history_after.size(), 3, "History should be restored")
-	assert_eq(history_after[0].amount, 100, "First transaction restored")
-	assert_eq(history_after[1].amount, 200, "Second transaction restored")
-	assert_eq(
-		history_after[2].amount, 50, "Third transaction restored (subtract stores positive amount)"
-	)
-	assert_eq(history_after[2].action, "subtract", "Third transaction should be a subtract")
+	assert_eq(history_after.size(), 0, "Transaction history not persisted (runtime-only)")
 
 
 # Signal Tests
@@ -215,11 +249,19 @@ func test_save_deleted_successfully() -> void:
 
 # Cross-Service Consistency Tests
 func test_cross_service_state_consistency() -> void:
-	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 1000)
+	# Week 18 Architecture: Currency stored per-character
+	var char_id = CharacterService.create_character("TestChar", "scavenger")
+	CharacterService.set_active_character(char_id)
+
+	CharacterService.update_character(
+		char_id, {"starting_currency": {"scrap": 1000, "components": 0, "nanites": 0}}
+	)
+	BankingService._sync_from_character(char_id)
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
 	ShopRerollService.execute_reroll()
 
 	SaveManager.save_all_services(TEST_SLOT)
+	CharacterService.reset()
 	BankingService.reset()
 	ShopRerollService.reset()
 
@@ -228,7 +270,7 @@ func test_cross_service_state_consistency() -> void:
 	assert_eq(
 		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
 		1000,
-		"Should restore scrap balance after load"
+		"Should restore scrap balance after load via CharacterService sync"
 	)
 	assert_eq(
 		BankingService.current_tier,

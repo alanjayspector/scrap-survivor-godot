@@ -307,7 +307,13 @@ func _set_currency_preset(scrap: int, components: int, nanites: int) -> void:
 
 
 func _on_apply_currency() -> void:
-	"""Apply currency values from spinboxes to the ACTIVE CHARACTER"""
+	"""Apply currency values from spinboxes to the ACTIVE CHARACTER
+
+	Architecture (Week 18 Fix):
+	- Currency is stored per-character in CharacterService
+	- BankingService is a "view" that auto-syncs via active_character_changed signal
+	- We only need to update CharacterService, then trigger BankingService to re-sync
+	"""
 	var new_scrap = int(scrap_spinbox.value)
 	var new_components = int(components_spinbox.value)
 	var new_nanites = int(nanites_spinbox.value)
@@ -333,13 +339,7 @@ func _on_apply_currency() -> void:
 		)
 	)
 
-	# Get current character currency
-	var current_currency = character.get(
-		"starting_currency", {"scrap": 0, "components": 0, "nanites": 0}
-	)
-	GameLogger.warning("[DEBUG] Current character currency: %s" % str(current_currency))
-
-	# Set currency directly on character
+	# Set currency on CharacterService (single source of truth)
 	CharacterService.update_character(
 		character_id,
 		{
@@ -348,24 +348,19 @@ func _on_apply_currency() -> void:
 		}
 	)
 
-	# ALSO update BankingService to keep it in sync (for UI that reads from BankingService)
-	# First reset to 0, then add the new amounts
-	BankingService.reset()
-	if new_scrap > 0:
-		BankingService.add_currency(BankingService.CurrencyType.SCRAP, new_scrap)
-	if new_components > 0:
-		BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, new_components)
-	if new_nanites > 0:
-		BankingService.add_currency(BankingService.CurrencyType.NANITES, new_nanites)
+	# Trigger BankingService to re-sync from CharacterService
+	# This updates the "view" so UI components reading from BankingService get updated
+	BankingService._sync_from_character(character_id)
 
-	# Verify
-	var updated_char = CharacterService.get_character(character_id)
-	var updated_currency = updated_char.get("starting_currency", {})
-	GameLogger.warning("[DEBUG] Updated character currency: %s" % str(updated_currency))
+	# Verify sync worked
 	GameLogger.warning(
 		(
-			"[DEBUG] BankingService balance: Scrap=%d"
-			% BankingService.get_balance(BankingService.CurrencyType.SCRAP)
+			"[DEBUG] BankingService after sync: Scrap=%d, Components=%d, Nanites=%d"
+			% [
+				BankingService.get_balance(BankingService.CurrencyType.SCRAP),
+				BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
+				BankingService.get_balance(BankingService.CurrencyType.NANITES)
+			]
 		)
 	)
 

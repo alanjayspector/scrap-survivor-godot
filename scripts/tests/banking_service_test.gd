@@ -296,28 +296,29 @@ func test_nanites_respects_tier_caps() -> void:
 	assert_eq(balance, 9_500, "Nanites balance should remain 9500 when exceeding cap")
 
 
-func test_serialize_includes_all_currencies() -> void:
+func test_serialize_includes_tier_and_version() -> void:
 	# Arrange
+	# Week 18 Architecture: BankingService no longer stores balances in serialize()
+	# Currency is stored per-character in CharacterService
 	BankingService.set_tier(BankingService.UserTier.PREMIUM)
-	BankingService.add_currency(BankingService.CurrencyType.SCRAP, 100)
-	BankingService.add_currency(BankingService.CurrencyType.COMPONENTS, 50)
-	BankingService.add_currency(BankingService.CurrencyType.NANITES, 75)
 
 	# Act
 	var serialized = BankingService.serialize()
 
 	# Assert
-	assert_has(serialized, "balances", "Serialized data should have balances")
-	assert_eq(serialized.balances.scrap, 100, "Serialized scrap should be 100")
-	assert_eq(serialized.balances.components, 50, "Serialized components should be 50")
-	assert_eq(serialized.balances.nanites, 75, "Serialized nanites should be 75")
+	assert_has(serialized, "version", "Serialized data should have version")
+	assert_eq(serialized.version, 2, "Version should be 2 (CharacterService stores currency)")
+	assert_has(serialized, "tier", "Serialized data should have tier")
+	assert_eq(serialized.tier, BankingService.UserTier.PREMIUM, "Serialized tier should be PREMIUM")
+	# Note: balances are NOT in serialized data - they live in CharacterService
 
 
-func test_deserialize_handles_missing_new_currencies() -> void:
-	# Arrange - Old save data without nanites
+func test_deserialize_ignores_v1_balances() -> void:
+	# Arrange - Old v1 save data with balances (should be ignored)
+	# Week 18 Architecture: Currency comes from CharacterService, not save data
 	var old_save_data = {
 		"version": 1,
-		"balances": {"scrap": 200, "components": 10},
+		"balances": {"scrap": 200, "components": 10, "nanites": 5},
 		"tier": BankingService.UserTier.PREMIUM,
 		"transaction_history": []
 	}
@@ -325,21 +326,14 @@ func test_deserialize_handles_missing_new_currencies() -> void:
 	# Act
 	BankingService.deserialize(old_save_data)
 
-	# Assert
+	# Assert - Tier should be restored, but balances should be ignored (stay at 0)
+	# The actual currency values come from CharacterService via active_character_changed signal
+	assert_eq(BankingService.current_tier, BankingService.UserTier.PREMIUM, "Tier should be loaded")
+	# Balances remain 0 because CharacterService is the source of truth
 	assert_eq(
 		BankingService.get_balance(BankingService.CurrencyType.SCRAP),
-		200,
-		"Scrap should be loaded from old save"
-	)
-	assert_eq(
-		BankingService.get_balance(BankingService.CurrencyType.COMPONENTS),
-		10,
-		"Components should be loaded from old save"
-	)
-	assert_eq(
-		BankingService.get_balance(BankingService.CurrencyType.NANITES),
 		0,
-		"Nanites should default to 0 for old save"
+		"Scrap should be 0 (ignored v1 balances - CharacterService is source of truth)"
 	)
 
 
