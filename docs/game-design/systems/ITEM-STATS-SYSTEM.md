@@ -423,6 +423,73 @@ func purchase_item(item: Item):
 
 ---
 
+## Stack Limits by Rarity (AUTHORITATIVE)
+
+### Overview
+
+Beyond the 1-limit system for specific powerful items, ALL items have a stack limit based on their rarity. This forces build diversity and prevents degenerate strategies.
+
+### Stack Limit Table
+
+| Rarity | Stack Limit | Example |
+|--------|-------------|---------|
+| **Common** (Gray) | 5 | Can have 5x Bandage |
+| **Uncommon** (Green) | 4 | Can have 4x Sharpening Stone |
+| **Rare** (Blue) | 3 | Can have 3x Glass Cannon |
+| **Epic** (Purple) | 2 | Can have 2x Plasma Deflector |
+| **Legendary** (Gold) | 1 | Can only have 1x God Armor |
+
+### Implementation
+
+```gdscript
+const STACK_LIMITS_BY_RARITY = {
+    Rarity.COMMON: 5,
+    Rarity.UNCOMMON: 4,
+    Rarity.RARE: 3,
+    Rarity.EPIC: 2,
+    Rarity.LEGENDARY: 1,
+}
+
+func can_acquire_item(character_id: String, item_def: ItemDefinition) -> bool:
+    var current_count = get_item_count(character_id, item_def.id)
+    var stack_limit = STACK_LIMITS_BY_RARITY[item_def.rarity]
+    return current_count < stack_limit
+
+func get_stack_limit(item_def: ItemDefinition) -> int:
+    return STACK_LIMITS_BY_RARITY[item_def.rarity]
+```
+
+### UI Feedback
+
+When attempting to acquire item at stack limit:
+```
+"❌ Stack Limit Reached: Can only have 5x Bandages.
+   Sell one first or choose a different item."
+```
+
+### Character Type Modifier: Tinkerer
+
+The **Tinkerer** character type (Premium) gains +1 to all stack limits:
+
+| Rarity | Normal Limit | Tinkerer Limit |
+|--------|-------------|----------------|
+| Common | 5 | 6 |
+| Uncommon | 4 | 5 |
+| Rare | 3 | 4 |
+| Epic | 2 | 3 |
+| Legendary | 1 | 2 |
+
+This makes Tinkerer ideal for specialized builds that benefit from stacking specific items.
+
+### Game Design Rationale
+
+- **Forces diversity** - Can't stack 10 Glass Cannons for broken damage
+- **Progression curve** - Rare items are more limited, forcing decision-making
+- **Tinkerer value** - Premium character has unique build advantage
+- **Economy health** - Players must acquire variety of items
+
+---
+
 ## Item Synergies
 
 ### Synergy Categories

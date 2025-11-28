@@ -1,100 +1,111 @@
 # Subscription Tier Experience
 
-**Date:** October 10, 2025
-**Status:** In Progress
+**Date:** November 27, 2025
+**Status:** Updated for Week 18 Character System
+**Last Updated:** 2025-11-27
 
 ---
 
-## 1. Value Proposition: Ultimate Convenience & Prestige
+## 1. Value Proposition: Ultimate Convenience & Power
 
-The Subscription Tier is designed for our most dedicated and engaged players. It offers a suite of powerful convenience features that streamline resource management and protect valuable assets, allowing players to focus on high-level strategy and experimentation across all their characters.
+The Subscription Tier is designed for our most dedicated players. It offers exclusive character access, powerful convenience features, and the lowest death penalties, allowing players to focus on high-level strategy and experimentation.
 
-**The core promise: Master the meta-game with unparalleled convenience and never worry about losing your best gear.**
+**The core promise: Access the most powerful character and never worry about losing your gear.**
 
 ---
 
 ## 2. How to Obtain
 
-- **Prerequisite:** Must own the Premium Tier (either purchased or earned).
-- **Price:** **$2.99/month** (recurring In-App Purchase).
+- **Price:** **$1.99-$4.99/month** (recurring In-App Purchase, exact price TBD)
 
-This tier is explicitly for players who are deeply invested in the game and see value in long-term time-saving features.
+This tier is for players who are deeply invested in the game and see value in long-term convenience features.
 
 ---
 
-## 3. New Features Unlocked
+## 3. Features Unlocked
 
-Subscribing grants access to the highest level of convenience and end-game features:
+### Exclusive Character Access
 
-**Character Management:**
-- **50 Active Character Slots:** Generous limit for experimentation (vs 15 for Premium)
-- **Hall of Fame (200 Archived Slots):** Archive retired characters instead of deleting
+**Overclocked Character (AUTHORITATIVE):**
+
+| Character | Special Mechanic | Playstyle |
+|-----------|------------------|-----------|
+| **Overclocked** | +25% Attack Speed, +15% Damage, takes 5% Max HP damage per wave | High risk/reward DPS |
+
+The Overclocked character is the most powerful offensive option in the game, but requires skill to manage the self-damage mechanic.
+
+### Character Management
+
+- **Unlimited Character Slots:** No cap on active characters
+- **Hall of Fame (Archived Slots):** Archive retired characters instead of deleting
   - Preserved stats and loadouts (read-only)
   - Auto-generate legendary trading card on archive
-  - Archived characters remain on global leaderboards
-  - One-way archive (cannot unarchive)
-- **Curation Tools:** Favorite/pin characters, add personal notes
-- **All Current & Future Character Types:** Permanent access to entire roster
 
-**Cross-Character Features (Exclusive):**
-- **Quantum Banking:** Transfer scrap + premium currency between any characters
-  - No fees, unlimited transfers
-  - Bypass 200k total balance cap
-  - Audit trail logged in Supabase
+### Economy & Protection
+
+- **2% Death Durability Loss:** Items last 5x longer than Free tier (10%)
+- **Mr Fix-It Repair Service:** Passive background item repair while offline
+  - 5 HP/hour repair rate
+  - Repairs 3 most damaged items simultaneously
+
+### Cross-Character Features (Exclusive)
+
+- **Quantum Banking:** Transfer scrap between any characters
+  - Small conversion fee (economy sink)
   - Funnel wealth to "main" character for expensive purchases
-- **Quantum Storage:** Transfer items (weapons, armor, trinkets) between characters
+- **Quantum Storage:** Transfer items between characters
   - No durability loss on transfer
-  - No restrictions on rarity or item type
-  - Optimize builds by sharing high-tier gear
+  - Optimize builds by sharing gear
 
-**Exclusive Shops & Services:**
-- **Atomic Vending Machine:** Weekly personalized shop (resets Monday 00:00 UTC)
-  - 6-12 items matched to your Playstyle Archetype
-  - 30% discount vs Black Market prices
-  - Subscription-exclusive access
-  - Curated based on AI classification (Tank, Glass Cannon, Speedrunner, Hoarder, Balanced)
+### Enhanced Progression
 
-**Enhanced Progression:**
 - **Goals System (Maximum):** 5 daily + 3 weekly + 2 seasonal goals
   - 2x rewards on all goal completions
-- **Achievements (Subscription Category):** 5 exclusive Subscription achievements
-- **Perks System:** Access to Subscription-tier perks (most powerful modifiers)
-- **Minions System (3 active slots):** Deploy 3 simultaneous combat companions
-  - 25 roster slots (vs 10 for Premium)
-  - Maximum tactical depth
-
-**Personalization & Optimization:**
-- **Personalization System (Full):** AI-driven playstyle classification
-  - Powers Atomic Vending Machine recommendations
-  - Archetype badge + detailed metrics
-- **Advisor (Ultimate):** Full post-run analysis + archetype optimization tips
-  - Performance summary with strengths/weaknesses
-  - Archetype alignment scoring
-  - Advanced meta-strategy recommendations
-- **Feature Request System (Maximum):** 5 votes/month (3x weight), 5 submissions/month
-
-**Quality of Life:**
-- **Black Market (10% Discount):** Reduced prices on all Black Market services
-- **Radioactivity (20% Reduced Debuffs + Preview):** Preview debuff before confirming irradiation
-- **Special Events (Enhanced):** Priority access and exclusive Subscription rewards
+- **Subscription Achievements:** 5 exclusive achievements
+- **Subscription Perks:** Access to most powerful run modifiers
 
 ---
 
-## 4. Cost & Revenue Analysis
+## 4. Future Subscription Features (Week 22+)
 
-- **Price:** $2.99/month
-- **Net to Developer (Year 1):** Approximately **$1.70/month** per subscriber after platform fees (30%) and payment processing.
+The following features are planned for future development:
 
-While the monthly revenue is modest, this tier provides a stable, predictable income stream from the most engaged segment of the player base. It is designed to have a low churn rate due to the high utility of its features for dedicated players.
+- **Minions System (DEFERRED):** AI-controlled combat companions
+  - Originally planned for Subscription tier with 3 active slots
+  - Moved to post-Week 21 development
+  - Will include 25 roster slots when implemented
+
+- **Atomic Vending Machine:** Weekly personalized shop
+  - AI-curated items based on playstyle
+  - Subscription-exclusive discounts
+
+- **Personalization System:** AI-driven playstyle classification
+  - Archetype detection and recommendations
 
 ---
 
-## 5. Upgrade Incentive
+## 5. Cost & Revenue Analysis
 
-The motivation to subscribe is driven by **convenience, optimization, and prestige**.
+- **Price:** $1.99-$4.99/month
+- **Net to Developer (Year 1):** Approximately 70% after platform fees
 
-- **For the Power Gamer:** Players who want to optimize multiple character builds will find Quantum Banking/Storage indispensable for funneling resources to a "main" character.
-- **For the Collector:** Hall of Fame allows preserving legendary characters without sacrificing active slots, creating a permanent legacy.
-- **For the Meta-Optimizer:** Atomic Vending Machine's personalized weekly shop + Advisor's optimization tips enable perfect build crafting tailored to playstyle.
-- **For the Community Leader:** Maximum voting power (5 votes @ 3x weight) in Feature Request System gives dedicated players significant influence over game development.
-- **For the Strategist:** 3 simultaneous minions (vs 2 for Premium) + 25 minion roster slots unlock maximum tactical depth in combat.
+This tier provides stable, predictable income from engaged players. Features are designed for low churn rate.
+
+---
+
+## 6. Upgrade Incentive
+
+The motivation to subscribe is driven by **power, convenience, and protection**.
+
+- **For the Power Gamer:** Overclocked character provides highest DPS potential in the game
+- **For the Hoarder:** 2% death penalty means items last 5x longer than free players
+- **For the Multi-Character Player:** Quantum Banking/Storage enables resource sharing
+- **For the Completionist:** Unlimited character slots enable collecting all builds
+
+---
+
+## Related Documentation
+
+- [CHARACTER-SYSTEM.md](../game-design/systems/CHARACTER-SYSTEM.md) - Character type definitions
+- [INVENTORY-SYSTEM.md](../game-design/systems/INVENTORY-SYSTEM.md) - Death penalty by tier, Mr Fix-It
+- [premium-tier.md](./premium-tier.md) - Premium tier features

@@ -629,3 +629,143 @@ Completed comprehensive audit of:
 **Status:** ✅ Reconciliation Complete - Awaiting Brotato Research
 **Ready for:** Session 2 (Brotato Research Integration)
 **Estimated Time to Address Gaps:** 3-4 hours (after research and Q&A)
+
+
+---
+
+## 🆕 RECONCILIATION UPDATE - 2025-11-27
+
+**Session:** Documentation Audit & Panel Review
+**Status:** DECISIONS FINALIZED - Ready for Implementation
+
+---
+
+### RESOLVED: Character Type System
+
+**Original Conflict:** Three different character type systems existed across documents.
+
+**RESOLUTION (APPROVED):**
+
+| Type | Tier | Weapon Slots | Special Mechanic | Flavor |
+|------|------|--------------|------------------|--------|
+| **Scavenger** | Free | 6 | +10% Scrap drops, +15 pickup range | "Knows where the good junk is" |
+| **Rustbucket** | Free | 4 | +30 Max HP, +5 Armor, -15% Speed | "More patches than original parts" |
+| **Hotshot** | Free | 6 | +20% Damage, +10% Crit, -20 Max HP | "Burns bright, burns fast" |
+| **Tinkerer** | Premium | 6 | +1 Stack limit (all rarities), -10% Damage | "Can always fit one more gadget" |
+| **Salvager** | Premium | 5 | +50% Component yield, +25% Shop discount, -1 Weapon slot | "Sees value in everything" |
+| **Overclocked** | Subscription | 6 | +25% Attack Speed, +15% Damage, takes 5% Max HP damage per wave | "Pushed past factory specs" |
+
+**Rationale:**
+- Replaced old Tank/Commando/Mutant definitions
+- Rejected One Armed/Weapon Master (direct Brotato copies)
+- New types provide meaningful gameplay variation
+- Tinkerer/Overclocked are UNIQUE to Scrap Survivor
+
+---
+
+### RESOLVED: Death Penalty Tier Differentiation
+
+**Original Conflict:** INVENTORY-SYSTEM.md only mentioned 10% for Free tier, no tier differentiation.
+
+**RESOLUTION (APPROVED):**
+
+```
+Free Tier:         10% durability loss per death
+Premium Tier:       5% durability loss per death  
+Subscription Tier:  2% durability loss per death
+```
+
+**Rationale:** Creates meaningful Premium/Subscription value differentiation.
+
+---
+
+### RESOLVED: Component Yields from Recycling
+
+**Original Conflict:** Week 19 proposed 2-3x higher yields than INVENTORY-SYSTEM.md.
+
+**RESOLUTION (APPROVED - HYBRID APPROACH):**
+
+**Base Yields:**
+| Tier | Base Components |
+|------|-----------------|
+| 1 | 8 |
+| 2 | 20 |
+| 3 | 40 |
+| 4 | 80 |
+
+**Luck Bonus Formula:**
+```gdscript
+func calculate_component_yield(item_tier: int, luck: int) -> int:
+    var base = BASE_YIELDS[item_tier]
+    var luck_bonus = base * (luck / 100.0) * 0.5  # Up to +50% at 100 luck
+    return base + int(luck_bonus)
+```
+
+**Result at Various Luck Levels:**
+| Tier | 0 Luck | 50 Luck | 100 Luck |
+|------|--------|---------|----------|
+| 1 | 8 | 10 | 12 |
+| 2 | 20 | 25 | 30 |
+| 3 | 40 | 50 | 60 |
+| 4 | 80 | 100 | 120 |
+
+**Rationale:** Balances predictable economy with meaningful Luck stat influence.
+
+---
+
+### DEFERRED: Minions System
+
+**Original Conflict:** Premium/Subscription tier docs specified Minions, Week 18-21 had no implementation.
+
+**RESOLUTION:** Deferred to Week 22+ as Future Work.
+
+**Action Required:** Update tier-experiences docs to note as "Future Work."
+
+---
+
+### CONFIRMED: Stack Limits (Missing from ITEM-STATS-SYSTEM.md)
+
+**RESOLUTION (APPROVED):**
+
+| Rarity | Stack Limit |
+|--------|-------------|
+| Common | 5 |
+| Uncommon | 4 |
+| Rare | 3 |
+| Epic | 2 |
+| Legendary | 1 |
+
+**Action Required:** Add to ITEM-STATS-SYSTEM.md.
+
+---
+
+### CONFIRMED: SHOP-SYSTEM.md is Legacy
+
+**Original Conflict:** SHOP-SYSTEM.md references React Native (FlatList, WatermelonDB).
+
+**RESOLUTION:** Archive as legacy. SHOPS-SYSTEM.md is the correct Godot document.
+
+---
+
+## 📋 DOCUMENTATION CLEANUP SCHEDULED
+
+**Document Created:** `docs/migration/NEXT_SESSION_DOC_CLEANUP.md`
+
+**Scope:**
+1. Archive ~50 legacy React Native files
+2. Archive ~15 completed week plan files
+3. Update CHARACTER-SYSTEM.md with new types
+4. Update INVENTORY-SYSTEM.md with death penalties + yields
+5. Update ITEM-STATS-SYSTEM.md with stack limits
+6. Update tier experience docs (Minions as future)
+7. Create docs/README.md index
+8. Create docs/GLOSSARY.md
+
+**Estimated Time:** 4-5 hours
+**Status:** Ready for execution in fresh session
+
+---
+
+**Next Steps:**
+1. Execute cleanup in fresh chat (avoid context rollover risk)
+2. Begin Week 18 implementation after cleanup complete

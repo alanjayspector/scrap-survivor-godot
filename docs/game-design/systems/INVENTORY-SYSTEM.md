@@ -427,76 +427,55 @@ Item Card Display:
 
 ---
 
-### 6B. Death Penalty - Durability Loss
+### 6B. Death Penalty - Durability Loss (AUTHORITATIVE)
 
-**When Character Dies:**
+**Tier-Based Death Penalty (APPROVED)**:
 
-**Option A: Random Loss**
+The durability loss on death is determined by the player's subscription tier, providing clear monetization value while maintaining consequence for all players.
 
-```typescript
-onCharacterDeath(character: Character) {
-  character.inventory.forEach(item => {
-    const loss = randomBetween(5, 15); // 5-15 HP lost
-    item.durability.currentHP -= loss;
-
-    if (item.durability.currentHP <= 0) {
-      destroyItem(item);
-      notifyPlayer(`${item.name} was destroyed!`);
-    }
-  });
+```gdscript
+const DEATH_PENALTY_BY_TIER = {
+    UserTier.FREE: 0.10,           # 10% durability loss per death
+    UserTier.PREMIUM: 0.05,        # 5% durability loss per death
+    UserTier.SUBSCRIPTION: 0.02,   # 2% durability loss per death
 }
+
+func apply_death_penalty(character: Dictionary) -> Dictionary:
+    var tier = CharacterService.get_tier()
+    var loss_percent = DEATH_PENALTY_BY_TIER[tier]
+    var damaged_items = []
+    
+    for item in character.inventory:
+        var loss = int(item.durability.max_hp * loss_percent)
+        item.durability.current_hp -= loss
+        
+        if item.durability.current_hp <= 0:
+            destroyed_items.append(item)
+        else:
+            damaged_items.append({"item": item, "loss": loss})
+    
+    return {
+        "damaged": damaged_items,
+        "destroyed": destroyed_items,
+        "tier": tier,
+        "loss_percent": loss_percent
+    }
 ```
 
-**Option B: Rarity-Based Loss**
+**Example Death Scenarios**:
 
-```typescript
-const DEATH_PENALTY = {
-  [Rarity.COMMON]: 20, // Lose 20 HP (5 deaths to destroy)
-  [Rarity.UNCOMMON]: 30, // Lose 30 HP (6-7 deaths)
-  [Rarity.RARE]: 50, // Lose 50 HP (8 deaths)
-  [Rarity.EPIC]: 80, // Lose 80 HP (10 deaths)
-  [Rarity.LEGENDARY]: 100, // Lose 100 HP (16 deaths)
-};
-```
+| Tier | Death Penalty | 100 HP Item | 400 HP Item | 1600 HP Item |
+|------|---------------|-------------|-------------|--------------|
+| Free | 10% | -10 HP (10 deaths to destroy) | -40 HP | -160 HP |
+| Premium | 5% | -5 HP (20 deaths to destroy) | -20 HP | -80 HP |
+| Subscription | 2% | -2 HP (50 deaths to destroy) | -8 HP | -32 HP |
 
-**Option C: Type-Based Loss**
-
-```typescript
-const DEATH_PENALTY_BY_TYPE = {
-  weapon: 15, // Weapons more fragile (combat damage)
-  armor: 5, // Armor more durable (designed to protect)
-  utility: 10, // Utility items moderate durability
-};
-```
-
-**Recommendation:** **Option B (Rarity-Based)** + **Option C (Type Multiplier)**
-
-**Combined Formula:**
-
-```typescript
-durabilityLoss = BASE_PENALTY[rarity] * TYPE_MULTIPLIER[type] * randomFactor(0.8, 1.2)
-
-Example Death (DPS character):
-- Legendary Sword (weapon):
-  - Base: 100 HP loss
-  - Type: 1.5x multiplier (weapons are fragile)
-  - Random: 1.1x
-  - Total: 165 HP loss
-
-- Epic Armor (armor):
-  - Base: 80 HP loss
-  - Type: 0.5x multiplier (armor is tough)
-  - Random: 0.9x
-  - Total: 36 HP loss
-```
-
-**Game Design Rationale:**
-
-- Legendary items last longer (16+ deaths) but hurt more when lost
-- Common items break faster but easier to replace
-- Weapons degrade faster (you're using them in combat!)
-- Armor protects itself (more durable)
-- Random factor adds tension ("will it survive this death?")
+**Game Design Rationale**:
+- **Free tier feels consequential** - 10 deaths destroys common items
+- **Premium tier provides safety** - Double the item lifespan
+- **Subscription tier is generous** - Items last 5x longer than free
+- **Clear upgrade path** - Each tier offers tangible protection
+- **Still has consequence** - Even subscribers can lose items eventually
 
 ---
 
@@ -596,6 +575,55 @@ function calculateRepairs(lastLoginTime: Date, currentTime: Date, items: Item[])
 - Items naturally degrade and eventually break
 - Must re-acquire items through gameplay
 - **This is OK** - creates economy, encourages re-engagement
+
+---
+
+### 6D. Component Yields from Recycling (AUTHORITATIVE)
+
+**Concept:** Players can recycle unwanted items for components. Yield is based on item tier plus a luck bonus.
+
+**Base Yields by Item Tier:**
+
+| Item Tier | Base Components |
+|-----------|-----------------|
+| Tier 1 (Common) | 8 components |
+| Tier 2 (Uncommon) | 20 components |
+| Tier 3 (Rare) | 40 components |
+| Tier 4 (Epic) | 80 components |
+
+**Luck Bonus Formula:**
+
+The player's luck stat provides up to +50% additional components at 100 luck.
+
+```gdscript
+const BASE_YIELDS = {
+    1: 8,
+    2: 20,
+    3: 40,
+    4: 80,
+}
+
+func calculate_component_yield(item_tier: int, luck: int) -> int:
+    var base = BASE_YIELDS[item_tier]
+    var luck_bonus = base * (luck / 100.0) * 0.5  # Up to +50% at 100 luck
+    return base + int(luck_bonus)
+```
+
+**Yield Table by Luck:**
+
+| Tier | 0 Luck | 25 Luck | 50 Luck | 75 Luck | 100 Luck |
+|------|--------|---------|---------|---------|----------|
+| 1 | 8 | 9 | 10 | 11 | 12 |
+| 2 | 20 | 22 | 25 | 27 | 30 |
+| 3 | 40 | 45 | 50 | 55 | 60 |
+| 4 | 80 | 90 | 100 | 110 | 120 |
+
+**Game Design Rationale:**
+- **Base yields are meaningful** - Even 0 luck gives useful returns
+- **Luck investment rewarded** - Players who build luck get 50% more components
+- **Tier scaling is exponential** - Higher tier items = more valuable recycling
+- **Economy sink** - Encourages item turnover instead of hoarding
+- **Build diversity** - Luck builds have recycling advantage
 
 ---
 
