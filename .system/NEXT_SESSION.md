@@ -60,9 +60,11 @@ Ready to implement Phase 1.
 ```
 Continue Week 18 Phase 1: Item Database + ItemService.
 
-Read:
-1. docs/migration/week18-plan.md (Phase 1 section)
-2. scripts/services/weapon_service.gd (WEAPON_DEFINITIONS to migrate)
+Read (IN THIS ORDER):
+1. .system/CLAUDE_RULES.md (ALWAYS read first - development protocols)
+2. docs/migration/week18-plan.md (Phase 1 section)
+3. scripts/services/weapon_service.gd (WEAPON_DEFINITIONS to migrate)
+4. scripts/services/character_service.gd (DEFAULT_BASE_STATS for valid stat keys)
 
 Tasks:
 1. Create scripts/data/ directory

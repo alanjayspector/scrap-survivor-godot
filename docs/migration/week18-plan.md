@@ -136,6 +136,7 @@ All new services MUST include perk hooks per `PERKS-ARCHITECTURE.md`:
 
 ```gdscript
 const ITEM_DATABASE = {
+    # === WEAPON EXAMPLE ===
     "weapon_rusty_blade": {
         "id": "weapon_rusty_blade",
         "name": "Rusty Blade",
@@ -147,21 +148,12 @@ const ITEM_DATABASE = {
             "damage": 15,
             "melee_damage": 5
         },
-        "stack_limit": 5,  # From rarity
-        
-        # Weapon-specific
-        "weapon_type": "melee",  # melee, ranged
-        "cooldown": 0.5,
-        "range": 50,
-        "special_behavior": "none",
-        "projectile": null,
-        
-        # Visual (from existing WeaponService)
-        "projectile_color": Color(0.8, 0.4, 0.2),
-        "trail_width": 0.0,
-        "screen_shake_intensity": 3.0
+        "stack_limit": 5,  # From rarity (Common=5)
+        "weapon_type": "melee",  # melee or ranged (for UI icons/filtering)
+        # NOTE: Combat data (cooldown, range, projectile, visuals) stays in WeaponService
     },
     
+    # === ARMOR EXAMPLE ===
     "armor_scrap_vest": {
         "id": "armor_scrap_vest",
         "name": "Scrap Vest",
@@ -176,6 +168,7 @@ const ITEM_DATABASE = {
         "stack_limit": 5
     },
     
+    # === TRINKET EXAMPLE ===
     "trinket_lucky_coin": {
         "id": "trinket_lucky_coin",
         "name": "Lucky Coin",
@@ -185,7 +178,7 @@ const ITEM_DATABASE = {
         "base_price": 150,
         "stats": {
             "luck": 10,
-            "harvesting": 5
+            "scavenging": 5  # Note: "scavenging" not "harvesting" - matches CharacterService stats
         },
         "stack_limit": 4
     }
@@ -201,6 +194,83 @@ const ITEM_DATABASE = {
 | Rare | Blue `#3B82F6` | 3 | 400-800 | 8% |
 | Epic | Purple `#A855F7` | 2 | 800-1,500 | 1.5% |
 | Legendary | Gold `#F59E0B` | 1 | 1,500-3,000 | 0.5% |
+
+### Implementation Conventions (AUTHORITATIVE)
+
+#### Item ID Naming Convention
+
+**All item IDs MUST use type prefixes:**
+- Weapons: `weapon_rusty_blade`, `weapon_plasma_pistol`
+- Armor: `armor_scrap_vest`, `armor_reinforced_plate`
+- Trinkets: `trinket_lucky_coin`, `trinket_speed_chip`
+- Consumables: `consumable_repair_kit`, `consumable_stim_pack`
+
+**Rationale:**
+1. Namespace clarity in unified ITEM_DATABASE
+2. Prevents ID collisions (e.g., both weapon and trinket named "lucky_coin")
+3. Enables prefix-based filtering: `item_id.begins_with("weapon_")`
+4. Industry standard pattern (Vampire Survivors, Hades, etc.)
+
+#### Weapon Data Migration (Phase 1 vs Phase 4)
+
+**What MIGRATES to ItemService (Phase 1):**
+- `id` (with `weapon_` prefix added)
+- `name` (from `display_name`)
+- `description` (NEW - add flavor text)
+- `type`: "weapon"
+- `rarity` (NEW - assign based on tier_required mapping)
+- `base_price` (NEW - from rarity range)
+- `stats` (NEW - extract damage bonuses)
+- `stack_limit` (from rarity)
+- `weapon_type`: "melee" or "ranged"
+
+**What STAYS in WeaponService (until Phase 4 refactor):**
+- `cooldown` - Combat timing
+- `range` - Combat targeting
+- `projectile`, `projectile_speed` - Combat behavior
+- `special_behavior` - Combat mechanics (spread, pierce, etc.)
+- `projectiles_per_shot`, `pierce_count`, `splash_radius` - Combat mechanics
+- `projectile_color`, `trail_*`, `screen_shake_intensity` - Visual/audio
+- All audio references
+
+**Phase 4 will have WeaponService query ItemService for base stats while keeping combat-specific data.**
+
+#### Valid Stat Keys (Phase 1)
+
+**Item stats MUST use keys from CharacterService.DEFAULT_BASE_STATS:**
+
+```gdscript
+# Core Survival Stats
+"max_hp", "hp_regen", "life_steal", "armor"
+
+# Offense Stats  
+"damage", "melee_damage", "ranged_damage", "attack_speed", "crit_chance", "resonance"
+
+# Defense Stats
+"dodge"
+
+# Utility Stats
+"speed", "luck", "pickup_range", "scavenging"
+```
+
+**Rationale:** Enables simple stat aggregation formula:
+```
+final_stat = base_stat + Σ(all_item_stat_bonuses)
+```
+
+New stats (e.g., durability) can be added in future weeks when consumed by new systems.
+
+#### Tier-to-Rarity Mapping (for weapon migration)
+
+When migrating weapons from WeaponService, map `tier_required` to `rarity`:
+
+| WeaponService tier_required | ItemService rarity |
+|-----------------------------|-------------------|
+| FREE | common or uncommon |
+| PREMIUM | uncommon or rare |
+| SUBSCRIPTION | rare or epic |
+
+Use judgment based on weapon power level within tier.
 
 ---
 
@@ -754,7 +824,7 @@ func calculate_price(character_id: String, base_price: int) -> int:
 
 ---
 
-**Document Version:** 2.1 (Added Phase 8 Try-Before-Buy, Deferred Integrations section)
+**Document Version:** 2.2 (Added Implementation Conventions section)
 **Created:** 2025-11-27
-**Last Major Update:** 2025-11-27 - Added Phase 8, documented deferred stat modifier integrations
+**Last Major Update:** 2025-11-27 - Added Implementation Conventions (item ID naming, weapon migration scope, valid stat keys)
 **Next Review:** After Phase 1 completion
