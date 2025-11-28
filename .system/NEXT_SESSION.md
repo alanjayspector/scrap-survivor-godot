@@ -2,54 +2,60 @@
 
 **Updated:** 2025-11-28
 **Current Branch:** `main`
-**Status:** Week 18 Phase 4 COMPLETE - Phase 5 NEXT
+**Status:** Week 18 Phase 5 COMPLETE - Phase 6 NEXT
 
 ---
 
 ## SESSION ACCOMPLISHMENTS (2025-11-28)
 
-### Phase 4: InventoryService - COMPLETE
+### Phase 5: ShopService Hub Refactor - COMPLETE
 
-**Initial Implementation (Gemini 3 Pro-High):**
-- Created `scripts/services/inventory_service.gd`
-- Created `scripts/tests/inventory_service_test.gd`
-- Basic add/remove, slot limits, stack limits, perk hooks
+**Problem:** ShopService was implemented with wave-based generation (combat model).
+**Solution:** Refactored to time-based hub model per SHOPS-SYSTEM.md.
 
-**Claude Review & Fixes:**
-1. **Tinkerer stack_limit_bonus** - Was defined but not consumed. Now applied in `_validate_stack_limit()`
-2. **GameLogger** - Added throughout for observability
-3. **reset()** method - Added for testing/new game
-4. **Persistence** - Fixed version warning, added timestamp
-5. **Test pollution bug** - Fixed `before_each` to use `duplicate(true)` preventing shared mock mutation
+**Changes Made:**
+1. **Removed wave-based concepts:**
+   - `_current_wave` state variable
+   - `wave` parameter from `generate_shop()`
+   - `_apply_wave_guarantees()` function
+   - `set_current_wave()` function
+   - `RARITY_TIERS` constant
 
-**Durability Placeholder Added:**
-- Changed data model from item IDs to item INSTANCES
-- Each instance has `{instance_id, item_id, durability: {current_hp, max_hp}}`
-- Durability by rarity: Common=100, Uncommon=200, Rare=400, Epic=800, Legendary=1600
-- APIs: `apply_durability_damage()`, `repair_item()`, `get_durability_percent()`
-- Save format v2 with v1→v2 migration for backwards compatibility
-- 8 new durability tests added
+2. **Added hub model features:**
+   - `check_empty_stock_refresh()` - FREE refresh when shop is empty
+   - Updated serialization to v2 format (with v1 migration support)
 
-**Deferred to Foundry (Week 19+):**
-- Durability perk hooks (`durability_damage_pre/post`, `durability_repair_pre/post`)
-- Death penalty (tier-based durability damage)
-- Mr Fix-It repair service (subscription feature)
+3. **Updated tests:**
+   - Removed 4 wave-related tests
+   - Added 2 new empty stock refresh tests
+   - Updated all `generate_shop()` calls to new signature
+
+**API Change:**
+```gdscript
+# Old (wave-based - REMOVED)
+generate_shop(wave: int, user_tier: String)
+
+# New (hub-based)
+generate_shop(user_tier: String = "free")
+check_empty_stock_refresh() -> bool  # NEW
+```
 
 ---
 
 ## IMMEDIATE NEXT ACTION
 
-**Begin Phase 5: ShopService Hub Refactor**
+**Begin Phase 6: Hub Shop UI**
 
-ShopService was implemented with wave-based generation (incorrect).
-Needs refactor to time-based hub model per SHOPS-SYSTEM.md.
+Create the shop UI scene and wire it to the scrapyard hub.
 
-**Key Changes:**
-- Remove wave parameter from `generate_shop()`
-- Add `_last_refresh_timestamp` tracking
-- Implement `check_refresh_needed()` - 4-hour cycle
-- Implement `check_empty_stock_refresh()` - FREE refresh when all items purchased
-- Add `get_time_until_refresh()` for UI countdown
+**Key Tasks:**
+1. Create/commission `assets/icons/hub/icon_shop_final.svg`
+2. Add ShopButton to `scenes/hub/scrapyard.tscn` (35% position)
+3. Create `scenes/ui/shop.tscn` (hub shop scene)
+4. Create `scenes/ui/components/shop_item_card.tscn`
+5. Wire navigation: scrapyard ↔ shop
+6. Implement refresh countdown display
+7. Show toast on auto-refresh
 
 ---
 
@@ -59,98 +65,99 @@ Needs refactor to time-based hub model per SHOPS-SYSTEM.md.
 |-------|-------------|-----------|--------|
 | **1** | Item Database + ItemService | 1.5h | ✅ COMPLETE |
 | **2** | Character Type System | 1.5h | ✅ COMPLETE |
-| **3** | ShopService | 1.5h | ✅ COMPLETE (needs refactor in Phase 5) |
+| **3** | ShopService | 1.5h | ✅ COMPLETE |
 | **4** | InventoryService | 1.5h | ✅ COMPLETE (with durability placeholder) |
-| **5** | ShopService Refactor for Hub Model | 1h | ⏭️ NEXT |
-| **6** | Hub Shop UI | 2h | PENDING |
+| **5** | ShopService Hub Refactor | 1h | ✅ COMPLETE |
+| **6** | Hub Shop UI | 2h | ⏭️ NEXT |
 | **6.5** | Hub Bank UI | 1h | PENDING |
 | **7** | Integration & QA | 1h | PENDING |
 | **8** | Try-Before-Buy | 2h | STRETCH |
 
 **Total Estimated**: 12-14 hours
-**Actual So Far**: ~6.5h for Phases 1-4
+**Actual So Far**: ~7.5h for Phases 1-5
 
 ---
 
 ## QUICK START PROMPT
 
 ```
-Continue Week 18 Phase 5: ShopService Hub Refactor.
-
-⚠️ Read SHOPS-SYSTEM.md first - Shop is a HUB SERVICE with time-based refresh.
+Continue Week 18 Phase 6: Hub Shop UI.
 
 Read (IN THIS ORDER):
 1. .system/CLAUDE_RULES.md (development protocols)
-2. docs/game-design/systems/SHOPS-SYSTEM.md (shop design - "Location: Hub → Shop")
-3. docs/migration/week18-plan.md (Phase 5 section)
-4. scripts/services/shop_service.gd (current implementation to refactor)
+2. docs/game-design/systems/SHOPS-SYSTEM.md (shop design - UI mockups)
+3. docs/migration/week18-plan.md (Phase 6 section)
+4. scripts/services/shop_service.gd (service API)
 
 Tasks:
-1. Remove wave parameter from generate_shop()
-2. Add _last_refresh_timestamp tracking
-3. Implement check_refresh_needed() - 4-hour refresh cycle
-4. Implement check_empty_stock_refresh() - FREE refresh when stock = 0
-5. Add get_time_until_refresh() for UI countdown
-6. Update tests for hub model
-7. Keep: rarity weighting, tier discounts, perk hooks
+1. Create shop icon (or use placeholder)
+2. Add ShopButton to scrapyard.tscn at 35% position
+3. Create shop.tscn scene with 6 item cards
+4. Create shop_item_card.tscn component
+5. Wire scrapyard ↔ shop navigation
+6. Display refresh countdown
+7. Show toast on empty stock refresh
 ```
 
 ---
 
 ## KEY FILES CHANGED THIS SESSION
 
-### New Files:
-- `scripts/services/inventory_service.gd` - Instance-based inventory with durability
-- `scripts/tests/inventory_service_test.gd` - 25 tests including durability
-
 ### Modified Files:
-- `scripts/data/item_database.gd` - Added `base_durability` to RARITY_CONFIG
-- `docs/migration/week18-plan.md` - Updated status, durability notes
+- `scripts/services/shop_service.gd` - Hub model refactor, v2 serialization
+- `scripts/tests/shop_service_test.gd` - Updated for hub model, +2/-4 tests
 
 ---
 
-## INVENTORYSERVICE API REFERENCE
+## SHOPSERVICE API REFERENCE (Updated)
 
 ```gdscript
-# Adding items (returns instance_id on success, "" on failure)
-var instance_id = InventoryService.add_item(character_id, item_id)
+# Generate shop (hub-based, no wave parameter)
+ShopService.generate_shop(user_tier: String = "free") -> Array[Dictionary]
 
-# Getting inventory
-var instances = InventoryService.get_inventory(character_id)  # Array of instance dicts
-var item_ids = InventoryService.get_item_ids(character_id)    # Array of strings (compat)
+# Get shop items
+ShopService.get_shop_items() -> Array[Dictionary]
+ShopService.get_shop_item(index: int) -> Dictionary
+ShopService.get_shop_item_by_id(item_id: String) -> Dictionary
+ShopService.is_item_in_shop(item_id: String) -> bool
 
-# Removing items
-InventoryService.remove_item(character_id, item_id)           # Remove first instance
-InventoryService.remove_item_by_instance(character_id, instance_id)  # Remove specific
+# Refresh mechanics
+ShopService.get_time_until_refresh() -> int  # Seconds until 4h refresh
+ShopService.should_refresh() -> bool  # True if 4h elapsed
+ShopService.check_empty_stock_refresh() -> bool  # FREE refresh if empty
 
-# Stats
-var stats = InventoryService.calculate_stats(character_id)
+# Purchases
+ShopService.purchase_item(character_id: String, item_id: String) -> Dictionary
+ShopService.calculate_purchase_price(character_id: String, base_price: int) -> int
 
-# Durability (placeholder - full system in Foundry)
-var survived = InventoryService.apply_durability_damage(character_id, instance_id, damage)
-InventoryService.repair_item(character_id, instance_id, heal_amount)
-var percent = InventoryService.get_durability_percent(character_id, instance_id)
+# Rerolls
+ShopService.reroll_shop(character_id: String) -> Array[Dictionary]
+ShopService.get_reroll_cost(character_id: String) -> int
+ShopService.get_reroll_count() -> int
+
+# State
+ShopService.set_user_tier(tier: String) -> void
+ShopService.get_shop_size() -> int
+ShopService.is_shop_empty() -> bool
 
 # Persistence
-var data = InventoryService.serialize()
-InventoryService.deserialize(data)  # Handles v1→v2 migration
-InventoryService.reset()
+ShopService.serialize() -> Dictionary  # v2 format
+ShopService.deserialize(data: Dictionary) -> void  # Supports v1 and v2
+ShopService.reset() -> void
 ```
 
 ---
 
 ## KNOWN ISSUES / NOTES
 
-1. **ShopService Needs Refactor**: Phase 5 will remove wave parameter, add time-based refresh
+1. **No Shop Icon Yet**: Need to create/commission `icon_shop_final.svg` for Phase 6
 
-2. **add_item() Return Type Change**: Now returns String (instance_id) instead of bool. But `if add_item(...):` still works because non-empty strings are truthy.
+2. **Empty Stock Refresh**: When all 6 items are purchased, `check_empty_stock_refresh()` triggers a FREE refresh. UI should call this and show toast.
 
-3. **Salvager Discount**: Already implemented in ShopService `calculate_purchase_price()`
-
-4. **No Shop/Bank Icons Yet**: Need to create/commission for Phase 6/6.5
+3. **Serialization v2**: Save format changed. v1 saves (with `current_wave`) are still loadable but wave data is ignored.
 
 ---
 
-**Git Status:** Phase 4 complete, ready for commit
-**Tests:** 857/881 passing (24 pending - projectile tests etc.)
-**Ready to Commit:** Yes - inventory_service.gd, inventory_service_test.gd, item_database.gd, week18-plan.md
+**Git Status:** Phase 5 complete, ready for commit
+**Tests:** 855/879 passing (24 pending - projectile tests)
+**Ready to Commit:** Yes - shop_service.gd, shop_service_test.gd

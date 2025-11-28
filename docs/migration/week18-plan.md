@@ -925,18 +925,18 @@ func calculate_price(character_id: String, base_price: int) -> int:
 | Phase 2: Character Types | 1.5h | ~1.5h | ✅ DONE | 2025-11-27 | 6 character types, portraits, CharacterTypeDatabase |
 | Phase 3: ShopService | 1.5h | ~1.5h | ✅ DONE | 2025-11-27 | Hub model, perk hooks, rerolls |
 | Phase 4: InventoryService | 1.5h | ~2h | ✅ DONE | 2025-11-28 | Instance-based with durability placeholder. Gemini implementation, Claude review+fixes |
-| Phase 5: ShopService Hub Refactor | 1h | - | ⏭️ PENDING | - | Needs wave param removal, time-based refresh |
+| Phase 5: ShopService Hub Refactor | 1h | ~1h | ✅ DONE | 2025-11-28 | Removed wave param, added check_empty_stock_refresh(), v2 serialization |
 | Phase 6: Hub Shop UI | 1.5h | - | ⏭️ PENDING | - | - |
 | Phase 6.5: Hub Bank UI | 1h | - | ⏭️ PENDING | - | - |
 | Phase 7: Integration & QA | 1h | - | ⏭️ PENDING | - | - |
 | Phase 8: Try-Before-Buy | 2h | - | ⏭️ STRETCH | - | Conversion optimization, can defer |
 
 **Total Estimated**: 10-12 hours (8-10h core + 2h stretch)
-**Actual So Far**: ~6.5h for Phases 1-4
+**Actual So Far**: ~7.5h for Phases 1-5
 
 ---
 
-**Document Version:** 2.3 (Phase 4 complete with durability)
+**Document Version:** 2.4 (Phase 5 complete)
 **Created:** 2025-11-27
-**Last Major Update:** 2025-11-28 - Phase 4 InventoryService complete with instance-based durability placeholder
-**Next Review:** After Phase 5 completion
+**Last Major Update:** 2025-11-28 - Phase 5 ShopService hub refactor complete
+**Next Review:** After Phase 6 completion

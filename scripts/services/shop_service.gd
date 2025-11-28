@@ -1,13 +1,13 @@
 extends Node
-## ShopService - Shop generation, purchases, and inventory management
+## ShopService - Hub shop generation, purchases, and inventory management
 ##
-## Week 18 Phase 3: Manages shop inventory, purchases, and rerolls
+## Week 18 Phase 5: Hub-based shop with time-based refresh (not wave-based)
 ##
 ## Responsibilities:
 ## - Generate shop inventory with weighted rarity
 ## - Handle purchases with currency validation
-## - Manage timed shop refreshes
-## - Apply wave guarantees for minimum item tiers
+## - Manage timed shop refreshes (4-hour cycle)
+## - Support empty-stock free refresh
 ## - Support character-specific discounts (Salvager)
 ## - Provide perk hooks for all operations
 ##
@@ -16,7 +16,7 @@ extends Node
 ## - Observer Pattern: Signals for perk hooks
 ## - Strategy Pattern: Tier-based rarity weighting
 ##
-## Based on: docs/migration/week18-plan.md (Phase 5)
+## Location: Hub → Shop (per SHOPS-SYSTEM.md)
 ## See also: docs/game-design/systems/SHOPS-SYSTEM.md
 
 ## =============================================================================
@@ -39,19 +39,16 @@ const RARITY_WEIGHTS = {
 ## Item type distribution weights
 const TYPE_WEIGHTS = {"weapon": 0.35, "armor": 0.30, "trinket": 0.25, "consumable": 0.10}
 
-## Rarity to tier mapping for wave guarantees
-const RARITY_TIERS = {"common": 1, "uncommon": 2, "rare": 3, "epic": 4, "legendary": 5}
-
 ## =============================================================================
 ## SIGNALS (Perk Hooks)
 ## =============================================================================
 
 ## Emitted before shop generation - allows perks to modify
-## Context: { wave, user_tier, allow_generate, bonus_items }
+## Context: { user_tier, allow_generate, bonus_items }
 signal shop_generate_pre(context: Dictionary)
 
 ## Emitted after shop generation
-## Context: { wave, shop_items }
+## Context: { user_tier, shop_items }
 signal shop_generate_post(context: Dictionary)
 
 ## Emitted before purchase - allows perks to modify cost or block
@@ -86,9 +83,6 @@ var _shop_items: Array[Dictionary] = []
 ## Last refresh timestamp (unix time)
 var _last_refresh_time: int = 0
 
-## Current wave (for wave guarantees)
-var _current_wave: int = 1
-
 ## Current user tier for rarity weighting
 var _current_user_tier: String = "free"
 
@@ -99,7 +93,7 @@ var _current_user_tier: String = "free"
 
 func _ready() -> void:
 	# Generate initial shop
-	generate_shop(1)
+	generate_shop()
 	GameLogger.info("ShopService initialized", {"shop_size": _shop_items.size()})
 
 
@@ -109,20 +103,16 @@ func _ready() -> void:
 
 
 ## Generate new shop inventory
-## wave: Current wave number (affects guarantees)
 ## user_tier: "free", "premium", or "subscription" (affects rarity weights)
-func generate_shop(wave: int = 1, user_tier: String = "free") -> Array[Dictionary]:
-	_current_wave = wave
+func generate_shop(user_tier: String = "free") -> Array[Dictionary]:
 	_current_user_tier = user_tier if RARITY_WEIGHTS.has(user_tier) else "free"
 
 	# Perk hook: shop_generate_pre
-	var pre_context = {
-		"wave": wave, "user_tier": _current_user_tier, "allow_generate": true, "bonus_items": []
-	}
+	var pre_context = {"user_tier": _current_user_tier, "allow_generate": true, "bonus_items": []}
 	shop_generate_pre.emit(pre_context)
 
 	if not pre_context.get("allow_generate", true):
-		GameLogger.info("Shop generation blocked by perk", {"wave": wave})
+		GameLogger.info("Shop generation blocked by perk")
 		return _shop_items
 
 	# Generate items
@@ -135,9 +125,6 @@ func generate_shop(wave: int = 1, user_tier: String = "free") -> Array[Dictionar
 		if not item.is_empty():
 			items.append(item)
 
-	# Apply wave guarantees
-	items = _apply_wave_guarantees(items, wave)
-
 	# Add any bonus items from perks
 	var bonus_items = pre_context.get("bonus_items", [])
 	for bonus_item in bonus_items:
@@ -148,13 +135,12 @@ func generate_shop(wave: int = 1, user_tier: String = "free") -> Array[Dictionar
 	_last_refresh_time = int(Time.get_unix_time_from_system())
 
 	# Perk hook: shop_generate_post
-	var post_context = {"wave": wave, "shop_items": _shop_items.duplicate(true)}
+	var post_context = {"user_tier": _current_user_tier, "shop_items": _shop_items.duplicate(true)}
 	shop_generate_post.emit(post_context)
 	shop_refreshed.emit(_shop_items)
 
 	GameLogger.info(
-		"Shop generated",
-		{"wave": wave, "user_tier": _current_user_tier, "item_count": _shop_items.size()}
+		"Shop generated", {"user_tier": _current_user_tier, "item_count": _shop_items.size()}
 	)
 
 	return _shop_items
@@ -207,47 +193,6 @@ func _get_random_item_of_type_and_rarity(item_type: String, rarity: String) -> D
 	return matching_items[index]
 
 
-## Apply wave guarantees (minimum rarity tiers at certain waves)
-func _apply_wave_guarantees(items: Array[Dictionary], wave: int) -> Array[Dictionary]:
-	if items.is_empty():
-		return items
-
-	var min_tier = 1
-	if wave >= 10:
-		min_tier = 3  # At least one Rare+ (T3)
-	elif wave >= 5:
-		min_tier = 2  # At least one Uncommon+ (T2)
-
-	if min_tier <= 1:
-		return items  # No guarantee needed
-
-	# Check if any item meets the minimum tier
-	var has_min_tier = false
-	for item in items:
-		var item_rarity = item.get("rarity", "common")
-		var item_tier = RARITY_TIERS.get(item_rarity, 1)
-		if item_tier >= min_tier:
-			has_min_tier = true
-			break
-
-	# If no item meets minimum, replace a random common with a guaranteed item
-	if not has_min_tier:
-		var target_rarity = "uncommon" if min_tier == 2 else "rare"
-		var guaranteed_item = _get_random_item_of_type_and_rarity(_roll_item_type(), target_rarity)
-
-		if not guaranteed_item.is_empty():
-			# Find first common item to replace
-			for i in range(items.size()):
-				if items[i].get("rarity", "common") == "common":
-					items[i] = guaranteed_item
-					GameLogger.info(
-						"Wave guarantee applied", {"wave": wave, "guaranteed_rarity": target_rarity}
-					)
-					break
-
-	return items
-
-
 ## =============================================================================
 ## SHOP ACCESS
 ## =============================================================================
@@ -289,9 +234,22 @@ func get_time_until_refresh() -> int:
 	return maxi(0, remaining)
 
 
-## Check if shop should auto-refresh
+## Check if shop should auto-refresh (time-based)
 func should_refresh() -> bool:
 	return get_time_until_refresh() <= 0
+
+
+## Check if shop is empty and trigger FREE refresh if so
+## Returns: true if a refresh was triggered, false otherwise
+## Per SHOPS-SYSTEM.md: empty stock = FREE auto-refresh
+func check_empty_stock_refresh() -> bool:
+	if not is_shop_empty():
+		return false
+
+	# Shop is empty - trigger free refresh
+	GameLogger.info("Empty stock refresh triggered (free)")
+	generate_shop(_current_user_tier)
+	return true
 
 
 ## =============================================================================
@@ -446,7 +404,7 @@ func reroll_shop(character_id: String = "") -> Array[Dictionary]:
 	ShopRerollService.execute_reroll()
 
 	# Generate new shop
-	var new_items = generate_shop(_current_wave, _current_user_tier)
+	var new_items = generate_shop(_current_user_tier)
 
 	# Perk hook: shop_reroll_post
 	var post_context = {
@@ -495,11 +453,6 @@ func get_reroll_count() -> int:
 ## =============================================================================
 
 
-## Set current wave (called when wave changes)
-func set_current_wave(wave: int) -> void:
-	_current_wave = wave
-
-
 ## Set current user tier (called when tier changes)
 func set_user_tier(tier: String) -> void:
 	if RARITY_WEIGHTS.has(tier):
@@ -526,19 +479,20 @@ func is_shop_empty() -> bool:
 ## Serialize service state
 func serialize() -> Dictionary:
 	return {
-		"version": 1,
+		"version": 2,
 		"shop_items": _shop_items.duplicate(true),
 		"last_refresh_time": _last_refresh_time,
-		"current_wave": _current_wave,
 		"current_user_tier": _current_user_tier,
 		"timestamp": Time.get_unix_time_from_system()
 	}
 
 
 ## Deserialize service state
+## Supports v1 (wave-based) and v2 (hub-based) formats
 func deserialize(data: Dictionary) -> void:
-	if data.get("version", 0) != 1:
-		GameLogger.warning("ShopService: Unknown save version", data)
+	var version = data.get("version", 0)
+	if version < 1 or version > 2:
+		GameLogger.warning("ShopService: Unknown save version", {"version": version})
 		return
 
 	# Restore state
@@ -548,17 +502,16 @@ func deserialize(data: Dictionary) -> void:
 			_shop_items.append(item)
 
 	_last_refresh_time = data.get("last_refresh_time", 0)
-	_current_wave = data.get("current_wave", 1)
 	_current_user_tier = data.get("current_user_tier", "free")
 
 	# Check if shop should auto-refresh
 	if should_refresh():
 		GameLogger.info("Shop auto-refreshing after load (time elapsed)")
-		generate_shop(_current_wave, _current_user_tier)
+		generate_shop(_current_user_tier)
 	else:
 		GameLogger.info(
 			"ShopService state loaded",
-			{"item_count": _shop_items.size(), "wave": _current_wave, "tier": _current_user_tier}
+			{"item_count": _shop_items.size(), "tier": _current_user_tier}
 		)
 
 
@@ -566,7 +519,6 @@ func deserialize(data: Dictionary) -> void:
 func reset() -> void:
 	_shop_items.clear()
 	_last_refresh_time = 0
-	_current_wave = 1
 	_current_user_tier = "free"
-	generate_shop(1, "free")
+	generate_shop("free")
 	GameLogger.info("ShopService reset")
