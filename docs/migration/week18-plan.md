@@ -1,9 +1,9 @@
 # Week 18 - Shop System + Item/Inventory Foundation
 ## Core Economy & Build Variety
 
-**Status:** PLANNING
-**Date:** 2025-11-27
-**Estimated Effort:** 6-8 hours
+**Status:** PLANNING COMPLETE - Ready for Implementation  
+**Date:** 2025-11-27  
+**Estimated Effort:** 8-10 hours (expanded scope)  
 **Focus:** Enable players to buy items during runs, creating the core roguelite decision loop
 
 ---
@@ -12,9 +12,13 @@
 
 Implement the Shop system and Item/Inventory foundation that enables the core roguelite gameplay loop: Combat → Shop → Build Decisions → Combat.
 
-### Design Principle
+### Design Principles
 
 > **"Every Shop is a Decision"** - The Shop creates meaningful choices that define builds and playstyles.
+
+> **"Tiers Gate Shops, Not Items"** - Once you own an item, it's yours forever. Tiers control WHERE you can buy, not WHAT you own.
+
+> **"Characters Define Builds"** - Character types have different weapon slots, starting gear, and stat modifiers that create meaningful variety.
 
 ---
 
@@ -22,11 +26,11 @@ Implement the Shop system and Item/Inventory foundation that enables the core ro
 
 | Role | Focus Area |
 |------|------------|
-| **Sr Game Designer** | Shop flow, item variety, build diversity |
+| **Sr Game Designer** | Shop flow, item variety, build diversity, character archetypes |
 | **Sr Economy Designer** | Pricing, reroll costs, item rarity balance |
 | **Sr Product Manager** | Feature scope, MVP definition, tier gating |
 | **Sr SQA Engineer** | Test coverage, edge cases, inventory validation |
-| **Sr Godot Developer** | Service architecture, auto-active system, persistence |
+| **Sr Godot Developer** | Service architecture, perk hooks, persistence |
 
 ---
 
@@ -36,376 +40,506 @@ Implement the Shop system and Item/Inventory foundation that enables the core ro
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| `BankingService` | ✅ Implemented | Currency management (Scrap, Components, etc.) |
-| `WeaponService` | ✅ Implemented | 10 weapons with behaviors |
+| `BankingService` | ✅ Implemented | Currency management (Scrap, Components, Nanites) |
+| `WeaponService` | ✅ Implemented | 10 weapons with behaviors, needs migration |
+| `CharacterService` | ✅ Implemented | Character CRUD, needs type configuration |
 | `DropSystem` | ✅ Implemented | Pickups during combat |
 | Combat loop | ✅ Implemented | Waves, enemies, player |
 | Scrap collection | ✅ Implemented | Currency earned in combat |
+| UI Design System | ✅ Implemented | Rarity colors, spacing, typography |
 
-### What's Missing
+### What's Missing (This Week)
 
 | Component | Priority | Notes |
 |-----------|----------|-------|
-| `ItemService` | **CRITICAL** | Item definitions (all types) |
+| `ItemService` | **CRITICAL** | Unified item definitions (all types) |
 | `InventoryService` | **CRITICAL** | Character inventory, slots, auto-active |
 | `ShopService` | **CRITICAL** | Shop generation, purchasing, rerolls |
-| Shop UI | **CRITICAL** | Between-wave shop screen |
-| Item effects | HIGH | Stats applied from owned items |
+| Character Type System | **CRITICAL** | Weapon slots, starting items per type |
+| Shop UI | **HIGH** | Between-wave shop screen |
+| Perk Hooks | **HIGH** | Integration points for future perks |
 
 ---
 
-## 🎨 KEY DESIGN ELEMENTS
+## 🎨 KEY DESIGN DECISIONS (Confirmed with Alan)
 
-### Item Types (from INVENTORY-SYSTEM.md)
+### Decision 1: Unified Item Database (Option B - JSON Dictionary)
 
-| Type | Description | Auto-Active |
-|------|-------------|-------------|
-| **Weapons** | Auto-fire, multiple simultaneous | ✅ Yes (6 max wielded) |
-| **Armor** | Defensive stats | ✅ Yes |
-| **Trinkets** | Special bonuses (luck, crit, XP) | ✅ Yes |
-| **Consumables** | Temporary buffs | ✅ Yes (while owned) |
-| **Minions** | AI companions (Premium+) | Special (1 active in combat) |
-| **Blueprints** | Crafting recipes | N/A (Workshop use) |
+All items (weapons, armor, trinkets, consumables) live in a single dictionary database. Weapons migrate FROM `WeaponService.WEAPON_DEFINITIONS` TO `ItemService`.
 
-### Inventory Limits (from docs)
+```gdscript
+# Single source of truth for all item definitions
+const ITEM_DATABASE = {
+    "weapon_rusty_blade": { ... },
+    "armor_scrap_vest": { ... },
+    "trinket_lucky_coin": { ... },
+}
+```
 
-| Limit | Value | Notes |
-|-------|-------|-------|
-| Total item slots | **30** | Per character |
-| Weapon slots | **6** | Max simultaneously wielded |
-| Stack limits | By rarity | Common: 5, Uncommon: 4, Rare: 3, Epic: 2, Legendary: 1 |
+**Rationale:** Consistent data structure, easier to maintain, single source of truth.
 
-### Weapon System
+### Decision 2: No Tier-Gated Items (Option C)
 
-- **All 6 weapons auto-fire** simultaneously
-- Each weapon has own `fireRate`, `range`, `damageType`
-- `finalDPS = Σ(allWeaponDPS) + Σ(damageBoostItems)`
-- Different fire rates = varied attack patterns
+Items have NO `tier_required` field. Tiers gate SHOPS, not items.
 
-### Shop Types (from SHOPS-SYSTEM.md)
+| Scenario | Behavior |
+|----------|----------|
+| Free player finds Legendary in combat | ✅ Keeps it forever |
+| Premium player buys from Black Market | ✅ Owns item forever |
+| Subscription player cancels | ✅ Keeps ALL owned items |
 
-| Shop | Access | Items | Refresh |
-|------|--------|-------|---------|
-| **Standard Shop** | All tiers | Weapons, Armor, Trinkets, Consumables | 4h or between waves |
-| **Black Market** | Premium+ | High-risk items, Minions | 8h |
-| **Atomic Vending** | Subscription | Personalized, Minion Patterns | 24h |
+**Rationale:** Simpler, fairer, avoids player rage. Subscription value comes from ACCESS and CONVENIENCE.
 
-**MVP Scope:** Standard Shop only (others are config changes later)
+### Decision 3: Character Types Define Builds
+
+Character types configure:
+- Weapon slot count (1-10+)
+- Inventory slot count (30-50)
+- Starting items
+- Stat modifiers (bonuses/penalties)
+- Item tags (for future shop affinity)
+
+**MVP Character Types:**
+- 3 Free: Scavenger, Gunslinger, Brawler
+- 2 Premium: Weapon Master (10 slots), One Armed (1 slot)
+- 1 Subscription: Collector (50 inventory slots)
+
+**Rationale:** Following Brotato's design - characters ARE the builds.
+
+### Decision 4: Perk Hooks Required
+
+All new services MUST include perk hooks per `PERKS-ARCHITECTURE.md`:
+- `shop_purchase_pre` / `shop_purchase_post`
+- `inventory_add_pre` / `inventory_add_post`
+- `character_create_pre` (for starting items)
+
+**Rationale:** Enables future server-side gameplay modifiers without client updates.
+
+---
+
+## 📋 ITEM SYSTEM DESIGN
+
+### Item Types
+
+| Type | Auto-Active | Slots | Notes |
+|------|-------------|-------|-------|
+| **Weapon** | ✅ Yes | Uses weapon slots (1-10) | All equipped weapons fire simultaneously |
+| **Armor** | ✅ Yes | Uses inventory slots | Defensive stats |
+| **Trinket** | ✅ Yes | Uses inventory slots | Special bonuses (luck, crit, XP) |
+| **Consumable** | ✅ Yes | Uses inventory slots | Temporary buffs while owned |
+
+**Not This Week:**
+- Minions (Week 19-20 Workshop)
+- Blueprints (Week 19-20 Workshop)
+
+### Item Definition Structure
+
+```gdscript
+const ITEM_DATABASE = {
+    "weapon_rusty_blade": {
+        "id": "weapon_rusty_blade",
+        "name": "Rusty Blade",
+        "description": "A weathered blade. Still cuts.",
+        "type": "weapon",
+        "rarity": "common",
+        "base_price": 75,
+        "stats": {
+            "damage": 15,
+            "melee_damage": 5
+        },
+        "stack_limit": 5,  # From rarity
+        
+        # Weapon-specific
+        "weapon_type": "melee",  # melee, ranged
+        "cooldown": 0.5,
+        "range": 50,
+        "special_behavior": "none",
+        "projectile": null,
+        
+        # Visual (from existing WeaponService)
+        "projectile_color": Color(0.8, 0.4, 0.2),
+        "trail_width": 0.0,
+        "screen_shake_intensity": 3.0
+    },
+    
+    "armor_scrap_vest": {
+        "id": "armor_scrap_vest",
+        "name": "Scrap Vest",
+        "description": "Cobbled together from junk. Better than nothing.",
+        "type": "armor",
+        "rarity": "common",
+        "base_price": 50,
+        "stats": {
+            "armor": 5,
+            "max_hp": 10
+        },
+        "stack_limit": 5
+    },
+    
+    "trinket_lucky_coin": {
+        "id": "trinket_lucky_coin",
+        "name": "Lucky Coin",
+        "description": "Found it in the wasteland. Feels... lucky.",
+        "type": "trinket",
+        "rarity": "uncommon",
+        "base_price": 150,
+        "stats": {
+            "luck": 10,
+            "harvesting": 5
+        },
+        "stack_limit": 4
+    }
+}
+```
+
+### Rarity System
+
+| Rarity | Color | Stack Limit | Base Price Range | Drop Weight |
+|--------|-------|-------------|------------------|-------------|
+| Common | Gray `#6B7280` | 5 | 50-150 | 60% |
+| Uncommon | Green `#10B981` | 4 | 150-400 | 30% |
+| Rare | Blue `#3B82F6` | 3 | 400-800 | 8% |
+| Epic | Purple `#A855F7` | 2 | 800-1,500 | 1.5% |
+| Legendary | Gold `#F59E0B` | 1 | 1,500-3,000 | 0.5% |
+
+---
+
+## 📋 CHARACTER TYPE SYSTEM
+
+### Character Type Definition Structure
+
+```gdscript
+const CHARACTER_TYPE_DEFINITIONS = {
+    # === FREE TIER (3 types) ===
+    "scavenger": {
+        "id": "scavenger",
+        "display_name": "Scavenger",
+        "description": "A balanced survivor. Jack of all trades.",
+        "tier_required": "free",
+        "weapon_slots": 6,
+        "inventory_slots": 30,
+        "starting_items": ["weapon_rusty_blade"],
+        "stat_modifiers": {},  # No bonuses or penalties
+        "tags": []
+    },
+    "gunslinger": {
+        "id": "gunslinger",
+        "display_name": "Gunslinger",
+        "description": "Ranged specialist. Keep your distance.",
+        "tier_required": "free",
+        "weapon_slots": 6,
+        "inventory_slots": 30,
+        "starting_items": ["weapon_plasma_pistol"],
+        "stat_modifiers": {
+            "ranged_damage_mult": 1.25,  # +25% ranged
+            "melee_damage_mult": 0.5     # -50% melee
+        },
+        "tags": ["Ranged Damage"]
+    },
+    "brawler": {
+        "id": "brawler",
+        "display_name": "Brawler",
+        "description": "Close combat expert. Get in their face.",
+        "tier_required": "free",
+        "weapon_slots": 6,
+        "inventory_slots": 30,
+        "starting_items": ["weapon_rusty_blade"],
+        "stat_modifiers": {
+            "melee_damage_mult": 1.25,  # +25% melee
+            "range_mult": 0.5           # -50% range
+        },
+        "tags": ["Melee Damage"]
+    },
+    
+    # === PREMIUM TIER (2 types) ===
+    "weapon_master": {
+        "id": "weapon_master",
+        "display_name": "Weapon Master",
+        "description": "Wield an arsenal. 10 weapon slots!",
+        "tier_required": "premium",
+        "weapon_slots": 10,  # MORE weapons
+        "inventory_slots": 30,
+        "starting_items": ["weapon_rusty_blade", "weapon_plasma_pistol"],
+        "stat_modifiers": {
+            "damage_mult": 0.85  # -15% damage (trade-off)
+        },
+        "tags": ["Damage"]
+    },
+    "one_armed": {
+        "id": "one_armed",
+        "display_name": "One Armed",
+        "description": "One weapon. Maximum power.",
+        "tier_required": "premium",
+        "weapon_slots": 1,  # FEWER weapons
+        "inventory_slots": 30,
+        "starting_items": ["weapon_steel_sword"],  # Better weapon
+        "stat_modifiers": {
+            "damage_mult": 2.0,      # +100% damage
+            "attack_speed_mult": 2.0  # +100% attack speed
+        },
+        "tags": ["Damage", "Attack Speed"]
+    },
+    
+    # === SUBSCRIPTION TIER (1 type) ===
+    "collector": {
+        "id": "collector",
+        "display_name": "Collector",
+        "description": "Hoarder supreme. 50 inventory slots!",
+        "tier_required": "subscription",
+        "weapon_slots": 6,
+        "inventory_slots": 50,  # MORE inventory
+        "starting_items": ["weapon_rusty_blade"],
+        "stat_modifiers": {
+            "luck_mult": 1.5,       # +50% luck
+            "harvesting_mult": 1.25  # +25% harvesting
+        },
+        "tags": ["Luck", "Harvesting"]
+    }
+}
+```
+
+### Inventory System
+
+**Slot Validation Rules:**
+1. Total items ≤ `character.inventory_slots` (30 default, 50 for Collector)
+2. Weapons ≤ `character.weapon_slots` (6 default, 10 for Weapon Master, 1 for One Armed)
+3. Stack limit per rarity (Common: 5, Legendary: 1)
+
+**Auto-Active Stats:**
+```gdscript
+# All owned items contribute to character stats
+final_stat = base_stat + Σ(all_item_stat_bonuses) * character_stat_modifier
+```
+
+---
+
+## 📋 SHOP SYSTEM DESIGN
+
+### Standard Shop (MVP - All Tiers)
+
+| Property | Value |
+|----------|-------|
+| Items per refresh | 6 |
+| Item types | Weapons, Armor, Trinkets, Consumables |
+| Refresh timing | Between waves (combat shop) |
+| Reroll base cost | 50 scrap |
+| Reroll escalation | 50 → 100 → 200 → 400 → 800 |
+
+### Shop Generation Algorithm
+
+```gdscript
+func generate_shop(wave: int) -> Array[Dictionary]:
+    var items = []
+    
+    for i in range(SHOP_SIZE):  # 6 items
+        var rarity = _roll_rarity(wave)
+        var item_type = _roll_item_type()
+        var item = _get_random_item_of_type_and_rarity(item_type, rarity)
+        items.append(item)
+    
+    # Wave guarantees
+    if wave >= 5:
+        _ensure_minimum_tier(items, 2)  # At least one T2+
+    if wave >= 10:
+        _ensure_minimum_tier(items, 3)  # At least one T3+
+    
+    return items
+
+const DROP_WEIGHTS = {
+    "common": 0.60,
+    "uncommon": 0.30,
+    "rare": 0.08,
+    "epic": 0.015,
+    "legendary": 0.005
+}
+```
+
+---
+
+## 📋 PERK HOOKS (Required)
+
+Per `PERKS-ARCHITECTURE.md`, these hooks MUST be added:
+
+### ItemService Hooks
+- None (data-only service)
+
+### InventoryService Hooks
+```gdscript
+signal inventory_add_pre(context: Dictionary)
+# Context: character_id, item_id, allow_add, bonus_items
+
+signal inventory_add_post(context: Dictionary)
+# Context: character_id, item_id, new_inventory_count
+
+signal inventory_remove_pre(context: Dictionary)
+# Context: character_id, item_id, allow_remove
+
+signal inventory_remove_post(context: Dictionary)
+# Context: character_id, item_id, removed_item
+```
+
+### ShopService Hooks
+```gdscript
+signal shop_generate_pre(context: Dictionary)
+# Context: wave, shop_items, allow_generate
+
+signal shop_generate_post(context: Dictionary)
+# Context: wave, final_shop_items
+
+signal shop_purchase_pre(context: Dictionary)
+# Context: character_id, item_id, base_cost, final_cost, allow_purchase
+
+signal shop_purchase_post(context: Dictionary)
+# Context: character_id, item_id, cost_paid, bonus_items
+
+signal shop_reroll_pre(context: Dictionary)
+# Context: character_id, reroll_count, base_cost, final_cost, allow_reroll
+
+signal shop_reroll_post(context: Dictionary)
+# Context: character_id, cost_paid, new_items
+```
+
+### CharacterService Hooks (Update Existing)
+```gdscript
+signal character_create_pre(context: Dictionary)
+# Context: character_type, base_stats, starting_items, allow_create
+
+signal character_create_post(context: Dictionary)
+# Context: character_id, character_data
+```
 
 ---
 
 ## 📋 IMPLEMENTATION PHASES
 
-### Phase 1: ItemService + Item Definitions (1.5-2 hours)
-**Priority:** CRITICAL
+### Phase 1: Item Database + ItemService (1.5h)
 
-#### Tasks
-
-1. **Create `ItemService`**
-   - Item definition loading
-   - Item creation/instantiation
-   - Rarity system
-   - Item type categorization
-
-2. **Define item data structure**
-   ```gdscript
-   class_name ItemDefinition
-   extends Resource
-
-   @export var item_id: String
-   @export var name: String
-   @export var description: String
-   @export var type: String  # weapon, armor, trinket, consumable, minion, blueprint
-   @export var rarity: String  # common, uncommon, rare, epic, legendary
-   @export var tier: int  # 1-4
-   @export var base_price: int
-   @export var stats: Dictionary  # {stat_name: value}
-   @export var tags: Array[String]  # Item tags for shop affinity
-   @export var stack_limit: int  # Based on rarity
-   @export var is_premium: bool
-   @export var limit_per_run: int  # 0 = unlimited, 1 = one-limit items
-
-   # Weapon-specific
-   @export var fire_rate: float
-   @export var range: float
-   @export var damage_type: String
-   @export var projectile_count: int
-   ```
-
-3. **Create initial item definitions**
-   - 10-15 weapons (expand existing)
-   - 10-15 armor items
-   - 10-15 trinkets
-   - 5-10 consumables
-   - Total: ~40-55 items for MVP
-
-4. **Unit tests**
-   - Item loading
-   - Rarity validation
-   - Stats calculation
+**Tasks:**
+1. Create `scripts/data/item_database.gd` with all item definitions
+2. Migrate 10 weapons from `weapon_service.gd` (add rarity, price)
+3. Add 10 armor items (common through rare)
+4. Add 10 trinkets (uncommon through epic)
+5. Add 5 consumables (common through uncommon)
+6. Create `scripts/services/item_service.gd`
+7. Unit tests for item loading
 
 **Success Criteria:**
-- [ ] ItemService created and registered
-- [ ] 40+ item definitions created
-- [ ] All item types represented
+- [ ] 35+ item definitions in database
+- [ ] ItemService can get item by ID
+- [ ] ItemService can filter by type/rarity
 - [ ] Unit tests passing
 
----
+### Phase 2: Character Type System (1.5h)
 
-### Phase 2: InventoryService (1.5-2 hours)
-**Priority:** CRITICAL
-
-#### Tasks
-
-1. **Create `InventoryService`**
-   - Add/remove items
-   - Slot management (30 total, 6 weapons)
-   - Stack limit enforcement
-   - Auto-active stat calculation
-
-2. **Implement inventory model**
-   ```gdscript
-   class_name InventoryService
-   extends Node
-
-   signal inventory_changed(character_id: String)
-   signal item_added(character_id: String, item: Dictionary)
-   signal item_removed(character_id: String, item_id: String)
-   signal stats_recalculated(character_id: String, stats: Dictionary)
-
-   const MAX_TOTAL_SLOTS = 30
-   const MAX_WEAPON_SLOTS = 6
-
-   # Stack limits by rarity
-   const STACK_LIMITS = {
-       "common": 5,
-       "uncommon": 4,
-       "rare": 3,
-       "epic": 2,
-       "legendary": 1
-   }
-
-   func can_add_item(character_id: String, item_def: ItemDefinition) -> Dictionary:
-       # Check total slots
-       # Check weapon slots if weapon
-       # Check stack limits
-       # Return {can_add: bool, reason: String}
-
-   func add_item(character_id: String, item_def: ItemDefinition) -> Dictionary:
-       # Add item to inventory
-       # Recalculate auto-active stats
-       # Emit signals
-
-   func get_auto_active_stats(character_id: String) -> Dictionary:
-       # Sum all item stats for character
-       # All items in inventory contribute
-   ```
-
-3. **Implement character-type slot allocation**
-   - Tank: 15 defensive, 10 offensive, 5 utility
-   - DPS: 15 offensive, 10 defensive, 5 utility
-   - Support: 15 utility, 10 defensive, 5 offensive
-
-4. **Integrate with existing systems**
-   - Connect to CharacterService
-   - Update StatService to include inventory stats
-
-5. **Unit tests**
-   - Add/remove items
-   - Slot limit enforcement
-   - Stack limit enforcement
-   - Auto-active stat calculation
+**Tasks:**
+1. Create `scripts/data/character_type_database.gd`
+2. Add 6 character type definitions
+3. Update `CharacterService` to use type definitions
+4. Implement weapon slot limits per type
+5. Implement inventory slot limits per type
+6. Implement starting items on create
+7. Add perk hooks to CharacterService
+8. Unit tests
 
 **Success Criteria:**
-- [ ] InventoryService created and registered
-- [ ] 30-slot limit enforced
-- [ ] 6-weapon limit enforced
-- [ ] Stack limits by rarity working
+- [ ] 6 character types defined
+- [ ] Characters created with correct slot limits
+- [ ] Starting items granted on creation
+- [ ] Tier validation working
+- [ ] Unit tests passing
+
+### Phase 3: InventoryService (1.5h)
+
+**Tasks:**
+1. Create `scripts/services/inventory_service.gd`
+2. Implement add_item with slot validation
+3. Implement remove_item
+4. Implement get_inventory
+5. Implement weapon slot limit enforcement
+6. Implement stack limit enforcement
+7. Implement auto-active stat calculation
+8. Add perk hooks
+9. Unit tests
+
+**Success Criteria:**
+- [ ] InventoryService created
+- [ ] Slot limits enforced (total + weapons)
+- [ ] Stack limits enforced by rarity
 - [ ] Auto-active stats calculating
+- [ ] Perk hooks implemented
 - [ ] Unit tests passing
 
----
+### Phase 4: WeaponService Refactor (1h)
 
-### Phase 3: ShopService (1.5-2 hours)
-**Priority:** CRITICAL
-
-#### Tasks
-
-1. **Create `ShopService`**
-   - Shop inventory generation
-   - Item purchasing
-   - Reroll system
-   - Price calculation
-
-2. **Implement shop model**
-   ```gdscript
-   class_name ShopService
-   extends Node
-
-   signal shop_refreshed(shop_type: String, items: Array)
-   signal item_purchased(item: Dictionary, price: int)
-   signal shop_rerolled(shop_type: String, cost: int)
-
-   const SHOP_SIZE = 6  # Items per shop
-   const BASE_REROLL_COST = 50
-   const REROLL_ESCALATION = [50, 100, 200, 400, 800]
-
-   var current_shop_items: Array = []
-   var reroll_count: int = 0
-
-   func generate_shop(wave: int, character_tags: Array) -> Array:
-       # Generate SHOP_SIZE items
-       # Weight by rarity (60% common, 30% uncommon, 8% rare, 2% epic/legendary)
-       # 5% chance to match character tags
-       # Wave guarantees (Wave 5: T2, Wave 10: T3, etc.)
-
-   func purchase_item(character_id: String, item_index: int) -> Dictionary:
-       # Validate can purchase (inventory space, currency)
-       # Deduct currency via BankingService
-       # Add item via InventoryService
-       # Remove from shop
-
-   func reroll_shop() -> Dictionary:
-       # Deduct reroll cost
-       # Increment reroll_count
-       # Generate new shop
-   ```
-
-3. **Implement tier/rarity weighting**
-   ```gdscript
-   const DROP_WEIGHTS = {
-       "common": 0.60,
-       "uncommon": 0.30,
-       "rare": 0.08,
-       "epic": 0.015,
-       "legendary": 0.005
-   }
-
-   # Wave guarantees
-   const WAVE_GUARANTEES = {
-       5: {"min_tier": 2},
-       10: {"min_tier": 3},
-       15: {"min_tier": 3},
-       20: {"min_tier": 4}  # Boss wave
-   }
-   ```
-
-4. **Implement character tag affinity**
-   - 5% chance shop selects from character's tagged items
-   - Tags: Max HP, Damage, Speed, Luck, etc. (23 tags)
-
-5. **Unit tests**
-   - Shop generation
-   - Purchase flow
-   - Reroll cost escalation
-   - Wave guarantees
+**Tasks:**
+1. Remove `WEAPON_DEFINITIONS` from WeaponService
+2. Add helper to get weapon data from ItemService
+3. Keep combat logic (fire, cooldown, audio)
+4. Update weapon equip to use InventoryService
+5. Verify all existing tests still pass
+6. Integration test: weapon combat with new system
 
 **Success Criteria:**
-- [ ] ShopService created and registered
-- [ ] Shop generates 6 items
+- [ ] WeaponService uses ItemService for data
+- [ ] Combat still works correctly
+- [ ] Audio still plays
+- [ ] All existing tests passing
+
+### Phase 5: ShopService (1.5h)
+
+**Tasks:**
+1. Create `scripts/services/shop_service.gd`
+2. Implement shop generation (6 items, weighted rarity)
+3. Implement wave guarantees
+4. Implement purchase flow (currency + inventory)
+5. Implement reroll with escalating costs
+6. Add perk hooks
+7. Unit tests
+
+**Success Criteria:**
+- [ ] ShopService generates 6 items
 - [ ] Rarity weighting working
 - [ ] Wave guarantees working
-- [ ] Reroll with escalating costs
 - [ ] Purchase integrates with Banking + Inventory
+- [ ] Reroll cost escalation working
+- [ ] Perk hooks implemented
 - [ ] Unit tests passing
 
----
+### Phase 6: Shop UI (1.5h)
 
-### Phase 4: Shop UI (1.5-2 hours)
-**Priority:** HIGH
-
-#### Tasks
-
-1. **Create Shop screen scene**
-   - `scenes/ui/shop_screen.tscn`
-   - Grid of item cards (6 items)
-   - Scrap balance display
-   - Reroll button with cost
-   - "Continue" button
-
-2. **Shop item card component**
-   - Item name, icon
-   - Rarity indicator (color)
-   - Stats preview
-   - Price
-   - "Buy" button
-   - "Can't Afford" state
-   - "Inventory Full" state
-
-3. **Wire up shop flow**
-   - Show between waves
-   - Trigger from wave completion
-   - Return to combat on "Continue"
-
-4. **Integrate multi-weapon display**
-   - Show current weapons (6 slots)
-   - Indicate which slot new weapon would take
-   - Preview DPS change
-
-5. **Device QA**
-   - Touch targets (44pt minimum)
-   - Scroll if needed
-   - Art Bible compliance
+**Tasks:**
+1. Create `scenes/ui/shop_screen.tscn`
+2. Create shop item card component
+3. Display 6 items with rarity colors
+4. Show scrap balance
+5. Implement purchase button
+6. Implement reroll button with cost display
+7. Add "Continue to Next Wave" button
+8. Wire up to wave completion
 
 **Success Criteria:**
-- [ ] Shop screen accessible between waves
-- [ ] All 6 items displayed
-- [ ] Purchase works and updates UI
-- [ ] Reroll works with escalating costs
-- [ ] Scrap balance updates correctly
-- [ ] "Continue" returns to combat
-- [ ] Device QA passed
+- [ ] Shop screen displays correctly
+- [ ] Items show rarity colors
+- [ ] Purchase works
+- [ ] Reroll works
+- [ ] Scrap updates in real-time
+- [ ] Can continue to next wave
 
----
+### Phase 7: Integration & QA (1h)
 
-## 🧪 QA CHECKLIST
+**Tasks:**
+1. End-to-end test: Create character → Combat → Shop → Purchase → Continue
+2. Test all character types
+3. Test slot limits (try to exceed)
+4. Test stack limits
+5. Device QA on iOS
+6. Fix any issues found
 
-### Automated Tests
-
-- [ ] ItemService unit tests
-- [ ] InventoryService unit tests
-- [ ] ShopService unit tests
-- [ ] Stack limit tests
-- [ ] Slot limit tests
-- [ ] Auto-active stat tests
-- [ ] Purchase flow integration tests
-
-### Manual Testing (Device)
-
-**Shop Flow:**
-- [ ] Shop appears between waves
-- [ ] 6 items displayed correctly
-- [ ] Prices shown for each item
-- [ ] Can purchase item (currency deducted)
-- [ ] Item appears in inventory
-- [ ] Reroll button works
-- [ ] Reroll cost escalates
-- [ ] "Continue" returns to combat
-
-**Inventory:**
-- [ ] Can't exceed 30 item slots
-- [ ] Can't exceed 6 weapon slots
-- [ ] Stack limits enforced
-- [ ] Auto-active stats apply to character
-
-**Weapons:**
-- [ ] Multiple weapons fire simultaneously
-- [ ] Different fire rates work
-- [ ] New weapon adds to loadout (up to 6)
-
----
-
-## 📊 SUCCESS METRICS
-
-**Week 18 Definition of Done:**
-
-| Metric | Target |
-|--------|--------|
-| Item definitions | 40+ |
-| Shop items displayed | 6 |
-| Inventory slots | 30 (6 weapons) |
-| Unit test coverage | 100% for new services |
-| Device QA | All manual tests passing |
+**Success Criteria:**
+- [ ] Full loop works on device
+- [ ] All character types playable
+- [ ] No crashes or errors
+- [ ] Performance acceptable
 
 ---
 
@@ -413,44 +547,103 @@ Implement the Shop system and Item/Inventory foundation that enables the core ro
 
 ```
 scripts/
+├── data/
+│   ├── item_database.gd            # NEW - All item definitions
+│   └── character_type_database.gd  # NEW - Character type definitions
 ├── services/
-│   ├── item_service.gd           # NEW
-│   ├── inventory_service.gd      # NEW
-│   └── shop_service.gd           # NEW
-├── resources/
-│   └── item_definition.gd        # NEW
+│   ├── item_service.gd             # NEW - Item data access
+│   ├── inventory_service.gd        # NEW - Player inventory
+│   ├── shop_service.gd             # NEW - Shop generation/purchase
+│   ├── weapon_service.gd           # MODIFIED - Remove definitions, keep combat
+│   └── character_service.gd        # MODIFIED - Add type system
 ├── tests/
-│   ├── item_service_test.gd      # NEW
-│   ├── inventory_service_test.gd # NEW
-│   └── shop_service_test.gd      # NEW
+│   ├── item_service_test.gd        # NEW
+│   ├── inventory_service_test.gd   # NEW
+│   ├── shop_service_test.gd        # NEW
+│   └── character_type_test.gd      # NEW
 
 scenes/
 ├── ui/
-│   ├── shop_screen.tscn          # NEW
+│   ├── shop_screen.tscn            # NEW
 │   └── components/
-│       └── shop_item_card.tscn   # NEW
-
-resources/
-└── items/
-    ├── weapons/                   # NEW - weapon definitions
-    ├── armor/                     # NEW - armor definitions
-    ├── trinkets/                  # NEW - trinket definitions
-    └── consumables/               # NEW - consumable definitions
+│       └── shop_item_card.tscn     # NEW
 ```
 
 ---
 
-## 📝 NOTES FOR WEEK 19
+## 🧪 QA CHECKLIST
 
-**Workshop Part 1 (Week 19) will build on this:**
-- Durability system (items have HP)
-- Repair Tab (fix damaged items)
-- Recycler Tab (items → Workshop Components)
-- Storage Locker (protect items from death)
+### Automated Tests
 
-**Dependencies:**
-- InventoryService must track item durability
-- Items must be identifiable for repair costs
+- [ ] ItemService: Load all items, validate fields
+- [ ] ItemService: Get items by type/rarity
+- [ ] InventoryService: Add item within limits
+- [ ] InventoryService: Block when slot limit exceeded
+- [ ] InventoryService: Block when weapon limit exceeded
+- [ ] InventoryService: Enforce stack limits
+- [ ] InventoryService: Calculate auto-active stats
+- [ ] ShopService: Generate 6 items
+- [ ] ShopService: Rarity weighting
+- [ ] ShopService: Wave guarantees
+- [ ] ShopService: Purchase flow
+- [ ] ShopService: Reroll escalation
+- [ ] CharacterService: Create with type
+- [ ] CharacterService: Grant starting items
+- [ ] CharacterService: Tier validation
+
+### Manual Testing (Device)
+
+**Character Creation:**
+- [ ] Can create Scavenger (Free)
+- [ ] Can create Gunslinger (Free)
+- [ ] Can create Brawler (Free)
+- [ ] Premium types blocked for Free tier (shows CTA)
+- [ ] Starting weapon appears in inventory
+
+**Shop Flow:**
+- [ ] Shop appears between waves
+- [ ] 6 items displayed correctly
+- [ ] Rarity colors correct
+- [ ] Prices shown for each item
+- [ ] Can purchase item (currency deducted)
+- [ ] Item appears in inventory
+- [ ] Reroll button works
+- [ ] Reroll cost escalates
+- [ ] "Continue" returns to combat
+
+**Inventory Limits:**
+- [ ] Can't exceed inventory slot limit
+- [ ] Can't exceed weapon slot limit
+- [ ] Stack limits enforced
+- [ ] One Armed can only have 1 weapon
+- [ ] Weapon Master can have 10 weapons
+
+---
+
+## 📊 SUCCESS METRICS
+
+| Metric | Target |
+|--------|--------|
+| Item definitions | 35+ |
+| Character types | 6 |
+| Shop items displayed | 6 |
+| Perk hooks implemented | 10+ |
+| Unit test coverage | 100% for new services |
+| Device QA | All manual tests passing |
+
+---
+
+## 📝 DEPENDENCIES FOR FUTURE WEEKS
+
+**Week 19-20 (Workshop) will need:**
+- Item durability field (add placeholder now?)
+- Blueprint item type
+- Minion item type
+
+**Week 21 (Meta Progression) will need:**
+- Item tags for shop affinity
+- Character tags
+- XP/leveling hooks
 
 ---
 
@@ -461,15 +654,19 @@ resources/
 
 | Phase | Planned Effort | Actual Effort | Status | Completion Date | Notes |
 |-------|---------------|---------------|--------|-----------------|-------|
-| Phase 1: ItemService | 1.5-2h | - | ⏭️ PENDING | - | - |
-| Phase 2: InventoryService | 1.5-2h | - | ⏭️ PENDING | - | - |
-| Phase 3: ShopService | 1.5-2h | - | ⏭️ PENDING | - | - |
-| Phase 4: Shop UI | 1.5-2h | - | ⏭️ PENDING | - | - |
+| Phase 1: Item Database | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 2: Character Types | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 3: InventoryService | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 4: WeaponService Refactor | 1h | - | ⏭️ PENDING | - | - |
+| Phase 5: ShopService | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 6: Shop UI | 1.5h | - | ⏭️ PENDING | - | - |
+| Phase 7: Integration & QA | 1h | - | ⏭️ PENDING | - | - |
 
-**Total Estimated**: 6-8 hours
+**Total Estimated**: 8-10 hours
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 2.0 (Expanded with character types, perk hooks, expert panel decisions)
 **Created:** 2025-11-27
+**Last Major Update:** 2025-11-27 - Added character type system, perk hooks, tier gating decisions
 **Next Review:** After Phase 1 completion

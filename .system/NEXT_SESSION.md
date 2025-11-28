@@ -1,126 +1,156 @@
-# Next Session: Week 18 Ready to Implement
+# Next Session: Week 18 Implementation Ready
 
 **Date**: 2025-11-27
-**Week 18 Status**: PLANNING COMPLETE - Ready to implement
-**Current Branch**: bold-poitras
-**QA Status**: N/A (planning session)
+**Week 18 Status**: PLANNING COMPLETE - Documentation Updated - Ready to Implement
+**Current Branch**: main
+**QA Status**: Tests passing (705/729)
 
 ---
 
 ## SESSION SUMMARY
 
-### Planning Session Outcome
+### Expert Panel Review Complete
 
-After expert panel review of all game design documentation, we **pivoted Week 18** from Meta Progression to **Shop System + Item/Inventory Foundation**. This is because:
+Conducted comprehensive review of:
+- Existing `weapon_service.gd` (10 weapons, dictionary-based)
+- `brotato-reference.md` (62 characters, 83 weapons, 177 items)
+- `INVENTORY-SYSTEM.md` (30 slots, 6 weapons, auto-active)
+- `SHOPS-SYSTEM.md` (3 shop types, tier gating)
+- `ui-design-system.md` (rarity colors defined)
+- `PERKS-SYSTEM.md` and `PERKS-ARCHITECTURE.md` (50+ hook points)
 
-1. Shop System was planned for Week 7 but never implemented
-2. Workshop was planned for Week 9 but never implemented
-3. Core gameplay loop requires items before meta progression makes sense
+### Key Decisions Made (Confirmed with Alan)
 
-### New Roadmap (Weeks 18-21)
+| Decision | Value | Rationale |
+|----------|-------|-----------|
+| **Item Storage** | JSON Dictionary (Option B) | Single source of truth, easier maintenance |
+| **Tier-Gated Items** | NO - Option C | Tiers gate SHOPS, not items. Fairer, simpler. |
+| **Subscription Cancel** | Keep items forever | Once owned, always owned. Avoids player rage. |
+| **Character Types** | Per-type weapon/inventory slots | Enables One Armed (1 slot), Weapon Master (10 slots) |
+| **Starting Items** | Character-type specific | Free: 1 common weapon. Premium: better loadouts. |
+| **Weapon Migration** | Move to ItemService | Single data source, WeaponService keeps combat logic |
+| **Perk Hooks** | Required in all new services | Per PERKS-ARCHITECTURE.md |
 
-| Week | Focus | Estimated Effort |
-|------|-------|------------------|
-| 18 | Shop System + Item/Inventory | 6-8 hours |
-| 19 | Workshop Part 1 (Durability, Repair, Recycler, Storage) | 5-6 hours |
-| 20 | Workshop Part 2 (Fusion, Craft, Blueprints) | 5-6 hours |
-| 21 | Post-Run Flow + Meta Progression | 4-6 hours |
+### Documentation Updated
 
----
-
-## WEEK 18 OVERVIEW
-
-**Goal**: Enable core roguelite loop: Combat -> Shop -> Build Decisions -> Combat
-
-### Key Systems
-
-| System | Description |
-|--------|-------------|
-| **ItemService** | Item definitions (weapons, armor, trinkets, consumables, minions, blueprints) |
-| **InventoryService** | 30 slots max, 6 weapons max, auto-active stats |
-| **ShopService** | 6 items per shop, reroll escalation, rarity weighting |
-| **Shop UI** | Between-wave shop screen |
-
-### Critical Design Decisions
-
-| Decision | Value | Notes |
-|----------|-------|-------|
-| Inventory slots | 30 total | Per character |
-| Weapon slots | 6 max | All fire simultaneously |
-| Stack limits | By rarity | C:5, U:4, R:3, E:2, L:1 |
-| Shop size | 6 items | Per refresh |
-| Reroll costs | 50->100->200->400->800 | Escalating |
-
-### Weapon System Note
-All 6 weapons auto-fire simultaneously at different rates/ranges. `finalDPS = Sum(allWeaponDPS) + Sum(damageBoostItems)`
+- ✅ `docs/migration/week18-plan.md` - Completely rewritten with expanded scope
+  - Added character type system (6 types)
+  - Added perk hook requirements
+  - Added 7 implementation phases
+  - Added expert panel decisions
+  - Added file structure
+  - Added comprehensive QA checklist
 
 ---
 
-## IMPLEMENTATION PHASES
+## WEEK 18 EXPANDED SCOPE
+
+### Implementation Phases (8-10 hours total)
 
 | Phase | Effort | Focus |
 |-------|--------|-------|
-| 1 | 1.5-2h | ItemService + 40+ item definitions |
-| 2 | 1.5-2h | InventoryService (slots, stacks, auto-active) |
-| 3 | 1.5-2h | ShopService (generation, purchasing, rerolls) |
-| 4 | 1.5-2h | Shop UI (between waves) |
+| 1 | 1.5h | Item Database + ItemService (35+ items) |
+| 2 | 1.5h | Character Type System (6 types, slot limits) |
+| 3 | 1.5h | InventoryService (slots, stacks, auto-active) |
+| 4 | 1h | WeaponService Refactor (migrate to ItemService) |
+| 5 | 1.5h | ShopService (generation, purchase, reroll) |
+| 6 | 1.5h | Shop UI (between waves) |
+| 7 | 1h | Integration & QA |
+
+### Character Types (MVP)
+
+| Type | Tier | Weapon Slots | Special |
+|------|------|--------------|---------|
+| Scavenger | Free | 6 | Balanced starter |
+| Gunslinger | Free | 6 | +25% ranged, -50% melee |
+| Brawler | Free | 6 | +25% melee, -50% range |
+| Weapon Master | Premium | 10 | -15% damage trade-off |
+| One Armed | Premium | 1 | +100% damage, +100% attack speed |
+| Collector | Subscription | 6 | 50 inventory slots, +50% luck |
+
+### Perk Hooks Required
+
+Per `PERKS-ARCHITECTURE.md`, these services need hooks:
+- `InventoryService`: add_pre/post, remove_pre/post
+- `ShopService`: purchase_pre/post, reroll_pre/post, generate_pre/post
+- `CharacterService`: create_pre/post (update existing)
 
 ---
 
-## FILES CREATED THIS SESSION
+## FILES TO READ BEFORE STARTING
 
-- `docs/migration/week18-plan.md` - Shop System + Items (REWRITTEN)
-- `docs/migration/week19-plan.md` - Workshop Part 1 (NEW)
-- `docs/migration/week20-plan.md` - Workshop Part 2 (NEW)
-- `docs/migration/week21-plan.md` - Post-Run + Meta (NEW)
-- `docs/migration/GODOT-MIGRATION-TIMELINE-UPDATED.md` - Updated to v4.0
-
----
-
-## PROJECT STATUS
-
-**Tests**: 705/729 passing (24 pending/skipped)
-**GDLint**: Clean
-**All Validators**: Passing
-**Git**: Planning session - ready to commit plans
+1. `docs/migration/week18-plan.md` - Updated implementation plan
+2. `scripts/services/weapon_service.gd` - Existing weapon structure to migrate
+3. `scripts/services/character_service.gd` - Needs character type integration
+4. `docs/core-architecture/ui-design-system.md` - Rarity colors
+5. `docs/core-architecture/PERKS-ARCHITECTURE.md` - Hook patterns
 
 ---
 
-## NEXT SESSION: Week 18 Implementation
+## NEXT SESSION: Phase 1 Implementation
 
-Start with **Phase 1: ItemService + Item Definitions**
+Start with **Phase 1: Item Database + ItemService**
 
-### Quick Start Tasks
+### Phase 1 Tasks
 
-1. Create `scripts/services/item_service.gd`
-2. Create `scripts/resources/item_definition.gd`
-3. Define 40+ item definitions (weapons, armor, trinkets, consumables)
-4. Write unit tests for ItemService
+1. Create `scripts/data/item_database.gd`
+   - Migrate 10 weapons from WeaponService (add rarity, price)
+   - Add 10 armor items
+   - Add 10 trinkets
+   - Add 5 consumables
+   - Total: 35+ items
 
-### Key Files to Reference
+2. Create `scripts/services/item_service.gd`
+   - get_item(id) -> Dictionary
+   - get_items_by_type(type) -> Array
+   - get_items_by_rarity(rarity) -> Array
+   - validate_all_items() -> bool
 
-- `docs/migration/week18-plan.md` - Full implementation plan
-- `docs/game-design/systems/INVENTORY-SYSTEM.md` - Inventory design
-- `docs/game-design/systems/SHOPS-SYSTEM.md` - Shop mechanics
-- `scripts/services/weapon_service.gd` - Existing weapon patterns
+3. Unit tests for ItemService
+
+### Success Criteria for Phase 1
+
+- [ ] 35+ item definitions in database
+- [ ] All 10 weapons migrated with rarity/price
+- [ ] ItemService can get item by ID
+- [ ] ItemService can filter by type/rarity
+- [ ] Unit tests passing
 
 ---
 
 ## QUICK START PROMPT (Next Session)
 
 ```
-Starting Week 18 implementation - Shop System + Item/Inventory Foundation.
+Continuing Week 18 implementation - Shop System + Item/Inventory Foundation.
 
-Week 18 plan is complete. Ready to implement Phase 1: ItemService.
+Documentation has been updated with expanded scope including:
+- Character type system (6 types with different weapon slots)
+- Perk hook requirements
+- 7 implementation phases
+
+Ready to implement Phase 1: Item Database + ItemService.
 
 Please read:
 1. .system/CLAUDE_RULES.md
-2. docs/migration/week18-plan.md
+2. docs/migration/week18-plan.md (UPDATED - read carefully)
+3. scripts/services/weapon_service.gd (migration source)
 
-Then begin Phase 1 implementation (create ItemService with item definitions).
+Then begin Phase 1:
+1. Create scripts/data/item_database.gd with 35+ items
+2. Create scripts/services/item_service.gd
+3. Write unit tests
 ```
 
 ---
 
+## GIT STATUS
+
+**Branch**: main
+**Last Commit**: Planning session
+**Uncommitted Changes**: 
+- docs/migration/week18-plan.md (updated with expanded scope)
+
+---
+
 **Last Updated**: 2025-11-27
-**Status**: Week 18 Planning Complete, Ready to Implement
+**Status**: Ready to Implement Phase 1
