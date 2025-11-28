@@ -54,14 +54,20 @@ var _initialized: bool = false
 
 
 func _ready() -> void:
-	# Defer connection to ensure CharacterService is ready
-	call_deferred("_connect_to_character_service")
+	# Connect to CharacterService immediately with retry logic
+	# DEFENSIVE: Avoid deferred calls for critical dependencies (Sr. Godot Developer recommendation)
+	_connect_to_character_service()
 
 
 ## Connect to CharacterService signals
+## DEFENSIVE: Includes retry logic if CharacterService isn't ready yet
 func _connect_to_character_service() -> void:
 	if not is_instance_valid(CharacterService):
-		GameLogger.error("[BankingService] CharacterService not available - currency sync disabled")
+		# CharacterService not ready yet - retry next frame
+		# This is safer than call_deferred as it explicitly handles the dependency
+		GameLogger.warning("[BankingService] CharacterService not ready - retrying next frame")
+		await get_tree().process_frame
+		_connect_to_character_service()
 		return
 
 	# Connect to active character changes
@@ -290,6 +296,7 @@ func serialize() -> Dictionary:
 ## Deserialize service state from dictionary
 ## NO-OP for balances: Currency is loaded from CharacterService via signal
 ## Only restores tier for backward compatibility
+## DEFENSIVE: Includes explicit sync to catch any missed signals (Option C)
 func deserialize(data: Dictionary) -> void:
 	var version = data.get("version", 1)
 
@@ -312,6 +319,25 @@ func deserialize(data: Dictionary) -> void:
 		)
 
 	GameLogger.info("[BankingService] Deserialized (tier only)", {"tier": current_tier})
+
+	# DEFENSIVE (Option C): Explicit sync in case signal was missed during startup
+	# This is a "belt and suspenders" approach - the signal should handle this,
+	# but we sync anyway to guarantee consistency
+	if is_instance_valid(CharacterService):
+		var active_id = CharacterService.get_active_character_id()
+		if not active_id.is_empty():
+			# Only sync if we haven't already (avoid redundant work)
+			var character = CharacterService.get_character(active_id)
+			if not character.is_empty():
+				var char_currency = character.get("starting_currency", {})
+				var char_scrap = char_currency.get("scrap", 0)
+				# If our balance doesn't match character's, we missed a signal - sync now
+				if balances["scrap"] != char_scrap:
+					GameLogger.warning(
+						"[BankingService] Defensive sync triggered - balance mismatch detected",
+						{"local": balances["scrap"], "character": char_scrap}
+					)
+					_sync_from_character(active_id)
 
 
 ## Private: Log a transaction

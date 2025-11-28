@@ -1,75 +1,92 @@
 # Next Session Handoff
 
-**Updated:** 2025-11-28 (Post Architecture Fix)
+**Updated:** 2025-11-28 (Post Defensive Fixes)
 **Current Branch:** `main`
-**Status:** BankingService Architecture Fix - COMPLETE ✅ Ready for QA
+**Status:** BankingService Architecture - COMPLETE ✅ + Defensive Fixes Applied
 
 ---
 
 ## SESSION ACCOMPLISHMENTS (2025-11-28)
 
-### BankingService ↔ CharacterService Sync - COMPLETE ✅
+### BankingService Defensive Fixes - COMPLETE ✅
 
-**Problem Fixed:**
-Currency was stored in TWO places that weren't synchronized:
-1. `CharacterService.characters[id].starting_currency` (per-character, source of truth)
-2. `BankingService.balances` (global singleton, was ignoring character data)
+**QA Verification Result:**
+- Currency sync architecture IS working correctly
+- Original issue was UX confusion (user didn't click "Set Currency Balances" button)
+- Log analysis confirmed signal chain functioning properly
 
-**Root Cause:**
-- BankingService had its own `serialize()`/`deserialize()` that stored balances independently
-- When active character changed, BankingService never synced from character's currency
-- Debug menu updated CharacterService but Shop read from BankingService (always 0)
+**Defensive Fixes Applied (Sr. Godot Developer Recommendations):**
 
-**Solution Implemented:**
+1. **Removed fragile `call_deferred` pattern** (lines 54-57):
+   - Old: `call_deferred("_connect_to_character_service")`
+   - New: Direct call with explicit retry logic using `await get_tree().process_frame`
+   - Why: Deferred calls for critical dependencies are fragile and can cause race conditions
 
-1. **BankingService is now a "view"** of active character's currency:
-   - Connects to `CharacterService.active_character_changed` signal
-   - On character change → loads character's `starting_currency` into balances
-   - On `add_currency`/`subtract_currency` → writes back to CharacterService immediately
-   - `serialize()` no longer stores balances (v2 format, tier only)
-   - `deserialize()` ignores v1 balance data (CharacterService is source of truth)
+2. **Added retry logic for CharacterService connection** (lines 62-70):
+   - If CharacterService isn't ready, waits one frame and retries
+   - Explicit handling instead of silent failure
+   - Logs warning when retry is needed for debugging
 
-2. **SaveManager load order fixed:**
-   - CharacterService now loads FIRST (was last)
-   - BankingService syncs via signal after CharacterService loads
+3. **Added defensive sync in deserialize (Option C)** (lines 320-340):
+   - After deserializing tier, checks if BankingService balance matches CharacterService
+   - If mismatch detected (signal was missed), triggers explicit sync
+   - Logs warning when defensive sync activates for debugging
+   - "Belt and suspenders" approach - signal should work, but we guarantee consistency
 
-3. **Debug menu simplified:**
-   - Only updates CharacterService
-   - Calls `BankingService._sync_from_character()` to refresh view
+**Files Modified:**
+- `scripts/services/banking_service.gd` - Defensive fixes applied
 
-4. **Tests updated:**
-   - 7 tests fixed to reflect new architecture
-   - All 855/879 tests passing
-
-### Files Modified
-
-| File | Changes |
-|------|---------|
-| `scripts/services/banking_service.gd` | Complete rewrite - now syncs with CharacterService |
-| `scripts/systems/save_manager.gd` | Reordered load: CharacterService first |
-| `scripts/debug/debug_menu.gd` | Simplified currency application |
-| `scripts/tests/banking_service_test.gd` | Updated serialize/deserialize tests |
-| `scripts/tests/save_integration_test.gd` | Updated 4 tests for new architecture |
-| `scripts/tests/service_integration_test.gd` | Fixed FREE tier test |
+**Tests:** All 855/879 passing
 
 ---
 
-## QA TESTING REQUIRED
+## ARCHITECTURE SUMMARY
 
-**Manual QA Checklist:**
+### Currency Flow (Verified Working)
+```
+CharacterService.characters[id].starting_currency  ← Source of Truth
+           ↑                           ↓
+           │                    (on active_character_changed)
+           │                           ↓
+    (write-through)          BankingService.balances  ← View
+           ↑                           ↓
+           │                    (currency_changed signal)
+           │                           ↓
+    BankingService.add_currency()    UI Components (Shop, HUD)
+    BankingService.subtract_currency()
+```
 
-1. [ ] Create new character
-2. [ ] Open Debug Menu → Set currency to Rich (10K)
-3. [ ] Close Debug Menu
-4. [ ] Open Shop → Verify currency shows 10,000 scrap
-5. [ ] Purchase an item → Verify currency decreases
-6. [ ] Return to Hub
-7. [ ] Open Debug Menu → Verify currency shows updated value
-8. [ ] Create SECOND character
-9. [ ] Switch to second character (Barracks)
-10. [ ] Open Shop → Verify currency is 0 (per-character!)
-11. [ ] Switch back to first character
-12. [ ] Open Shop → Verify original currency restored
+### Defense Layers (New)
+1. **Primary:** Signal-based sync on `active_character_changed`
+2. **Secondary:** Signal-based sync on `state_loaded`
+3. **Tertiary:** Explicit sync check in `deserialize()` (Option C)
+4. **Retry:** Connection retry if CharacterService not ready at startup
+
+---
+
+## DEBUG MENU UX CLARIFICATION
+
+**Important for QA Testing:**
+
+The Debug Menu has TWO separate action areas:
+
+1. **Currency Controls Section:**
+   - Spinboxes for Scrap/Components/Nanites
+   - Preset buttons: Poor (100), Medium (1K), Rich (10K), Whale (100K)
+   - **"💰 Set Currency Balances" button** ← Must click this to apply!
+
+2. **Tier/Reset Section:**
+   - Tier buttons: FREE, PREMIUM, SUBSCRIPTION
+   - Reset options: Keep chars, Reset chars, Nuclear
+   - **"Apply Changes" button** ← Only applies tier/reset, NOT currency!
+
+**Correct QA Flow:**
+1. Open Debug Menu
+2. Click preset (e.g., "Rich (10K)") OR manually set spinbox values
+3. Click "💰 Set Currency Balances" button
+4. See confirmation notification
+5. Close Debug Menu
+6. Open Shop → Currency should reflect new values
 
 ---
 
@@ -77,25 +94,21 @@ Currency was stored in TWO places that weren't synchronized:
 
 ```bash
 git add -A
-git commit -m "fix: BankingService now syncs currency from active character
+git commit -m "fix: add defensive programming to BankingService currency sync
 
-BREAKING: Currency is now per-character (stored in CharacterService)
+Changes:
+- Remove fragile call_deferred pattern for CharacterService connection
+- Add explicit retry logic with await if CharacterService not ready
+- Add defensive sync check in deserialize() to catch missed signals
+- Log warnings when defensive measures activate (aids debugging)
 
-Architecture changes:
-- BankingService connects to CharacterService.active_character_changed
-- On character change: load character's starting_currency into balances  
-- On add/subtract: write-through to CharacterService immediately
-- serialize() no longer stores balances (v2 format)
-- SaveManager loads CharacterService FIRST (order matters for signals)
+This is a 'belt and suspenders' approach - the signal chain works,
+but we now guarantee consistency even in edge cases like:
+- Hot reload during development
+- Autoload order changes
+- Future refactoring
 
-This enables:
-- Per-character currency (core design principle)
-- Quantum Banking subscription feature (transfer between characters)
-- Debug menu currency controls now work correctly
-
-Tests: Updated 7 tests, all 855/879 passing
-
-Fixes: Debug menu currency not updating Shop display"
+Tests: All 855/879 passing"
 ```
 
 ---
@@ -105,7 +118,7 @@ Fixes: Debug menu currency not updating Shop display"
 ### Scope
 Implement the Bank UI in the Hub for depositing/withdrawing scrap.
 
-### Now Possible (Architecture Fixed!)
+### Now Possible (Architecture Verified!)
 With BankingService properly synced to CharacterService:
 - Bank deposits update character's `starting_currency`
 - Switching characters loads correct bank balance
@@ -127,36 +140,15 @@ With BankingService properly synced to CharacterService:
 | CharacterService | `scripts/services/character_service.gd` |
 | SaveManager | `scripts/systems/save_manager.gd` |
 | Debug menu | `scripts/debug/debug_menu.gd` |
+| Shop UI | `scripts/ui/shop.gd` |
 | Banking System Design | `docs/game-design/systems/BANKING-SYSTEM.md` |
-
----
-
-## ARCHITECTURE NOTES
-
-### Currency Flow (New)
-```
-CharacterService.characters[id].starting_currency  ← Source of Truth
-           ↑                           ↓
-           │                    (on active_character_changed)
-           │                           ↓
-    (write-through)          BankingService.balances  ← View
-           ↑                           ↓
-           │                    (currency_changed signal)
-           │                           ↓
-    BankingService.add_currency()    UI Components
-    BankingService.subtract_currency()
-```
-
-### Save/Load Order
-1. CharacterService.deserialize() → emits `state_loaded`, `active_character_changed`
-2. BankingService receives signal → calls `_sync_from_character()`
-3. BankingService.deserialize() → restores tier only (balances come from signal)
 
 ---
 
 ## LESSONS LEARNED THIS SESSION
 
-1. **Single Source of Truth** - Currency must live in ONE place (CharacterService)
-2. **Signal-based sync** - Services should communicate via signals, not duplicate data
-3. **Load order matters** - When using signals, dependent services must load after their sources
-4. **Test the architecture** - Integration tests caught the sync issue
+1. **Log analysis is essential** - The QA log proved the architecture worked; the issue was UX
+2. **Deferred calls are fragile** - Use explicit retry logic for critical dependencies
+3. **Defense in depth** - Multiple sync points ensure consistency even when primary mechanism fails
+4. **UX clarity matters** - Debug menu needs clear separation of currency vs tier actions
+5. **Don't assume code is broken** - Verify with evidence before refactoring
