@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dqw5k3j8navxr"]
+[gd_scene load_steps=11 format=3 uid="uid://dqw5k3j8navxr"]
 
 [ext_resource type="Script" path="res://scripts/hub/scrapyard.gd" id="1_hub_script"]
 [ext_resource type="Theme" uid="uid://clyvgadvbeqjg" path="res://themes/game_theme.tres" id="2_theme"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/hub/icon_settings_final.svg" id="7_icon_settings"]
 [ext_resource type="Script" path="res://scripts/ui/components/screen_container.gd" id="8_screen_container"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/survivor_status_panel.tscn" id="9_survivor_panel"]
+[ext_resource type="Texture2D" path="res://assets/icons/hub/icon_shop_final.png" id="10_icon_shop"]
 
 [node name="Scrapyard" type="Control"]
 layout_mode = 3
@@ -99,6 +100,23 @@ icon_texture = ExtResource("6_icon_roster")
 button_size = 1
 button_variant = 0
 label_text = "Barracks"
+
+[node name="ShopButton" parent="." instance=ExtResource("4_icon_button")]
+layout_mode = 1
+anchor_left = 0.35
+anchor_top = 0.5
+anchor_right = 0.35
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+icon_texture = ExtResource("10_icon_shop")
+button_size = 1
+button_variant = 0
+label_text = "Shop"
 
 [node name="SettingsButton" parent="." instance=ExtResource("4_icon_button")]
 layout_mode = 1

@@ -17,6 +17,7 @@ const BUTTON_CLICK_SOUND: AudioStream = preload("res://assets/audio/ui/button_cl
 ## References to new IconButton components
 @onready var start_run_button: Button = $StartRunButton
 @onready var roster_button: Button = $RosterButton
+@onready var shop_button: Button = $ShopButton
 @onready var settings_button: Button = $SettingsButton
 @onready var audio_player: AudioStreamPlayer = $AudioStreamPlayer
 @onready var debug_qa_button: Button = $DebugQAButton
@@ -78,6 +79,7 @@ func _connect_signals() -> void:
 	"""Connect button signals - IconButton uses standard Button.pressed signal"""
 	start_run_button.pressed.connect(_on_start_run_pressed)
 	roster_button.pressed.connect(_on_roster_pressed)
+	shop_button.pressed.connect(_on_shop_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	debug_qa_button.pressed.connect(_on_debug_qa_pressed)
 
@@ -181,6 +183,46 @@ func _on_roster_pressed() -> void:
 	else:
 		GameLogger.warning("[Hub] barracks.tscn not yet implemented")
 		get_tree().change_scene_to_file("res://scenes/ui/character_selection.tscn")
+
+
+func _on_shop_pressed() -> void:
+	"""Handle Shop button - validate character state before opening shop"""
+	_play_button_click_sound()
+
+	if is_instance_valid(Analytics):
+		Analytics.hub_button_pressed("Shop")
+
+	var character_count := CharacterService.get_character_count()
+	var active_id := CharacterService.get_active_character_id()
+
+	GameLogger.info(
+		"[Hub] Shop button pressed",
+		{"character_count": character_count, "active_character_id": active_id}
+	)
+
+	# Check 1: No survivors exist
+	if character_count == 0:
+		GameLogger.info("[Hub] No survivors - showing recruitment prompt")
+		ModalFactory.show_alert(
+			self, "No Survivors", "Recruit a survivor at the Barracks first.", Callable()
+		)
+		return
+
+	# Check 2: Survivors exist but none selected
+	if active_id.is_empty():
+		GameLogger.info("[Hub] No survivor selected - showing selection prompt")
+		ModalFactory.show_alert(
+			self, "No Survivor Selected", "Select a survivor at the Barracks first.", Callable()
+		)
+		return
+
+	# Has selected survivor - open shop
+	GameLogger.info("[Hub] Opening shop", {"character_id": active_id})
+	if ResourceLoader.exists("res://scenes/ui/shop.tscn"):
+		get_tree().change_scene_to_file("res://scenes/ui/shop.tscn")
+	else:
+		GameLogger.warning("[Hub] shop.tscn not yet implemented")
+		ModalFactory.show_alert(self, "Coming Soon", "The Shop will be available soon.", Callable())
 
 
 func _on_settings_pressed() -> void:

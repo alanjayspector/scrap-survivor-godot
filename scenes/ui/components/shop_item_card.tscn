@@ -1,0 +1,123 @@
+[gd_scene load_steps=2 format=3 uid="uid://cshop1t3mcard"]
+
+[ext_resource type="Script" path="res://scripts/ui/components/shop_item_card.gd" id="1_script"]
+
+[node name="ShopItemCard" type="Button"]
+custom_minimum_size = Vector2(160, 180)
+offset_right = 160.0
+offset_bottom = 180.0
+focus_mode = 0
+flat = true
+script = ExtResource("1_script")
+
+[node name="PanelBg" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="RarityBorder" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ContentContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="NameLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.91, 0.91, 0.82, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+text = "Item Name"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="RarityLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 14
+text = "Common"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StatsLabel" type="Label" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.47, 1, 0.47, 1)
+theme_override_font_sizes/font_size = 14
+text = "+10 Damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="PriceContainer" type="HBoxContainer" parent="ContentContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="ScrapIcon" type="Label" parent="ContentContainer/VBoxContainer/PriceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.77, 0.24, 1)
+theme_override_font_sizes/font_size = 16
+text = "S"
+
+[node name="PriceLabel" type="Label" parent="ContentContainer/VBoxContainer/PriceContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.77, 0.24, 1)
+theme_override_font_sizes/font_size = 16
+text = "100"
+
+[node name="SoldOverlay" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SoldLabel" type="Label" parent="SoldOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
+text = "SOLD"
+horizontal_alignment = 1
+vertical_alignment = 1
